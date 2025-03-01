@@ -3,6 +3,7 @@ import Header from './components/Header';
 import HeroSection from './components/HeroSection';
 import JourneySection from './components/JourneyHeading';
 import ModelSection from './components/ModelSection';
+import Scene3D from './components/Scene3D';
 // import Scene from './components/Scene';
 // import Scene3D from './components/Scene3D';
 
@@ -18,8 +19,9 @@ export default function Home() {
   return (
     <main>
       <Header />
+      {/* <Scene3D /> */}
       <HeroSection />
-      <JourneySection />
+      {/* <JourneySection /> */}
       <ModelSection />
       <div className="h-screen">
 

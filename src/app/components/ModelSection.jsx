@@ -2,6 +2,7 @@
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
+import ImageOpacity from './ImageOpacity';
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
@@ -183,19 +184,8 @@ const ModelSection = () => {
       <div className="container mx-auto px-28">
         <div className="grid grid-cols-2 gap-8 items-center">
           {/* Left side - Blob/Model */}
-          <div className="relative w-full h-full flex items-center justify-center">
-            <svg 
-              ref={blobRef}
-              viewBox="0 0 200 200" 
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-full max-w-md"
-            >
-              <path 
-                fill="#FF0066" 
-                d="M37.4,-58.9C49.8,-50.2,62.1,-42.1,67.9,-30.7C73.6,-19.2,72.8,-4.4,70.9,10.4C69.1,25.2,66.2,40,58.6,53.4C51.1,66.9,38.9,79,24.6,82.8C10.2,86.7,-6.3,82.3,-21,75.9C-35.7,69.6,-48.5,61.4,-58.9,50.4C-69.2,39.5,-77.1,25.9,-76.5,12.6C-75.8,-0.6,-66.6,-13.4,-60,-27.3C-53.5,-41.2,-49.6,-56.1,-40,-66.1C-30.5,-76.1,-15.2,-81.1,-1.4,-78.9C12.5,-76.8,25,-67.6,37.4,-58.9Z" 
-                transform="translate(100 100)" 
-              />
-            </svg>
+          <div className="relative w-full flex items-center justify-center rounded-xl">
+            <ImageOpacity />
           </div>
 
           {/* Right side - Text carousel */}

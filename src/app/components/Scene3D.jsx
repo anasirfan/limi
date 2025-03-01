@@ -324,7 +324,7 @@ export default function Scene3D() {
           </div>
         </div>
       )}
-      <div ref={containerRef} className="w-full h-screen bg-black relative">
+      <div ref={containerRef} className="w-full h-[50vh] bg-black relative">
         <Canvas
           camera={{
             fov: 50,
