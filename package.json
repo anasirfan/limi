@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@google/model-viewer": "^4.0.0",
+
     "@react-three/drei": "^9.97.0",
     "@react-three/fiber": "^9.0.0-alpha.2",
     "@react-three/postprocessing": "^2.15.12",
