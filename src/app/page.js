@@ -3,6 +3,7 @@ import CubeAnimation from './components/CubeAnimation';
 import EcoSystem from './components/EcoSystem';
 import Header from './components/Header';
 import HeroSection from './components/HeroSection';
+import InteractiveStory from '@/components/InteractiveStory';
 import JourneySection from './components/JourneyHeading';
 import ModelSection from './components/ModelSection';
 import Scene3D from './components/Scene3D';
@@ -23,10 +24,11 @@ export default function Home() {
       <Header />
       {/* <Scene3D /> */}
       <HeroSection />
-      <CubeAnimation/>
-      <EcoSystem />
+      <InteractiveStory />
+      {/* <CubeAnimation/> */}
+      {/* <EcoSystem /> */}
       {/* <JourneySection /> */}
-      <ModelSection />
+      {/* <ModelSection /> */}
       <div className="h-screen">
 
       </div>
