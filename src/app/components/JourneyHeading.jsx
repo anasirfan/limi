@@ -139,7 +139,7 @@ const JourneySection = () => {
           {
             opacity: 1,
             scale: 1,
-            x: (i) => (i === 0 ? "15vw" : "-15vw"),
+            x: (i) => (i === 0 ? " /. ``````````Q" : "-15vw"),
             y: (i) => (i === 0 ? "-30vh" : "-30vh"),
             duration: 2,
             stagger: 0.2,

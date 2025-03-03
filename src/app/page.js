@@ -1,4 +1,6 @@
 'use client';
+import CubeAnimation from './components/CubeAnimation';
+import EcoSystem from './components/EcoSystem';
 import Header from './components/Header';
 import HeroSection from './components/HeroSection';
 import JourneySection from './components/JourneyHeading';
@@ -21,6 +23,8 @@ export default function Home() {
       <Header />
       {/* <Scene3D /> */}
       <HeroSection />
+      <CubeAnimation/>
+      <EcoSystem />
       {/* <JourneySection /> */}
       <ModelSection />
       <div className="h-screen">

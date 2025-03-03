@@ -6,7 +6,7 @@ import * as THREE from 'three';
 
 const RoomModel = forwardRef((props, ref) => {
   const localRef = useRef();
-  const { scene } = useGLTF("/models/room.glb");
+  const { scene } = useGLTF("/models/pandent.glb");
   const [lampMaterial, setLampMaterial] = useState(null);
   const [pendantMaterial, setPendantMaterial] = useState(null);
 

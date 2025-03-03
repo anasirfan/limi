@@ -2,7 +2,7 @@
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
-import ImageOpacity from './ImageOpacity';
+import ModelTransition from './ModelTransition';
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
@@ -184,11 +184,18 @@ const ModelSection = () => {
       <div className="container mx-auto px-28">
         <div className="grid grid-cols-2 gap-8 items-center">
           {/* Left side - Blob/Model */}
-          <div className="relative w-full flex items-center justify-center rounded-xl">
-            <ImageOpacity />
+          <div 
+            className="relative w-full h-[600px] flex items-center justify-center rounded-xl overflow-hidden"
+            style={{
+              backgroundImage: `url('/images/2d-room.jpg')`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat'
+            }}
+          >
+            <ModelTransition />
           </div>
 
-          {/* Right side - Text carousel */}
           <div ref={containerRef} className="relative min-h-[300px]">
             <div className="relative">
               {texts.map((text, index) => (

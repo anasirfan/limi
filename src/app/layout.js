@@ -1,5 +1,6 @@
 import { Poppins } from 'next/font/google';
 import "./globals.css";
+import SmoothScroll from './components/SmoothScroll';
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -25,7 +26,9 @@ export default function RootLayout({ children }) {
     <html lang="en" suppressHydrationWarning>
       <head />
       <body className={poppins.className} suppressHydrationWarning>
-        {children}
+        <SmoothScroll>
+          {children}
+        </SmoothScroll>
       </body>
     </html>
   );
