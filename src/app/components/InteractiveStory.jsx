@@ -1,25 +1,60 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Image from 'next/image';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const TRIANGLE_CONFIG = {
-  HUB: { x: -173.2, y: -100 }, // 200px from center at 120 degrees
-  BASE: { x: 173.2, y: -100 }, // 200px from center at 60 degrees
-  APP: { x: 0, y: 200 }, // 200px from center at 270 degrees
+// Responsive triangle configuration
+const getTriangleConfig = () => {
+  // Check if we're on the client side before using window
+  if (typeof window !== 'undefined') {
+    const isMobile = window.innerWidth < 768;
+    const isTablet = window.innerWidth >= 768 && window.innerWidth < 1024;
+    
+    if (isMobile) {
+      return {
+        HUB: { x: -100, y: -80 },
+        BASE: { x: 100, y: -80 },
+        APP: { x: 0, y: 100 },
+      };
+    } else if (isTablet) {
+      return {
+        HUB: { x: -140, y: -90 },
+        BASE: { x: 140, y: -90 },
+        APP: { x: 0, y: 150 },
+      };
+    }
+  }
+  
+  // Default (desktop) configuration
+  return {
+    HUB: { x: -173.2, y: -100 },
+    BASE: { x: 173.2, y: -100 },
+    APP: { x: 0, y: 200 },
+  };
 };
 
 const InteractiveStory = () => {
+  const [triangleConfig, setTriangleConfig] = useState(getTriangleConfig());
   const containerRef = useRef(null);
   const headingRef = useRef(null);
   const hubRef = useRef(null);
   const baseRef = useRef(null);
   const appRef = useRef(null);
   const svgRef = useRef(null);
+  
+  // Update triangle config on resize
+  useEffect(() => {
+    const handleResize = () => {
+      setTriangleConfig(getTriangleConfig());
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   
   useEffect(() => {
     let ctx = gsap.context(() => {
@@ -50,7 +85,7 @@ const InteractiveStory = () => {
         .to(svgRef.current.querySelectorAll('.main-triangle-line'), {
           opacity: 1,
           duration: 1,
-        }) ;
+        });
 
       // Move divs into triangle formation with names
       timeline
@@ -62,18 +97,18 @@ const InteractiveStory = () => {
           ease: 'power2.out',
         })
         .to(hubRef.current, {
-          x: TRIANGLE_CONFIG.HUB.x,
-          y: TRIANGLE_CONFIG.HUB.y,
+          x: triangleConfig.HUB.x,
+          y: triangleConfig.HUB.y,
           duration: 1,
         }, 'triangle')
         .to(baseRef.current, {
-          x: TRIANGLE_CONFIG.BASE.x,
-          y: TRIANGLE_CONFIG.BASE.y,
+          x: triangleConfig.BASE.x,
+          y: triangleConfig.BASE.y,
           duration: 1,
         }, 'triangle')
         .to(appRef.current, {
-          x: TRIANGLE_CONFIG.APP.x,
-          y: TRIANGLE_CONFIG.APP.y,
+          x: triangleConfig.APP.x,
+          y: triangleConfig.APP.y,
           duration: 1,
         }, 'triangle')
 
@@ -120,18 +155,28 @@ const InteractiveStory = () => {
         .to('.description-text', {
           opacity: 1,
           duration: 0.5,
-        })
+        });
+
+      // For mobile, add a special animation for the mobile descriptions
+      if (window.innerWidth < 768) {
+        timeline.to('.mobile-description', {
+          opacity: 1,
+          y: 0,
+          duration: 0.5,
+          stagger: 0.2,
+        });
+      }
     });
 
     return () => ctx.revert();
-  }, []);
+  }, [triangleConfig]);
 
   return (
     <div ref={containerRef} className="relative h-screen w-full overflow-hidden bg-[#292929]">
       {/* Heading */}
       <h1
         ref={headingRef}
-        className="absolute text-center left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-6xl md:text-6xl sm:text-4xl font-bold text-emerald-400 px-4"
+        className="absolute text-center left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-emerald-400 px-4"
       >
         How Our <br/> EcoSystem Works
       </h1>
@@ -149,10 +194,10 @@ const InteractiveStory = () => {
         >
           <line 
             className="main-triangle-line opacity-0"
-            x1={TRIANGLE_CONFIG.HUB.x}
-            y1={TRIANGLE_CONFIG.HUB.y}
-            x2={TRIANGLE_CONFIG.BASE.x}
-            y2={TRIANGLE_CONFIG.BASE.y}
+            x1={triangleConfig.HUB.x}
+            y1={triangleConfig.HUB.y}
+            x2={triangleConfig.BASE.x}
+            y2={triangleConfig.BASE.y}
             stroke="white"
             strokeWidth="2"
             strokeDasharray="300"
@@ -160,10 +205,10 @@ const InteractiveStory = () => {
           />
           <line 
             className="main-triangle-line opacity-0"
-            x1={TRIANGLE_CONFIG.BASE.x}
-            y1={TRIANGLE_CONFIG.BASE.y}
-            x2={TRIANGLE_CONFIG.APP.x}
-            y2={TRIANGLE_CONFIG.APP.y}
+            x1={triangleConfig.BASE.x}
+            y1={triangleConfig.BASE.y}
+            x2={triangleConfig.APP.x}
+            y2={triangleConfig.APP.y}
             stroke="white"
             strokeWidth="2"
             strokeDasharray="300"
@@ -171,10 +216,10 @@ const InteractiveStory = () => {
           />
           <line 
             className="main-triangle-line opacity-0"
-            x1={TRIANGLE_CONFIG.APP.x}
-            y1={TRIANGLE_CONFIG.APP.y}
-            x2={TRIANGLE_CONFIG.HUB.x}
-            y2={TRIANGLE_CONFIG.HUB.y}
+            x1={triangleConfig.APP.x}
+            y1={triangleConfig.APP.y}
+            x2={triangleConfig.HUB.x}
+            y2={triangleConfig.HUB.y}
             stroke="white"
             strokeWidth="2"
             strokeDasharray="300"
@@ -185,14 +230,14 @@ const InteractiveStory = () => {
         {/* Hub Div */}
         <div
           ref={hubRef}
-          className="absolute left-1/2 top-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 transform rounded-lg bg-[#0077FF] p-4 z-20 md:h-40 md:w-40 sm:h-32 sm:w-32"
+          className="absolute left-1/2 top-1/2 h-24 w-24 sm:h-32 sm:w-32 md:h-36 md:w-36 lg:h-40 lg:w-40 -translate-x-1/2 -translate-y-1/2 transform rounded-lg bg-[#0077FF] p-4 z-20"
         >
-          <div className="div-name text-2xl font-bold text-white text-center mb-2">Hub</div>
+          <div className="div-name text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-white text-center mb-1 sm:mb-2">Hub</div>
           <div className="div-image opacity-0 absolute inset-0">
             <Image src="/images/hub-new.jpg" alt="Hub" className="rounded-xl" fill style={{ objectFit: 'cover' }} />
           </div>
     
-          {/* Hub Description Line */}
+          {/* Hub Description Line - Desktop only */}
           <svg 
             id="e7pqTGlYxEy1" 
             className="absolute right-0 top-1/2 -translate-y-1/2 opacity-0 description-line hidden md:block" 
@@ -213,24 +258,23 @@ const InteractiveStory = () => {
           </svg>
 
           <div className="description-text absolute right-48 top-1/2 -translate-y-1/2 w-96 text-white opacity-0 hidden md:block">
-         
-          <h1> Hub – The Brain of the System</h1>
-          <p className='italic text-sm'>Seamlessly Connects Everything</p>
-          <p className='text-sm'>The Hub acts as the core processor, managing smart integrations and connecting all lighting modules for real-time adjustments.</p>
+            <h1 className="text-xl lg:text-2xl font-semibold"> Hub – The Brain of the System</h1>
+            <p className='italic text-xs lg:text-sm'>Seamlessly Connects Everything</p>
+            <p className='text-xs lg:text-sm'>The Hub acts as the core processor, managing smart integrations and connecting all lighting modules for real-time adjustments.</p>
           </div>
         </div>
 
         {/* Base Div */}
         <div
           ref={baseRef}
-          className="absolute left-1/2 top-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 transform rounded-lg bg-[#00C2A8] p-4 z-20 md:h-40 md:w-40 sm:h-32 sm:w-32"
+          className="absolute left-1/2 top-1/2 h-24 w-24 sm:h-32 sm:w-32 md:h-36 md:w-36 lg:h-40 lg:w-40 -translate-x-1/2 -translate-y-1/2 transform rounded-lg bg-[#00C2A8] p-4 z-20"
         >
-          <div className="div-name text-2xl font-bold text-white text-center mb-2">Base</div>
+          <div className="div-name text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-white text-center mb-1 sm:mb-2">Base</div>
           <div className="div-image opacity-0 absolute inset-0">
             <Image src="/images/base-new.png" alt="Base" className="rounded-xl" fill style={{ objectFit: 'cover' }} />
           </div>
        
-          {/* Base Description Line - Reversed */}
+          {/* Base Description Line - Desktop only */}
           <svg 
             id="ebGvKdsWm4j1" 
             className="absolute left-0 top-1/2 -translate-y-1/2 opacity-0 description-line hidden md:block" 
@@ -251,24 +295,23 @@ const InteractiveStory = () => {
           </svg>
 
           <div className="description-text absolute left-64 top-1/3 -translate-y-1/2 w-96 text-white opacity-0 hidden md:block">
-          <h1> Base – The Power & Stability</h1>
-          <p className='italic text-sm'>Reliable Infrastructure</p>
-          <p className='text-sm'>The Base serves as the backbone, providing secure data storage, intelligent power distribution, and seamless automation.</p>
-         
+            <h1 className="text-xl lg:text-2xl font-semibold"> Base – The Power & Stability</h1>
+            <p className='italic text-xs lg:text-sm'>Reliable Infrastructure</p>
+            <p className='text-xs lg:text-sm'>The Base serves as the backbone, providing secure data storage, intelligent power distribution, and seamless automation.</p>
           </div>
         </div>
 
         {/* App Div */}
         <div
           ref={appRef}
-          className="absolute left-1/2 top-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 transform rounded-lg bg-[#7D00FF] p-4 z-20 md:h-40 md:w-40 sm:h-32 sm:w-32"
+          className="absolute left-1/2 top-1/2 h-24 w-24 sm:h-32 sm:w-32 md:h-36 md:w-36 lg:h-40 lg:w-40 -translate-x-1/2 -translate-y-1/2 transform rounded-lg bg-[#7D00FF] p-4 z-20"
         >
-          <div className="div-name text-2xl font-bold text-white text-center mb-2">App</div>
+          <div className="div-name text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-white text-center mb-1 sm:mb-2">App</div>
           <div className="div-image opacity-0 absolute inset-0">
             <Image src="/images/mobile-app-new.png" className="rounded-xl" alt="App" fill style={{ objectFit: 'cover' }} />
           </div>
        
-          {/* App Description Line */}
+          {/* App Description Line - Desktop only */}
           <svg 
             id="appDescSvg" 
             className="absolute top-0 left-1/2 -translate-x-1/2 opacity-0 description-line hidden md:block" 
@@ -289,10 +332,41 @@ const InteractiveStory = () => {
           </svg>
 
           <div className="description-text absolute top-[130%] -left-[90%] -translate-x-1/2 -translate-y-24 w-96 text-white opacity-0 hidden md:block">
-          <h1>  App – Your Control Center</h1>
-          <p className='italic text-sm'>Effortless User Control</p>
-          <p className='text-sm'>With the App, you can customize lighting effects, set schedules, and create the perfect ambiance with just a tap.</p>
-         
+            <h1 className="text-xl lg:text-2xl font-semibold">App – Your Control Center</h1>
+            <p className='italic text-xs lg:text-sm'>Effortless User Control</p>
+            <p className='text-xs lg:text-sm'>With the App, you can customize lighting effects, set schedules, and create the perfect ambiance with just a tap.</p>
+          </div>
+        </div>
+
+        {/* Mobile Descriptions - Only visible on small screens */}
+        <div className="fixed bottom-0 left-0 right-0 bg-black/80 backdrop-blur-sm p-4 z-30 opacity-0 translate-y-full md:hidden mobile-description">
+          <div className="flex flex-col space-y-4 text-white max-h-[30vh] overflow-y-auto">
+            <div className="flex items-start space-x-2">
+              <div className="w-4 h-4 rounded-full bg-[#0077FF] mt-1 flex-shrink-0"></div>
+              <div>
+                <h3 className="text-base font-semibold">Hub – The Brain of the System</h3>
+                <p className="text-xs italic">Seamlessly Connects Everything</p>
+                <p className="text-xs">The Hub acts as the core processor, managing smart integrations and connecting all lighting modules for real-time adjustments.</p>
+              </div>
+            </div>
+            
+            <div className="flex items-start space-x-2">
+              <div className="w-4 h-4 rounded-full bg-[#00C2A8] mt-1 flex-shrink-0"></div>
+              <div>
+                <h3 className="text-base font-semibold">Base – The Power & Stability</h3>
+                <p className="text-xs italic">Reliable Infrastructure</p>
+                <p className="text-xs">The Base serves as the backbone, providing secure data storage, intelligent power distribution, and seamless automation.</p>
+              </div>
+            </div>
+            
+            <div className="flex items-start space-x-2">
+              <div className="w-4 h-4 rounded-full bg-[#7D00FF] mt-1 flex-shrink-0"></div>
+              <div>
+                <h3 className="text-base font-semibold">App – Your Control Center</h3>
+                <p className="text-xs italic">Effortless User Control</p>
+                <p className="text-xs">With the App, you can customize lighting effects, set schedules, and create the perfect ambiance with just a tap.</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>

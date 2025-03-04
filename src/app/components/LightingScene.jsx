@@ -69,11 +69,12 @@ const LightingScene = () => {
   return (
     <div 
       ref={sceneRef}
-      className="relative h-[90vh] w-full overflow-hidden"
+      className="relative h-[90vh] w-full overflow-hidden bg-black"
       style={{
         backgroundImage: 'url(/images/day.webp)',
-        backgroundSize: 'cover',
+        backgroundSize: 'contain',
         backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
         transition: 'filter 0.8s ease'
       }}
     >
@@ -83,8 +84,9 @@ const LightingScene = () => {
         className="absolute inset-0 mix-blend-screen"
         style={{
           backgroundImage: 'url(/images/top-light.webp)',
-          backgroundSize: 'cover',
+          backgroundSize: 'contain',
           backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
           opacity: 0
         }}
       />
@@ -95,8 +97,9 @@ const LightingScene = () => {
         className="absolute inset-0 mix-blend-screen"
         style={{
           backgroundImage: 'url(/images/middle-light.webp)',
-          backgroundSize: 'cover',
+          backgroundSize: 'contain',
           backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
           opacity: 0
         }}
       />
