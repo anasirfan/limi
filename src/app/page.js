@@ -5,8 +5,10 @@ import Header from './components/Header';
 import HeroSection from './components/HeroSection';
 import InteractiveStory from './components/InteractiveStory';
 import JourneySection from './components/JourneyHeading';
+import LightActivation from './components/LightActivation';
 import LightingScene from './components/LightingScene';
 import ModelSection from './components/ModelSection';
+import MotiveSection from './components/MotiveSection';
 import Scene3D from './components/Scene3D';
 // import Scene from './components/Scene';
 // import Scene3D from './components/Scene3D';
@@ -24,7 +26,9 @@ export default function Home() {
     <main>
       <Header />
       <HeroSection />
+      <MotiveSection />
       <InteractiveStory />
+      {/* <LightActivation /> */}
       <CubeAnimation/>
       {/* <EcoSystem /> */}
       {/* <JourneySection /> */}
