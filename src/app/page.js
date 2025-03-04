@@ -1,10 +1,11 @@
 'use client';
 import CubeAnimation from './components/CubeAnimation';
-import EcoSystem from './components/EcoSystem';
+import Footer from './components/Footer';
 import Header from './components/Header';
 import HeroSection from './components/HeroSection';
-import InteractiveStory from '@/components/InteractiveStory';
+import InteractiveStory from './components/InteractiveStory';
 import JourneySection from './components/JourneyHeading';
+import LightingScene from './components/LightingScene';
 import ModelSection from './components/ModelSection';
 import Scene3D from './components/Scene3D';
 // import Scene from './components/Scene';
@@ -22,16 +23,15 @@ export default function Home() {
   return (
     <main>
       <Header />
-      {/* <Scene3D /> */}
       <HeroSection />
       <InteractiveStory />
-      {/* <CubeAnimation/> */}
+      <CubeAnimation/>
       {/* <EcoSystem /> */}
       {/* <JourneySection /> */}
-      {/* <ModelSection /> */}
-      <div className="h-screen">
-
-      </div>
+      <ModelSection />
+      <LightingScene />
+      <Footer />
+      {/* <Scene3D /> */}
     </main>
   );
 }

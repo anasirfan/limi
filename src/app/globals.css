@@ -12,6 +12,14 @@ body {
   background: var(--background);
   margin: 0;
   padding: 0;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+  width: 100%;
+  max-width: 100vw;
+}
+
+html {
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
 @font-face {
@@ -31,5 +39,23 @@ body {
   p {
     font-family: var(--font-poppins);
     font-size: 18px;
+  }
+}
+
+/* Ensure all sections are properly contained */
+section, div {
+  max-width: 100vw;
+}
+
+/* Fix for absolute positioned elements that might extend beyond viewport */
+.absolute {
+  max-width: 100vw;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
 }

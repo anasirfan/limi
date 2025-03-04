@@ -3,6 +3,7 @@ import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
 import ModelTransition from './ModelTransition';
+import ImageOpacity from './ImageOpacity';
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
@@ -181,11 +182,11 @@ const ModelSection = () => {
       ref={sectionRef}
       className="bg-[#292929] h-screen flex items-center relative overflow-hidden"
     >
-      <div className="container mx-auto px-28">
-        <div className="grid grid-cols-2 gap-8 items-center">
+      <div className="container mx-auto px-4 md:px-8 lg:px-16 xl:px-28">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
           {/* Left side - Blob/Model */}
           <div 
-            className="relative w-full h-[600px] flex items-center justify-center rounded-xl overflow-hidden"
+            className="relative w-full h-[300px] md:h-[400px] lg:h-[500px] xl:h-[600px] flex items-center justify-center rounded-xl overflow-hidden"
             style={{
               backgroundImage: `url('/images/2d-room.jpg')`,
               backgroundSize: 'cover',
@@ -193,7 +194,8 @@ const ModelSection = () => {
               backgroundRepeat: 'no-repeat'
             }}
           >
-            <ModelTransition />
+            {/* <ModelTransition /> */}
+            <ImageOpacity />
           </div>
 
           <div ref={containerRef} className="relative min-h-[300px]">
@@ -207,16 +209,16 @@ const ModelSection = () => {
                     visibility: index === 0 ? 'visible' : 'hidden'
                   }}
                 >
-                  <span className="text-[230px] font-amenti text-white opacity-20 leading-none block -mb-20">
+                  <span className="text-[120px] md:text-[180px] lg:text-[230px] font-amenti text-white opacity-20 leading-none block -mb-10 md:-mb-20">
                     {text.number}
                   </span>
-                  <h3 className="text-white font-amenti text-[42px] mb-6 uppercase font-semibold">
+                  <h3 className="text-white font-amenti text-[28px] md:text-[36px] lg:text-[42px] mb-4 md:mb-6 uppercase font-semibold">
                     {text.heading}
                   </h3>
-                  <p className="text-white font-poppins text-[18px] leading-relaxed max-w-[80%] mb-4">
+                  <p className="text-white font-poppins text-[16px] md:text-[18px] leading-relaxed max-w-full md:max-w-[90%] lg:max-w-[80%] mb-2 md:mb-4">
                     {text.description}
                   </p>
-                  <p className="text-white font-poppins text-[18px] leading-relaxed max-w-[80%] opacity-80">
+                  <p className="text-white font-poppins text-[16px] md:text-[18px] leading-relaxed max-w-full md:max-w-[90%] lg:max-w-[80%] opacity-80">
                     {text.subtext}
                   </p>
                 </div>
@@ -228,7 +230,7 @@ const ModelSection = () => {
               {texts.map((_, index) => (
                 <div
                   key={index}
-                  className={`scroll-indicator w-1 h-16 rounded-full bg-[#4a4a4a] transition-colors duration-300`}
+                  className={`scroll-indicator w-1 h-8 md:h-12 lg:h-16 rounded-full bg-[#4a4a4a] transition-colors duration-300`}
                 />
               ))}
             </div>
@@ -239,4 +241,4 @@ const ModelSection = () => {
   );
 };
 
-export default ModelSection; 
+export default ModelSection;
