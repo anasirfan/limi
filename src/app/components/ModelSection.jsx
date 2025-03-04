@@ -18,36 +18,53 @@ const ModelSection = () => {
     {
       id: 1,
       number: "01",
-      heading: "Participation",
-      description: "Join tight-knit communities around your favorite creators, thoughtleaders, products, and experiences.",
-      subtext: "Access, distribute and co-own what matters to you, while generating passive income through revenue sharing.",
+      heading: "Placement",
+      description: "Begin with a pendant positioned on the ceiling, setting the foundation for transformation.",
+      subtext: "This marks the starting point of an evolving lighting experience.",
       color: "#FF0066"
     },
     {
       id: 2,
       number: "02",
-      heading: "Visualization",
-      description: "Experience your space in stunning 3D detail before making any physical changes.",
-      subtext: "Our advanced visualization tools help you make confident decisions about your space.",
+      heading: "Repositioning",
+      description: "The pendant transitions from the ceiling to a lamp, adapting to a new function.",
+      subtext: "A shift in placement opens up creative possibilities.",
       color: "#4CAF50"
     },
     {
       id: 3,
       number: "03",
-      heading: "Customization",
-      description: "Tailor every aspect of your space to match your unique style and needs.",
-      subtext: "From colors to layouts, customize every detail to create your perfect environment.",
+      heading: "Replacement",
+      description: "A new pendant takes its place on the ceiling, introducing a fresh aesthetic.",
+      subtext: "Lighting evolves as new elements are introduced.",
       color: "#2196F3"
     },
     {
       id: 4,
       number: "04",
-      heading: "Realization",
-      description: "Watch your vision come to life with our expert implementation support.",
-      subtext: "We guide you through every step of turning your digital design into reality.",
+      heading: "Adaptation",
+      description: "The new pendant moves to the wall while the previous one transitions from the lamp.",
+      subtext: "Dynamic placements create an ever-changing ambiance.",
       color: "#FFC107"
+    },
+    {
+      id: 5,
+      number: "05",
+      heading: "Restoration",
+      description: "The previous pendant returns to the ceiling, completing the transformation cycle.",
+      subtext: "A seamless return to the original placement, ready for the next cycle.",
+      color: "#9C27B0"
+    },
+    {
+      id: 6,
+      number: "06",
+      heading: "Continuity",
+      description: "The cycle repeats, ensuring a continuous loop of lighting evolution.",
+      subtext: "Endless adaptability for a dynamic and immersive space.",
+      color: "#FF5722"
     }
   ];
+  
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -188,10 +205,8 @@ const ModelSection = () => {
           <div 
             className="relative w-full h-[300px] md:h-[400px] lg:h-[500px] xl:h-[600px] flex items-center justify-center rounded-xl overflow-hidden"
             style={{
-              backgroundImage: `url('/images/2d-room.jpg')`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              backgroundRepeat: 'no-repeat'
+              background: '#1a1a1a',
+              boxShadow: '0 10px 30px rgba(0, 0, 0, 0.3)'
             }}
           >
             {/* <ModelTransition /> */}

@@ -53,7 +53,7 @@ const MotiveSection = () => {
       ease: "power2.out" 
     }, 0)
     .to(designRef.current, {
-      top: "20%",
+      top: "30%",
       duration: 0.2
     }, 0.3);
 
@@ -65,7 +65,7 @@ const MotiveSection = () => {
       ease: "power2.out" 
     }, 0.4)
     .to(controlRef.current, {
-      top: "40%",
+      top: "50%",
       duration: 0.2
     }, 0.7);
 
@@ -77,7 +77,7 @@ const MotiveSection = () => {
       ease: "power2.out" 
     }, 0.8)
     .to(transformRef.current, {
-      top: "60%",
+      top: "70%",
       duration: 0.2
     }, 1.1);
 
