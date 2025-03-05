@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { useEffect, useRef } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useEffect, useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 // Register GSAP plugins
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
@@ -17,19 +17,15 @@ const MotiveSection = () => {
   const transformRef = useRef(null);
 
   useEffect(() => {
-    // Make sure all refs are available
     if (!sectionRef.current || !containerRef.current || !designRef.current || !controlRef.current || !transformRef.current) return;
 
-    // Clear any existing ScrollTriggers for this section
     let triggers = [];
-    
-    // Set initial states - all items start invisible
+
     gsap.set([designRef.current, controlRef.current, transformRef.current], { 
       opacity: 0,
       y: 50
     });
 
-    // Main pin timeline - pins the container
     const pinTl = gsap.timeline({
       scrollTrigger: {
         trigger: sectionRef.current,
@@ -42,59 +38,29 @@ const MotiveSection = () => {
         id: "pin-trigger"
       }
     });
-    
+
     triggers.push(ScrollTrigger.getById("pin-trigger"));
 
-    // Design word animation
-    pinTl.to(designRef.current, { 
-      opacity: 1, 
-      y: 0,
-      duration: 0.3,
-      ease: "power2.out" 
-    }, 0)
-    .to(designRef.current, {
-      top: "30%",
-      duration: 0.2
-    }, 0.3);
+    pinTl.to(designRef.current, { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" }, 0)
+      .to(designRef.current, { top: "30%", duration: 0.2 }, 0.3);
 
-    // Control word animation
-    pinTl.to(controlRef.current, { 
-      opacity: 1, 
-      y: 0,
-      duration: 0.3,
-      ease: "power2.out" 
-    }, 0.4)
-    .to(controlRef.current, {
-      top: "50%",
-      duration: 0.2
-    }, 0.7);
+    pinTl.to(controlRef.current, { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" }, 0.4)
+      .to(controlRef.current, { top: "50%", duration: 0.2 }, 0.7);
 
-    // Transform word animation
-    pinTl.to(transformRef.current, { 
-      opacity: 1, 
-      y: 0,
-      duration: 0.3,
-      ease: "power2.out" 
-    }, 0.8)
-    .to(transformRef.current, {
-      top: "70%",
-      duration: 0.2
-    }, 1.1);
+    pinTl.to(transformRef.current, { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" }, 0.8)
+      .to(transformRef.current, { top: "70%", duration: 0.2 }, 1.1);
 
     return () => {
-      // Clean up only the triggers we created
-      triggers.forEach(trigger => {
-        if (trigger) trigger.kill();
-      });
+      triggers.forEach(trigger => trigger?.kill());
     };
   }, []);
 
   return (
     <section 
       ref={sectionRef}
-      className="relative w-full h-[200vh] bg-gradient-to-b from-gray-900 to-black overflow-hidden"
+      className="relative w-full h-[200vh] bg-[#292929] overflow-hidden"
     >
-      {/* Container for pinned content */}
+      {/* Container */}
       <div 
         ref={containerRef}
         className="relative w-full h-screen overflow-hidden"
@@ -104,8 +70,8 @@ const MotiveSection = () => {
           ref={designRef}
           className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 flex items-center gap-6"
         >
-          <span className="text-[#FF6B6B] text-7xl sm:text-8xl md:text-9xl">🎨</span>
-          <h2 className="text-[#FF6B6B] text-7xl sm:text-8xl md:text-9xl font-bold tracking-wider">
+          <span className="text-[#54bb74] text-7xl sm:text-8xl md:text-9xl">🎨</span>
+          <h2 className="text-[#54bb74] text-7xl sm:text-8xl md:text-9xl font-bold tracking-wider font-[Amenti]">
             Design
           </h2>
         </div>
@@ -115,8 +81,8 @@ const MotiveSection = () => {
           ref={controlRef}
           className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 flex items-center gap-6"
         >
-          <span className="text-[#4ECDC4] text-7xl sm:text-8xl md:text-9xl">🎛️</span>
-          <h2 className="text-[#4ECDC4] text-7xl sm:text-8xl md:text-9xl font-bold tracking-wider">
+          <span className="text-[#93cfa2] text-7xl sm:text-8xl md:text-9xl">🎛️</span>
+          <h2 className="text-[#93cfa2] text-7xl sm:text-8xl md:text-9xl font-bold tracking-wider font-[Amenti]">
             Control
           </h2>
         </div>
@@ -126,17 +92,17 @@ const MotiveSection = () => {
           ref={transformRef}
           className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 flex items-center gap-6"
         >
-          <span className="text-[#FFD166] text-7xl sm:text-8xl md:text-9xl">✨</span>
-          <h2 className="text-[#FFD166] text-7xl sm:text-8xl md:text-9xl font-bold tracking-wider">
+          <span className="text-[#f3ebe2] text-7xl sm:text-8xl md:text-9xl">✨</span>
+          <h2 className="text-[#f3ebe2]/80 text-7xl sm:text-8xl md:text-9xl font-bold tracking-wider font-[Amenti]">
             Transform
           </h2>
         </div>
 
-        {/* Background elements for visual interest */}
+        {/* Background Gradient */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-10">
-          <div className="absolute top-[10%] left-[10%] w-40 h-40 rounded-full bg-[#FF6B6B] blur-xl"></div>
-          <div className="absolute top-[40%] right-[15%] w-52 h-52 rounded-full bg-[#4ECDC4] blur-xl"></div>
-          <div className="absolute bottom-[20%] left-[30%] w-48 h-48 rounded-full bg-[#FFD166] blur-xl"></div>
+          <div className="absolute top-[10%] left-[10%] w-40 h-40 rounded-full bg-[#54bb74] blur-xl"></div>
+          <div className="absolute top-[40%] right-[15%] w-52 h-52 rounded-full bg-[#93cfa2] blur-xl"></div>
+          <div className="absolute bottom-[20%] left-[30%] w-48 h-48 rounded-full bg-[#f3ebe2] blur-xl"></div>
         </div>
       </div>
     </section>

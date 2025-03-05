@@ -10,6 +10,7 @@ import LightingScene from './components/LightingScene';
 import ModelSection from './components/ModelSection';
 import MotiveSection from './components/MotiveSection';
 import Scene3D from './components/Scene3D';
+import ScrollToTop from './components/ScrollToTop';
 // import Scene from './components/Scene';
 // import Scene3D from './components/Scene3D';
 
@@ -35,6 +36,7 @@ export default function Home() {
       <ModelSection />
       <LightingScene />
       <Footer />
+      <ScrollToTop />
       {/* <Scene3D /> */}
     </main>
   );
