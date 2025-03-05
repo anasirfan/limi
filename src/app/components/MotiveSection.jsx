@@ -71,7 +71,7 @@ const MotiveSection = () => {
           className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 flex items-center gap-6"
         >
           <span className="text-[#54bb74] text-7xl sm:text-8xl md:text-9xl">🎨</span>
-          <h2 className="text-[#54bb74] text-7xl sm:text-8xl md:text-9xl font-bold tracking-wider font-[Amenti]">
+          <h2 className="max-sm:text-5xl text-[#54bb74] text-7xl sm:text-8xl md:text-9xl font-bold tracking-wider font-[Amenti]">
             Design
           </h2>
         </div>
@@ -82,7 +82,7 @@ const MotiveSection = () => {
           className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 flex items-center gap-6"
         >
           <span className="text-[#93cfa2] text-7xl sm:text-8xl md:text-9xl">🎛️</span>
-          <h2 className="text-[#93cfa2] text-7xl sm:text-8xl md:text-9xl font-bold tracking-wider font-[Amenti]">
+          <h2 className="max-sm:text-5xl text-[#93cfa2] text-7xl sm:text-8xl md:text-9xl font-bold tracking-wider font-[Amenti]">
             Control
           </h2>
         </div>
@@ -93,7 +93,7 @@ const MotiveSection = () => {
           className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 flex items-center gap-6"
         >
           <span className="text-[#f3ebe2] text-7xl sm:text-8xl md:text-9xl">✨</span>
-          <h2 className="text-[#f3ebe2]/80 text-7xl sm:text-8xl md:text-9xl font-bold tracking-wider font-[Amenti]">
+          <h2 className="max-sm:text-5xl text-[#f3ebe2]/80 text-7xl sm:text-8xl md:text-9xl font-bold tracking-wider font-[Amenti]">
             Transform
           </h2>
         </div>

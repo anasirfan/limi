@@ -21,7 +21,7 @@ const ModelSection = () => {
       heading: "Placement",
       description: "Begin with a pendant positioned on the ceiling, setting the foundation for transformation.",
       subtext: "This marks the starting point of an evolving lighting experience.",
-      color: "#FF0066"
+      color: "#54bb74"
     },
     {
       id: 2,
@@ -29,7 +29,7 @@ const ModelSection = () => {
       heading: "Repositioning",
       description: "The pendant transitions from the ceiling to a lamp, adapting to a new function.",
       subtext: "A shift in placement opens up creative possibilities.",
-      color: "#4CAF50"
+      color: "#93cfa2"
     },
     {
       id: 3,
@@ -37,7 +37,7 @@ const ModelSection = () => {
       heading: "Replacement",
       description: "A new pendant takes its place on the ceiling, introducing a fresh aesthetic.",
       subtext: "Lighting evolves as new elements are introduced.",
-      color: "#2196F3"
+      color: "#54bb74"
     },
     {
       id: 4,
@@ -45,7 +45,7 @@ const ModelSection = () => {
       heading: "Adaptation",
       description: "The new pendant moves to the wall while the previous one transitions from the lamp.",
       subtext: "Dynamic placements create an ever-changing ambiance.",
-      color: "#FFC107"
+      color: "#93cfa2"
     },
     {
       id: 5,
@@ -53,7 +53,7 @@ const ModelSection = () => {
       heading: "Restoration",
       description: "The previous pendant returns to the ceiling, completing the transformation cycle.",
       subtext: "A seamless return to the original placement, ready for the next cycle.",
-      color: "#9C27B0"
+      color: "#54bb74"
     },
     {
       id: 6,
@@ -61,7 +61,7 @@ const ModelSection = () => {
       heading: "Continuity",
       description: "The cycle repeats, ensuring a continuous loop of lighting evolution.",
       subtext: "Endless adaptability for a dynamic and immersive space.",
-      color: "#FF5722"
+      color: "#93cfa2"
     }
   ];
   
@@ -89,7 +89,7 @@ const ModelSection = () => {
         visibility: 'visible'
       });
       gsap.set(indicators, { backgroundColor: '#4a4a4a' });
-      gsap.set(indicators[0], { backgroundColor: '#ffffff' });
+      gsap.set(indicators[0], { backgroundColor: '#54bb74' });
 
       // Create scroll triggers for each text section transition
       texts.forEach((_, index) => {
@@ -120,7 +120,7 @@ const ModelSection = () => {
           
             // Update indicators
             gsap.to(indicators, { backgroundColor: '#4a4a4a', duration: 0.3 });
-            gsap.to(indicators[index], { backgroundColor: '#ffffff', duration: 0.3 });
+            gsap.to(indicators[index], { backgroundColor: '#54bb74', duration: 0.3 });
           },
           onEnterBack: () => {
             if (index === 0) return;
@@ -224,18 +224,18 @@ const ModelSection = () => {
                     visibility: index === 0 ? 'visible' : 'hidden'
                   }}
                 >
-                  <span className="text-[120px] md:text-[180px] lg:text-[230px] font-amenti text-white opacity-20 leading-none block -mb-10 md:-mb-20">
-                    {text.number}
-                  </span>
-                  <h3 className="text-white font-amenti text-[28px] md:text-[36px] lg:text-[42px] mb-4 md:mb-6 uppercase font-semibold">
-                    {text.heading}
-                  </h3>
-                  <p className="text-white font-poppins text-[16px] md:text-[18px] leading-relaxed max-w-full md:max-w-[90%] lg:max-w-[80%] mb-2 md:mb-4">
-                    {text.description}
-                  </p>
-                  <p className="text-white font-poppins text-[16px] md:text-[18px] leading-relaxed max-w-full md:max-w-[90%] lg:max-w-[80%] opacity-80">
-                    {text.subtext}
-                  </p>
+                 <span className="text-[120px] md:text-[180px] lg:text-[230px] font-['Amenti'] text-[#54bb74] opacity-20 leading-none block -mb-10 md:-mb-20">
+  {text.number}
+</span>
+<h3 className="text-[#f3ebe2] font-['Amenti'] text-[28px] md:text-[36px] lg:text-[42px] mb-4 md:mb-6 uppercase font-bold">
+  {text.heading}
+</h3>
+<p className="text-[#f3ebe2] font-['Poppins'] text-[16px] md:text-[18px] leading-relaxed max-w-full md:max-w-[90%] lg:max-w-[80%] mb-2 md:mb-4">
+  {text.description}
+</p>
+<p className="text-[#93cfa2] font-['Poppins'] text-[16px] md:text-[18px] leading-relaxed max-w-full md:max-w-[90%] lg:max-w-[80%] opacity-80">
+  {text.subtext}
+</p>
                 </div>
               ))}
             </div>
