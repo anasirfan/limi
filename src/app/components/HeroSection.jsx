@@ -5,25 +5,35 @@ function HeroSection() {
   return (
     <>
       <div
-        className="relative min-h-screen flex flex-col items-start justify-center overflow-hidden bg-gradient-to-br from-[#292929] via-[#2d3d33] to-[#54bb74]/20"
+        className="relative min-h-screen flex flex-col items-start justify-center overflow-hidden
+        "
       >
+        {/* //  bg-gradient-to-br from-[#292929] via-[#2d3d33] to-[#54bb74]/20 */}
         {/* Background Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#292929]/40 to-[#54bb74]/10"></div>
+        {/* <div className="absolute inset-0 bg-gradient-to-b from-[#292929]/40 to-[#54bb74]/10"></div> */}
         {/* Glow effect container */}
-        <div className="absolute w-full h-full overflow-hidden">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px]">
-            {/* White glow for shell */}
-            <div className="absolute inset-0 bg-white opacity-40 blur-[100px] animate-pulse" />
-            <div className="absolute inset-0 bg-white opacity-30 blur-[150px] animate-pulse delay-100" />
+        {/* <div className="absolute w-full h-full overflow-hidden"> */}
+        <video
+          autoPlay
+          loop
+          muted
+          className="absolute top-0 left-0 w-full h-full object-cover z-10"
+        >
+          <source src="/videos/bg-video.mp4" type="video/mp4" />
+        </video>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px]">
+          {/* White glow for shell */}
+          {/* <div className="absolute inset-0 bg-white opacity-40 blur-[100px] animate-pulse" />
+            <div className="absolute inset-0 bg-white opacity-30 blur-[150px] animate-pulse delay-100" /> */}
 
-            {/* Warm color overlay */}
-            <div className="absolute inset-0 bg-gradient-to-r from-yellow-200 to-orange-500 opacity-30 blur-[120px] animate-pulse delay-200" />
-            <div className="absolute inset-0 bg-gradient-to-r from-yellow-300 to-orange-600 opacity-20 blur-[180px] animate-pulse delay-300" />
+          {/* Warm color overlay */}
+          {/* <div className="absolute inset-0 bg-gradient-to-r from-yellow-200 to-orange-500 opacity-30 blur-[120px] animate-pulse delay-200" />
+            <div className="absolute inset-0 bg-gradient-to-r from-yellow-300 to-orange-600 opacity-20 blur-[180px] animate-pulse delay-300" /> */}
 
-            {/* Additional ambient reflection */}
-            <div className="absolute inset-0 bg-white/40 mix-blend-overlay blur-[80px] animate-pulse" />
-            <div className="absolute inset-0 bg-yellow-400/20 mix-blend-screen blur-[100px] animate-pulse delay-150" />
-          </div>
+          {/* Additional ambient reflection */}
+          {/* <div className="absolute inset-0 bg-white/40 mix-blend-overlay blur-[80px] animate-pulse" />
+            <div className="absolute inset-0 bg-yellow-400/20 mix-blend-screen blur-[100px] animate-pulse delay-150" /> */}
+          {/* </div> */}
         </div>
         {/* Main Content */}
         <div className="container mx-auto px-4 hero-content relative z-10">
