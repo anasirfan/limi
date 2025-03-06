@@ -2,7 +2,7 @@
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
-import ModelTransition from './ModelTransition';
+// import ModelTransition from './ModelTransition';
 import ImageOpacity from './ImageOpacity';
 
 if (typeof window !== 'undefined') {
@@ -11,7 +11,7 @@ if (typeof window !== 'undefined') {
 
 const ModelSection = () => {
   const sectionRef = useRef(null);
-  const blobRef = useRef(null);
+
   const containerRef = useRef(null);
 
   const texts = [
@@ -73,7 +73,7 @@ const ModelSection = () => {
       const textElements = containerRef.current.querySelectorAll('.text-item');
       const indicators = containerRef.current.querySelectorAll('.scroll-indicator');
       const section = sectionRef.current;
-      const blob = blobRef.current;
+     
 
       // Set initial states
       gsap.set(textElements, { 
@@ -115,8 +115,6 @@ const ModelSection = () => {
               gsap.to(textElements[index], { opacity: 1, y: 0, duration: 0.3 });
             }
           
-            // Update blob color
-            gsap.to(blob, { attr: { fill: texts[index].color }, duration: 0.3 });
           
             // Update indicators
             gsap.to(indicators, { backgroundColor: '#4a4a4a', duration: 0.3 });
@@ -134,8 +132,6 @@ const ModelSection = () => {
             gsap.to(textElements[index], { opacity: 0, y: 20, duration: 0.3 });
             gsap.to(textElements[index - 1], { opacity: 1, y: 0, duration: 0.3 });
           
-            // Update blob color
-            gsap.to(blob, { attr: { fill: texts[index - 1].color }, duration: 0.3 });
           
             // Update indicators
             gsap.to(indicators, { backgroundColor: '#4a4a4a', duration: 0.3 });
@@ -157,8 +153,6 @@ const ModelSection = () => {
           gsap.to(textElements[texts.length - 1], { opacity: 1, y: 0, duration: 0.3 });
           gsap.to(textElements[texts.length - 2], { opacity: 0, y: -20, duration: 0.3 });
           
-          // Update blob color
-          gsap.to(blob, { attr: { fill: texts[texts.length - 1].color }, duration: 0.3 });
           
           // Update indicators
           gsap.to(indicators, { backgroundColor: '#4a4a4a', duration: 0.3 });
@@ -171,8 +165,6 @@ const ModelSection = () => {
           gsap.to(textElements[texts.length - 1], { opacity: 0, y: 20, duration: 0.3 });
           gsap.to(textElements[texts.length - 2], { opacity: 1, y: 0, duration: 0.3 });
           
-          // Update blob color
-          gsap.to(blob, { attr: { fill: texts[texts.length - 2].color }, duration: 0.3 });
           
           // Update indicators
           gsap.to(indicators, { backgroundColor: '#4a4a4a', duration: 0.3 });
@@ -201,7 +193,7 @@ const ModelSection = () => {
     >
       <div className="container mx-auto px-4 md:px-8 lg:px-16 xl:px-28">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-          {/* Left side - Blob/Model */}
+          {/* Left side - Model */}
           <div 
             className="relative w-full h-[300px] md:h-[400px] lg:h-[500px] xl:h-[600px] flex items-center justify-center rounded-xl overflow-hidden"
             style={{

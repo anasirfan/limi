@@ -339,7 +339,7 @@ const InteractiveStory = () => {
         </div>
 
         {/* Mobile Descriptions - Only visible on small screens */}
-        <div className="fixed bottom-0 left-0 right-0 bg-[#292929]/80 backdrop-blur-sm p-4 z-30 opacity-0 translate-y-full md:hidden mobile-description">
+        {/* <div className="fixed bottom-0 left-0 right-0 bg-[#292929]/80 backdrop-blur-sm p-4 z-30 opacity-0 translate-y-full md:hidden mobile-description">
           <div className="flex flex-col space-y-4 text-white max-h-[30vh] overflow-y-auto">
 
             <div className="flex items-start space-x-2">
@@ -370,7 +370,7 @@ const InteractiveStory = () => {
             </div>
 
           </div>
-        </div>
+        </div> */}
 
       </div>
     </div>

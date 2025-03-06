@@ -47,7 +47,7 @@ const MotiveSection = () => {
     pinTl.to(controlRef.current, { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" }, 0.4)
       .to(controlRef.current, { top: "50%", duration: 0.2 }, 0.7);
 
-    pinTl.to(transformRef.current, { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" }, 0.8)
+    pinTl.to(transformRef.current, { opacity: 1, y: 20, duration: 0.3, ease: "power2.out" }, 0.8)
       .to(transformRef.current, { top: "70%", duration: 0.2 }, 1.1);
 
     return () => {
