@@ -1,5 +1,7 @@
 'use client';
 import CubeAnimation from './components/CubeAnimation';
+import CubeAnimation1 from './components/CubeAnimation1';
+// import CursorTrailEffect from './components/CursorTrailEffect';
 import Footer from './components/Footer';
 import Header from './components/Header';
 import HeroSection from './components/HeroSection';
@@ -9,9 +11,10 @@ import InteractiveStory from './components/InteractiveStory';
 import LightingScene from './components/LightingScene';
 import ModelSection from './components/ModelSection';
 import MotiveSection from './components/MotiveSection';
+import MouseTrail from './components/MouseTrail';
 // import Scene3D from './components/Scene3D';
 import ScrollToTop from './components/ScrollToTop';
-import VideoScrub from './components/VideoScrub';
+// import VideoScrub from './components/VideoScrub';
 // import Scene from './components/Scene';
 // import Scene3D from './components/Scene3D';
 
@@ -26,13 +29,19 @@ import VideoScrub from './components/VideoScrub';
 export default function Home() {
   return (
     <main>
+    <MouseTrail />
+    {/* <CursorTrailEffect 
+  color="rgba(255, 255, 255, 0.9)"
+  blendMode="source-over"
+/> */}
       <Header />
       <HeroSection />
       <MotiveSection />
       <InteractiveStory />
       {/* <VideoScrub /> */}
       {/* <LightActivation /> */}
-      <CubeAnimation/>
+      {/* <CubeAnimation/> */}
+      <CubeAnimation1 />
       {/* <EcoSystem /> */}
       {/* <JourneySection /> */}
       <ModelSection />

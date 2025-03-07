@@ -25,7 +25,7 @@ const LightingScene = () => {
     // Animate scene based on day/night mode
     if (sceneRef.current) {
       gsap.to(sceneRef.current, {
-        backgroundImage: `url(/images/configImages/${isDayMode ? 'day' : 'night'}.webp)`,
+        backgroundImage: `url(/images/configImages/${isDayMode ? 'day' : 'night'}.jpg)`,
         duration: 0.8,
         ease: 'power2.out'
       });
@@ -51,7 +51,7 @@ const LightingScene = () => {
     console.log("Top Light:", isTopLightOn);
     if (topLightRef.current) {
       // Update the light image based on day/night mode
-      topLightRef.current.style.backgroundImage = `url(/images/configImages/${isDayMode ? 'day' : 'night'}_ceiling.webp)`;
+      topLightRef.current.style.backgroundImage = `url(/images/configImages/${isDayMode ? 'day' : 'night'}_ceiling.jpg)`;
       
       gsap.to(topLightRef.current, {
         opacity: isTopLightOn ? 0.4 : 0,
@@ -66,7 +66,7 @@ const LightingScene = () => {
     console.log("Middle Light:", isMiddleLightOn);
     if (middleLightRef.current) {
       // Update the light image based on day/night mode
-      middleLightRef.current.style.backgroundImage = `url(/images/configImages/${isDayMode ? 'day' : 'night'}_wall.webp)`;
+      middleLightRef.current.style.backgroundImage = `url(/images/configImages/${isDayMode ? 'day' : 'night'}_wall.jpg)`;
       
       gsap.to(middleLightRef.current, {
         opacity: isMiddleLightOn ? 0.4 : 0,
@@ -81,7 +81,7 @@ const LightingScene = () => {
       ref={sceneRef}
       className="relative h-[90vh] w-full overflow-hidden bg-black"
       style={{
-        backgroundImage: `url(/images/configImages/${isDayMode ? 'day' : 'night'}.webp)`,
+        backgroundImage: `url(/images/configImages/${isDayMode ? 'day' : 'night'}.jpg)`,
         backgroundSize: 'contain',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
@@ -93,7 +93,7 @@ const LightingScene = () => {
         ref={topLightRef}
         className="absolute inset-0 mix-blend-screen"
         style={{
-          backgroundImage: `url(/images/configImages/top-light-${isDayMode ? 'day' : 'night'}.webp)`,
+          backgroundImage: `url(/images/configImages/${isDayMode ? 'day' : 'night'}_ceiling.jpg)`,
           backgroundSize: 'contain',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
@@ -106,7 +106,7 @@ const LightingScene = () => {
         ref={middleLightRef}
         className="absolute inset-0 mix-blend-screen"
         style={{
-          backgroundImage: `url(/images/configImages/middle-light-${isDayMode ? 'day' : 'night'}.webp)`,
+          backgroundImage: `url(/images/configImages/${isDayMode ? 'day' : 'night'}_wall.jpg)`,
           backgroundSize: 'contain',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',

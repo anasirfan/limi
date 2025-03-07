@@ -62,7 +62,7 @@ const InteractiveStory = () => {
         scrollTrigger: {
           trigger: containerRef.current,
           start: 'top top',
-          end: '+=600%', // Increased for more scrolling
+          end: '+=400%', // Increased for more scrolling
           pin: true,
           scrub: 1,
         },
@@ -84,7 +84,7 @@ const InteractiveStory = () => {
         })
         .to(svgRef.current.querySelectorAll('.main-triangle-line'), {
           opacity: 1,
-          duration: 1,
+          duration: .1,
         });
 
       // Move divs into triangle formation with names
@@ -127,26 +127,13 @@ const InteractiveStory = () => {
         .from('.main-triangle-line', {
           strokeDashoffset: 300,
           strokeDasharray: 300,
-          duration: 1,
+          duration: .5,
           stagger: 0.2,
         })
-
-        // Animate individual triangles
-        .from('.individual-triangle', {
-          scale: 0,
-          opacity: 0,
-          duration: 0.5,
-          stagger: 0.2,
-        })
-
         // Animate description lines
         .to('.main-triangle-line', {
           opacity: 1,
           duration: 1,
-        })
-        .to('.individual-triangle', {
-          opacity: 1,
-          duration: 0.5,
         })
         .to('.description-line', {
           opacity: 1,
