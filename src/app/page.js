@@ -11,6 +11,7 @@ import ModelSection from './components/ModelSection';
 import MotiveSection from './components/MotiveSection';
 // import Scene3D from './components/Scene3D';
 import ScrollToTop from './components/ScrollToTop';
+import VideoScrub from './components/VideoScrub';
 // import Scene from './components/Scene';
 // import Scene3D from './components/Scene3D';
 
@@ -29,6 +30,7 @@ export default function Home() {
       <HeroSection />
       <MotiveSection />
       <InteractiveStory />
+      {/* <VideoScrub /> */}
       {/* <LightActivation /> */}
       <CubeAnimation/>
       {/* <EcoSystem /> */}

@@ -25,7 +25,7 @@ const LightingScene = () => {
     // Animate scene based on day/night mode
     if (sceneRef.current) {
       gsap.to(sceneRef.current, {
-        filter: isDayMode ? 'brightness(1)' : 'brightness(0.4)',
+        backgroundImage: `url(/images/configImages/${isDayMode ? 'day' : 'night'}.webp)`,
         duration: 0.8,
         ease: 'power2.out'
       });
@@ -43,39 +43,49 @@ const LightingScene = () => {
   }, [isDayMode]);
 
   // Animate top light
+  /**
+   * Updates the top light's appearance and animation based on its on/off state
+   * and the current day/night mode.
+   */
   useEffect(() => {
     console.log("Top Light:", isTopLightOn);
     if (topLightRef.current) {
+      // Update the light image based on day/night mode
+      topLightRef.current.style.backgroundImage = `url(/images/configImages/${isDayMode ? 'day' : 'night'}_ceiling.webp)`;
+      
       gsap.to(topLightRef.current, {
-        opacity: isTopLightOn ? 1 : 0,
+        opacity: isTopLightOn ? 0.4 : 0,
         duration: 0.5,
         ease: 'power2.out'
       });
     }
-  }, [isTopLightOn]);
+  }, [isTopLightOn, isDayMode]);
 
   // Animate middle light
   useEffect(() => {
     console.log("Middle Light:", isMiddleLightOn);
     if (middleLightRef.current) {
+      // Update the light image based on day/night mode
+      middleLightRef.current.style.backgroundImage = `url(/images/configImages/${isDayMode ? 'day' : 'night'}_wall.webp)`;
+      
       gsap.to(middleLightRef.current, {
-        opacity: isMiddleLightOn ? 1 : 0,
+        opacity: isMiddleLightOn ? 0.4 : 0,
         duration: 0.5,
         ease: 'power2.out'
       });
     }
-  }, [isMiddleLightOn]);
+  }, [isMiddleLightOn, isDayMode]);
 
   return (
     <div 
       ref={sceneRef}
       className="relative h-[90vh] w-full overflow-hidden bg-black"
       style={{
-        backgroundImage: 'url(/images/day.webp)',
+        backgroundImage: `url(/images/configImages/${isDayMode ? 'day' : 'night'}.webp)`,
         backgroundSize: 'contain',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
-        transition: 'filter 0.8s ease'
+        transition: 'background-image 0.8s ease'
       }}
     >
       {/* Top Light Layer */}
@@ -83,7 +93,7 @@ const LightingScene = () => {
         ref={topLightRef}
         className="absolute inset-0 mix-blend-screen"
         style={{
-          backgroundImage: 'url(/images/top-light.webp)',
+          backgroundImage: `url(/images/configImages/top-light-${isDayMode ? 'day' : 'night'}.webp)`,
           backgroundSize: 'contain',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
@@ -96,7 +106,7 @@ const LightingScene = () => {
         ref={middleLightRef}
         className="absolute inset-0 mix-blend-screen"
         style={{
-          backgroundImage: 'url(/images/middle-light.webp)',
+          backgroundImage: `url(/images/configImages/middle-light-${isDayMode ? 'day' : 'night'}.webp)`,
           backgroundSize: 'contain',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
