@@ -258,7 +258,7 @@ const InteractiveStory = () => {
         >
           <div className="div-name text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-white text-center mb-1 sm:mb-2">Base</div>
           <div className="div-image opacity-0 absolute inset-0">
-            <Image src="/images/base-new.png" alt="Base" className="rounded-xl" fill style={{ objectFit: 'cover' }} />
+            <Image src="/images/base-new.jpg" alt="Base" className="rounded-xl" fill style={{ objectFit: 'cover' }} />
           </div>
 
           {/* Base Description Line - Desktop only */}
