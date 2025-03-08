@@ -41,7 +41,7 @@ export default function Home() {
       {/* <VideoScrub /> */}
       {/* <LightActivation /> */}
       {/* <CubeAnimation/> */}
-      <CubeAnimation1 />
+      <CubeAnimation />
       {/* <EcoSystem /> */}
       {/* <JourneySection /> */}
       <ModelSection />
