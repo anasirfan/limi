@@ -97,6 +97,11 @@ function PendantModel({ position, scrollProgress, pendantPath, isLeft }) {
                 p3.position.y = p3.position.y - 1;
             }
 
+            if (pendantGroupRef.current) {
+                // Adjust rotation speed based on scroll progress
+                pendantGroupRef.current.rotation.y = scrollProgress * Math.PI * 2;
+            }
+
             setModel(clonedScene);
         }
     }, [scene]);
