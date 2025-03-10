@@ -382,7 +382,7 @@ export default function CubeAnimation() {
 
                 <div className="header-2 " ref={header2Ref}>
                     <h2>Crafting Tomorrow's Lighting Solutions</h2>
-                    <p className="!text-[#292929]/6">
+                    <p className="!text-[#0c0c0c]">
                         At LIMI, we're revolutionizing the lighting industry through cutting-edge 
                         3D visualization technology. Our journey began with a vision to transform 
                         how lighting solutions are designed, experienced, and implemented in the 
