@@ -9,9 +9,9 @@ import { gsap } from 'gsap';
  */
 const LightingScene = () => {
   // State for controlling day/night mode and lights
-  const [isDayMode, setIsDayMode] = useState(true);
-  const [isTopLightOn, setIsTopLightOn] = useState(false);
-  const [isMiddleLightOn, setIsMiddleLightOn] = useState(false);
+  const [isDayMode, setIsDayMode] = useState(false);
+  const [isTopLightOn, setIsTopLightOn] = useState(true);
+  const [isMiddleLightOn, setIsMiddleLightOn] = useState(true);
   
   // Refs for GSAP animations
   const sceneRef = useRef(null);

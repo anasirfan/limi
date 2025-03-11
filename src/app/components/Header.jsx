@@ -41,14 +41,14 @@ const Header = () => {
             className="md:hidden flex flex-col justify-center items-center w-8 h-8 z-50"
             onClick={toggleMobileMenu}
           >
-            <span className={`block w-6 h-0.5 bg-softBeige mb-1.5 transition-transform ${mobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
-            <span className={`block w-6 h-0.5 bg-softBeige mb-1.5 transition-opacity ${mobileMenuOpen ? 'opacity-0' : 'opacity-100'}`}></span>
-            <span className={`block w-6 h-0.5 bg-softBeige transition-transform ${mobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
+            <span className={`block w-6 h-0.5 bg-white mb-1.5 transition-transform ${mobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
+            <span className={`block w-6 h-0.5 bg-white mb-1.5 transition-opacity ${mobileMenuOpen ? 'opacity-0' : 'opacity-100'}`}></span>
+            <span className={`block w-6 h-0.5 bg-white transition-transform ${mobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
           </button>
 
           {/* Mobile menu */}
           <div
-            className={`md:hidden fixed inset-0 bg-charcoal/90 backdrop-blur-md z-40 flex flex-col items-center justify-center transition-opacity duration-300 ${
+            className={`md:hidden fixed inset-0 bg-charcoal/10 backdrop-blur-md z-40 flex flex-col items-center justify-center transition-opacity duration-300 ${
               mobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
             }`}
           >

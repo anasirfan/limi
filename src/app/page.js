@@ -1,6 +1,7 @@
 'use client';
 import CubeAnimation from './components/CubeAnimation';
 import CubeAnimation1 from './components/CubeAnimation1';
+import CursorParticles from './components/CursorParticles';
 // import CursorTrailEffect from './components/CursorTrailEffect';
 import Footer from './components/Footer';
 import Header from './components/Header';
@@ -30,6 +31,7 @@ export default function Home() {
   return (
     <main>
     <MouseTrail />
+    {/* <CursorParticles /> */}
     {/* <CursorTrailEffect 
   color="rgba(255, 255, 255, 0.9)"
   blendMode="source-over"
@@ -45,6 +47,15 @@ export default function Home() {
       {/* <EcoSystem /> */}
       {/* <JourneySection /> */}
       <ModelSection />
+      <iframe
+      classname= "max-sm:block hidden"
+      src="https://mywebar.com/p/Project_0_cz29c48dxi"
+      frameBorder="0"
+      scrolling="yes"
+      seamless
+      style={{ display: "block", width: "100%", height: "100vh" }}
+      allow="camera; gyroscope; accelerometer; magnetometer; xr-spatial-tracking; microphone"
+    />
       <LightingScene />
       <Footer />
       <ScrollToTop />

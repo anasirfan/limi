@@ -187,11 +187,11 @@ section {
     width: 90%;
     max-width: 800px;
     position: absolute;
-    top: 80%;
-    left: 30%;
+    top: 87%;
+    left: 34%;
     transform: translate(-50%, -50%) scale(0.75);
     transform-origin: center center;
-    text-align: center;
+    text-align: left;
     color: #f3ebe2;
     opacity: 0;
     filter: blur(10px);
