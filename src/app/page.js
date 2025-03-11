@@ -47,8 +47,9 @@ export default function Home() {
       {/* <EcoSystem /> */}
       {/* <JourneySection /> */}
       <ModelSection />
+      <div className="max-sm:block hidden">
+
       <iframe
-      classname= "max-sm:block hidden"
       src="https://mywebar.com/p/Project_0_cz29c48dxi"
       frameBorder="0"
       scrolling="yes"
@@ -56,6 +57,7 @@ export default function Home() {
       style={{ display: "block", width: "100%", height: "100vh" }}
       allow="camera; gyroscope; accelerometer; magnetometer; xr-spatial-tracking; microphone"
     />
+      </div>
       <LightingScene />
       <Footer />
       <ScrollToTop />

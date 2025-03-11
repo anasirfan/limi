@@ -213,7 +213,7 @@ function PendantScene({ scrollProgress }) {
             {/* Render the model */}
             {modelRef.current && (
                 <>
-                    <primitive object={modelRef.current} scale={0.02} position={[5.3, -1, 0.6]} />
+                    <primitive object={modelRef.current} scale={0.02} position={[4.9, -1, 0.6]} />
                     {console.log('Rendering model')}
                 </>
             )}
@@ -360,7 +360,7 @@ export default function CubeAnimation() {
                 {/* Background image overlay */}
                 <div 
                     ref={bgImageRef} 
-                    className="absolute inset-0 z-0 mt-28 mx-60" 
+                    className="absolute inset-0 z-0 md:mt-28 md:mx-60 mt-16 mx-4" 
                     style={{
                         backgroundImage: 'url(/images/configImages/chandler-bg.jpg)',
                         backgroundSize: 'cover',
@@ -373,7 +373,7 @@ export default function CubeAnimation() {
                 {/* 3D scene container */}
                 <div 
                     ref={threeSceneRef}
-                    className="absolute inset-0 z-10 mt-28 mx-40"
+                    className="absolute inset-0 z-10 md:mt-28 md:mx-40 mt-16 mx-4"
                     style={{
                         opacity: 0,
                         transition: 'opacity 0.5s ease'
@@ -407,12 +407,12 @@ export default function CubeAnimation() {
                 </div>
 
                 <div className="header-1" ref={header1Ref}>
-                    <h1>Illuminating the Path of Innovation in Lighting Design</h1>
+                    <h1 className="text-3xl md:text-4xl lg:text-5xl text-center px-4">Illuminating the Path of Innovation in Lighting Design</h1>
                 </div>
 
                 <div className="header-2 " ref={header2Ref}>
-                    <h2>Crafting Tomorrow's Lighting Solutions</h2>
-                    <p className="">
+                    <h2 className="text-2xl md:text-3xl lg:text-4xl text-center px-4 mb-4">Crafting Tomorrow's Lighting Solutions</h2>
+                    <p className="text-sm md:text-base lg:text-lg max-w-3xl mx-auto px-6 md:px-8 text-center">
                         At LIMI, we're revolutionizing the lighting industry through cutting-edge 
                         3D visualization technology. Our journey began with a vision to transform 
                         how lighting solutions are designed, experienced, and implemented in the 
