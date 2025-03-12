@@ -97,18 +97,18 @@ const InteractiveStory = () => {
           ease: 'power2.out',
         })
         .to(hubRef.current, {
-          x: triangleConfig.HUB.x,
-          y: triangleConfig.HUB.y,
+          x: triangleConfig?.HUB?.x,
+          y: triangleConfig?.HUB?.y,
           duration: 1,
         }, 'triangle')
         .to(baseRef.current, {
-          x: triangleConfig.BASE.x,
-          y: triangleConfig.BASE.y,
+          x: triangleConfig?.BASE?.x,
+          y: triangleConfig?.BASE?.y,
           duration: 1,
         }, 'triangle')
         .to(appRef.current, {
-          x: triangleConfig.APP.x,
-          y: triangleConfig.APP.y,
+          x: triangleConfig?.APP?.x,
+          y: triangleConfig?.APP?.y,
           duration: 1,
         }, 'triangle')
 
@@ -181,10 +181,10 @@ const InteractiveStory = () => {
         >
           <line
             className="main-triangle-line opacity-0"
-            x1={triangleConfig.HUB.x}
-            y1={triangleConfig.HUB.y}
-            x2={triangleConfig.BASE.x}
-            y2={triangleConfig.BASE.y}
+            x1={triangleConfig?.HUB?.x}
+            y1={triangleConfig?.HUB?.y}
+            x2={triangleConfig?.BASE?.x}
+            y2={triangleConfig?.BASE?.y}
             stroke="white"
             strokeWidth="2"
             strokeDasharray="300"
@@ -192,10 +192,10 @@ const InteractiveStory = () => {
           />
           <line
             className="main-triangle-line opacity-0"
-            x1={triangleConfig.BASE.x}
-            y1={triangleConfig.BASE.y}
-            x2={triangleConfig.APP.x}
-            y2={triangleConfig.APP.y}
+            x1={triangleConfig?.BASE?.x}
+            y1={triangleConfig?.BASE?.y}
+            x2={triangleConfig?.APP?.x}
+            y2={triangleConfig?.APP?.y}
             stroke="white"
             strokeWidth="2"
             strokeDasharray="300"
@@ -203,10 +203,10 @@ const InteractiveStory = () => {
           />
           <line
             className="main-triangle-line opacity-0"
-            x1={triangleConfig.APP.x}
-            y1={triangleConfig.APP.y}
-            x2={triangleConfig.HUB.x}
-            y2={triangleConfig.HUB.y}
+            x1={triangleConfig?.APP?.x}
+            y1={triangleConfig?.APP?.y}
+            x2={triangleConfig?.HUB?.x}
+            y2={triangleConfig?.HUB?.y}
             stroke="white"
             strokeWidth="2"
             strokeDasharray="300"
