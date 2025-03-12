@@ -24,16 +24,16 @@ const PendantModel = ({ position, scrollProgress, pendantPath }) => {
     // Setup the model and find all parts
     useEffect(() => {
         if (scene) {
-            console.log("Loading pendant model from:", pendantPath);
+            // console.log("Loading pendant model from:", pendantPath);
             const clonedScene = scene.clone();
             
             // Log model structure to help debug
-            console.log("Pendant model structure:", clonedScene);
+            // console.log("Pendant model structure:", clonedScene);
             
             // Make all meshes visible and adjust materials
             clonedScene.traverse((object) => {
                 if (object.isMesh) {
-                    console.log("Found mesh:", object.name);
+                    // console.log("Found mesh:", object.name);
                     object.visible = true;
                     object.castShadow = true;
                     object.receiveShadow = true;

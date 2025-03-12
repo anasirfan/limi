@@ -34,22 +34,22 @@ const CursorTrailEffect = ({
   const isMouseDown = useRef(false);
 
   useEffect(() => {
-    console.log("🔍 CursorTrailEffect useEffect running");
+    // console.log("🔍 CursorTrailEffect useEffect running");
     const canvas = canvasRef.current;
     if (!canvas) {
-      console.error("❌ Canvas ref is null");
+      // console.error("❌ Canvas ref is null");
       return;
     }
     
-    console.log("✅ Canvas initialized: ", { element: canvas });
+    // console.log("✅ Canvas initialized: ", { element: canvas });
     
     const ctx = canvas.getContext('2d');
     if (!ctx) {
-      console.error("❌ Could not get canvas context");
+      // console.error("❌ Could not get canvas context");
       return;
     }
     
-    console.log("✅ Canvas context acquired");
+    // console.log("✅ Canvas context acquired");
     
     // Set canvas size to match window
     const resize = () => {
@@ -61,10 +61,10 @@ const CursorTrailEffect = ({
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
       
-      console.log("🔄 Canvas resized:", {
-        from: { width: oldWidth, height: oldHeight },
-        to: { width: canvas.width, height: canvas.height }
-      });
+      // console.log("🔄 Canvas resized:", {
+      //   from: { width: oldWidth, height: oldHeight },
+      //   to: { width: canvas.width, height: canvas.height }
+      // });
       
       setDebugInfo(prev => ({
         ...prev,
@@ -75,7 +75,7 @@ const CursorTrailEffect = ({
     
     resize();
     window.addEventListener('resize', resize);
-    console.log("✅ Resize listener added");
+    // console.log("✅ Resize listener added");
 
     // Track mouse movement
     const handleMouseMove = (e) => {
@@ -85,17 +85,17 @@ const CursorTrailEffect = ({
       const newX = e.clientX - rect.left;
       const newY = e.clientY - rect.top;
       
-      console.log("🖱️ Mouse move detected", { 
-        clientX: e.clientX, 
-        clientY: e.clientY,
-        rect: { 
-          left: rect.left, 
-          top: rect.top,
-          width: rect.width,
-          height: rect.height 
-        },
-        canvasPosition: { x: newX, y: newY } 
-      });
+      // console.log("🖱️ Mouse move detected", { 
+      //   clientX: e.clientX, 
+      //   clientY: e.clientY,
+      //   rect: { 
+      //     left: rect.left, 
+      //     top: rect.top,
+      //     width: rect.width,
+      //     height: rect.height 
+      //   },
+      //   canvasPosition: { x: newX, y: newY } 
+      // });
       
       mousePosition.current = { x: newX, y: newY };
       
@@ -114,7 +114,7 @@ const CursorTrailEffect = ({
       if (isActive) {
         // Number of particles based on speed
         const numParticles = Math.min(Math.ceil(speed / 5), 10);
-        console.log("🔥 Creating particles", { numParticles, speed });
+        // console.log("🔥 Creating particles", { numParticles, speed });
         
         for (let i = 0; i < numParticles; i++) {
           // Interpolate position along the line from previous to current position
@@ -137,16 +137,16 @@ const CursorTrailEffect = ({
     
     const handleMouseDown = () => {
       isMouseDown.current = true;
-      console.log("👇 Mouse down");
+      // console.log("👇 Mouse down");
     };
     
     const handleMouseUp = () => {
       isMouseDown.current = false;
-      console.log("☝️ Mouse up");
+      // console.log("☝️ Mouse up");
     };
 
     // Add mouse event listeners
-    console.log("🔄 Adding event listeners");
+    // console.log("🔄 Adding event listeners");
     canvas.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mousedown', handleMouseDown);
@@ -155,7 +155,7 @@ const CursorTrailEffect = ({
     // Animation function
     const animate = () => {
       if (!canvas) {
-        console.error("❌ Canvas missing in animation loop");
+        // console.error("❌ Canvas missing in animation loop");
         return;
       }
       
@@ -261,7 +261,7 @@ const CursorTrailEffect = ({
             }
             ctx.restore();
           } catch (err) {
-            console.error("❌ Error drawing particle:", err);
+            // console.error("❌ Error drawing particle:", err);
           }
           
           remainingParticles.push(p);
@@ -269,28 +269,28 @@ const CursorTrailEffect = ({
       });
       
       if (particles.current.length > 0 && remainingParticles.length === 0) {
-        console.log("⚠️ All particles expired");
+        // console.log("⚠️ All particles expired");
       }
       
       particles.current = remainingParticles;
       
       if (initialParticleCount !== remainingParticles.length) {
-        console.log("🧮 Particle count changed", { 
-          before: initialParticleCount, 
-          after: remainingParticles.length 
-        });
+        // console.log("🧮 Particle count changed", { 
+        //   before: initialParticleCount, 
+        //   after: remainingParticles.length 
+        // });
       }
       
       animFrameRef.current = requestAnimationFrame(animate);
     };
     
     // Start animation loop
-    console.log("🎬 Starting animation loop");
+    // console.log("🎬 Starting animation loop");
     animate();
     
     // Clean up
     return () => {
-      console.log("🧹 Cleaning up CursorTrailEffect");
+      // console.log("🧹 Cleaning up CursorTrailEffect");
       window.removeEventListener('resize', resize);
       canvas.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mousemove', handleMouseMove);
@@ -345,11 +345,11 @@ const CursorTrailEffect = ({
       randomOffset: Math.random() * 10 // For turbulence effect
     };
     
-    console.log("➕ Created particle", { 
-      position: { x: newParticle.x, y: newParticle.y },
-      velocity: { vx: newParticle.vx, vy: newParticle.vy },
-      size: newParticle.size
-    });
+    // console.log("➕ Created particle", { 
+    //   position: { x: newParticle.x, y: newParticle.y },
+    //   velocity: { vx: newParticle.vx, vy: newParticle.vy },
+    //   size: newParticle.size
+    // });
     
     particles.current.push(newParticle);
     
@@ -357,7 +357,7 @@ const CursorTrailEffect = ({
     if (particles.current.length > 120) {
       const removed = particles.current.length - 120;
       particles.current = particles.current.slice(-120);
-      console.log(`🗑️ Removed ${removed} particles due to limit`);
+      // console.log(`🗑️ Removed ${removed} particles due to limit`);
     }
   };
 

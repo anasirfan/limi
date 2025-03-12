@@ -17,7 +17,6 @@ const interpolate = (start, end, progress) => {
 };
 
 
-// Main component for 3D scene
 function PendantScene({ scrollProgress }) {
     const { gl } = useThree();
     const modelRef = useRef();
@@ -30,19 +29,19 @@ function PendantScene({ scrollProgress }) {
         light_holders: null
     });
     
-    // Make renderer background transparent
+
     useEffect(() => {
         gl.setClearColor(0x000000, 0);
-        console.log('PendantScene initialized, scroll progress:', scrollProgress);
+        // console.log('PendantScene initialized, scroll progress:', scrollProgress);
     }, [gl, scrollProgress]);
     
     // Load the model
     useEffect(() => {
-        console.log('Starting model loading...');
+        // console.log('Starting model loading...');
         
         const loadModel = () => {
             try {
-                console.log('Loading model from /models/chandler.glb');
+                // console.log('Loading model from /models/chandler.glb');
                 
                 // Use the GLTFLoader from three.js directly
                 const loader = new GLTFLoader();
@@ -50,11 +49,11 @@ function PendantScene({ scrollProgress }) {
                 loader.load(
                     '/models/chandler.glb',
                     (gltf) => {
-                        console.log('Model loaded successfully:', gltf.scene);
+                        // console.log('Model loaded successfully:', gltf.scene);
                         
                         // Clone the scene to avoid manipulating the cached original
                         const clonedScene = gltf.scene.clone();
-                        console.log('Scene cloned', clonedScene);
+                        // console.log('Scene cloned', clonedScene);
                         
                         // Find and store references to all required parts
                         const parts = {
@@ -67,10 +66,10 @@ function PendantScene({ scrollProgress }) {
                         };
                         
                         // Log all mesh names in the scene to help with debugging
-                        console.log('Searching for model parts. All meshes in scene:');
+                        // console.log('Searching for model parts. All meshes in scene:');
                         clonedScene.traverse((child) => {
                             if (child.isMesh) {
-                                console.log('Found mesh:', child.name, child);
+                                // console.log('Found mesh:', child.name, child);
                             }
                         });
                         
@@ -78,22 +77,22 @@ function PendantScene({ scrollProgress }) {
                             if (child.isMesh) {
                                 // Map the mesh names to our state object keys
                                 if (child.name === 'main_base_with_wires') {
-                                    console.log('Found main_base_with_wires part');
+                                    // console.log('Found main_base_with_wires part');
                                     parts.main_base_with_wires = child;
                                 } else if (child.name === '3_bases') {
-                                    console.log('Found 3_bases part');
+                                    // console.log('Found 3_bases part');
                                     parts.bases = child;
                                 } else if (child.name === 'small_wires') {
-                                    console.log('Found small_wires part');
+                                    // console.log('Found small_wires part');
                                     parts.small_wires = child;
                                 } else if (child.name === 'Pendants') {
-                                    console.log('Found Pendants part');
+                                    // console.log('Found Pendants part');
                                     parts.pendants = child;
                                 } else if (child.name === 'wire_holders') {
-                                    console.log('Found wire_holders part');
+                                    // console.log('Found wire_holders part');
                                     parts.wire_holders = child;
                                 } else if (child.name === 'light_holders') {
-                                    console.log('Found light_holders part');
+                                    // console.log('Found light_holders part');
                                     parts.light_holders = child;
                                 }
                                 
@@ -105,23 +104,23 @@ function PendantScene({ scrollProgress }) {
                                     // Enable transparency
                                     child.material.transparent = true;
                                     child.material.opacity = 0;
-                                    console.log(`Set ${child.name} opacity to 0`);
+                                    // console.log(`Set ${child.name} opacity to 0`);
                                 }
                             }
                         });
                         
-                        console.log('Final parts object:', parts);
+                        // console.log('Final parts object:', parts);
                         setModelParts(parts);
                         
                         // Set the model to the ref
                         modelRef.current = clonedScene;
-                        console.log('Model reference set to modelRef');
+                        // console.log('Model reference set to modelRef');
                     },
                     (progress) => {
-                        console.log('Loading progress:', (progress.loaded / progress.total) * 100, '%');
+                        // console.log('Loading progress:', (progress.loaded / progress.total) * 100, '%');
                     },
                     (error) => {
-                        console.error('Error loading model:', error);
+                        // console.error('Error loading model:', error);
                     }
                 );
             } catch (error) {
@@ -134,8 +133,8 @@ function PendantScene({ scrollProgress }) {
     
     // Animate parts based on scroll progress
     useEffect(() => {
-        console.log('Scroll progress update:', scrollProgress);
-        console.log('Current model parts state:', modelParts);
+        // console.log('Scroll progress update:', scrollProgress);
+        // console.log('Current model parts state:', modelParts);
         
         if (!modelParts.main_base_with_wires && 
             !modelParts.bases && 
@@ -143,7 +142,7 @@ function PendantScene({ scrollProgress }) {
             !modelParts.pendants &&
             !modelParts.wire_holders &&
             !modelParts.light_holders) {
-            console.log('Model parts not loaded yet, skipping animation');
+            // console.log('Model parts not loaded yet, skipping animation');
             return;
         }
         
@@ -154,54 +153,54 @@ function PendantScene({ scrollProgress }) {
         if (modelParts.main_base_with_wires && modelParts.main_base_with_wires.material) {
             const mainBaseProgress = scrollProgress < 0.6 ? 0 : Math.min((scrollProgress - 0.6) / 0.1, 1); // 0.6 to 0.7 mapped to 0-1
             modelParts.main_base_with_wires.material.opacity = mainBaseProgress;
-            console.log('main_base_with_wires opacity:', mainBaseProgress);
+            // console.log('main_base_with_wires opacity:', mainBaseProgress);
         } else {
-            console.log('main_base_with_wires part or material missing');
+            // console.log('main_base_with_wires part or material missing');
         }
         
         // 3 bases (70% - 75%)
         if (modelParts.bases && modelParts.bases.material) {
             const basesProgress = scrollProgress < 0.7 ? 0 : Math.min((scrollProgress - 0.7) / 0.05, 1); // 0.7 to 0.75 mapped to 0-1
             modelParts.bases.material.opacity = basesProgress;
-            console.log('3_bases opacity:', basesProgress);
+            // console.log('3_bases opacity:', basesProgress);
         } else {
-            console.log('3_bases part or material missing');
+            // console.log('3_bases part or material missing');
         }
         
         // Wire holders (75% - 80%)
         if (modelParts.wire_holders && modelParts.wire_holders.material) {
             const wireHoldersProgress = scrollProgress < 0.75 ? 0 : Math.min((scrollProgress - 0.75) / 0.05, 1); // 0.75 to 0.8 mapped to 0-1
             modelParts.wire_holders.material.opacity = wireHoldersProgress;
-            console.log('wire_holders opacity:', wireHoldersProgress);
+            // console.log('wire_holders opacity:', wireHoldersProgress);
         } else {
-            console.log('wire_holders part or material missing');
+            // console.log('wire_holders part or material missing');
         }
         
         // Small wires (80% - 85%)
         if (modelParts.small_wires && modelParts.small_wires.material) {
             const smallWiresProgress = scrollProgress < 0.8 ? 0 : Math.min((scrollProgress - 0.8) / 0.05, 1); // 0.8 to 0.85 mapped to 0-1
             modelParts.small_wires.material.opacity = smallWiresProgress;
-            console.log('small_wires opacity:', smallWiresProgress);
+            // console.log('small_wires opacity:', smallWiresProgress);
         } else {
-            console.log('small_wires part or material missing');
+            // console.log('small_wires part or material missing');
         }
         
         // Light holders (85% - 90%)
         if (modelParts.light_holders && modelParts.light_holders.material) {
             const lightHoldersProgress = scrollProgress < 0.85 ? 0 : Math.min((scrollProgress - 0.85) / 0.05, 1); // 0.85 to 0.9 mapped to 0-1
             modelParts.light_holders.material.opacity = lightHoldersProgress;
-            console.log('light_holders opacity:', lightHoldersProgress);
+            // console.log('light_holders opacity:', lightHoldersProgress);
         } else {
-            console.log('light_holders part or material missing');
+            // console.log('light_holders part or material missing');
         }
         
         // Pendants (90% - 95%)
         if (modelParts.pendants && modelParts.pendants.material) {
             const pendantsProgress = scrollProgress < 0.9 ? 0 : Math.min((scrollProgress - 0.9) / 0.05, 1); // 0.9 to 0.95 mapped to 0-1
             modelParts.pendants.material.opacity = pendantsProgress;
-            console.log('Pendants opacity:', pendantsProgress);
+            // console.log('Pendants opacity:', pendantsProgress);
         } else {
-            console.log('Pendants part or material missing');
+            // console.log('Pendants part or material missing');
         }
     }, [scrollProgress, modelParts]);
     
@@ -214,7 +213,7 @@ function PendantScene({ scrollProgress }) {
             {modelRef.current && (
                 <>
                     <primitive object={modelRef.current} scale={0.02} position={[4.9, -1, 0.6]} />
-                    {console.log('Rendering model')}
+
                 </>
             )}
             
@@ -410,9 +409,9 @@ export default function CubeAnimation() {
                     <h1 className="text-3xl md:text-4xl lg:text-5xl text-center px-4">Illuminating the Path of Innovation in Lighting Design</h1>
                 </div>
 
-                <div className="header-2 " ref={header2Ref}>
-                    <h2 className="text-2xl md:text-3xl lg:text-4xl text-center px-4 mb-4">Crafting Tomorrow's Lighting Solutions</h2>
-                    <p className="text-sm md:text-base lg:text-lg max-w-3xl mx-auto px-6 md:px-8 text-center">
+                <div className="header-2 max-sm:!left-[50%]" ref={header2Ref}>
+                    <h2 className="text-2xl md:text-3xl lg:text-4xl max-sm:text-center  max-sm:px-4 mb-4">Crafting Tomorrow's Lighting Solutions</h2>
+                    <p className="text-sm md:text-base lg:text-lg max-w-3xl mx-auto max-sm:px-6  md:px-2 max-sm:text-center">
                         At LIMI, we're revolutionizing the lighting industry through cutting-edge 
                         3D visualization technology. Our journey began with a vision to transform 
                         how lighting solutions are designed, experienced, and implemented in the 

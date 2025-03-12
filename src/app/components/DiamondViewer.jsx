@@ -51,7 +51,7 @@ function Diamond() {
 
       // Get the number of text sections from ModelSection
       const texts = document.querySelectorAll('.text-section');
-      console.log(texts)
+      // console.log(texts)
       const totalSections = 4;
 
       // Create timeline for rotations
@@ -77,7 +77,7 @@ function Diamond() {
               modelRef.current.rotation.z = zRotation;
             }
 
-            console.log("Diamond Rotation Progress:", progress.toFixed(2));
+            // console.log("Diamond Rotation Progress:", progress.toFixed(2));
           }
         }
       });

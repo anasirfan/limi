@@ -30,11 +30,11 @@ const getTriangleConfig = () => {
   }
 
   // Default (desktop) configuration
-  return {
-    HUB: { x: -173.2, y: -100 },
-    BASE: { x: 173.2, y: -100 },
-    APP: { x: 0, y: 200 },
-  };
+  // return {
+  //   HUB: { x: -173.2, y: -100 },
+  //   BASE: { x: 173.2, y: -100 },
+  //   APP: { x: 0, y: 200 },
+  // };
 };
 
 const InteractiveStory = () => {

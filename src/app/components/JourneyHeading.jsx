@@ -124,7 +124,7 @@ const JourneySection = () => {
           pin: true,
           scrub: 1,
           onUpdate: (self) => {
-            console.log("Timeline Progress:", self.progress.toFixed(2));
+            // console.log("Timeline Progress:", self.progress.toFixed(2));
           }
         },
       });

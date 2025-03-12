@@ -21,7 +21,7 @@ const LightingScene = () => {
 
   // GSAP animations for smooth transitions
   useEffect(() => {
-    console.log("Day/Night Mode:", isDayMode);
+    // console.log("Day/Night Mode:", isDayMode);
     // Animate scene based on day/night mode
     if (sceneRef.current) {
       gsap.to(sceneRef.current, {
@@ -48,7 +48,7 @@ const LightingScene = () => {
    * and the current day/night mode.
    */
   useEffect(() => {
-    console.log("Top Light:", isTopLightOn);
+    // console.log("Top Light:", isTopLightOn);
     if (topLightRef.current) {
       // Update the light image based on day/night mode
       topLightRef.current.style.backgroundImage = `url(/images/configImages/${isDayMode ? 'day' : 'night'}_ceiling.jpg)`;
@@ -63,7 +63,7 @@ const LightingScene = () => {
 
   // Animate middle light
   useEffect(() => {
-    console.log("Middle Light:", isMiddleLightOn);
+    // console.log("Middle Light:", isMiddleLightOn);
     if (middleLightRef.current) {
       // Update the light image based on day/night mode
       middleLightRef.current.style.backgroundImage = `url(/images/configImages/${isDayMode ? 'day' : 'night'}_wall.jpg)`;
@@ -138,7 +138,7 @@ const LightingScene = () => {
           <div 
             className="w-12 sm:w-16 h-6 sm:h-8 bg-black rounded-full p-1 relative cursor-pointer"
             onClick={() => {
-              console.log("Vanity Light Clicked");
+              // console.log("Vanity Light Clicked");
               setIsMiddleLightOn(!isMiddleLightOn);
             }}
           >
@@ -156,7 +156,7 @@ const LightingScene = () => {
           <div 
             className="w-12 sm:w-16 h-6 sm:h-8 bg-black rounded-full p-1 relative cursor-pointer"
             onClick={() => {
-              console.log("Top Light Clicked");
+              // console.log("Top Light Clicked");
               setIsTopLightOn(!isTopLightOn);
             }}
           >
@@ -174,7 +174,7 @@ const LightingScene = () => {
           <div 
             className="w-12 sm:w-16 h-6 sm:h-8 bg-black rounded-full p-1 relative cursor-pointer"
             onClick={() => {
-              console.log("Day/Night Clicked");
+              // console.log("Day/Night Clicked");
               setIsDayMode(!isDayMode);
             }}
           >
