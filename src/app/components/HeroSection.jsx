@@ -39,7 +39,7 @@ function HeroSection() {
         <div className="container mx-auto px-4 hero-content relative z-10">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             {/* Left Side - Heading */}
-            <div className="text-white self-end -mb-6">
+            <div className="text-white self-end -mb-6 max-sm:-mb-9">
               <h1 className="text-3xl md:text-6xl font-bold mb-6">
                 From Standard to Smart
               </h1>
