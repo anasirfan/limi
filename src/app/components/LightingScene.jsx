@@ -79,7 +79,7 @@ const LightingScene = () => {
   return (
     <div 
       ref={sceneRef}
-      className="relative h-[90vh] w-full overflow-hidden bg-black"
+      className="relative h-[90vh] max-sm:h-[60vh] w-full overflow-hidden bg-black"
       style={{
         backgroundImage: `url(/images/configImages/${isDayMode ? 'day' : 'night'}.jpg)`,
         backgroundSize: 'contain',
@@ -132,7 +132,7 @@ const LightingScene = () => {
       </div>
 
       {/* Controls */}
-      <div className="absolute bottom-8 sm:bottom-12 md:bottom-16 right-4 sm:right-6 md:right-10 flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 md:space-x-8 items-center z-50 transform-none sm:-translate-x-1/2">
+      <div className="absolute bottom-8 sm:bottom-12 md:bottom-16 right-4 sm:right-6 md:right-10 flex flex-col max-sm:flex-row max-sm:space-y-0 max-sm:space-x-10 max-sm:bg-[#54bb74] max-sm:rounded-lg max-sm:p-2 max-sm:w-full sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 md:space-x-8 items-center z-50 transform-none sm:-translate-x-1/2">
         {/* Vanity Light Toggle */}
         <div className="flex flex-col items-center">
           <div 
