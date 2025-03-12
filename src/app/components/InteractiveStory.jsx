@@ -230,16 +230,16 @@ const InteractiveStory = () => {
       {/* Heading */}
       <h1
         ref={headingRef}
-        className={`font-[Amenti] text-center text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-emerald-400 px-4 z-10 ${isMobile ? 'mb-8 relative top-0' : 'absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2'}`}
+        className={`font-[Amenti] text-center text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-emerald-400 px-4 z-10 ${isMobile ? 'hidden mb-8 relative top-0' : 'absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2'}`}
       >
         How Our <br /> EcoSystem Works
       </h1>
-      {/* <h1
+      <h1
         ref={headingRef}
         className={`font-[Amenti] text-center text-3xl s font-bold text-emerald-400 px-4 z-10 hidden max-sm:block `}
       >
         How Our <br /> EcoSystem Works
-      </h1> */}
+      </h1>
 
       {/* Triangle Container - hidden on mobile */}
       {!isMobile && (
