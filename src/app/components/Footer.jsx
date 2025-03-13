@@ -13,8 +13,8 @@ const Footer = () => {
               <Image
                 src="/images/svgLogos/__Logo_Icon_Inverted.svg"
                 alt="Limi Logo"
-                width={120}
-                height={48}
+                width={80}
+                height={32}
                 className="mb-4"
               />
               <p className=" text-sm md:text-base font-[Poppins] text-[#f3ebe2] max-w-xs">
@@ -41,26 +41,26 @@ const Footer = () => {
           </div>
 
           {/* Quick Links */}
-          <div>
+          <div className="xl:mx-16">
             <h3 className="text-lg font-semibold font-[Amenti] mb-4">Quick Links</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="#products" className="text-[#93cfa2] hover:text-[#54bb74] transition-colors">
+                <Link href="#products" className="text-gray-300 hover:text-emerald-500 transition-colors">
                   Products
                 </Link>
               </li>
               <li>
-                <Link href="#features" className="text-[#93cfa2] hover:text-[#54bb74] transition-colors">
+                <Link href="#features" className="text-gray-300 hover:text-emerald-500 transition-colors">
                   Features
                 </Link>
               </li>
               <li>
-                <Link href="#about" className="text-[#93cfa2] hover:text-[#54bb74] transition-colors">
+                <Link href="#about" className="text-gray-300 hover:text-emerald-500 transition-colors">
                   About Us
                 </Link>
               </li>
               <li>
-                <Link href="#contact" className="text-[#93cfa2] hover:text-[#54bb74] transition-colors">
+                <Link href="#contact" className="text-gray-300 hover:text-emerald-500 transition-colors">
                   Contact
                 </Link>
               </li>
@@ -68,26 +68,26 @@ const Footer = () => {
           </div>
 
           {/* Products */}
-          <div>
+          <div className="xl:mx-16">
             <h3 className="text-lg font-semibold font-[Amenti] mb-4">Products</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="#" className="text-[#93cfa2] hover:text-[#54bb74] transition-colors">
+                <Link href="#" className="text-gray-300 hover:text-emerald-500 transition-colors">
                   Pendant Lights
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-[#93cfa2] hover:text-[#54bb74] transition-colors">
+                <Link href="#" className="text-gray-300 hover:text-emerald-500 transition-colors">
                   Wall Sconces
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-[#93cfa2] hover:text-[#54bb74] transition-colors">
+                <Link href="#" className="text-gray-300 hover:text-emerald-500 transition-colors">
                   Floor Lamps
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-[#93cfa2] hover:text-[#54bb74] transition-colors">
+                <Link href="#" className="text-gray-300 hover:text-emerald-500 transition-colors">
                   Smart Lighting
                 </Link>
               </li>
@@ -95,7 +95,7 @@ const Footer = () => {
           </div>
 
           {/* Contact */}
-          <div>
+          <div className="xl:mx-16">
             <h3 className="text-lg font-semibold font-[Amenti] mb-4">Contact Us</h3>
             <ul className="space-y-2">
               <li className="flex items-start">
@@ -109,13 +109,13 @@ const Footer = () => {
                 <svg className="w-5 h-5 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                 </svg>
-                <a href="mailto:info@limi3d.com" className="text-[#93cfa2] hover:text-[#54bb74] transition-colors">info@limi.com</a>
+                <a href="mailto:info@limi3d.com" className="text-gray-300 hover:text-emerald-500 transition-colors">info@limi.com</a>
               </li>
               <li className="flex items-center">
                 <svg className="w-5 h-5 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
                 </svg>
-                <a href="tel:+12345678900" className="text-[#93cfa2] hover:text-[#54bb74] transition-colors">+1 (234) 567-8900</a>
+                <a href="tel:+12345678900" className="text-gray-300 hover:text-emerald-500 transition-colors">+1 (234) 567-8900</a>
               </li>
             </ul>
           </div>
@@ -124,16 +124,16 @@ const Footer = () => {
         {/* Bottom Section */}
         <div className="mt-12 pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-400 text-sm mb-4 md:mb-0">
-            © {new Date().getFullYear()} LIMI 3D. All rights reserved.
+            &copy; {new Date().getFullYear()} LIMI 3D. All rights reserved.
           </p>
           <div className="flex space-x-6">
-            <Link href="#" className="text-gray-400 text-sm hover:text-white transition-colors">
+            <Link href="#" className="text-gray-300 hover:text-emerald-500 transition-colors">
               Privacy Policy
             </Link>
-            <Link href="#" className="text-gray-400 text-sm hover:text-white transition-colors">
+            <Link href="#" className="text-gray-300 hover:text-emerald-500 transition-colors">
               Terms of Service
             </Link>
-            <Link href="#" className="text-gray-400 text-sm hover:text-white transition-colors">
+            <Link href="#" className="text-gray-300 hover:text-emerald-500 transition-colors">
               Cookie Policy
             </Link>
           </div>

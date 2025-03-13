@@ -149,54 +149,54 @@ function PendantScene({ scrollProgress }) {
         // Define the animation sequence with scroll progress ranges
         // Each part will fade in at a specific scroll progress range
         
-        // Main base with wires (60% - 70%)
+        // Main base with wires (40% - 50%)
         if (modelParts.main_base_with_wires && modelParts.main_base_with_wires.material) {
-            const mainBaseProgress = scrollProgress < 0.6 ? 0 : Math.min((scrollProgress - 0.6) / 0.1, 1); // 0.6 to 0.7 mapped to 0-1
+            const mainBaseProgress = scrollProgress < 0.4 ? 0 : Math.min((scrollProgress - 0.4) / 0.1, 1); // 0.4 to 0.5 mapped to 0-1
             modelParts.main_base_with_wires.material.opacity = mainBaseProgress;
             // console.log('main_base_with_wires opacity:', mainBaseProgress);
         } else {
             // console.log('main_base_with_wires part or material missing');
         }
         
-        // 3 bases (70% - 75%)
+        // 3 bases (50% - 55%)
         if (modelParts.bases && modelParts.bases.material) {
-            const basesProgress = scrollProgress < 0.7 ? 0 : Math.min((scrollProgress - 0.7) / 0.05, 1); // 0.7 to 0.75 mapped to 0-1
+            const basesProgress = scrollProgress < 0.5 ? 0 : Math.min((scrollProgress - 0.5) / 0.05, 1); // 0.5 to 0.55 mapped to 0-1
             modelParts.bases.material.opacity = basesProgress;
             // console.log('3_bases opacity:', basesProgress);
         } else {
             // console.log('3_bases part or material missing');
         }
         
-        // Wire holders (75% - 80%)
+        // Wire holders (55% - 60%)
         if (modelParts.wire_holders && modelParts.wire_holders.material) {
-            const wireHoldersProgress = scrollProgress < 0.75 ? 0 : Math.min((scrollProgress - 0.75) / 0.05, 1); // 0.75 to 0.8 mapped to 0-1
+            const wireHoldersProgress = scrollProgress < 0.55 ? 0 : Math.min((scrollProgress - 0.55) / 0.05, 1); // 0.55 to 0.6 mapped to 0-1
             modelParts.wire_holders.material.opacity = wireHoldersProgress;
             // console.log('wire_holders opacity:', wireHoldersProgress);
         } else {
             // console.log('wire_holders part or material missing');
         }
         
-        // Small wires (80% - 85%)
+        // Small wires (60% - 65%)
         if (modelParts.small_wires && modelParts.small_wires.material) {
-            const smallWiresProgress = scrollProgress < 0.8 ? 0 : Math.min((scrollProgress - 0.8) / 0.05, 1); // 0.8 to 0.85 mapped to 0-1
+            const smallWiresProgress = scrollProgress < 0.6 ? 0 : Math.min((scrollProgress - 0.6) / 0.05, 1); // 0.6 to 0.65 mapped to 0-1
             modelParts.small_wires.material.opacity = smallWiresProgress;
             // console.log('small_wires opacity:', smallWiresProgress);
         } else {
             // console.log('small_wires part or material missing');
         }
         
-        // Light holders (85% - 90%)
+        // Light holders (65% - 70%)
         if (modelParts.light_holders && modelParts.light_holders.material) {
-            const lightHoldersProgress = scrollProgress < 0.85 ? 0 : Math.min((scrollProgress - 0.85) / 0.05, 1); // 0.85 to 0.9 mapped to 0-1
+            const lightHoldersProgress = scrollProgress < 0.65 ? 0 : Math.min((scrollProgress - 0.65) / 0.05, 1); // 0.65 to 0.7 mapped to 0-1
             modelParts.light_holders.material.opacity = lightHoldersProgress;
             // console.log('light_holders opacity:', lightHoldersProgress);
         } else {
             // console.log('light_holders part or material missing');
         }
         
-        // Pendants (90% - 95%)
+        // Pendants (70% - 75%)
         if (modelParts.pendants && modelParts.pendants.material) {
-            const pendantsProgress = scrollProgress < 0.9 ? 0 : Math.min((scrollProgress - 0.9) / 0.05, 1); // 0.9 to 0.95 mapped to 0-1
+            const pendantsProgress = scrollProgress < 0.7 ? 0 : Math.min((scrollProgress - 0.7) / 0.05, 1); // 0.7 to 0.75 mapped to 0-1
             modelParts.pendants.material.opacity = pendantsProgress;
             // console.log('Pendants opacity:', pendantsProgress);
         } else {
@@ -233,7 +233,7 @@ export default function CubeAnimation() {
     const [scrollProgress, setScrollProgress] = useState(0);
 
     useEffect(() => {
-        const stickyHeight = window.innerHeight * 6;
+        const stickyHeight = window.innerHeight * 2;
 
         // Add images to cube faces
         const cubesFaces = document.querySelectorAll(".cube > div");
@@ -283,7 +283,7 @@ export default function CubeAnimation() {
                 cubesContainerRef.current.style.opacity = Math.max(0, Math.min(1, cubesOpacity));
 
                 // Background image opacity - start appearing at 50% progress
-                const bgImageProgress = Math.max(0, Math.min((self.progress - 0.5) * (1/0.1), 1)); // Start at 0.5, fully visible at 0.6
+                const bgImageProgress = Math.max(0, Math.min((self.progress - 0.3) * (1/0.1), 1)); // Start at 0.5, fully visible at 0.6
                 bgImageRef.current.style.opacity = bgImageProgress;
 
                 // 3D scene opacity - sync with background image
@@ -296,8 +296,8 @@ export default function CubeAnimation() {
                 header1Ref.current.style.filter = `blur(${interpolate(0, 20, header1Progress)}px)`;
                 header1Ref.current.style.opacity = 1 - header1Progress;
 
-                // Modify header2 to appear after cubes start fading (at 0.7 progress)
-                const header2StartProgress = (self.progress - 0.7) * (1/0.3); // Start at 0.7, fully visible at 1.0
+                // Modify header2 to appear after header1 starts fading (at 0.4 progress)
+                const header2StartProgress = (self.progress - 0.4) * (1/0.6); // Start at 0.4, fully visible at 1.0
                 const header2Progress = Math.max(0, Math.min(header2StartProgress, 1));
                 const header2Scale = interpolate(0.75, 1, header2Progress);
                 const header2Blur = interpolate(10, 0, header2Progress);
