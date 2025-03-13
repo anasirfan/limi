@@ -184,7 +184,7 @@ const LightingScene = () => {
               }`}
             />
           </div>
-          <span className="text-white text-xs sm:text-sm mt-1 sm:mt-2">Day / Night</span>
+          <span className="text-white text-xs sm:text-sm mt-1 sm:mt-2">Night / Day</span>
         </div>
       </div>
 

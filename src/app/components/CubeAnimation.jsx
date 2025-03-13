@@ -410,12 +410,9 @@ export default function CubeAnimation() {
                 </div>
 
                 <div className="header-2 max-sm:!w-full max-sm:!left-[50%]" ref={header2Ref}>
-                    <h2 className="text-xl md:text-3xl lg:text-4xl max-sm:text-center  max-sm:px-4 mb-4">Crafting Tomorrow's Lighting Solutions</h2>
-                    <p className="text-sm md:text-base lg:text-lg max-w-3xl mx-auto max-sm:px-6  md:px-2 max-sm:text-center">
-                        At LIMI, we're revolutionizing the lighting industry through cutting-edge 
-                        3D visualization technology. Our journey began with a vision to transform 
-                        how lighting solutions are designed, experienced, and implemented in the 
-                        modern world.
+                    <h2 className="text-xl md:text-3xl lg:text-4xl max-sm:text-center  max-sm:px-4 mb-4 max-sm:!mb-2 max-sm:!leading-[24px] max-sm:!text-2xl">Crafting Tomorrow's Lighting Solutions</h2>
+                    <p className="text-sm md:text-base lg:text-lg max-w-3xl mx-auto max-sm:px-4  md:px-4 max-sm:text-center max-sm:!text-[14px] max-sm:!leading-tight max-sm:!w-[100%] ">
+                    At LIMI, we revolutionize lighting with cutting-edge 3D visualization, transforming design, experience, and implementation.
                     </p>
                 </div>
             </section>

@@ -1,7 +1,7 @@
 'use client';
 import CubeAnimation from './components/CubeAnimation';
 import CubeAnimation1 from './components/CubeAnimation1';
-import CursorParticles from './components/CursorParticles';
+// import CursorParticles from './components/CursorParticles';
 // import CursorTrailEffect from './components/CursorTrailEffect';
 import Footer from './components/Footer';
 import Header from './components/Header';
