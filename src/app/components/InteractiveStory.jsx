@@ -316,7 +316,7 @@ const InteractiveStory = () => {
         How Our <br /> EcoSystem Works
       </h1>
       <h1
-        className={`font-[Amenti] text-center text-3xl s font-bold text-emerald-400 px-4 z-10 hidden max-sm:block `}
+        className={`font-[Amenti] text-center text-3xl -mt-16 mb-12 font-bold text-emerald-400 px-4 z-10 hidden max-sm:block `}
       >
         How Our <br /> EcoSystem Works
       </h1>

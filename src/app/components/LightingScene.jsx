@@ -79,7 +79,7 @@ const LightingScene = () => {
   return (
     <div 
       ref={sceneRef}
-      className="relative h-[90vh] max-sm:h-[60vh] w-full overflow-hidden bg-black"
+      className="relative h-[90vh] max-sm:h-[60vh]  w-full overflow-hidden bg-black"
       style={{
         backgroundImage: `url(/images/configImages/${isDayMode ? 'day' : 'night'}.jpg)`,
         backgroundSize: 'contain',
@@ -121,8 +121,8 @@ const LightingScene = () => {
             Layers of Light
             <div className="w-12 sm:w-16 h-0.5 bg-yellow-400 mt-1"></div>
           </h3>
-          <h2 className="text-white text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light">Adani</h2>
-          <button className="mt-4 sm:mt-6 bg-white text-black px-3 py-1.5 sm:px-4 sm:py-2 rounded-full flex items-center text-xs sm:text-sm">
+ 
+          <button className=" sm:mt-6 bg-white text-black px-3 py-1.5 sm:px-4 sm:py-2 rounded-full flex items-center text-xs sm:text-sm">
             Explore More Collections
             <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 sm:h-4 sm:w-4 ml-1 sm:ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
@@ -132,7 +132,7 @@ const LightingScene = () => {
       </div>
 
       {/* Controls */}
-      <div className="absolute bottom-8 sm:bottom-12 md:bottom-16 right-4 sm:right-6 md:right-10 flex flex-col max-sm:flex-row max-sm:space-y-0 max-sm:space-x-10 max-sm:justify-between max-sm:bg-[#54bb74] max-sm:rounded-lg max-sm:p-2 max-sm:w-full sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 md:space-x-8 items-center z-50 transform-none sm:-translate-x-1/2">
+      <div className="max-sm:right-0 absolute bottom-8 sm:bottom-12 md:bottom-16 right-4 sm:right-6 md:right-10 flex flex-col max-sm:flex-row max-sm:space-y-0 max-sm:space-x-4 max-sm:justify-between max-sm:bg-[#2d4133] max-sm:shadow-glass max-sm:p-2 max-sm:w-full sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 md:space-x-8 items-center z-50 transform-none sm:-translate-x-1/2">
         {/* Vanity Light Toggle */}
         <div className="flex flex-col items-center">
           <div 
@@ -148,7 +148,7 @@ const LightingScene = () => {
               }`}
             />
           </div>
-          <span className="text-white text-xs sm:text-sm mt-1 sm:mt-2">Vanity</span>
+          <span className="text-white text-xs sm:text-sm mt-1 sm:mt-2">Ceiling Pendant</span>
         </div>
 
         {/* Sconce/Toe Kick Lighting Toggle */}
@@ -166,7 +166,7 @@ const LightingScene = () => {
               }`}
             />
           </div>
-          <span className="text-white text-xs sm:text-sm mt-1 sm:mt-2">Kick Lighting</span>
+          <span className="text-white text-xs sm:text-sm mt-1 sm:mt-2">Wall Pendant</span>
         </div>
 
         {/* Day/Night Toggle */}

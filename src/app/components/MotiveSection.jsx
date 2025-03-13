@@ -49,7 +49,6 @@ const MotiveSection = () => {
 
     pinTl.to(transformRef.current, { opacity: 1, y: 20, duration: 0.3, ease: "power2.out" }, 0.8)
       .to(transformRef.current, { top: "70%", duration: 0.2 }, 1.1);
-
     return () => {
       triggers.forEach(trigger => trigger?.kill());
     };
@@ -58,7 +57,7 @@ const MotiveSection = () => {
   return (
     <section 
       ref={sectionRef}
-      className="relative w-full h-[200vh] bg-[#292929] overflow-hidden"
+      className="relative w-full h-[200vh]  bg-[#292929] overflow-hidden"
     >
       {/* Container */}
       <div 
