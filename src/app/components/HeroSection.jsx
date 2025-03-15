@@ -5,6 +5,7 @@ function HeroSection() {
   return (
     <>
       <div
+        id="hero"
         className="relative min-h-screen flex flex-col items-start justify-center overflow-hidden
         "
       >
@@ -56,7 +57,7 @@ function HeroSection() {
                 extraordinary.
               </p>
 
-              <button className="cta-button px-8 py-4 bg-[#54bb74] text-white rounded-full text-lg font-bold transform transition-all hover:scale-105 hover:shadow-lg hover:shadow-[#54bb74]/30 hover:bg-[#93cfa2] focus:outline-none focus:ring-2 focus:ring-[#54bb74] focus:ring-opacity-50">
+              <button className="cta-button px-8 py-4 bg-[#292929] text-white rounded-full text-lg font-bold transform transition-all hover:scale-105 hover:shadow-lg hover:shadow-[#54bb74]/30 hover:bg-[#292929]/10 focus:outline-none focus:ring-2 focus:ring-[#54bb74] focus:ring-opacity-50">
                 Explore Smart Lighting
               </button>
             </div>

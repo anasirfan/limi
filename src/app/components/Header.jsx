@@ -1,13 +1,71 @@
 'use client';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import gsap from 'gsap';
 
 const Header = () => {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+  const menuContentRef = useRef(null);
+  
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+  };
 
-  const toggleMobileMenu = () => {
-    setMobileMenuOpen(!mobileMenuOpen);
+  useEffect(() => {
+    if (!menuRef.current || !menuContentRef.current) return;
+    
+    const menuTl = gsap.timeline({ paused: true });
+    
+    // Paper rolling effect
+    menuTl.fromTo(menuRef.current, 
+      { height: 0, opacity: 0 },
+      { height: '100vh', opacity: 1, duration: 0.5, ease: 'power3.inOut' }
+    );
+    
+    menuTl.fromTo(menuContentRef.current,
+      { opacity: 0, y: -20 },
+      { opacity: 1, y: 0, duration: 0.3, stagger: 0.1 },
+      "-=0.2"
+    );
+    
+    if (menuOpen) {
+      menuTl.play();
+    } else {
+      gsap.to(menuRef.current, { 
+        height: 0, 
+        opacity: 0, 
+        duration: 0.4, 
+        ease: 'power3.inOut',
+        onComplete: () => {
+          gsap.set(menuContentRef.current, { clearProps: 'all' });
+        }
+      });
+    }
+    
+    return () => {
+      menuTl.kill();
+    };
+  }, [menuOpen]);
+
+  const sections = [
+    { id: 'hero', label: 'Home' },
+    { id: 'motive', label: 'Our Vision' },
+    { id: 'interactive', label: 'Our Journey' },
+    { id: 'cube', label: 'Experience LIMI' },
+    { id: 'model', label: 'Transformation' },
+    { id: 'lighting', label: 'Configurations' }
+  ];
+
+  const handleNavClick = (id) => {
+    setMenuOpen(false);
+    
+    // Smooth scroll to section
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   return (
@@ -25,51 +83,55 @@ const Header = () => {
             />
           </div>
 
-          <nav className="hidden md:flex items-center gap-6 lg:gap-12 text-softBeige">
-            {['Products', 'Features', 'About', 'Contact'].map((item) => (
-              <Link key={item} href={`#${item.toLowerCase()}`} className="relative group font-['Amenti'] text-base lg:text-lg">
+          {/* Hamburger button */}
+          <button
+            className="flex flex-col justify-center items-center w-10 h-10 z-50 relative"
+            onClick={toggleMenu}
+            aria-label="Toggle menu"
+          >
+            <span 
+              className={`block w-7 h-0.5 bg-white mb-1.5 transition-all duration-300 ${
+                menuOpen ? 'rotate-45 translate-y-2' : ''
+              }`}
+            ></span>
+            <span 
+              className={`block w-7 h-0.5 bg-white mb-1.5 transition-all duration-300 ${
+                menuOpen ? 'opacity-0' : 'opacity-100'
+              }`}
+            ></span>
+            <span 
+              className={`block w-7 h-0.5 bg-white transition-all duration-300 ${
+                menuOpen ? '-rotate-45 -translate-y-2' : ''
+              }`}
+            ></span>
+          </button>
+        </div>
+      </div>
+
+      {/* Paper rolling menu */}
+      <div 
+        ref={menuRef}
+        className={`fixed top-0 left-0 w-full bg-charcoal/95 backdrop-blur-lg overflow-hidden z-40 origin-top`}
+        style={{ height: 0, opacity: 0 }}
+      >
+        <div 
+          ref={menuContentRef}
+          className="container mx-auto px-4 py-20 h-full flex flex-col justify-center items-center"
+        >
+          <nav className="flex flex-col items-center gap-6 text-softBeige">
+            {sections.map((section) => (
+              <button
+                key={section.id}
+                onClick={() => handleNavClick(section.id)}
+                className="text-2xl md:text-3xl font-['Amenti'] text-softBeige hover:text-emerald transition-colors duration-300 relative group"
+              >
                 <span className="relative">
-                  {item}
+                  {section.label}
                   <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-emerald transition-all duration-300 group-hover:w-full"></span>
                 </span>
-              </Link>
+              </button>
             ))}
           </nav>
-
-          {/* Mobile menu button */}
-          <button
-            className="md:hidden flex flex-col justify-center items-center w-8 h-8 z-50"
-            onClick={toggleMobileMenu}
-          >
-            <span className={`block w-6 h-0.5 bg-white mb-1.5 transition-transform ${mobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
-            <span className={`block w-6 h-0.5 bg-white mb-1.5 transition-opacity ${mobileMenuOpen ? 'opacity-0' : 'opacity-100'}`}></span>
-            <span className={`block w-6 h-0.5 bg-white transition-transform ${mobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
-          </button>
-
-          {/* Mobile menu */}
-          <div
-            className={`md:hidden fixed inset-0 bg-charcoal/10 backdrop-blur-md z-40 flex flex-col items-center justify-center transition-opacity duration-300 ${
-              mobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-            }`}
-          >
-            <nav className="flex flex-col items-center gap-8 text-softBeige">
-              {['Products', 'Features', 'About', 'Contact'].map((item) => (
-                <Link key={item} href={`#${item.toLowerCase()}`} className="text-xl font-['Amenti']" onClick={() => setMobileMenuOpen(false)}>
-                  {item}
-                </Link>
-              ))}
-            </nav>
-          </div>
-
-          <button
-            className="px-4 py-2 lg:px-6 lg:py-2 rounded-full border border-emerald text-emerald text-sm lg:text-lg
-            transition-all duration-300 font-['Poppins']
-            hover:bg-emerald/10 hover:border-emerald hover:text-emerald
-            hover:shadow-[0_0_20px_rgba(84,187,116,0.3)] hover:scale-105
-            active:scale-100 focus:outline-none focus:ring-2 focus:ring-emerald focus:ring-opacity-50"
-          >
-            Contact Us
-          </button>
         </div>
       </div>
     </header>

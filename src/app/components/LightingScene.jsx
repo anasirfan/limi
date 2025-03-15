@@ -78,6 +78,7 @@ const LightingScene = () => {
 
   return (
     <div 
+      id="lighting"
       ref={sceneRef}
       className="relative h-[90vh] max-sm:h-[60vh]  w-full overflow-hidden bg-black"
       style={{
@@ -88,7 +89,6 @@ const LightingScene = () => {
         transition: 'background-image 0.8s ease'
       }}
     >
-      {/* Top Light Layer */}
       <div 
         ref={topLightRef}
         className="absolute inset-0 mix-blend-screen"
@@ -101,7 +101,6 @@ const LightingScene = () => {
         }}
       />
 
-      {/* Middle Light Layer */}
       <div 
         ref={middleLightRef}
         className="absolute inset-0 mix-blend-screen"
@@ -114,7 +113,6 @@ const LightingScene = () => {
         }}
       />
 
-      {/* Headings */}
       <div className="absolute top-4 sm:top-6 md:top-10 left-4 sm:left-6 md:left-10 z-50">
         <div className="flex flex-col items-start">
           <h3 className="text-white text-xs sm:text-sm font-semibold tracking-widest uppercase mb-1 sm:mb-2">

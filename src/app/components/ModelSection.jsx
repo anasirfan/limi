@@ -95,7 +95,7 @@ const ModelSection = () => {
       texts.forEach((_, index) => {
         const startPosition = `${index * 400}vh`;
         const endPosition = `${(index + 1) * 400 - 10}vh`;
-        
+         
         ScrollTrigger.create({
           trigger: section,
           start: `${startPosition} top`,
@@ -188,6 +188,7 @@ const ModelSection = () => {
 
   return (
     <section 
+      id="model"
       ref={sectionRef}
       className="bg-[#292929] h-screen flex items-center relative overflow-hidden"
     >

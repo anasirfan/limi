@@ -337,68 +337,69 @@ export default function CubeAnimation() {
     }, []);
 
     return (
-        <>
-            <section className="sticky" ref={stickyRef}>
-                {/* Background image overlay */}
-                <div 
-                    ref={bgImageRef} 
-                    className="absolute inset-0 z-0 md:mt-28 md:mx-60 mt-16 mx-4" 
-                    style={{
-                        backgroundImage: 'url(/images/configImages/chandler-bg.jpg)',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        opacity: 0,
-                        transition: 'opacity 0.5s ease'
-                    }}
-                />
-                
-                {/* 3D scene container */}
-                <div 
-                    ref={threeSceneRef}
-                    className="absolute inset-0 z-10 md:mt-28 md:mx-40 mt-16 mx-4"
-                    style={{
-                        opacity: 0,
-                        transition: 'opacity 0.5s ease'
-                    }}
+        <section 
+            id="cube"
+            className="relative h-screen bg-[#292929] overflow-hidden"
+        >
+            {/* Background image overlay */}
+            <div 
+                ref={bgImageRef} 
+                className="absolute inset-0 z-0 md:mt-28 md:mx-60 mt-16 mx-4" 
+                style={{
+                    backgroundImage: 'url(/images/configImages/chandler-bg.jpg)',
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    opacity: 0,
+                    transition: 'opacity 0.5s ease'
+                }}
+            />
+            
+            {/* 3D scene container */}
+            <div 
+                ref={threeSceneRef}
+                className="absolute inset-0 z-10 md:mt-28 md:mx-40 mt-16 mx-4"
+                style={{
+                    opacity: 0,
+                    transition: 'opacity 0.5s ease'
+                }}
+            >
+                <Canvas 
+                    camera={{ position: [0, 0, 10], fov: 50 }}
+                    style={{ background: 'transparent' }}
                 >
-                    <Canvas 
-                        camera={{ position: [0, 0, 10], fov: 50 }}
-                        style={{ background: 'transparent' }}
-                    >
-                        <PendantScene scrollProgress={scrollProgress} />
-                    </Canvas>
+                    <PendantScene scrollProgress={scrollProgress} />
+                </Canvas>
+            </div>
+            
+            <div className="logo" ref={logoRef}>
+                <div className="col">
+                    <div className="blocked block-1"></div>
+                    <div className="blocked block-2"></div>
                 </div>
-                
-                <div className="logo" ref={logoRef}>
-                    <div className="col">
-                        <div className="blocked block-1"></div>
-                        <div className="blocked block-2"></div>
-                    </div>
-                    <div className="col">
-                        <div className="blocked block-3"></div>
-                        <div className="blocked block-4"></div>
-                    </div>
-                    <div className="col">
-                        <div className="blocked block-5"></div>
-                        <div className="blocked block-6"></div>
-                    </div>
+                <div className="col">
+                    <div className="blocked block-3"></div>
+                    <div className="blocked block-4"></div>
                 </div>
+                <div className="col">
+                    <div className="blocked block-5"></div>
+                    <div className="blocked block-6"></div>
+                </div>
+            </div>
 
-                <div className="cubes" ref={cubesContainerRef}>
-                  
-                </div>
+            <div className="cubes" ref={cubesContainerRef}>
+              
+            </div>
 
-                <div className="header-1" ref={header1Ref}>
-                    <h1 className="text-3xl md:text-4xl lg:text-5xl text-center px-4">Illuminating the Path of Innovation in Lighting Design</h1>
-                </div>
+            <div className="header-1" ref={header1Ref}>
+                <h1 className="text-3xl md:text-4xl lg:text-5xl text-center px-4">Illuminating the Path of Innovation in Lighting Design</h1>
+            </div>
 
-                <div className="header-2 max-sm:!w-full max-sm:!left-[50%]" ref={header2Ref}>
-                    <h2 className="text-xl md:text-3xl lg:text-4xl max-sm:text-center  max-sm:px-4 mb-4 max-sm:!mb-2 max-sm:!leading-[24px] max-sm:!text-2xl">Crafting Tomorrow's Lighting Solutions</h2>
-                    <p className="text-sm md:text-base lg:text-lg max-w-3xl mx-auto max-sm:px-4  md:px-4 max-sm:text-center max-sm:!text-[14px] max-sm:!leading-tight max-sm:!w-[100%] ">
-                    At LIMI, we revolutionize lighting with cutting-edge 3D visualization, transforming design, experience, and implementation.
-                    </p>
-                </div>
-            </section>
-        </>
+            <div className="header-2 max-sm:!w-full max-sm:!left-[50%]" ref={header2Ref}>
+                <h2 className="text-xl md:text-3xl lg:text-4xl max-sm:text-center  max-sm:px-4 mb-4 max-sm:!mb-2 max-sm:!leading-[24px] max-sm:!text-2xl">Crafting Tomorrow's Lighting Solutions</h2>
+                <p className="text-sm md:text-base lg:text-lg max-w-3xl mx-auto max-sm:px-4  md:px-4 max-sm:text-center max-sm:!text-[14px] max-sm:!leading-tight max-sm:!w-[100%] ">
+                At LIMI, we revolutionize lighting with cutting-edge 3D visualization, transforming design, experience, and implementation.
+                </p>
+            </div>
+        </section>
     );
 }

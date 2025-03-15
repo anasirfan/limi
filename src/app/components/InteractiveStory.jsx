@@ -299,6 +299,7 @@ const InteractiveStory = () => {
 
   return (
     <div
+      id="interactive"
       ref={containerRef}
       className={`relative ${
         isMobile ? "h-auto py-16" : "h-screen"

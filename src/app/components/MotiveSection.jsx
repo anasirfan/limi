@@ -56,8 +56,9 @@ const MotiveSection = () => {
 
   return (
     <section 
+      id="motive"
       ref={sectionRef}
-      className="relative w-full h-[200vh]  bg-[#292929] overflow-hidden"
+      className="relative w-full h-[200vh] bg-[#292929] overflow-hidden"
     >
       {/* Container */}
       <div 
