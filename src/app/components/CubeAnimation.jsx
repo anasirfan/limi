@@ -288,40 +288,6 @@ export default function CubeAnimation() {
                 header2Ref.current.style.transform = `translate(-50%, -50%) scale(${header2Scale})`;
                 header2Ref.current.style.filter = `blur(${header2Blur}px)`;
                 header2Ref.current.style.opacity = header2Progress;
-
-                // Animation for cube positions and rotations continues until the end
-                // This means cubes will continue moving even as they fade out
-                const firstPhaseProgress = Math.min(self.progress * 1.25, 1); // Complete movement by 80% of scroll
-                const secondPhaseProgress = self.progress >= 0.5 ? (self.progress - 0.5) * 2 : 0;
-
-                // Object.entries(cubesData).forEach(([cubeClass, data]) => {
-                //     const cube = document.querySelector(`.${cubeClass}`);
-                //     const { initial, final } = data;
-
-                //     const currentTop = interpolate(initial.top, final.top, firstPhaseProgress);
-                //     const currentLeft = interpolate(initial.left, final.left, firstPhaseProgress);
-                //     const currentRotateX = interpolate(initial.rotateX, final.rotateX, firstPhaseProgress);
-                //     const currentRotateY = interpolate(initial.rotateY, final.rotateY, firstPhaseProgress);
-                //     const currentRotateZ = interpolate(initial.rotateZ, final.rotateZ, firstPhaseProgress);
-                //     const currentZ = interpolate(initial.z, final.z, firstPhaseProgress);
-
-                //     let additionalRotation = 0;
-
-                //     if (cubeClass === "cube-2") {
-                //         additionalRotation = interpolate(0, 180, secondPhaseProgress);
-                //     } else if (cubeClass === "cube-4") {
-                //         additionalRotation = interpolate(0, -180, secondPhaseProgress);
-                //     }
-
-                //     cube.style.top = `${currentTop}%`;
-                //     cube.style.left = `${currentLeft}%`;
-                //     cube.style.transform = `
-                //         translate3d(-50%,-50%,${currentZ}px)            
-                //         rotateX(${currentRotateX}deg)
-                //         rotateY(${currentRotateY + additionalRotation}deg) 
-                //         rotateZ(${currentRotateZ}deg)
-                //     `;
-                // });
             }
         });
 
@@ -339,6 +305,7 @@ export default function CubeAnimation() {
     return (
         <section 
             id="cube"
+            ref={stickyRef}
             className="relative h-screen bg-[#292929] overflow-hidden"
         >
             {/* Background image overlay */}
