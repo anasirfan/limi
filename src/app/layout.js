@@ -13,10 +13,10 @@ export const metadata = {
   description: "A Journey Through Time",
   icons: {
     icon: [
-      { url: '/images/svgLogos/__Icon_Wordmark_Colored.svg', type: 'image/svg+xml' }
+      { url: '/images/svgLogos/__Logo_Icon_Colored.svg', type: 'image/svg+xml' }
     ],
     shortcut: [
-      { url: '/images/svgLogos/__Icon_Wordmark_Colored.svg', type: 'image/svg+xml' }
+      { url: '/images/svgLogos/__Logo_Icon_Colored.svg', type: 'image/svg+xml' }
     ]
   }
 };

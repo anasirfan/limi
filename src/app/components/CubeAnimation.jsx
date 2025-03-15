@@ -3,11 +3,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Environment, OrbitControls } from '@react-three/drei';
-import * as THREE from 'three';
+import { Canvas, useThree } from '@react-three/fiber';
+import { Environment } from '@react-three/drei';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import { cubesData } from './CubesData';
 import './CubeAnimation.css';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -32,30 +30,19 @@ function PendantScene({ scrollProgress }) {
 
     useEffect(() => {
         gl.setClearColor(0x000000, 0);
-        // console.log('PendantScene initialized, scroll progress:', scrollProgress);
     }, [gl, scrollProgress]);
     
     // Load the model
     useEffect(() => {
-        // console.log('Starting model loading...');
         
         const loadModel = () => {
             try {
-                // console.log('Loading model from /models/chandler.glb');
-                
-                // Use the GLTFLoader from three.js directly
                 const loader = new GLTFLoader();
                 
                 loader.load(
                     '/models/chandler.glb',
                     (gltf) => {
-                        // console.log('Model loaded successfully:', gltf.scene);
-                        
-                        // Clone the scene to avoid manipulating the cached original
                         const clonedScene = gltf.scene.clone();
-                        // console.log('Scene cloned', clonedScene);
-                        
-                        // Find and store references to all required parts
                         const parts = {
                             main_base_with_wires: null,
                             bases: null,
@@ -64,12 +51,8 @@ function PendantScene({ scrollProgress }) {
                             wire_holders: null,
                             light_holders: null
                         };
-                        
-                        // Log all mesh names in the scene to help with debugging
-                        // console.log('Searching for model parts. All meshes in scene:');
                         clonedScene.traverse((child) => {
                             if (child.isMesh) {
-                                // console.log('Found mesh:', child.name, child);
                             }
                         });
                         
