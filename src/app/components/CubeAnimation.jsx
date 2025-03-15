@@ -195,7 +195,7 @@ function PendantScene({ scrollProgress }) {
             {/* Render the model */}
             {modelRef.current && (
                 <>
-                    <primitive object={modelRef.current} scale={0.02} position={[4.9, -1, 0.6]} />
+                    <primitive object={modelRef.current} scale={0.02} position={[5.4, -1, 0.6]} />
 
                 </>
             )}
