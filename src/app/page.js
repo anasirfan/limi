@@ -9,6 +9,7 @@ import ModelSection from './components/ModelSection';
 import MotiveSection from './components/MotiveSection';
 import MouseTrail from './components/MouseTrail';
 import ScrollToTop from './components/ScrollToTop';
+import SplashScreen from './components/SplashScreen';
 
 
 
@@ -21,8 +22,8 @@ import ScrollToTop from './components/ScrollToTop';
 export default function Home() {
   return (
     <main>
-    <MouseTrail />
-
+      <MouseTrail />
+      <SplashScreen />
       <Header />
       <HeroSection />
       <MotiveSection />
