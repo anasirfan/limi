@@ -81,7 +81,7 @@ const MouseTrail = () => {
     };
   }, []);
 
-  return <div ref={trailRef} className="pointer-events-none fixed inset-0 z-50" />;
+  return <div ref={trailRef} className="pointer-events-none fixed inset-0 z-50 max-sm:hidden" />;
 };
 
 export default MouseTrail;
