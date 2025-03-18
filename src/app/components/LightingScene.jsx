@@ -146,7 +146,7 @@ const LightingScene = () => {
               }`}
             />
           </div>
-          <span className="text-white text-xs sm:text-sm mt-1 sm:mt-2">Ceiling Pendant</span>
+          <span className="text-white text-xs sm:text-sm mt-1 sm:mt-2">Wall Pendant</span>
         </div>
 
         {/* Sconce/Toe Kick Lighting Toggle */}
@@ -164,7 +164,7 @@ const LightingScene = () => {
               }`}
             />
           </div>
-          <span className="text-white text-xs sm:text-sm mt-1 sm:mt-2">Wall Pendant</span>
+          <span className="text-white text-xs sm:text-sm mt-1 sm:mt-2">Ceiling Pendant</span>
         </div>
 
         {/* Day/Night Toggle */}
