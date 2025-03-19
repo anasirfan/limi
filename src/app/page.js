@@ -23,17 +23,18 @@ import SplashScreen from './components/SplashScreen';
 export default function Home() {
   return (
     <main>
-      <MouseTrail />
       <SplashScreen />
       <Header />
       <HeroSection />
-      {/* <LightingCarousel /> */}
+      {/* <LightingCarousel />
+       */}
       <MotiveSection />
       <InteractiveStory />
       <CubeAnimation />
       <ModelSection />
       <LightingScene />
       <Footer />
+      <MouseTrail />
       <ScrollToTop />
     </main>
   );
