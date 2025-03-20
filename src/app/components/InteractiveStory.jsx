@@ -473,7 +473,7 @@ const InteractiveStory = () => {
               } absolute inset-0 rounded-2xl`}
             >
               <Image
-                src="/images/base-new.jpg"
+                src="/images/base_1.jpg"
                 alt="Base"
                 className="rounded-xl shadow-glass backdrop-blur-lg  bg-white/10"
                 fill
@@ -563,7 +563,7 @@ const InteractiveStory = () => {
               } absolute inset-0 rounded-2xl`}
             >
               <Image
-                src="/images/mobile-app-new.png"
+                src="/images/light.webp"
                 className="rounded-xl shadow-glass"
                 alt="App"
                 fill
