@@ -26,7 +26,7 @@ export default function Home() {
       <SplashScreen />
       <Header />
       <HeroSection />
-      <LightingCarousel />
+      {/* <LightingCarousel /> */}
       <MotiveSection />
       <InteractiveStory />
       <CubeAnimation />

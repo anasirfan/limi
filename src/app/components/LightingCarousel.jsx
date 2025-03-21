@@ -274,7 +274,7 @@ const LightingCarousel = () => {
                 <div 
                   className="absolute inset-0 bg-cover bg-center" 
                   style={{
-                    backgroundImage: "url('/images/carouselImages/warm_pure.jpg')",
+                    backgroundImage: "url('/images/carouselImages/warm_pure.jpg')", 
                     opacity: warmCoolValue > 50 ? (warmCoolValue - 50) / 50 : 0
                   }}
                 />
