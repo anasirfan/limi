@@ -88,41 +88,20 @@ const LightingCarousel = () => {
       
       // Get cursor position relative to the dial
       const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
       
-      // Get closest point on the path
-      const pathLength = 400; // Approximate path length
-      let closestDistance = Infinity;
-      let closestPoint = { x: 0, y: 0 };
-      let closestT = 0;
+      // Calculate position on straight bar (0-100%)
+      const barWidth = rect.width;
+      const barStart = 50; // Left edge of bar in SVG coordinates
+      const barEnd = 416; // Right edge of bar in SVG coordinates
       
-      // Sample points along the path to find the closest one
-      for (let t = 0; t <= 1; t += 0.01) {
-        // Bezier curve calculation for path: M65,261 C64,36 400,41 401,258
-        const p0x = 65;
-        const p0y = 261;
-        const p1x = 64;
-        const p1y = 36;
-        const p2x = 400;
-        const p2y = 41;
-        const p3x = 401;
-        const p3y = 258;
-        
-        // Cubic Bezier formula
-        const cx = (1-t)**3 * p0x + 3*(1-t)**2*t * p1x + 3*(1-t)*t**2 * p2x + t**3 * p3x;
-        const cy = (1-t)**3 * p0y + 3*(1-t)**2*t * p1y + 3*(1-t)*t**2 * p2y + t**3 * p3y;
-        
-        const distance = Math.sqrt((x - cx)**2 + (y - cy)**2);
-        
-        if (distance < closestDistance) {
-          closestDistance = distance;
-          closestPoint = { x: cx, y: cy };
-          closestT = t;
-        }
-      }
+      // Convert screen coordinates to SVG coordinates
+      const svgX = (x / barWidth) * 466;
       
-      // Convert t value (0-1) to warmCoolValue (0-100)
-      const newValue = Math.round(closestT * 100);
+      // Constrain to bar boundaries
+      const constrainedX = Math.max(barStart, Math.min(barEnd, svgX));
+      
+      // Convert position to value (0-100)
+      const newValue = Math.round(((constrainedX - barStart) / (barEnd - barStart)) * 100);
       setWarmCoolValue(newValue);
     };
 
@@ -291,21 +270,37 @@ const LightingCarousel = () => {
           <div className="relative w-2/3 h-full">
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="relative w-full h-full overflow-hidden">
-                {/* Warm Image */}
+                {/* Warm Images */}
                 <div 
                   className="absolute inset-0 bg-cover bg-center" 
                   style={{
-                    backgroundImage: "url('/images/lighting/warm-max.jpg')",
-                    opacity: warmCoolValue / 100
+                    backgroundImage: "url('/images/carouselImages/warm_pure.jpg')",
+                    opacity: warmCoolValue > 50 ? (warmCoolValue - 50) / 50 : 0
                   }}
                 />
                 
-                {/* Cool Image */}
                 <div 
                   className="absolute inset-0 bg-cover bg-center" 
                   style={{
-                    backgroundImage: "url('/images/lighting/cool-max.jpg')",
-                    opacity: coolValue / 100
+                    backgroundImage: "url('/images/carouselImages/warm_mix.jpg')",
+                    opacity: warmCoolValue <= 50 ? warmCoolValue / 50 : (100 - warmCoolValue) / 50
+                  }}
+                />
+                
+                {/* Cool Images */}
+                <div 
+                  className="absolute inset-0 bg-cover bg-center" 
+                  style={{
+                    backgroundImage: "url('/images/carouselImages/cool_mix.jpg')",
+                    opacity: coolValue <= 50 ? coolValue / 50 : (100 - coolValue) / 50
+                  }}
+                />
+                
+                <div 
+                  className="absolute inset-0 bg-cover bg-center" 
+                  style={{
+                    backgroundImage: "url('/images/carouselImages/cool_pure.jpg')",
+                    opacity: coolValue > 50 ? (coolValue - 50) / 50 : 0
                   }}
                 />
               </div>
@@ -325,54 +320,47 @@ const LightingCarousel = () => {
                 className="relative w-full h-64 overflow-hidden cursor-pointer mx-auto"
                 onMouseDown={(e) => handleDialMouseDown(e, 'warmCool')}
               >
-                {/* SVG for the curved path */}
+                {/* Straight bar implementation for warm/cool control */}
                 <svg width="100%" height="100%" viewBox="0 0 466 300" className="absolute top-0 left-0">
-                  {/* Path for visual reference */}
-                  <path 
-                    d="M65,261 C64,36 400,41 401,258" 
-                    fill="none" 
-                    stroke="url(#warmCoolGradient)" 
-                    strokeWidth="40" 
-                    strokeLinecap="round"
+                  {/* Straight horizontal bar */}
+                  <rect 
+                    x="50" 
+                    y="150" 
+                    width="366" 
+                    height="40" 
+                    fill="url(#warmCoolGradient)" 
+                    rx="20"
+                    ry="20"
                   />
                   
                   {/* Gradient definition */}
                   <defs>
                     <linearGradient id="warmCoolGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="#FFA500" />
-                      <stop offset="100%" stopColor="#00BFFF" />
+                      <stop offset="0%" stopColor="#00BFFF" /> {/* Cool color on left */}
+                      <stop offset="100%" stopColor="#FFA500" /> {/* Warm color on right */}
                     </linearGradient>
                   </defs>
                   
-                  {/* Inner path (thinner) */}
-                  <path 
-                    d="M65,261 C64,36 400,41 401,258" 
-                    fill="none" 
-                    stroke="#121212" 
-                    strokeWidth="30" 
-                    strokeLinecap="round"
+                  {/* Inner bar (background) */}
+                  <rect 
+                    x="55" 
+                    y="155" 
+                    width="356" 
+                    height="30" 
+                    fill="#121212" 
+                    rx="15"
+                    ry="15"
                   />
                   
-                  {/* Calculate position along the path based on warmCoolValue */}
+                  {/* Calculate position along the straight bar based on warmCoolValue */}
                   {(() => {
-                    const t = warmCoolValue / 100;
-                    const p0x = 65;
-                    const p0y = 261;
-                    const p1x = 64;
-                    const p1y = 36;
-                    const p2x = 400;
-                    const p2y = 41;
-                    const p3x = 401;
-                    const p3y = 258;
-                    
-                    // Cubic Bezier formula
-                    const cx = (1-t)**3 * p0x + 3*(1-t)**2*t * p1x + 3*(1-t)*t**2 * p2x + t**3 * p3x;
-                    const cy = (1-t)**3 * p0y + 3*(1-t)**2*t * p1y + 3*(1-t)*t**2 * p2y + t**3 * p3y;
+                    // Simple linear interpolation for straight bar
+                    const position = 50 + (warmCoolValue / 100) * 366;
                     
                     return (
                       <circle 
-                        cx={cx} 
-                        cy={cy} 
+                        cx={position} 
+                        cy="170" 
                         r="15" 
                         fill="white" 
                         filter="drop-shadow(0 0 5px rgba(255, 255, 255, 0.8))"
@@ -382,8 +370,8 @@ const LightingCarousel = () => {
                 </svg>
                 
                 {/* Text labels */}
-                <div className="absolute bottom-10 left-16 text-amber-500 font-bold">Warm</div>
-                <div className="absolute bottom-10 right-16 text-blue-500 font-bold">Cool</div>
+                <div className="absolute bottom-10 left-16 text-blue-500 font-bold">Cool</div>
+                <div className="absolute bottom-10 right-16 text-amber-500 font-bold">Warm</div>
                 
                 {/* Value display */}
                 <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-white font-bold">
