@@ -14,8 +14,12 @@ const LightingCarousel = () => {
   const [activeSlide, setActiveSlide] = useState(0);
   const [warmCoolValue, setWarmCoolValue] = useState(50);
   const [brightness, setBrightness] = useState(100);
-  const [rgbValues, setRgbValues] = useState({ r: 0, g: 0, b: 0 });
+  const [rgbValues, setRgbValues] = useState({ r: 0, g: 255, b: 0 });
   const [isDragging, setIsDragging] = useState(false);
+  const [selectedColor, setSelectedColor] = useState(null);
+  const [isInProgress, setIsInProgress] = useState(true);
+  const [isCopied, setIsCopied] = useState(false);
+  const [previousRgbValues, setPreviousRgbValues] = useState(rgbValues);
   const carouselRef = useRef(null);
   const slidesRef = useRef([]);
   const dialRef = useRef(null);
@@ -26,6 +30,22 @@ const LightingCarousel = () => {
   const warmLabelRef = useRef(null);
   const headingRef = useRef(null);
   const descriptionRef = useRef(null);
+
+  // Step 1: Define solid colors
+  const solidColors = [
+    { name: 'Red', rgb: { r: 255, g: 0, b: 0 } },
+    { name: 'Green', rgb: { r: 0, g: 255, b: 0 } },
+    { name: 'Blue', rgb: { r: 0, g: 0, b: 255 } },
+    { name: 'Yellow', rgb: { r: 255, g: 255, b: 0 } },
+    { name: 'Cyan', rgb: { r: 0, g: 255, b: 255 } },
+    { name: 'Magenta', rgb: { r: 255, g: 0, b: 255 } },
+    { name: 'Orange', rgb: { r: 255, g: 165, b: 0 } },
+    { name: 'Purple', rgb: { r: 128, g: 0, b: 128 } },
+    { name: 'Brown', rgb: { r: 165, g: 42, b: 42 } },
+    { name: 'Pink', rgb: { r: 255, g: 192, b: 203 } }
+  ];
+
+
 
   useEffect(() => {
 
@@ -105,7 +125,6 @@ const LightingCarousel = () => {
     }
   }, [carouselRef]); // Run animations on mount
 
-
   // Brand colors
   const brandColors = {
     primary: '#54bb74', // Green from the button hover
@@ -144,6 +163,14 @@ const LightingCarousel = () => {
     { id: 'relax', name: 'Relax Mode', color: '#FFA500' },
     { id: 'ambient', name: 'Ambient Mode', color: '#00BFFF' }
   ];
+
+  // Function to copy RGB values to clipboard
+  const copyToClipboard = (color) => {
+    const rgbString = `rgb(${color.r}, ${color.g}, ${color.b})`;
+    navigator.clipboard.writeText(rgbString).then(() => {
+      setIsCopied(true); // Set copied status to true
+    })
+  }
 
   useEffect(() => {
     // Initialize animations
@@ -268,7 +295,16 @@ const LightingCarousel = () => {
   };
 
   const handleRgbChange = (color, value) => {
-    setRgbValues(prev => ({ ...prev, [color]: value }));
+    // setRgbValues(prev => ({ ...prev, [color]: value }));
+    setRgbValues(prevValues => {
+      const newRgbValues = { ...prevValues, [color]: value };
+      // Check if the RGB values have changed
+      if (newRgbValues.r !== previousRgbValues.r || newRgbValues.g !== previousRgbValues.g || newRgbValues.b !== previousRgbValues.b) {
+        setIsCopied(false); // Reset copy status
+        setPreviousRgbValues(newRgbValues); // Update previous RGB values
+      }
+      return newRgbValues;
+    });
   };
 
   const selectMode = (mode) => {
@@ -305,7 +341,7 @@ const LightingCarousel = () => {
   return (
     <div
       ref={carouselRef}
-      className="relative w-full h-screen overflow-hidden bg-black"
+      className="relative w-full h-screen overflow-hidden bg-black "
     >
       {/* Navigation Arrows - Moved to higher z-index */}
       <button
@@ -355,7 +391,7 @@ const LightingCarousel = () => {
               <div className="relative w-full h-full overflow-hidden">
                 {/* Warm Images */}
                 <div
-                  className="absolute inset-0 bg-cover bg-center"
+                  className="absolute inset-0 bg-contain bg-no-repeat bg-center"
                   style={{
                     backgroundImage: "url('/images/carouselImages/warm_pure.jpg')",
                     opacity: warmCoolValue > 50 ? (warmCoolValue - 50) / 50 : 0
@@ -363,7 +399,7 @@ const LightingCarousel = () => {
                 />
 
                 <div
-                  className="absolute inset-0 bg-cover bg-center"
+                  className="absolute inset-0 bg-contain bg-no-repeat bg-center"
                   style={{
                     backgroundImage: "url('/images/carouselImages/warm_mix.jpg')",
                     opacity: warmCoolValue <= 50 ? warmCoolValue / 50 : (100 - warmCoolValue) / 50
@@ -372,7 +408,7 @@ const LightingCarousel = () => {
 
                 {/* Cool Images */}
                 <div
-                  className="absolute inset-0 bg-cover bg-center"
+                  className="absolute inset-0 bg-contain bg-no-repeat bg-center"
                   style={{
                     backgroundImage: "url('/images/carouselImages/cool_mix.jpg')",
                     opacity: coolValue <= 50 ? coolValue / 50 : (100 - coolValue) / 50
@@ -380,7 +416,7 @@ const LightingCarousel = () => {
                 />
 
                 <div
-                  className="absolute inset-0 bg-cover bg-center"
+                  className="absolute inset-0 bg-contain bg-no-repeat bg-center"
                   style={{
                     backgroundImage: "url('/images/carouselImages/cool_pure.jpg')",
                     opacity: coolValue > 50 ? (coolValue - 50) / 50 : 0
@@ -498,34 +534,44 @@ const LightingCarousel = () => {
 
         {/* Brightness Control Slide */}
         <div
-          ref={el => slidesRef.current[1] = el}
+          ref={el => slidesRef.current[2] = el}
           className="absolute inset-0 flex flex-row items-stretch justify-between p-0"
           style={{ backgroundColor: '#121212' }}
         >
-          {/* Image Section (2/3) */}
-          <div className="relative w-2/3 h-full">
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="relative w-full h-full overflow-hidden">
-                {/* Light On Image */}
-                <div
-                  className="absolute inset-0 bg-cover bg-center"
-                  style={{
-                    backgroundImage: "url('/images/lighting/light-on.jpg')",
-                    opacity: brightness / 100
-                  }}
-                />
 
-                {/* Light Off Image */}
-                <div
-                  className="absolute inset-0 bg-cover bg-center"
-                  style={{
-                    backgroundImage: "url('/images/lighting/light-off.jpg')",
-                    opacity: 1 - (brightness / 100)
-                  }}
-                />
-              </div>
+          {isInProgress ? (
+            <div className="absolute bottom-96 left-1/2 transform -translate-x-1/2 text-white font-bold">
+              inProgress
             </div>
-          </div>
+          ) : (
+            <>
+              {/* Image Section (2/3) */}
+              <div className="relative w-2/3 h-full">
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="relative w-full h-full overflow-hidden">
+                    {/* Light On Image */}
+                    <div
+                      className="absolute inset-0 bg-cover bg-center"
+                      style={{
+                        backgroundImage: "url('/images/lighting/light-on.jpg')",
+                        opacity: brightness / 100
+                      }}
+                    />
+
+                    {/* Light Off Image */}
+                    <div
+                      className="absolute inset-0 bg-cover bg-center"
+                      style={{
+                        backgroundImage: "url('/images/lighting/light-off.jpg')",
+                        opacity: 1 - (brightness / 100)
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+
 
           {/* Text and Controls Section (1/3) */}
           <div className="relative w-1/3 h-full bg-black/80 flex flex-col items-center justify-center p-8">
@@ -600,29 +646,38 @@ const LightingCarousel = () => {
 
         {/* Lighting Modes Slide */}
         <div
-          ref={el => slidesRef.current[2] = el}
+          ref={el => slidesRef.current[3] = el}
           className="absolute inset-0 flex flex-row items-stretch justify-between p-0"
           style={{ backgroundColor: '#121212' }}
         >
-          {/* Image Section (2/3) */}
-          <div className="relative w-2/3 h-full">
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="relative w-full h-full overflow-hidden">
-                {lightingModes.map((mode) => (
-                  <div
-                    key={mode.id}
-                    className="absolute inset-0 bg-cover bg-center transition-opacity duration-500"
-                    style={{
-                      backgroundImage: `url('/images/lighting/${mode.id}-mode.jpg')`,
-                      opacity: rgbValues.r === parseInt(mode.color.slice(1, 3), 16) &&
-                        rgbValues.g === parseInt(mode.color.slice(3, 5), 16) &&
-                        rgbValues.b === parseInt(mode.color.slice(5, 7), 16) ? 1 : 0
-                    }}
-                  />
-                ))}
-              </div>
+          {isInProgress ? (
+            <div className="absolute bottom-96 left-1/2 transform -translate-x-1/2 text-white font-bold">
+              inProgress
             </div>
-          </div>
+          ) : (
+            <>
+              {/* Image Section (2/3) */}
+              <div className="relative w-2/3 h-full">
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="relative w-full h-full overflow-hidden">
+                    {lightingModes.map((mode) => (
+                      <div
+                        key={mode.id}
+                        className="absolute inset-0 bg-cover bg-center transition-opacity duration-500"
+                        style={{
+                          backgroundImage: `url('/images/lighting/${mode.id}-mode.jpg')`,
+                          opacity: rgbValues.r === parseInt(mode.color.slice(1, 3), 16) &&
+                            rgbValues.g === parseInt(mode.color.slice(3, 5), 16) &&
+                            rgbValues.b === parseInt(mode.color.slice(5, 7), 16) ? 1 : 0
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+
 
           {/* Text and Controls Section (1/3) */}
           <div className="relative w-1/3 h-full bg-black/80 flex flex-col items-center justify-center p-8">
@@ -651,7 +706,7 @@ const LightingCarousel = () => {
 
         {/* RGB Neon Lights Control Slide */}
         <div
-          ref={el => slidesRef.current[3] = el}
+          ref={el => slidesRef.current[1] = el}
           className="absolute inset-0 flex flex-row items-stretch justify-between p-0"
           style={{ backgroundColor: '#121212' }}
         >
@@ -660,10 +715,7 @@ const LightingCarousel = () => {
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="relative w-full h-full overflow-hidden">
                 {/* Base Room Image */}
-                <div
-                  className="absolute inset-0 bg-cover bg-center"
-             
-                />
+                <div className="absolute inset-0 bg-cover bg-center" />
 
                 {/* Red Light Layer */}
                 <div
@@ -696,13 +748,13 @@ const LightingCarousel = () => {
           </div>
 
           {/* Text and Controls Section (1/3) */}
-          <div className="relative w-1/3 h-full bg-black/80 flex flex-col items-center justify-center p-8">
-            <div className="text-center mb-12">
+          <div className="relative w-1/3 h-full bg-black/80 flex flex-col items-center justify-center p-8 ">
+            <div className="text-center mb-12  ">
               <h2 className="text-3xl font-bold text-white mb-4" style={{ color: brandColors.primary }}>{slides[3].title}</h2>
               <p className="text-base text-white/80 mb-8">{slides[3].description}</p>
             </div>
 
-            <div className="w-full max-w-xs flex flex-col gap-6">
+            <div className="w-full max-w-xs flex flex-col gap-6 ">
               <div>
                 <label className="text-red-500 mb-2 block font-bold text-sm">Red: {rgbValues.r}</label>
                 <input
@@ -751,14 +803,50 @@ const LightingCarousel = () => {
                 />
               </div>
 
-              <div className="mt-2 p-3 rounded-lg" style={{
-                backgroundColor: `rgba(${rgbValues.r}, ${rgbValues.g}, ${rgbValues.b}, 0.5)`,
-                boxShadow: `0 0 20px rgba(${rgbValues.r}, ${rgbValues.g}, ${rgbValues.b}, 0.8)`
-              }}>
-                <div className="text-white font-bold text-center text-shadow">
-                  RGB({rgbValues.r}, {rgbValues.g}, {rgbValues.b})
+              <div className="relative">
+
+
+                <div className="mt-2 p-3 rounded-lg" style={{
+                  backgroundColor: `rgba(${rgbValues.r}, ${rgbValues.g}, ${rgbValues.b}, 0.5)`,
+                  boxShadow: `0 0 20px rgba(${rgbValues.r}, ${rgbValues.g}, ${rgbValues.b}, 0.8)`
+                }}>
+                  <div className="text-white font-bold text-center text-shadow">
+                    RGB({rgbValues.r}, {rgbValues.g}, {rgbValues.b})
+                  </div>
                 </div>
+                <button onClick={() => copyToClipboard(rgbValues)} className="ml-2 text-white absolute top-0 right-0">
+                  {isCopied ? '✔️' : '📋'}
+                </button>
               </div>
+
+              {/* // Step 2: Add color selection UI */}
+              <div className="color-selection  flex flex-wrap justify-center items-center">
+                {solidColors.map((color) => (
+                  <button
+                    key={color.name}
+                    className={`rounded-full shadow-lg hover:scale-105 hover:shadow-lg hover:shadow-[#54bb74]/30 hover:bg-[#292929]/10 focus:outline-none focus:ring-2 focus:ring-[#54bb74] focus:ring-opacity-50 ${selectedColor === color.name ? 'shadow-2xl' : ''}`}
+                    onClick={() => {
+                      setRgbValues(color.rgb);
+                      setSelectedColor(color.name); // Set selected color
+                      if (color.rgb.r !== previousRgbValues.r || color.rgb.g !== previousRgbValues.g || color.rgb.b !== previousRgbValues.b) {
+                        setIsCopied(false); // Reset copy status if RGB values change
+                        setPreviousRgbValues(color.rgb); // Update previous RGB values
+                      }
+                    }}
+                    style={{
+                      backgroundColor: `rgb(${color.rgb.r}, ${color.rgb.g}, ${color.rgb.b})`,
+                      width: '50px',
+                      height: '50px',
+                      border: 'none',
+                      margin: '5px',
+                      cursor: 'pointer',
+                      boxShadow: selectedColor === color.name ? `0 0 20px rgba(${color.rgb.r}, ${color.rgb.g}, ${color.rgb.b}, 0.8)` : 'none', // Apply dynamic shadow
+                    }}
+                    title={color.name}
+                  />
+                ))}
+              </div>
+
             </div>
           </div>
         </div>
