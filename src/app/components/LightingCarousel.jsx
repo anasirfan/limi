@@ -656,40 +656,38 @@ const LightingCarousel = () => {
           style={{ backgroundColor: '#121212' }}
         >
           {/* Image Section (2/3) */}
-          <div className="relative w-2/3 h-full">
+          <div className="relative w-2/3 h-auto">
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="relative w-full h-full overflow-hidden">
                 {/* Base Room Image */}
                 <div
                   className="absolute inset-0 bg-cover bg-center"
-                  style={{
-                    backgroundImage: "url('/images/lighting/room-base.jpg')"
-                  }}
+             
                 />
 
                 {/* Red Light Layer */}
                 <div
-                  className="absolute inset-0 bg-cover bg-center mix-blend-screen"
+                  className="absolute inset-0 bg-contain bg-no-repeat bg-center mix-blend-screen"
                   style={{
-                    backgroundImage: "url('/images/lighting/red-light.jpg')",
+                    backgroundImage: "url('/images/RGB/red.jpg')",
                     opacity: rgbValues.r / 255
                   }}
                 />
 
                 {/* Green Light Layer */}
                 <div
-                  className="absolute inset-0 bg-cover bg-center mix-blend-screen"
+                  className="absolute inset-0 bg-contain bg-no-repeat bg-center mix-blend-screen"
                   style={{
-                    backgroundImage: "url('/images/lighting/green-light.jpg')",
+                    backgroundImage: "url('/images/RGB/green.jpg')",
                     opacity: rgbValues.g / 255
                   }}
                 />
 
                 {/* Blue Light Layer */}
                 <div
-                  className="absolute inset-0 bg-cover bg-center mix-blend-screen"
+                  className="absolute inset-0 bg-contain bg-no-repeat bg-center mix-blend-screen"
                   style={{
-                    backgroundImage: "url('/images/lighting/blue-light.jpg')",
+                    backgroundImage: "url('/images/RGB/blue.jpg')",
                     opacity: rgbValues.b / 255
                   }}
                 />

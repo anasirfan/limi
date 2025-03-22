@@ -43,6 +43,7 @@ function PendantScene({ scrollProgress }) {
                     '/models/chandler.glb',
                     (gltf) => {
                         const clonedScene = gltf.scene.clone();
+                        console.log(clonedScene);
                         const parts = {
                             main_base_with_wires: null,
                             bases: null,
@@ -185,6 +186,20 @@ function PendantScene({ scrollProgress }) {
         } else {
             // console.log('Pendants part or material missing');
         }
+        
+        // Add rotation animation after all parts are visible (75%+)
+        if (modelRef.current && scrollProgress >= 0.75) {
+            // Calculate rotation speed based on scroll progress beyond 75%
+            const rotationProgress = Math.min((scrollProgress - 0.75) / 0.25, 1); // 0.75 to 1.0 mapped to 0-1
+            const rotationSpeed = rotationProgress * 0.05; // Adjust this value to control rotation speed
+            
+            // Apply rotation to the entire model
+            modelRef.current.rotation.y += rotationSpeed;
+            
+            // Optional: Add some vertical bobbing motion
+            const time = Date.now() * 0.001; // Get current time in seconds
+            modelRef.current.position.y = -1 + Math.sin(time * 2) * 0.05 * rotationProgress; // Subtle up/down motion
+        }
     }, [scrollProgress, modelParts]);
     
     return (
@@ -195,8 +210,11 @@ function PendantScene({ scrollProgress }) {
             {/* Render the model */}
             {modelRef.current && (
                 <>
-                    <primitive object={modelRef.current} scale={0.02} position={[5., -1, 0.6]} />
-
+                    <primitive 
+                        object={modelRef.current} 
+                        scale={0.02} 
+                        position={[5., -1, 0.6]} 
+                    />
                 </>
             )}
             
