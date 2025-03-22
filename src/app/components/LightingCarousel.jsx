@@ -765,7 +765,7 @@ const LightingCarousel = () => {
       </div>
 
       {/* Logo at Bottom */}
-      <div className="absolute bottom-4 left-4 z-20">
+      {/* <div className="absolute bottom-4 left-4 z-20">
         <Image
           src="/images/svgLogos/__Primary_Logo_Black.svg"
           alt="Limi Logo"
@@ -774,7 +774,7 @@ const LightingCarousel = () => {
           className="invert opacity-80"
           priority
         />
-      </div>
+      </div> */}
     </div>
   );
 };
