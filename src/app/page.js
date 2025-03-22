@@ -12,8 +12,6 @@ import MouseTrail from './components/MouseTrail';
 import ScrollToTop from './components/ScrollToTop';
 import SplashScreen from './components/SplashScreen';
 
-
-
 /**
  * The main entry point of the application, which renders the main sections:
  * a header, a hero section, a journey section, a model section, and a 3D scene.
@@ -26,7 +24,7 @@ export default function Home() {
       <SplashScreen />
       <Header />
       <HeroSection />
-      {/* <LightingCarousel /> */}
+      <LightingCarousel />
       <MotiveSection />
       <InteractiveStory />
       <CubeAnimation />
