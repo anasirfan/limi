@@ -341,9 +341,36 @@ const LightingCarousel = () => {
   };
 
   const handleDialMouseDown = (e, dialType) => {
-    e.preventDefault();
+    // e.preventDefault();
+    console.log("mobile  click ")
+    console.log(dialType)
     setIsDragging(true);
     activeDialRef.current = dialType;
+     
+    const moveHandler = (e) => {
+      const dial = dialRef.current;
+      const rect = dial.getBoundingClientRect();
+      const x = e.clientX ? e.clientX - rect.left : e.touches[0].clientX - rect.left; // Handle both mouse and touch
+  
+      // Calculate position on the dial (0-100)
+      const newValue = Math.min(Math.max((x / rect.width) * 100, 0), 100);
+      setWarmCoolValue(newValue);
+    };
+  
+    const endHandler = () => {
+      setIsDragging(false);
+      activeDialRef.current = null;
+      document.removeEventListener("mousemove", moveHandler);
+      document.removeEventListener("mouseup", endHandler);
+      document.removeEventListener("touchmove", moveHandler); // Remove touch event
+      document.removeEventListener("touchend", endHandler); // Remove touch event
+    };
+  
+    document.addEventListener("mousemove", moveHandler);
+    document.addEventListener("mouseup", endHandler);
+    document.addEventListener("touchmove", moveHandler); // Add touch event
+    document.addEventListener("touchend", endHandler); // Add touch event
+
   };
 
   const handleRgbChange = (color, value) => {
@@ -442,11 +469,23 @@ const LightingCarousel = () => {
         {/* Warm & Cool Light Control Slide */}
         <div
           ref={(el) => (slidesRef.current[0] = el)}
-          className="absolute inset-0 flex flex-row items-stretch justify-between p-0"
+          className="absolute  inset-0 md:flex md:flex-row flex flex-col items-stretch justify-between p-0"
           style={{ backgroundColor: "#121212" }}
         >
+          <div className="text-center block md:hidden  pt-10">
+              <h2
+                ref={headingRef}
+                className="text-3xl font-bold text-white mb-4"
+                style={{ color: brandColors.primary }}
+              >
+                {slides[0].title}
+              </h2>
+              <p ref={descriptionRef} className="text-base text-white/80 mb-8">
+                {slides[0].description}
+              </p>
+            </div>
           {/* Image Section (2/3) */}
-          <div className="relative w-2/3 h-full">
+          <div className="relative w-full h-full md:w-2/3">
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="relative w-full h-full overflow-hidden">
                 {/* Warm Images */}
@@ -493,63 +532,11 @@ const LightingCarousel = () => {
               </div>
             </div>
           </div>
-          {/* Straight bar implementation for warm/cool control */}
-          {/* <svg width="100%" height="100%" viewBox="0 0 466 300" className="absolute top-0 left-0"> */}
-          {/* Straight horizontal bar */}
-          {/* <rect 
-                    x="50" 
-                    y="150" 
-                    width="366" 
-                    height="40" 
-                    fill="url(#warmCoolGradient)" 
-                    rx="20"
-                    ry="20"
-                  />
-                   */}
-          {/* Gradient definition */}
-          {/* <defs>
-                    <linearGradient id="warmCoolGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="#00BFFF" />
-                    <stop offset="100%" stopColor="#FFA500" /> 
-                    </linearGradient>
-                  </defs> */}
 
-          {/* Inner bar (background) */}
-          {/* <rect 
-                    x="55" 
-                    y="155" 
-                    width="356" 
-                    height="30" 
-                    fill="#121212" 
-                    rx="15"
-                    ry="15"
-                  /> */}
-
-          {/* Calculate position along the straight bar based on warmCoolValue */}
-          {/* {(() => {
-                    // Simple linear interpolation for straight bar
-                    const position = 50 + (warmCoolValue / 100) * 366;
-                    
-                    return (
-                      <circle 
-                        cx={position} 
-                        cy="170" 
-                        r="15" 
-                        fill="white" 
-                        filter="drop-shadow(0 0 5px rgba(255, 255, 255, 0.8))"
-                      />
-                    );
-                  })()} */}
-          {/* </svg> */}
-
-          {/* Progress Bar Container */}
-          {/* <div className="relative w-full h-10 bg-gray-800 rounded-full shadow-lg"> */}
-          {/* Progress Bar */}
-          {/* Progress Bar */}
 
           {/* Text and Controls Section (1/3) */}
-          <div className="relative w-1/3 h-full bg-black/80 flex flex-col items-center justify-center p-8">
-            <div className="text-center mb-12">
+          <div className="relative w-full md:w-1/3 h-full bg-black/80 flex flex-col-reverse  items-center justify-end  ">
+            <div className="text-center mb-12 hidden md:block">
               <h2
                 ref={headingRef}
                 className="text-3xl font-bold text-white mb-4"
@@ -562,11 +549,12 @@ const LightingCarousel = () => {
               </p>
             </div>
 
-            <div className="w-full max-w-xs">
-              <div
+            <div className="w-full max-w-xs  ">
+              <div  
                 ref={dialRef}
                 className="relative w-full h-64 overflow-hidden cursor-pointer mx-auto "
                 onMouseDown={(e) => handleDialMouseDown(e, "warmCool")}
+                onTouchStart={(e) => handleDialMouseDown(e, "warmCool")}
               >
                 <div className="relative h-12 rounded-full cursor-pointer  transform -translate-y-1/2 -translate-x-1/2 top-1/2 left-1/2 ">
                   {/* Gradient background */}
@@ -823,11 +811,23 @@ const LightingCarousel = () => {
         {/* RGB Neon Lights Control Slide */}
         <div
           ref={(el) => (slidesRef.current[1] = el)}
-          className="absolute inset-0 flex flex-row items-stretch justify-between p-0"
+          className="absolute  inset-0 md:flex md:flex-row flex flex-col items-stretch justify-between p-0"
           style={{ backgroundColor: "#121212" }}
         >
+             <div className="text-center    block md:hidden pt-4 px-1 ">
+              <h2
+                className="text-3xl font-bold text-white mb-4"
+                style={{ color: brandColors.primary }}
+              >
+                {slides[3].title}
+              </h2>
+              <p className="text-base text-white/80 mb-8">
+                {slides[3].description}
+              </p>
+            </div>
+
           {/* Image Section (2/3) */}
-          <div className="relative w-2/3 h-auto">
+          <div className="relative w-full h-full md:w-2/3 ">
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="relative w-full h-full overflow-hidden">
                 {/* Base Room Image */}
@@ -888,8 +888,8 @@ const LightingCarousel = () => {
           </div>
 
           {/* Text and Controls Section (1/3) */}
-          <div className="relative w-1/3 h-full bg-black/80 flex flex-col items-center justify-center p-8 ">
-            <div className="text-center mb-12  ">
+          <div className="relative w-full md:w-1/3 h-full bg-black/80 flex flex-col-reverse  items-center justify-center p-8">
+            <div className="text-center mb-12  hidden sm:block ">
               <h2
                 className="text-3xl font-bold text-white mb-4"
                 style={{ color: brandColors.primary }}
@@ -1039,3 +1039,56 @@ const LightingCarousel = () => {
 };
 
 export default LightingCarousel;
+          {/* Straight bar implementation for warm/cool control */}
+          {/* <svg width="100%" height="100%" viewBox="0 0 466 300" className="absolute top-0 left-0"> */}
+          {/* Straight horizontal bar */}
+          {/* <rect 
+                    x="50" 
+                    y="150" 
+                    width="366" 
+                    height="40" 
+                    fill="url(#warmCoolGradient)" 
+                    rx="20"
+                    ry="20"
+                  />
+                   */}
+          {/* Gradient definition */}
+          {/* <defs>
+                    <linearGradient id="warmCoolGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#00BFFF" />
+                    <stop offset="100%" stopColor="#FFA500" /> 
+                    </linearGradient>
+                  </defs> */}
+
+          {/* Inner bar (background) */}
+          {/* <rect 
+                    x="55" 
+                    y="155" 
+                    width="356" 
+                    height="30" 
+                    fill="#121212" 
+                    rx="15"
+                    ry="15"
+                  /> */}
+
+          {/* Calculate position along the straight bar based on warmCoolValue */}
+          {/* {(() => {
+                    // Simple linear interpolation for straight bar
+                    const position = 50 + (warmCoolValue / 100) * 366;
+                    
+                    return (
+                      <circle 
+                        cx={position} 
+                        cy="170" 
+                        r="15" 
+                        fill="white" 
+                        filter="drop-shadow(0 0 5px rgba(255, 255, 255, 0.8))"
+                      />
+                    );
+                  })()} */}
+          {/* </svg> */}
+
+          {/* Progress Bar Container */}
+          {/* <div className="relative w-full h-10 bg-gray-800 rounded-full shadow-lg"> */}
+          {/* Progress Bar */}
+          {/* Progress Bar */}
