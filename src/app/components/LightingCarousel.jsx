@@ -73,7 +73,7 @@ const LightingCarousel = () => {
 
     // 1️⃣ Handle Off Light (when RGB values are very low)
     if (maxRGBValue < minRGBThreshold) {
-      globalThis.offLightOpacity = 1 - maxRGBValue / minRGBThreshold
+      globalThis.offLightOpacity = 1 - (maxRGBValue / minRGBThreshold) - 0.3;
       setOffLight(true);
     } else {
       globalThis.offLightOpacity = 0;
@@ -805,18 +805,16 @@ const LightingCarousel = () => {
               <div className="relative w-full h-full overflow-hidden">
                 {/* Base Room Image */}
                 <div className="absolute inset-0 bg-cover bg-center" />
-                {offLight && (
-                  <>
+               
                     <div
                       className="absolute inset-0 bg-contain bg-no-repeat bg-center mix-blend-screen"
                       style={{
                         backgroundImage: "url('/images/RGB/off.jpg')",
-                        opacity: offLightOpacity,
+                        opacity: offLight ? offLightOpacity : 0,
                         // transition: "opacity 0.3s ease-in-out",
                       }}
                     />
-                  </>
-                )}
+              
                 {/* Red Light Layer */}
                 <div
                   className="absolute inset-0 bg-contain bg-no-repeat bg-center mix-blend-screen"
@@ -846,16 +844,16 @@ const LightingCarousel = () => {
                     // transition: "opacity 0.3s ease-in-out",
                   }}
                 />
-                {onLight && (
+            
                   <div
                     className="absolute inset-0 bg-contain bg-no-repeat bg-center mix-blend-screen"
                     style={{
                       backgroundImage: "url('/images/RGB/white.jpg')",
-                      opacity: whiteOpacity,
+                      opacity: onLight ? whiteOpacity : 0,
                       // transition: "opacity 0.3s ease-in-out",
                     }}
                   />
-                )}
+              
               </div>
             </div>
           </div>
