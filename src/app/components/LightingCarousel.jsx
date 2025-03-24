@@ -485,7 +485,7 @@ const LightingCarousel = () => {
               </p>
             </div>
           {/* Image Section (2/3) */}
-          <div className="relative w-full h-full md:w-2/3">
+          <div className="relative w-full h-full md:w-2/3 ">
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="relative w-full h-full overflow-hidden">
                 {/* Warm Images */}
@@ -536,7 +536,7 @@ const LightingCarousel = () => {
 
           {/* Text and Controls Section (1/3) */}
           <div className="relative w-full md:w-1/3 h-full bg-black/80 flex flex-col-reverse  items-center justify-end  ">
-            <div className="text-center mb-12 hidden md:block">
+            <div className="text-center mb-12 hidden md:block md:pt-40">
               <h2
                 ref={headingRef}
                 className="text-3xl font-bold text-white mb-4"
@@ -549,7 +549,7 @@ const LightingCarousel = () => {
               </p>
             </div>
 
-            <div className="w-full max-w-xs  ">
+            <div className="w-full max-w-xs  md:pt-60  ">
               <div  
                 ref={dialRef}
                 className="relative w-full h-64 overflow-hidden cursor-pointer mx-auto "
