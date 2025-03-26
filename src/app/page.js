@@ -39,17 +39,17 @@ export default function Home() {
 
   return (
     <main>
-      <SplashScreen />
+      {/* <SplashScreen /> */}
       <Header />
       <HeroSection />
       {/* <LightingCarousel /> */}
-      <MotiveSection />
+      {/* <MotiveSection />
       <InteractiveStory />
     <CubeAnimation />
       <ModelSection />
       <LightingScene />
       {!isMobile && <MouseTrail />}
-      <Footer />
+      <Footer /> */}
       <ScrollToTop />
     </main>
   );
