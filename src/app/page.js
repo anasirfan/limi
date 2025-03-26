@@ -1,5 +1,5 @@
 'use client';
-// import CubeAnimation from './components/CubeAnimation';
+import CubeAnimation from './components/CubeAnimation';
 import Footer from './components/Footer';
 import Header from './components/Header';
 import HeroSection from './components/HeroSection';
@@ -45,7 +45,7 @@ export default function Home() {
       <LightingCarousel />
       <MotiveSection />
       <InteractiveStory />
-      {/* <CubeAnimation /> */}
+      <CubeAnimation />
       {/* <ModelSection /> */}
       {/* <LightingScene /> */}
       {/* {!isMobile && <MouseTrail />} */}
