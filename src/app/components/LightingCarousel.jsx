@@ -20,8 +20,7 @@ const LightingCarousel = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [selectedColor, setSelectedColor] = useState(null);
   const [isInProgress, setIsInProgress] = useState(true);
-  const [isCopied, setIsCopied] = useState(false);
-  const [previousRgbValues, setPreviousRgbValues] = useState(rgbValues);
+
   const carouselRef = useRef(null);
   const slidesRef = useRef([]);
   const dialRef = useRef(null);
