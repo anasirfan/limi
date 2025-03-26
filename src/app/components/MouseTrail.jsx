@@ -7,6 +7,7 @@ const MouseTrail = () => {
   const dotsRef = useRef([]);
   const mouseRef = useRef({ x: 0, y: 0 });
   const requestRef = useRef();
+  const throttleRef = useRef(false);
 
   useEffect(() => {
     const dots = [];
@@ -17,7 +18,8 @@ const MouseTrail = () => {
       '#FFFF66', // Yellow
       '#FF66FF', // Magenta
     ];
-    const numDots = 25;
+    // Reduce number of dots for better performance
+    const numDots = 15; // Reduced from 25
     const trailContainer = trailRef.current;
 
     // Create dots
@@ -47,12 +49,20 @@ const MouseTrail = () => {
     }
     dotsRef.current = dots;
 
-    // Mouse move handler
+    // Mouse move handler with throttling
     const handleMouseMove = (e) => {
+      // Throttle mousemove events for better performance
+      if (throttleRef.current) return;
+      
+      throttleRef.current = true;
+      setTimeout(() => {
+        throttleRef.current = false;
+      }, 16); // ~60fps
+      
       mouseRef.current = { x: e.clientX, y: e.clientY };
     };
 
-    // Animation loop
+    // Animation loop with RAF optimization
     const animate = () => {
       dotsRef.current.forEach((dot, index) => {
         const targetX = mouseRef.current.x;
@@ -76,8 +86,16 @@ const MouseTrail = () => {
     // Cleanup
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
-      cancelAnimationFrame(requestRef.current);
-      dots.forEach(dot => dot.element.remove());
+      if (requestRef.current) {
+        cancelAnimationFrame(requestRef.current);
+        requestRef.current = null;
+      }
+      dots.forEach(dot => {
+        if (dot.element && dot.element.parentNode) {
+          dot.element.remove();
+        }
+      });
+      dotsRef.current = [];
     };
   }, []);
 

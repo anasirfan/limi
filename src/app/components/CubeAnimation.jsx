@@ -27,7 +27,6 @@ function PendantScene({ scrollProgress }) {
         light_holders: null
     });
     
-
     useEffect(() => {
         gl.setClearColor(0x000000, 0);
     }, [gl, scrollProgress]);
@@ -37,13 +36,12 @@ function PendantScene({ scrollProgress }) {
         
         const loadModel = () => {
             try {
-                const loader = new GLTFLoader();
-                
+                const loader = new GLTFLoader();  
                 loader.load(
                     '/models/chandler.glb',
                     (gltf) => {
                         const clonedScene = gltf.scene.clone();
-                        console.log(clonedScene);
+               
                         const parts = {
                             main_base_with_wires: null,
                             bases: null,
@@ -52,31 +50,26 @@ function PendantScene({ scrollProgress }) {
                             wire_holders: null,
                             light_holders: null
                         };
-                        clonedScene.traverse((child) => {
-                            if (child.isMesh) {
-                            }
-                        });
                         
                         clonedScene.traverse((child) => {
                             if (child.isMesh) {
                                 // Map the mesh names to our state object keys
-                                if (child.name === 'main_base_with_wires') {
-                                    // console.log('Found main_base_with_wires part');
+                                if (child.name === 'main_base_with_wires') {                                   
                                     parts.main_base_with_wires = child;
                                 } else if (child.name === '3_bases') {
-                                    // console.log('Found 3_bases part');
+                                    
                                     parts.bases = child;
                                 } else if (child.name === 'small_wires') {
-                                    // console.log('Found small_wires part');
+                                    
                                     parts.small_wires = child;
                                 } else if (child.name === 'Pendants') {
-                                    // console.log('Found Pendants part');
+                                    
                                     parts.pendants = child;
                                 } else if (child.name === 'wire_holders') {
-                                    // console.log('Found wire_holders part');
+                                    
                                     parts.wire_holders = child;
                                 } else if (child.name === 'light_holders') {
-                                    // console.log('Found light_holders part');
+                                    
                                     parts.light_holders = child;
                                 }
                                 
@@ -88,27 +81,19 @@ function PendantScene({ scrollProgress }) {
                                     // Enable transparency
                                     child.material.transparent = true;
                                     child.material.opacity = 0;
-                                    // console.log(`Set ${child.name} opacity to 0`);
+                                    
+                                    child.material.needsUpdate = true;
+                                    child.frustumCulled = true;
                                 }
                             }
                         });
-                        
-                        // console.log('Final parts object:', parts);
-                        setModelParts(parts);
-                        
+                        setModelParts(parts);          
                         // Set the model to the ref
                         modelRef.current = clonedScene;
-                        // console.log('Model reference set to modelRef');
-                    },
-                    (progress) => {
-                        // console.log('Loading progress:', (progress.loaded / progress.total) * 100, '%');
-                    },
-                    (error) => {
-                        // console.error('Error loading model:', error);
-                    }
+                    },    
                 );
             } catch (error) {
-                console.error('Error in model loading process:', error);
+                console.error('Error loading model:', error);
             }
         };
         
@@ -117,8 +102,8 @@ function PendantScene({ scrollProgress }) {
     
     // Animate parts based on scroll progress
     useEffect(() => {
-        // console.log('Scroll progress update:', scrollProgress);
-        // console.log('Current model parts state:', modelParts);
+        
+        
         
         if (!modelParts.main_base_with_wires && 
             !modelParts.bases && 
@@ -126,7 +111,7 @@ function PendantScene({ scrollProgress }) {
             !modelParts.pendants &&
             !modelParts.wire_holders &&
             !modelParts.light_holders) {
-            // console.log('Model parts not loaded yet, skipping animation');
+            
             return;
         }
         
@@ -137,54 +122,36 @@ function PendantScene({ scrollProgress }) {
         if (modelParts.main_base_with_wires && modelParts.main_base_with_wires.material) {
             const mainBaseProgress = scrollProgress < 0.4 ? 0 : Math.min((scrollProgress - 0.4) / 0.1, 1); // 0.4 to 0.5 mapped to 0-1
             modelParts.main_base_with_wires.material.opacity = mainBaseProgress;
-            // console.log('main_base_with_wires opacity:', mainBaseProgress);
-        } else {
-            // console.log('main_base_with_wires part or material missing');
-        }
+    
+        } 
         
         // 3 bases (50% - 55%)
         if (modelParts.bases && modelParts.bases.material) {
             const basesProgress = scrollProgress < 0.5 ? 0 : Math.min((scrollProgress - 0.5) / 0.05, 1); // 0.5 to 0.55 mapped to 0-1
-            modelParts.bases.material.opacity = basesProgress;
-            // console.log('3_bases opacity:', basesProgress);
-        } else {
-            // console.log('3_bases part or material missing');
-        }
-        
+            modelParts.bases.material.opacity = basesProgress; 
+        } 
         // Wire holders (55% - 60%)
         if (modelParts.wire_holders && modelParts.wire_holders.material) {
             const wireHoldersProgress = scrollProgress < 0.55 ? 0 : Math.min((scrollProgress - 0.55) / 0.05, 1); // 0.55 to 0.6 mapped to 0-1
-            modelParts.wire_holders.material.opacity = wireHoldersProgress;
-            // console.log('wire_holders opacity:', wireHoldersProgress);
-        } else {
-            // console.log('wire_holders part or material missing');
-        }
+            modelParts.wire_holders.material.opacity = wireHoldersProgress;        
+        } 
         
         // Small wires (60% - 65%)
         if (modelParts.small_wires && modelParts.small_wires.material) {
             const smallWiresProgress = scrollProgress < 0.6 ? 0 : Math.min((scrollProgress - 0.6) / 0.05, 1); // 0.6 to 0.65 mapped to 0-1
-            modelParts.small_wires.material.opacity = smallWiresProgress;
-            // console.log('small_wires opacity:', smallWiresProgress);
-        } else {
-            // console.log('small_wires part or material missing');
+            modelParts.small_wires.material.opacity = smallWiresProgress;           
         }
         
         // Light holders (65% - 70%)
         if (modelParts.light_holders && modelParts.light_holders.material) {
             const lightHoldersProgress = scrollProgress < 0.65 ? 0 : Math.min((scrollProgress - 0.65) / 0.05, 1); // 0.65 to 0.7 mapped to 0-1
-            modelParts.light_holders.material.opacity = lightHoldersProgress;
-            // console.log('light_holders opacity:', lightHoldersProgress);
-        } else {
-            // console.log('light_holders part or material missing');
+            modelParts.light_holders.material.opacity = lightHoldersProgress;           
         }
         
         // Pendants (70% - 75%)
         if (modelParts.pendants && modelParts.pendants.material) {
             const pendantsProgress = scrollProgress < 0.7 ? 0 : Math.min((scrollProgress - 0.7) / 0.05, 1); // 0.7 to 0.75 mapped to 0-1
-            modelParts.pendants.material.opacity = pendantsProgress;
-            // console.log('Pendants opacity:', pendantsProgress);
-        } else {
-            // console.log('Pendants part or material missing');
+            modelParts.pendants.material.opacity = pendantsProgress;           
         }
         
         // Add rotation animation after all parts are visible (75%+)
