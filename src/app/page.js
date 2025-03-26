@@ -3,7 +3,7 @@
 import Footer from './components/Footer';
 import Header from './components/Header';
 import HeroSection from './components/HeroSection';
-// import InteractiveStory from './components/InteractiveStory';
+import InteractiveStory from './components/InteractiveStory';
 import LightingCarousel from './components/LightingCarousel';
 // import LightingScene from './components/LightingScene';
 // import ModelSection from './components/ModelSection';
@@ -44,7 +44,7 @@ export default function Home() {
       <HeroSection />
       <LightingCarousel />
       <MotiveSection />
-      {/* <InteractiveStory /> */}
+      <InteractiveStory />
       {/* <CubeAnimation /> */}
       {/* <ModelSection /> */}
       {/* <LightingScene /> */}
