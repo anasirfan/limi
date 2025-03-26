@@ -45,10 +45,10 @@ export default function Home() {
       <LightingCarousel />
       <MotiveSection />
       <InteractiveStory />
-      <CubeAnimation />
-      {/* <ModelSection /> */}
-      {/* <LightingScene /> */}
-      {/* {!isMobile && <MouseTrail />} */}
+      {isMobile && <CubeAnimation />}
+      <ModelSection />
+      <LightingScene />
+      {!isMobile && <MouseTrail />}
       <Footer />
       <ScrollToTop />
     </main>
