@@ -32,7 +32,7 @@ function HeroSection() {
               </h1>
             </div>
             {/* Right Side - Description and CTA */}
-            <div className="text-white/80">
+            <div className="text-[#54bb74]/90">
               <p className="hero-description text-lg max-sm:text-sm mb-8 leading-relaxed">
                 Experience the future of lighting with our innovative smart
                 solutions. Our intelligent design seamlessly adapts to your
