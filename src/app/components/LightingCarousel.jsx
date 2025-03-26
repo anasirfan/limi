@@ -3,6 +3,8 @@ import { useState, useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'; // Import the CSS
 import Image from "next/image";
 
 // Register GSAP plugins
@@ -32,7 +34,7 @@ const LightingCarousel = () => {
   const descriptionRef = useRef(null);
   const [offLight, setOffLight] = useState(false);
   const [onLight, setOnLight] = useState(false);
-  const [rgbOpacities, setRgbOpacities] = useState({ r: 0.7 , g:0.7, b: 0.7 });
+  const [rgbOpacities, setRgbOpacities] = useState({ r: 0.7, g: 0.7, b: 0.7 });
   // Step 1: Define solid colors
   const solidColors = [
     { name: "Red", rgb: { r: 255, g: 0, b: 0 } },
@@ -65,19 +67,19 @@ const LightingCarousel = () => {
     // }
     const minRGBThreshold = 20;
     const maxRGBThreshold = 240;
-    
+
     const maxRGBValue = Math.max(rgbValues.r, rgbValues.g, rgbValues.b);
     const minRGBValue = Math.min(rgbValues.r, rgbValues.g, rgbValues.b);
-  
+
     // 1️⃣ Handle Off Light (when RGB values are very low)
     if (maxRGBValue < minRGBThreshold) {
-      globalThis.offLightOpacity = 1-  maxRGBValue / minRGBThreshold
+      globalThis.offLightOpacity = 1 - (maxRGBValue / minRGBThreshold) - 0.3;
       setOffLight(true);
     } else {
       globalThis.offLightOpacity = 0;
       setOffLight(false);
     }
-  
+
     // 2️⃣ Handle White Light (when any RGB value exceeds 240)
     if (minRGBValue > maxRGBThreshold) {
       console.log("White Light");
@@ -124,20 +126,6 @@ const LightingCarousel = () => {
         },
       });
     }
-    // Animate the gradient background
-    if (gradientRef.current) {
-      gsap.from(gradientRef.current, {
-        opacity: 1,
-        y: -30, // Increased vertical slide effect
-        duration: 1, // Set duration for smoothness
-        ease: "back.out", // Changed easing for a more pronounced effect
-        scrollTrigger: {
-          trigger: gradientRef.current,
-          start: "top 80%", // Start animation when the top of the element reaches 80% of the viewport height
-          toggleActions: "play none none reverse", // Play on enter and reverse on leave
-        },
-      });
-    }
 
     // Animate text labels
     if (coolLabelRef.current && warmLabelRef.current) {
@@ -152,7 +140,7 @@ const LightingCarousel = () => {
           scrollTrigger: {
             trigger: coolLabelRef.current,
             start: "top 80%",
-            toggleActions: "play none none reverse",
+            // toggleActions: "play none none reverse",
           },
         }
       );
@@ -168,7 +156,7 @@ const LightingCarousel = () => {
           scrollTrigger: {
             trigger: warmLabelRef.current,
             start: "top 80%",
-            toggleActions: "play none none reverse",
+            // toggleActions: "play none none reverse",
           },
         }
       );
@@ -218,7 +206,7 @@ const LightingCarousel = () => {
   const copyToClipboard = (color) => {
     const rgbString = `rgb(${color.r}, ${color.g}, ${color.b})`;
     navigator.clipboard.writeText(rgbString).then(() => {
-      setIsCopied(true); // Set copied status to true
+      toast.success("RGB value is copied!");
     });
   };
 
@@ -341,26 +329,38 @@ const LightingCarousel = () => {
   };
 
   const handleDialMouseDown = (e, dialType) => {
-    e.preventDefault();
+    // e.preventDefault();
     setIsDragging(true);
     activeDialRef.current = dialType;
+
+    const moveHandler = (e) => {
+      const dial = dialRef.current;
+      const rect = dial.getBoundingClientRect();
+      const x = e.clientX ? e.clientX - rect.left : e.touches[0].clientX - rect.left; // Handle both mouse and touch
+
+      // Calculate position on the dial (0-100)
+      const newValue = Math.min(Math.max((x / rect.width) * 100, 0), 100);
+      setWarmCoolValue(newValue);
+    };
+
+    const endHandler = () => {
+      setIsDragging(false);
+      activeDialRef.current = null;
+      document.removeEventListener("mousemove", moveHandler);
+      document.removeEventListener("mouseup", endHandler);
+      document.removeEventListener("touchmove", moveHandler); // Remove touch event
+      document.removeEventListener("touchend", endHandler); // Remove touch event
+    };
+
+    document.addEventListener("mousemove", moveHandler);
+    document.addEventListener("mouseup", endHandler);
+    document.addEventListener("touchmove", moveHandler); // Add touch event
+    document.addEventListener("touchend", endHandler); // Add touch event
+
   };
 
   const handleRgbChange = (color, value) => {
-    // setRgbValues(prev => ({ ...prev, [color]: value }));
-    setRgbValues((prevValues) => {
-      const newRgbValues = { ...prevValues, [color]: value };
-      // Check if the RGB values have changed
-      if (
-        newRgbValues.r !== previousRgbValues.r ||
-        newRgbValues.g !== previousRgbValues.g ||
-        newRgbValues.b !== previousRgbValues.b
-      ) {
-        setIsCopied(false); // Reset copy status
-        setPreviousRgbValues(newRgbValues); // Update previous RGB values
-      }
-      return newRgbValues;
-    });
+    setRgbValues(prev => ({ ...prev, [color]: value }));
   };
 
   const selectMode = (mode) => {
@@ -399,22 +399,23 @@ const LightingCarousel = () => {
       ref={carouselRef}
       className="relative w-full h-screen overflow-hidden bg-black "
     >
+      <ToastContainer /> {/* This will display your toasts */}
       {/* Navigation Arrows - Moved to higher z-index */}
       <button
         onClick={prevSlide}
-        className="absolute left-8 top-1/2 -translate-y-1/2 z-50 bg-black/50 text-white p-6 rounded-full hover:bg-black/70 transition-all hover:scale-110"
+        className="absolute left-8 top-1/2 -translate-y-1/2 z-50 bg-black/50 text-white p-4 rounded-full hover:bg-black/70 transition-all  max-sm:p-2 max-sm:scale-75" // Adjusted padding and scale for mobile
         aria-label="Previous slide"
         style={{ backgroundColor: `${brandColors.secondary}80` }}
       >
-        <FaChevronLeft size={36} />
+        <FaChevronLeft size={28} /> {/* Adjusted icon size */}
       </button>
       <button
         onClick={nextSlide}
-        className="absolute right-8 top-1/2 -translate-y-1/2 z-50 bg-black/50 text-white p-6 rounded-full hover:bg-black/70 transition-all hover:scale-110"
+        className="absolute right-8 top-1/2 -translate-y-1/2 z-50 bg-black/50 text-white p-4 rounded-full hover:bg-black/70 transition-all  max-sm:p-2 max-sm:scale-75" // Adjusted padding and scale for mobile
         aria-label="Next slide"
         style={{ backgroundColor: `${brandColors.secondary}80` }}
       >
-        <FaChevronRight size={36} />
+        <FaChevronRight size={28} /> {/* Adjusted icon size */}
       </button>
 
       {/* Slide Indicators */}
@@ -423,9 +424,8 @@ const LightingCarousel = () => {
           <button
             key={slide.id}
             onClick={() => setActiveSlide(index)}
-            className={`w-4 h-4 rounded-full transition-all ${
-              index === activeSlide ? "bg-white scale-125" : "bg-white/50"
-            }`}
+            className={`w-4 h-4 rounded-full transition-all ${index === activeSlide ? "bg-white scale-125" : "bg-white/50"
+              }`}
             style={{
               backgroundColor:
                 index === activeSlide
@@ -442,11 +442,23 @@ const LightingCarousel = () => {
         {/* Warm & Cool Light Control Slide */}
         <div
           ref={(el) => (slidesRef.current[0] = el)}
-          className="absolute inset-0 flex flex-row items-stretch justify-between p-0"
+          className="absolute  inset-0 md:flex md:flex-row flex flex-col items-stretch justify-between p-0"
           style={{ backgroundColor: "#121212" }}
         >
+          <div className="text-center block md:hidden  pt-10">
+            <h2
+              ref={headingRef}
+              className="text-3xl font-bold text-white mb-4"
+              style={{ color: brandColors.primary }}
+            >
+              {slides[0].title}
+            </h2>
+            <p ref={descriptionRef} className="text-base text-white/80 mb-0">
+              {slides[0].description}
+            </p>
+          </div>
           {/* Image Section (2/3) */}
-          <div className="relative w-2/3 h-full">
+          <div className="relative w-full   max-sm:h-4/5 h-full md:w-2/3  ">
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="relative w-full h-full overflow-hidden">
                 {/* Warm Images */}
@@ -493,63 +505,11 @@ const LightingCarousel = () => {
               </div>
             </div>
           </div>
-          {/* Straight bar implementation for warm/cool control */}
-          {/* <svg width="100%" height="100%" viewBox="0 0 466 300" className="absolute top-0 left-0"> */}
-          {/* Straight horizontal bar */}
-          {/* <rect 
-                    x="50" 
-                    y="150" 
-                    width="366" 
-                    height="40" 
-                    fill="url(#warmCoolGradient)" 
-                    rx="20"
-                    ry="20"
-                  />
-                   */}
-          {/* Gradient definition */}
-          {/* <defs>
-                    <linearGradient id="warmCoolGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="#00BFFF" />
-                    <stop offset="100%" stopColor="#FFA500" /> 
-                    </linearGradient>
-                  </defs> */}
 
-          {/* Inner bar (background) */}
-          {/* <rect 
-                    x="55" 
-                    y="155" 
-                    width="356" 
-                    height="30" 
-                    fill="#121212" 
-                    rx="15"
-                    ry="15"
-                  /> */}
-
-          {/* Calculate position along the straight bar based on warmCoolValue */}
-          {/* {(() => {
-                    // Simple linear interpolation for straight bar
-                    const position = 50 + (warmCoolValue / 100) * 366;
-                    
-                    return (
-                      <circle 
-                        cx={position} 
-                        cy="170" 
-                        r="15" 
-                        fill="white" 
-                        filter="drop-shadow(0 0 5px rgba(255, 255, 255, 0.8))"
-                      />
-                    );
-                  })()} */}
-          {/* </svg> */}
-
-          {/* Progress Bar Container */}
-          {/* <div className="relative w-full h-10 bg-gray-800 rounded-full shadow-lg"> */}
-          {/* Progress Bar */}
-          {/* Progress Bar */}
 
           {/* Text and Controls Section (1/3) */}
-          <div className="relative w-1/3 h-full bg-black/80 flex flex-col items-center justify-center p-8">
-            <div className="text-center mb-12">
+          <div className="relative w-full md:w-1/3 md:h-full h-1/2  bg-black/80 flex flex-col-reverse  items-center justify-end ">
+            <div className="text-center mb-12 hidden md:block md:pt-40 ">
               <h2
                 ref={headingRef}
                 className="text-3xl font-bold text-white mb-4"
@@ -562,11 +522,12 @@ const LightingCarousel = () => {
               </p>
             </div>
 
-            <div className="w-full max-w-xs">
+            <div className="w-full max-w-xs  md:pt-60 ">
               <div
                 ref={dialRef}
-                className="relative w-full h-64 overflow-hidden cursor-pointer mx-auto "
+                className="relative w-full h-40 md:h-52 overflow-hidden cursor-pointer mx-auto "
                 onMouseDown={(e) => handleDialMouseDown(e, "warmCool")}
+                onTouchStart={(e) => handleDialMouseDown(e, "warmCool")}
               >
                 <div className="relative h-12 rounded-full cursor-pointer  transform -translate-y-1/2 -translate-x-1/2 top-1/2 left-1/2 ">
                   {/* Gradient background */}
@@ -589,8 +550,8 @@ const LightingCarousel = () => {
                         warmCoolValue < 30
                           ? "#00BFFF"
                           : warmCoolValue > 70
-                          ? "#FFA500"
-                          : "#FFFFFF",
+                            ? "#FFA500"
+                            : "#FFFFFF",
                       boxShadow: "0 0 10px rgba(0, 0, 0, 0.2)",
                       willChange: "left, background-color", // Add this line
                     }}
@@ -602,13 +563,13 @@ const LightingCarousel = () => {
                 {/* Text labels */}
                 <div
                   ref={coolLabelRef}
-                  className="absolute bottom-10 left-16 text-blue-500 font-bold"
+                  className="absolute md:bottom-8 left-16  bottom-8 text-blue-500 font-bold"
                 >
                   Cool
                 </div>
                 <div
                   ref={warmLabelRef}
-                  className="absolute bottom-10 right-16 text-amber-500 font-bold"
+                  className="absolute md:bottom-8  right-16 bottom-8 text-amber-500 font-bold"
                 >
                   Warm
                 </div>
@@ -627,7 +588,7 @@ const LightingCarousel = () => {
         {/* Brightness Control Slide */}
         <div
           ref={(el) => (slidesRef.current[2] = el)}
-          className="absolute inset-0 flex flex-row items-stretch justify-between p-0"
+          className="absolute inset-0 flex flex-row items-stretch justify-between p-0 "
           style={{ backgroundColor: "#121212" }}
         >
           {isInProgress ? (
@@ -774,9 +735,9 @@ const LightingCarousel = () => {
                           opacity:
                             rgbValues.r ===
                               parseInt(mode.color.slice(1, 3), 16) &&
-                            rgbValues.g ===
+                              rgbValues.g ===
                               parseInt(mode.color.slice(3, 5), 16) &&
-                            rgbValues.b === parseInt(mode.color.slice(5, 7), 16)
+                              rgbValues.b === parseInt(mode.color.slice(5, 7), 16)
                               ? 1
                               : 0,
                         }}
@@ -823,27 +784,37 @@ const LightingCarousel = () => {
         {/* RGB Neon Lights Control Slide */}
         <div
           ref={(el) => (slidesRef.current[1] = el)}
-          className="absolute inset-0 flex flex-row items-stretch justify-between p-0"
+          className="absolute  inset-0 md:flex md:flex-row flex flex-col items-stretch justify-between p-0"
           style={{ backgroundColor: "#121212" }}
         >
+          <div className="text-center   block md:hidden pt-8 px-1border border-white ">
+            <h2
+              className="text-3xl font-bold text-white mb-4"
+              style={{ color: brandColors.primary }}
+            >
+              {slides[3].title}
+            </h2>
+            <p className="text-base text-white/80 ">
+              {slides[3].description}
+            </p>
+          </div>
+
           {/* Image Section (2/3) */}
-          <div className="relative w-2/3 h-auto">
+          <div className="relative w-full h-full md:w-2/3 ">
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="relative w-full h-full overflow-hidden">
                 {/* Base Room Image */}
                 <div className="absolute inset-0 bg-cover bg-center" />
-                {offLight && (
-                  <>
+               
                     <div
                       className="absolute inset-0 bg-contain bg-no-repeat bg-center mix-blend-screen"
                       style={{
                         backgroundImage: "url('/images/RGB/off.jpg')",
-                        opacity: offLightOpacity,
+                        opacity: offLight ? offLightOpacity : 0,
                         // transition: "opacity 0.3s ease-in-out",
                       }}
                     />
-                  </>
-                )}
+              
                 {/* Red Light Layer */}
                 <div
                   className="absolute inset-0 bg-contain bg-no-repeat bg-center mix-blend-screen"
@@ -873,23 +844,23 @@ const LightingCarousel = () => {
                     // transition: "opacity 0.3s ease-in-out",
                   }}
                 />
-                {onLight && (
+            
                   <div
                     className="absolute inset-0 bg-contain bg-no-repeat bg-center mix-blend-screen"
                     style={{
                       backgroundImage: "url('/images/RGB/white.jpg')",
-                      opacity: whiteOpacity,
-                    // transition: "opacity 0.3s ease-in-out",
-                  }}
-                />
-                )}
+                      opacity: onLight ? whiteOpacity : 0,
+                      // transition: "opacity 0.3s ease-in-out",
+                    }}
+                  />
+              
               </div>
             </div>
           </div>
 
           {/* Text and Controls Section (1/3) */}
-          <div className="relative w-1/3 h-full bg-black/80 flex flex-col items-center justify-center p-8 ">
-            <div className="text-center mb-12  ">
+          <div className="relative w-full md:w-1/3 h-full bg-black/80 flex flex-col-reverse  items-center justify-center p-8">
+            <div className="text-center mb-12 mt-5   hidden sm:block ">
               <h2
                 className="text-3xl font-bold text-white mb-4"
                 style={{ color: brandColors.primary }}
@@ -901,9 +872,9 @@ const LightingCarousel = () => {
               </p>
             </div>
 
-            <div className="w-full max-w-xs flex flex-col gap-6 ">
+            <div className="w-full max-w-xs flex flex-col md:gap-6  gap-2 ">
               <div>
-                <label className="text-red-500 mb-2 block font-bold text-sm">
+                <label className="text-red-500  md:mb-2 block font-bold text-sm">
                   Red: {rgbValues.r}
                 </label>
                 <input
@@ -923,7 +894,7 @@ const LightingCarousel = () => {
               </div>
 
               <div>
-                <label className="text-green-500 mb-2 block font-bold text-sm">
+                <label className="text-green-500  md:mb-2 block font-bold text-sm">
                   Green: {rgbValues.g}
                 </label>
                 <input
@@ -943,7 +914,7 @@ const LightingCarousel = () => {
               </div>
 
               <div>
-                <label className="text-blue-500 mb-2 block font-bold text-sm">
+                <label className="text-blue-500   md:mb-2 block font-bold text-sm">
                   Blue: {rgbValues.b}
                 </label>
                 <input
@@ -976,9 +947,9 @@ const LightingCarousel = () => {
                 </div>
                 <button
                   onClick={() => copyToClipboard(rgbValues)}
-                  className="ml-2 text-white absolute top-0 right-0"
+                  className="ml-2 text-white absolute top-0 right-0 p-2 text-4xl"
                 >
-                  {isCopied ? "✔️" : "📋"}
+                  📋
                 </button>
               </div>
 
@@ -987,20 +958,10 @@ const LightingCarousel = () => {
                 {solidColors.map((color) => (
                   <button
                     key={color.name}
-                    className={`rounded-full shadow-lg hover:scale-105 hover:shadow-lg hover:shadow-[#54bb74]/30 hover:bg-[#292929]/10 focus:outline-none focus:ring-2 focus:ring-[#54bb74] focus:ring-opacity-50 ${
-                      selectedColor === color.name ? "shadow-2xl" : ""
-                    }`}
+                    className={`rounded-full shadow-lg hover:scale-105 hover:shadow-lg hover:shadow-[#54bb74]/30 hover:bg-[#292929]/10 focus:outline-none focus:ring-2 focus:ring-[#54bb74] focus:ring-opacity-50 ${selectedColor === color.name ? "shadow-2xl" : ""
+                      }`}
                     onClick={() => {
                       setRgbValues(color.rgb);
-                      setSelectedColor(color.name); // Set selected color
-                      if (
-                        color.rgb.r !== previousRgbValues.r ||
-                        color.rgb.g !== previousRgbValues.g ||
-                        color.rgb.b !== previousRgbValues.b
-                      ) {
-                        setIsCopied(false); // Reset copy status if RGB values change
-                        setPreviousRgbValues(color.rgb); // Update previous RGB values
-                      }
                     }}
                     style={{
                       backgroundColor: `rgb(${color.rgb.r}, ${color.rgb.g}, ${color.rgb.b})`,
@@ -1039,3 +1000,56 @@ const LightingCarousel = () => {
 };
 
 export default LightingCarousel;
+{/* Straight bar implementation for warm/cool control */ }
+{/* <svg width="100%" height="100%" viewBox="0 0 466 300" className="absolute top-0 left-0"> */ }
+{/* Straight horizontal bar */ }
+{/* <rect 
+                    x="50" 
+                    y="150" 
+                    width="366" 
+                    height="40" 
+                    fill="url(#warmCoolGradient)" 
+                    rx="20"
+                    ry="20"
+                  />
+                   */}
+{/* Gradient definition */ }
+{/* <defs>
+                    <linearGradient id="warmCoolGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#00BFFF" />
+                    <stop offset="100%" stopColor="#FFA500" /> 
+                    </linearGradient>
+                  </defs> */}
+
+{/* Inner bar (background) */ }
+{/* <rect 
+                    x="55" 
+                    y="155" 
+                    width="356" 
+                    height="30" 
+                    fill="#121212" 
+                    rx="15"
+                    ry="15"
+                  /> */}
+
+{/* Calculate position along the straight bar based on warmCoolValue */ }
+{/* {(() => {
+                    // Simple linear interpolation for straight bar
+                    const position = 50 + (warmCoolValue / 100) * 366;
+                    
+                    return (
+                      <circle 
+                        cx={position} 
+                        cy="170" 
+                        r="15" 
+                        fill="white" 
+                        filter="drop-shadow(0 0 5px rgba(255, 255, 255, 0.8))"
+                      />
+                    );
+                  })()} */}
+{/* </svg> */ }
+
+{/* Progress Bar Container */ }
+{/* <div className="relative w-full h-10 bg-gray-800 rounded-full shadow-lg"> */ }
+{/* Progress Bar */ }
+{/* Progress Bar */ }

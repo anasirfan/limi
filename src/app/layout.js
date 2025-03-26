@@ -1,6 +1,9 @@
 import { Poppins } from 'next/font/google';
 import "./globals.css";
 import SmoothScroll from './components/SmoothScroll';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -26,7 +29,9 @@ export default function RootLayout({ children }) {
     <html lang="en" suppressHydrationWarning>
       <head />
       <body className={poppins.className} suppressHydrationWarning>
+      
         <SmoothScroll>
+        
           {children}
         </SmoothScroll>
       </body>
