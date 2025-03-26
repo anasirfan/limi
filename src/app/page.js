@@ -45,7 +45,7 @@ export default function Home() {
       <LightingCarousel />
       <MotiveSection />
       <InteractiveStory />
-      {isMobile && <CubeAnimation />}
+      {!isMobile && <CubeAnimation />}
       <ModelSection />
       <LightingScene />
       {!isMobile && <MouseTrail />}
