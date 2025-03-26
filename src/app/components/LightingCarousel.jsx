@@ -20,6 +20,19 @@ const LightingCarousel = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [selectedColor, setSelectedColor] = useState(null);
   const [isInProgress, setIsInProgress] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    // Function to check screen width
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768); // Adjust for your breakpoint
+    };
+
+    handleResize(); // Initial check
+    window.addEventListener("resize", handleResize); // Listen for resizes
+
+    return () => window.removeEventListener("resize", handleResize); // Cleanup
+  }, []); 
 
   const carouselRef = useRef(null);
   const slidesRef = useRef([]);
@@ -464,7 +477,7 @@ const LightingCarousel = () => {
                 {/* Warm Images */}
                 <div className="absolute inset-0 flex items-center justify-center">
                   <Image
-                    src="/images/carouselImages/warm_pure.jpg"
+                    src={isMobile ? "/images/carouselImages/warm_pure_mob.jpg" : "/images/carouselImages/warm_pure.jpg"}
                     alt="Warm Pure"
                     layout="fill" // Makes the image cover the div
                     objectFit="contain" // Ensures the whole image is visible
@@ -477,7 +490,7 @@ const LightingCarousel = () => {
                 </div>
                 <div className="absolute inset-0 flex items-center justify-center">
                   <Image
-                    src="/images/carouselImages/warm_mix.jpg"
+                    src={isMobile ? "/images/carouselImages/warm_mix_mob.jpg" : "/images/carouselImages/warm_mix.jpg"}
                     alt="Warm Mix"
                     layout="fill" // Makes the image cover the div
                     objectFit="contain" // Ensures the whole image is visible
@@ -495,7 +508,7 @@ const LightingCarousel = () => {
 
                 <div className="absolute inset-0 flex items-center justify-center">
                   <Image
-                    src="/images/carouselImages/cool_mix.jpg"
+                    src={isMobile ? "/images/carouselImages/cool_mix_mob.jpg" : "/images/carouselImages/cool_mix.jpg"}
                     alt="Cool Mix"
                     layout="fill" // Makes the image cover the div
                     objectFit="contain" // Ensures the whole image is visible
@@ -510,7 +523,7 @@ const LightingCarousel = () => {
                 </div>
                 <div className="absolute inset-0 flex items-center justify-center">
                   <Image
-                    src="/images/carouselImages/cool_pure.jpg"
+                    src={isMobile ? "/images/carouselImages/cool_pure_mob.jpg" : "/images/carouselImages/cool_pure.jpg"}
                     alt="Cool Pure"
                     layout="fill" // Makes the image cover the div
                     objectFit="contain" // Ensures the whole image is visible
@@ -542,11 +555,11 @@ const LightingCarousel = () => {
             <div className="w-full max-w-xs  md:pt-60 ">
               <div
                 ref={dialRef}
-                className="relative w-full h-40 md:h-52 overflow-hidden cursor-pointer mx-auto "
+                className="relative w-full max-sm:w-[60%] h-40 md:h-52 overflow-hidden cursor-pointer mx-auto "
                 onMouseDown={(e) => handleDialMouseDown(e, "warmCool")}
                 onTouchStart={(e) => handleDialMouseDown(e, "warmCool")}
               >
-                <div className="relative h-12 rounded-full cursor-pointer  transform -translate-y-1/2 -translate-x-1/2 top-1/2 left-1/2 ">
+                <div className="relative h-12 max-sm:h-7 rounded-full cursor-pointer  transform -translate-y-1/2 -translate-x-1/2 top-1/2 left-1/2 ">
                   {/* Gradient background */}
                   <div
                     ref={gradientRef}
@@ -560,7 +573,7 @@ const LightingCarousel = () => {
 
                   {/* Circle indicator */}
                   <div
-                    className="absolute top-1/2 transform -translate-y-1/2 -translate-x-1/2 w-8 h-8 rounded-full border-4 border-white dark:border-gray-800 shadow-lg transition-all duration-100 ease-out"
+                    className="absolute top-1/2 transform -translate-y-1/2 -translate-x-1/2 w-8 h-8 max-sm:w-6 max-sm:h-6 rounded-full border-4 border-white dark:border-gray-800 shadow-lg transition-all duration-100 ease-out"
                     style={{
                       left: `${warmCoolValue}%`,
                       backgroundColor:
@@ -580,13 +593,13 @@ const LightingCarousel = () => {
                 {/* Text labels */}
                 <div
                   ref={coolLabelRef}
-                  className="absolute md:bottom-8 left-16  bottom-8 text-blue-500 font-bold"
+                  className="absolute max-sm:bottom-10 left-16  bottom-8 max-sm:left-0 max-sm:text-sm text-blue-500 font-bold"
                 >
                   Cool
                 </div>
                 <div
                   ref={warmLabelRef}
-                  className="absolute md:bottom-8  right-16 bottom-8 text-amber-500 font-bold"
+                  className="absolute max-sm:bottom-10  right-16 bottom-8 max-sm:right-0 max-sm:text-sm text-amber-500 font-bold"
                 >
                   Warm
                 </div>
@@ -824,7 +837,7 @@ const LightingCarousel = () => {
                 {/* Off Light Layer */}
                 <div className="absolute inset-0 mix-blend-screen">
                   <Image
-                    src="/images/RGB/off.jpg"
+                    src={isMobile ? "/images/RGB/off_mob.jpg" : "/images/RGB/off.jpg"}
                     alt="Off Light"
                     layout="fill"
                     objectFit="contain"
@@ -837,7 +850,7 @@ const LightingCarousel = () => {
                 {/* Red Light Layer */}
                 <div className="absolute inset-0 mix-blend-screen">
                   <Image
-                    src="/images/RGB/red.jpg"
+                    src={isMobile ? "/images/RGB/red_mob.jpg" : "/images/RGB/red.jpg"}
                     alt="Red Light"
                     layout="fill"
                     objectFit="contain"
@@ -852,7 +865,7 @@ const LightingCarousel = () => {
                 {/* Green Light Layer */}
                 <div className="absolute inset-0 mix-blend-screen">
                   <Image
-                    src="/images/RGB/green.jpg"
+                    src={isMobile ? "/images/RGB/green_mob.jpg" : "/images/RGB/green.jpg"}
                     alt="Green Light"
                     layout="fill"
                     objectFit="contain"
@@ -867,7 +880,7 @@ const LightingCarousel = () => {
                 {/* Blue Light Layer */}
                 <div className="absolute inset-0 mix-blend-screen">
                   <Image
-                    src="/images/RGB/blue.jpg"
+                    src={isMobile ? "/images/RGB/blue_mob.jpg" : "/images/RGB/blue.jpg"}
                     alt="Blue Light"
                     layout="fill"
                     objectFit="contain"
@@ -882,7 +895,7 @@ const LightingCarousel = () => {
                 {/* White Light Layer */}
                 <div className="absolute inset-0 mix-blend-screen">
                   <Image
-                    src="/images/RGB/white.jpg"
+                    src={isMobile ? "/images/RGB/white_mob.jpg" : "/images/RGB/white.jpg"}
                     alt="White Light"
                     layout="fill"
                     objectFit="contain"
