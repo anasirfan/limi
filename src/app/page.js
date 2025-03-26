@@ -7,7 +7,7 @@ import HeroSection from './components/HeroSection';
 import LightingCarousel from './components/LightingCarousel';
 // import LightingScene from './components/LightingScene';
 // import ModelSection from './components/ModelSection';
-// import MotiveSection from './components/MotiveSection';
+import MotiveSection from './components/MotiveSection';
 // import MouseTrail from './components/MouseTrail';
 import ScrollToTop from './components/ScrollToTop';
 import SplashScreen from './components/SplashScreen';
@@ -43,7 +43,7 @@ export default function Home() {
       <Header />
       <HeroSection />
       <LightingCarousel />
-      {/* <MotiveSection /> */}
+      <MotiveSection />
       {/* <InteractiveStory /> */}
       {/* <CubeAnimation /> */}
       {/* <ModelSection /> */}
