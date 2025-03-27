@@ -360,6 +360,24 @@ const AnalyticsInsights = () => {
         </div>
       )}
 
+      {/* Add keyframe animations for pulse effects */}
+      {/* <style jsx global>{`
+        @keyframes pulse-slow {
+          0%, 100% {
+            opacity: 0.5;
+            transform: scale(1);
+          }
+          50% {
+            opacity: 1;
+            transform: scale(1.1);
+          }
+        }
+        
+        .animate-pulse-slow {
+          animation: pulse-slow 1.5s infinite;
+        }
+      `}</style> */}
+
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="text-center mb-16" ref={headingRef}>
@@ -413,10 +431,18 @@ const AnalyticsInsights = () => {
           <h3 className="text-2xl font-bold mb-8 text-center">
             <span style={{ color: brandColors.primary }}>Our Latest Innovations & Achievements</span>
           </h3>
+          {/* Mobile swipe indicator */}
+          <div className="md:hidden flex justify-center items-center mb-4">
+            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 text-sm animate-pulse">
+              <FaArrowLeft className="text-white/70 animate-pulse-slow" />
+              <span className="text-white/90">Swipe</span>
+              <FaArrowRight className="text-white/70 animate-pulse-slow" />
+            </div>
+          </div>
           <div className="relative">
             <div 
               ref={carouselRef}
-              className="flex overflow-x-auto pb-6 gap-6 cursor-grab active:cursor-grabbing"
+              className="flex overflow-x-auto pb-6 gap-6 cursor-grab active:cursor-grabbing select-none"
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
               onMouseMove={handleMouseMove}
               onMouseEnter={handleMouseEnter}
@@ -429,11 +455,19 @@ const AnalyticsInsights = () => {
                 div::-webkit-scrollbar {
                   display: none;
                 }
+                
+                /* Prevent text selection during drag */
+                div {
+                  -webkit-user-select: none;
+                  -moz-user-select: none;
+                  -ms-user-select: none;
+                  user-select: none;
+                }
               `}</style>
               {innovations.map((item, index) => (
                 <div 
                   key={index} 
-                  className="innovation-card flex-shrink-0 w-full md:w-80 bg-[#292929]/50 rounded-lg overflow-hidden transition-transform hover:transform hover:scale-105"
+                  className="innovation-card flex-shrink-0 w-full md:w-80 bg-[#292929]/50 rounded-lg overflow-hidden transition-transform hover:transform hover:scale-105 select-none"
                 >
                   <div className="relative h-48">
                     <Image 

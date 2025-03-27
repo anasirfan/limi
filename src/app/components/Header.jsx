@@ -126,9 +126,9 @@ const Header = () => {
                 key={section.id}
                 ref={menuItemRef}
                 onClick={() => handleNavClick(section.id)}
-                className="navigation text-2xl  md:text-3xl font-['Amenti'] text-softBeige hover:text-emerald transition-colors duration-300 relative group"
+                className="navigation text-2xl  md:text-3xl font-['Amenti']  hover:text-emerald transition-colors duration-300 relative group"
               >
-                <span className="relative group inline-block pb-1">
+                <span className="relative group inline-block pb-1 !text-white">
                   {section.label}
                   <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-emerald-600 to-white group-hover:w-full transition-all duration-1000 ease-in-out"></span>
                 </span>
