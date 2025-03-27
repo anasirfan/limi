@@ -49,7 +49,7 @@ const AnalyticsInsights = () => {
     },
     {
       title: "Projected Demand",
-      value: 250,
+      value: 350,
       suffix: "+",
       description: "Year when modular smart lighting is expected to dominate residential & commercial spaces",
       icon: <FaLightbulb className="text-3xl" />,
@@ -162,12 +162,13 @@ const AnalyticsInsights = () => {
         const counterElement = counterRefs.current[index];
         if (!counterElement) return;
 
-        let startValue = 0;
+        // Start from a higher value for large numbers (like 250)
+        let startValue = stat.value > 100 ? Math.floor(stat.value * 0.7) : 0;
         const endValue = stat.value;
-        const duration = 2.5;
+        const duration = stat.value > 100 ? 1.5 : 2.5; // Faster duration for larger values
         
         // Faster counting for larger numbers
-        const stepTime = duration * 1000 / (endValue < 100 ? endValue : 100);
+        const stepTime = duration * 1000 / (endValue - startValue);
         
         let counter = setInterval(() => {
           startValue += 1;
