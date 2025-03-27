@@ -11,6 +11,7 @@ import MotiveSection from './components/MotiveSection';
 import MouseTrail from './components/MouseTrail';
 import ScrollToTop from './components/ScrollToTop';
 import SplashScreen from './components/SplashScreen';
+import AnalyticsInsights from './components/AnalyticsInsights';
 import { useEffect, useState } from 'react';
 
 /**
@@ -42,10 +43,11 @@ export default function Home() {
       <SplashScreen />
       <Header />
       <HeroSection />
-      <LightingCarousel />
       <MotiveSection />
       <InteractiveStory />
+      <AnalyticsInsights />
       {/* {!isMobile && <CubeAnimation />} */}
+      <LightingCarousel />
       <ModelSection />
       <LightingScene />
       {!isMobile && <MouseTrail />}

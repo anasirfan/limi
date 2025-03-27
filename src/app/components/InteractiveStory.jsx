@@ -275,9 +275,9 @@ const InteractiveStory = () => {
           {
             opacity: 1,
             duration: 0.5,
-            stagger: 0.8,
+            stagger: 0.2,
           },
-          "showDescriptions+=0.5"
+          "showDescriptions+=0.3"
         );
     });
 

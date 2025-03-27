@@ -57,8 +57,10 @@ const Header = () => {
     { id: 'motive', label: 'Our Vision' },
     { id: 'interactive', label: 'Our Journey' },
     { id: 'cube', label: 'Experience LIMI' },
+    { id: 'analytics-insights', label: 'Analytics Insights' },
+    { id: 'lighting-carousel', label: 'Explore Smart Lighting' },
     { id: 'model', label: 'Transformation' },
-    { id: 'lighting', label: 'Configurations' }
+    { id: 'lighting', label: 'Configurations' },
   ];
 
   const handleNavClick = (id) => {

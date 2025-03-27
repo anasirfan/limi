@@ -41,16 +41,18 @@ function HeroSection() {
                 technology and transform your space into something
                 extraordinary.
               </p>
-
-              <button className="cta-button px-8 py-4 bg-[#292929] text-white rounded-full text-lg font-bold transform transition-all hover:scale-105 hover:shadow-lg hover:shadow-[#54bb74]/30 hover:bg-[#292929]/10 focus:outline-none focus:ring-2 focus:ring-[#54bb74] focus:ring-opacity-50">
-                Explore Smart Lighting
-              </button>
+              <a 
+  href="#lighting-carousel"
+  className="cta-button px-8 py-4 bg-[#292929] text-white rounded-full text-lg font-bold transform transition-all hover:scale-105 hover:shadow-lg hover:shadow-[#54bb74]/30 hover:bg-[#292929]/10 focus:outline-none focus:ring-2 focus:ring-[#54bb74] focus:ring-opacity-50 inline-block"
+>
+  Explore Smart Lighting
+</a>
             </div>
           </div>
         </div>
 
         {/* Logo at Bottom */}
-        <div className="hero-logo mt-20 w-full max-w-5xl mx-auto px-4 relative z-20">
+        <div className="hero-logo mt-20 w-full  max-w-5xl mx-auto px-4 relative z-20">
           <Image
             src="/images/svgLogos/__Primary_Logo_Black.svg"
             alt="Limi Logo"

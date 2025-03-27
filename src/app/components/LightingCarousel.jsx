@@ -62,7 +62,6 @@ const LightingCarousel = () => {
   ];
 
   useEffect(() => {
-   
     const minRGBThreshold = 20;
     const maxRGBThreshold = 240;
 
@@ -390,6 +389,7 @@ const LightingCarousel = () => {
 
   return (
     <div
+    id="lighting-carousel"
       ref={carouselRef}
       className="relative w-full h-screen overflow-hidden bg-black "
     >
@@ -616,7 +616,6 @@ const LightingCarousel = () => {
           ref={(el) => (slidesRef.current[2] = el)}
           className="absolute inset-0 flex flex-row items-stretch justify-between p-0 max-sm:flex-col max-sm:items-center "
           style={{ backgroundColor: "#121212" }}
-
         >
           <div className="text-center block md:hidden  pt-10">
             <h2
@@ -640,7 +639,11 @@ const LightingCarousel = () => {
                   style={{ opacity: brightness / 100 }}
                 >
                   <Image
-                    src={isMobile ? "/images/brightness/light_on_mob.jpg" : "/images/brightness/light_on.jpg"}
+                    src={
+                      isMobile
+                        ? "/images/brightness/light_on_mob.jpg"
+                        : "/images/brightness/light_on.jpg"
+                    }
                     alt="Light On"
                     layout="fill" // Makes the image cover the div
                     objectFit="contain" // Ensures the whole image is visible
@@ -655,13 +658,16 @@ const LightingCarousel = () => {
                   style={{ opacity: 1 - brightness / 100 }}
                 >
                   <Image
-                    src={isMobile ? "/images/brightness/light_off_mob.jpg" : "/images/brightness/light_off.jpg"}
+                    src={
+                      isMobile
+                        ? "/images/brightness/light_off_mob.jpg"
+                        : "/images/brightness/light_off.jpg"
+                    }
                     alt="Light Off"
                     layout="fill" // Makes the image cover the div
                     objectFit="contain" // Ensures the whole image is visible
                     objectPosition="center"
                     priority
-                    
                   />
                 </div>
               </div>
@@ -945,6 +951,18 @@ const LightingCarousel = () => {
           {/* Text and Controls Section (1/3) */}
           <div className="relative w-full md:w-1/3 h-full bg-black/80 flex flex-col-reverse  items-center justify-center p-8 max-sm:p-2">
             <div className="w-full max-w-xs flex flex-col md:gap-6 max-sm:gap-0 ">
+              <div className="text-center hidden md:block mb-12">
+                <h2
+                  className="text-3xl font-bold text-white mb-4"
+                  style={{ color: brandColors.primary }}
+                >
+                  {slides[3].title}
+                </h2>
+                <p className="text-base text-white/80 mb-8">
+                  {slides[3].description}
+                </p>
+              </div>
+
               <div>
                 <label className="text-red-500  md:mb-2 block font-bold text-sm max-sm:text-xs">
                   Red: {rgbValues.r}
@@ -1072,86 +1090,3 @@ const LightingCarousel = () => {
 };
 
 export default LightingCarousel;
-{
-  /* Straight bar implementation for warm/cool control */
-}
-{
-  /* <svg width="100%" height="100%" viewBox="0 0 466 300" className="absolute top-0 left-0"> */
-}
-{
-  /* Straight horizontal bar */
-}
-{
-  /* <rect 
-                    x="50" 
-                    y="150" 
-                    width="366" 
-                    height="40" 
-                    fill="url(#warmCoolGradient)" 
-                    rx="20"
-                    ry="20"
-                  />
-                   */
-}
-{
-  /* Gradient definition */
-}
-{
-  /* <defs>
-                    <linearGradient id="warmCoolGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="#00BFFF" />
-                    <stop offset="100%" stopColor="#FFA500" /> 
-                    </linearGradient>
-                  </defs> */
-}
-
-{
-  /* Inner bar (background) */
-}
-{
-  /* <rect 
-                    x="55" 
-                    y="155" 
-                    width="356" 
-                    height="30" 
-                    fill="#121212" 
-                    rx="15"
-                    ry="15"
-                  /> */
-}
-
-{
-  /* Calculate position along the straight bar based on warmCoolValue */
-}
-{
-  /* {(() => {
-                    // Simple linear interpolation for straight bar
-                    const position = 50 + (warmCoolValue / 100) * 366;
-                    
-                    return (
-                      <circle 
-                        cx={position} 
-                        cy="170" 
-                        r="15" 
-                        fill="white" 
-                        filter="drop-shadow(0 0 5px rgba(255, 255, 255, 0.8))"
-                      />
-                    );
-                  })()} */
-}
-{
-  /* </svg> */
-}
-
-{
-  /* Progress Bar Container */
-}
-{
-  /* <div className="relative w-full h-10 bg-gray-800 rounded-full shadow-lg"> */
-}
-{
-  /* Progress Bar */
-}
-{
-  /* Progress Bar */
-}
