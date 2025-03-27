@@ -124,7 +124,7 @@ const ImageOpacity = () => {
           start: "top center",
           end: `${6 * 400}vh top`, // Shorter scroll distance on mobile
           scrub: isMobile ? 0.5 : 1, // Faster scrub on mobile
-          markers: true,
+          markers: false,
           onEnter: () => {
             // Optimize by only showing images when in view
             if (containerRef.current) {
