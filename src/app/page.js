@@ -1,5 +1,5 @@
 'use client';
-// import CubeAnimation from './components/CubeAnimation';
+import dynamic from 'next/dynamic';
 import Footer from './components/Footer';
 import Header from './components/Header';
 import HeroSection from './components/HeroSection';
@@ -12,7 +12,13 @@ import MouseTrail from './components/MouseTrail';
 import ScrollToTop from './components/ScrollToTop';
 import SplashScreen from './components/SplashScreen';
 import AnalyticsInsights from './components/AnalyticsInsights';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
+
+// Dynamically import CubeAnimation with SSR disabled
+const CubeAnimation = dynamic(() => import('./components/CubeAnimation'), { 
+  ssr: false,
+  loading: () => <div className="h-screen bg-[#292929]"></div>
+});
 
 /**
  * The main entry point of the application, which renders the main sections:
@@ -45,8 +51,8 @@ export default function Home() {
       <HeroSection />
       <MotiveSection />
       <InteractiveStory />
+      {/* {!isMobile && <Suspense fallback={<div className="h-screen bg-[#292929]">Loading ...</div>}><CubeAnimation /></Suspense>} */}
       <AnalyticsInsights />
-      {/* {!isMobile && <CubeAnimation />} */}
       <LightingCarousel />
       <ModelSection />
       <LightingScene />

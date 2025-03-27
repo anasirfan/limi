@@ -40,55 +40,55 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Quick Links */}
+          {/* Navigation Links */}
           <div className="xl:mx-16 ">
-            <h3 className="text-lg font-semibold font-[Amenti] mb-4">Quick Links</h3>
+            <h3 className="text-lg font-semibold font-[Amenti] mb-4">Navigation</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="#products" className="text-gray-300 hover:text-emerald-500 transition-colors">
-                  Products
+                <Link href="#hero" className="text-gray-300 hover:text-emerald-500 transition-colors">
+                  Home
                 </Link>
               </li>
               <li>
-                <Link href="#features" className="text-gray-300 hover:text-emerald-500 transition-colors">
-                  Features
+                <Link href="#motive" className="text-gray-300 hover:text-emerald-500 transition-colors">
+                  Our Vision
                 </Link>
               </li>
               <li>
-                <Link href="#about" className="text-gray-300 hover:text-emerald-500 transition-colors">
-                  About Us
+                <Link href="#interactive" className="text-gray-300 hover:text-emerald-500 transition-colors">
+                  Our Journey
                 </Link>
               </li>
               <li>
-                <Link href="#contact" className="text-gray-300 hover:text-emerald-500 transition-colors">
-                  Contact
+                <Link href="#cube" className="text-gray-300 hover:text-emerald-500 transition-colors">
+                  Experience LIMI
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Products */}
+          {/* Products & Features */}
           <div className="xl:mx-16">
-            <h3 className="text-lg font-semibold font-[Amenti] mb-4">Products</h3>
+            <h3 className="text-lg font-semibold font-[Amenti] mb-4">Explore</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="#" className="text-gray-300 hover:text-emerald-500 transition-colors">
-                  Pendant Lights
+                <Link href="#analytics-insights" className="text-gray-300 hover:text-emerald-500 transition-colors">
+                  Analytics Insights
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-gray-300 hover:text-emerald-500 transition-colors">
-                  Wall Sconces
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="text-gray-300 hover:text-emerald-500 transition-colors">
-                  Floor Lamps
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="text-gray-300 hover:text-emerald-500 transition-colors">
+                <Link href="#lighting-carousel" className="text-gray-300 hover:text-emerald-500 transition-colors">
                   Smart Lighting
+                </Link>
+              </li>
+              <li>
+                <Link href="#model" className="text-gray-300 hover:text-emerald-500 transition-colors">
+                  Transformation
+                </Link>
+              </li>
+              <li>
+                <Link href="#lighting" className="text-gray-300 hover:text-emerald-500 transition-colors">
+                  Configurations
                 </Link>
               </li>
             </ul>
