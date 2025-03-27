@@ -61,6 +61,7 @@ const Header = () => {
     { id: 'lighting-carousel', label: 'Explore Smart Lighting' },
     { id: 'model', label: 'Transformation' },
     { id: 'lighting', label: 'Configurations' },
+    { id: 'distributor-hub', label: 'Become a Distributor' },
   ];
 
   const handleNavClick = (id) => {

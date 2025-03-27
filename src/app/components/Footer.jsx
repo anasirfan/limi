@@ -91,6 +91,11 @@ const Footer = () => {
                   Configurations
                 </Link>
               </li>
+              <li>
+                <Link href="#distributor-hub" className="text-gray-300 hover:text-emerald-500 transition-colors">
+                  Become a Distributor
+                </Link>
+              </li>
             </ul>
           </div>
 

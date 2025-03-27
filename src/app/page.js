@@ -12,6 +12,7 @@ import MouseTrail from './components/MouseTrail';
 import ScrollToTop from './components/ScrollToTop';
 import SplashScreen from './components/SplashScreen';
 import AnalyticsInsights from './components/AnalyticsInsights';
+import DistributorHub from './components/DistributorHub';
 import { useEffect, useState, Suspense } from 'react';
 
 // Dynamically import CubeAnimation with SSR disabled
@@ -51,11 +52,12 @@ export default function Home() {
       <HeroSection />
       <MotiveSection />
       <InteractiveStory />
-      {/* {!isMobile && <Suspense fallback={<div className="h-screen bg-[#292929]">Loading ...</div>}><CubeAnimation /></Suspense>} */}
       <AnalyticsInsights />
+      {/* {!isMobile && <Suspense fallback={<div className="h-screen bg-[#292929]"></div>}><CubeAnimation /></Suspense>} */}
       <LightingCarousel />
       <ModelSection />
       <LightingScene />
+      <DistributorHub />
       {!isMobile && <MouseTrail />}
       <Footer />
       <ScrollToTop />
