@@ -50,7 +50,7 @@ export default function Home() {
       <SplashScreen />
       <Header />
       <HeroSection />
-      <MotiveSection />
+      {/* <MotiveSection /> */}
       <InteractiveStory />
       <AnalyticsInsights />
       {/* {!isMobile && <Suspense fallback={<div className="h-screen bg-[#292929]"></div>}><CubeAnimation /></Suspense>} */}
