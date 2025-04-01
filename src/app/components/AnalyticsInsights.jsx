@@ -524,7 +524,7 @@ const AnalyticsInsights = ({ userType }) => {
                 <div className="p-3 rounded-full mr-4" style={{ backgroundColor: brandColors.primary + '30' }}>
                   {stat.icon}
                 </div>
-                <h4 className="text-xl font-semibold">{stat.title}</h4>
+                <h4 className="text-xl text-white font-semibold">{stat.title}</h4>
               </div>
               <div className="mb-4">
                 <span 
