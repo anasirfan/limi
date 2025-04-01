@@ -169,8 +169,8 @@ const LightingScene = ({ userType }) => {
         }}
       />
 
-      <div className="absolute top-4 sm:top-6 md:top-10 left-4 sm:left-6 md:left-10 z-50">
-        <div className="flex flex-col items-start">
+      <div className="absolute top-4  md:top-10 left-4 sm:left-6 md:left-10 z-50 max-sm:bottom-32 max-sm:top-auto">
+        <div className="flex flex-col items-start max-sm:flex-row max-sm:space-x-4 max-sm:justify-center">
           <h3 className="text-white text-xs sm:text-sm font-semibold tracking-widest uppercase mb-1 sm:mb-2">
             Layers of Light
             <div className="w-12 sm:w-16 h-0.5 bg-yellow-400 mt-1"></div>
