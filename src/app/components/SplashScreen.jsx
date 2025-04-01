@@ -2,7 +2,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { gsap } from 'gsap';
 
-const SplashScreen = () => {
+const SplashScreen = ({ onComplete }) => {
   const [isVisible, setIsVisible] = useState(true);
   const [svgContent, setSvgContent] = useState(null);
   const svgContainerRef = useRef(null);
@@ -37,6 +37,11 @@ const SplashScreen = () => {
             
             // Enable scrolling on the body
             document.body.style.overflow = 'auto';
+            
+            // Call the onComplete callback if provided
+            if (typeof onComplete === 'function') {
+              onComplete();
+            }
           }
         });
       }
@@ -84,7 +89,7 @@ const SplashScreen = () => {
     return () => {
       document.body.style.overflow = 'auto';
     };
-  }, [svgContent]);
+  }, [svgContent, onComplete]);
 
   // If not visible, don't render anything
   if (!isVisible) return null;

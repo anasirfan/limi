@@ -16,6 +16,7 @@ const defaultTriangleConfig = {
 const InteractiveStory = () => {
   const [triangleConfig, setTriangleConfig] = useState(defaultTriangleConfig);
   const [isMobile, setIsMobile] = useState(false);
+  const [activePopup, setActivePopup] = useState(null);
   const containerRef = useRef(null);
   const headingRef = useRef(null);
   const hubRef = useRef(null);
@@ -302,7 +303,7 @@ const InteractiveStory = () => {
       id="interactive"
       ref={containerRef}
       className={`relative ${
-        isMobile ? "h-auto py-16" : "h-screen"
+        isMobile ? "h-auto py-16 " : "h-screen"
       } w-full overflow-hidden bg-[#292929]`}
     >
       {/* Heading */}
@@ -317,10 +318,96 @@ const InteractiveStory = () => {
         How Our <br /> EcoSystem Works
       </h1>
       <h1
-        className={`font-[Amenti] text-center text-3xl -mt-16 mb-12 font-bold text-emerald-400 px-4 z-10 hidden max-sm:block `}
+        className={`font-[Amenti] text-center text-3xl mb-12 font-bold text-emerald-400 px-4 z-10 hidden max-sm:block`}
       >
         How Our <br /> EcoSystem Works
       </h1>
+
+      {/* Mobile Interactive Elements - Only visible on small screens */}
+      {isMobile && (
+        <div className="flex flex-col items-center justify-center mb-12">
+          <div className="relative w-full max-w-xs mx-auto mb-8">
+            <div className="absolute  inset-0 bg-emerald-400/10 rounded-full animate-pulse-slow"></div>
+            <svg className="w-full mt-16 h-auto" viewBox="0 0 300 300">
+              <line
+                x1="50"
+                y1="50"
+                x2="250"
+                y2="50"
+                stroke="#54bb74"
+                strokeWidth="2"
+                strokeDasharray="5,5"
+              />
+              <line
+                x1="50"
+                y1="50"
+                x2="150"
+                y2="200"
+                stroke="#54bb74"
+                strokeWidth="2"
+                strokeDasharray="5,5"
+              />
+              <line
+                x1="250"
+                y1="50"
+                x2="150"
+                y2="200"
+                stroke="#54bb74"
+                strokeWidth="2"
+                strokeDasharray="5,5"
+              />
+              <circle cx="50" cy="50" r="40" fill="#292929" stroke="#54bb74" strokeWidth="2" />
+              <circle cx="250" cy="50" r="40" fill="#292929" stroke="#54bb74" strokeWidth="2" />
+              <circle cx="150" cy="200" r="40" fill="#292929" stroke="#54bb74" strokeWidth="2" />
+              
+              <text x="50" y="55" textAnchor="middle" fill="#ffffff" fontSize="12" fontWeight="bold">HUB</text>
+              <text x="250" y="55" textAnchor="middle" fill="#ffffff" fontSize="12" fontWeight="bold">BASE</text>
+              <text x="150" y="205" textAnchor="middle" fill="#ffffff" fontSize="12" fontWeight="bold">APP</text>
+            </svg>
+          </div>
+          
+          <div className="grid grid-cols-3 gap-4 w-full max-w-md mx-auto mb-8">
+            <div className="flex flex-col items-center">
+              <div className="w-20 h-20 rounded-lg overflow-hidden mb-2 border-2 border-emerald-400 shadow-lg shadow-emerald-400/20">
+                <Image
+                  src="/images/hub-new.jpg"
+                  alt="Hub"
+                  width={80}
+                  height={80}
+                  className="object-cover w-full h-full"
+                />
+              </div>
+              <span className="text-white text-xs font-semibold">Hub</span>
+            </div>
+            
+            <div className="flex flex-col items-center">
+              <div className="w-20 h-20 rounded-lg overflow-hidden mb-2 border-2 border-emerald-400 shadow-lg shadow-emerald-400/20">
+                <Image
+                  src="/images/base_1.jpg"
+                  alt="Base"
+                  width={80}
+                  height={80}
+                  className="object-cover w-full h-full"
+                />
+              </div>
+              <span className="text-white text-xs font-semibold">Base</span>
+            </div>
+            
+            <div className="flex flex-col items-center">
+              <div className="w-20 h-20 rounded-lg overflow-hidden mb-2 border-2 border-emerald-400 shadow-lg shadow-emerald-400/20">
+                <Image
+                  src="/images/light.webp"
+                  alt="App"
+                  width={80}
+                  height={80}
+                  className="object-cover w-full h-full"
+                />
+              </div>
+              <span className="text-white text-xs font-semibold">App</span>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Triangle Container - hidden on mobile */}
       {!isMobile && (
@@ -375,8 +462,8 @@ const InteractiveStory = () => {
             className={`${
               isMobile
                 ? "relative mx-auto mb-4"
-                : "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2  transform"
-            } h-20 w-20 sm:h-28 sm:w-28 md:h-36 md:w-36 lg:h-40 lg:w-40 rounded-2xl  p-4 z-20`}
+                : "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform"
+            } h-40 w-40 sm:h-28 sm:w-28 md:h-36 md:w-36 lg:h-40 lg:w-40 rounded-2xl p-4 z-20`}
           >
             <div className="div-name text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-white text-center mb-1 sm:mb-2">
               Hub
@@ -440,18 +527,20 @@ const InteractiveStory = () => {
               />
             </svg>
 
-            <div className="description-text absolute right-48 top-1/2 -translate-y-1/2 w-96 text-white opacity-0 hidden md:block">
-              <h1 className="text-xl lg:text-2xl font-[Amenti] font-semibold">
+            <div className="description-text absolute right-36 max-xl:right-44 max-lg:right-40 max-xl:w-56 top-1/2 max-lg:w-52 max-lg:top-1/4 -translate-y-1/2 w-96 text-white opacity-0 hidden md:block">
+              <h1 className="text-xl lg:text-2xl max-xl:text-lg font-[Amenti] font-semibold">
                 {" "}
                 Hub – The Brain of the System
               </h1>
-              <p className="italic text-[#93CFA2] text-xs lg:text-sm">
+              <p className="italic text-[#93CFA2] max-xl:text-xs text-xs lg:text-sm">
                 Seamlessly Connects Everything
               </p>
-              <p className="text-xs lg:text-sm font-[Poppins]">
-                The Hub acts as the core processor, managing smart integrations
-                and connecting all lighting modules for real-time adjustments.
-              </p>
+              <button 
+                onClick={() => setActivePopup('hub')}
+                className="mt-3 px-4 py-1.5 bg-[#54bb74]/20 text-[#54bb74] border border-[#54bb74]/30 rounded-full text-xs hover:bg-[#54bb74]/30 transition-colors"
+              >
+                More Info
+              </button>
             </div>
           </div>
 
@@ -462,14 +551,14 @@ const InteractiveStory = () => {
               isMobile
                 ? "relative mx-auto mb-4"
                 : "absolute left-1/2 top-[55%] -translate-x-1/2 -translate-y-1/2 transform"
-            } h-20 w-20 sm:h-28 sm:w-28 md:h-36 md:w-36 lg:h-40  lg:w-40 rounded-2xl p-4 z-20`}
+            } h-20 w-20 sm:h-28 sm:w-28 md:h-36 md:w-36 lg:h-40 lg:w-40 rounded-2xl p-4 z-20`}
           >
             <div className="div-name text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-white text-center mb-1 sm:mb-2">
               Base
             </div>
             <div
               className={`div-image ${
-                isMobile ? "opacity-100" : "opacity-10  "
+                isMobile ? "opacity-100" : "opacity-10"
               } absolute inset-0 rounded-2xl`}
             >
               <Image
@@ -526,7 +615,7 @@ const InteractiveStory = () => {
               />
             </svg>
 
-            <div className="description-text absolute left-64 top-1/3 -translate-y-1/2 w-96 text-white opacity-0 hidden md:block">
+            <div className="description-text absolute left-60 max-lg:left-40 max-lg:top-1/4 max-xl:w-52 max-xl:left-52  max-lg:w-48 top-1/3 -translate-y-1/2 w-96 text-white opacity-0 hidden md:block">
               <h1 className="text-xl lg:text-2xl font-[Amenti] font-semibold">
                 {" "}
                 Base – The Power & Stability
@@ -534,10 +623,12 @@ const InteractiveStory = () => {
               <p className="italic text-[#93CFA2] text-xs lg:text-sm">
                 Reliable Infrastructure
               </p>
-              <p className="text-xs lg:text-sm font-[Poppins]">
-                The Base serves as the backbone, providing secure data storage,
-                intelligent power distribution, and seamless automation.
-              </p>
+              <button 
+                onClick={() => setActivePopup('base')}
+                className="mt-3 px-4 max-lg:ml-8 py-1.5 bg-[#54bb74]/20 text-[#54bb74] border border-[#54bb74]/30 rounded-full text-xs hover:bg-[#54bb74]/30 transition-colors"
+              >
+                More Info
+              </button>
             </div>
           </div>
 
@@ -548,7 +639,7 @@ const InteractiveStory = () => {
               isMobile
                 ? "relative mx-auto mb-4"
                 : "absolute left-1/2 top-[60%] -translate-x-1/2 -translate-y-1/2 transform"
-            } h-20 w-20 sm:h-28 sm:w-28 md:h-36  md:w-36 lg:h-40 lg:w-40 rounded-lg backdrop-blur-lg  bg-white/10  p-4 z-20`}
+            } h-20 w-20 sm:h-28 sm:w-28 md:h-36 md:w-36 lg:h-40 lg:w-40 rounded-lg backdrop-blur-lg bg-white/10 p-4 z-20`}
           >
             <div
               className="div-name text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-white text-center mb-1 sm:mb-2 
@@ -616,77 +707,304 @@ const InteractiveStory = () => {
               />
             </svg>
 
-            <div className="description-text absolute top-[120%] -left-[120%] -translate-x-1/2 -translate-y-24 w-96 text-white opacity-0 hidden md:block">
+            <div className="description-text absolute top-[120%] max-xl:w-48 max-xl:-left-[100%] -left-[120%] -translate-x-1/2 -translate-y-24 w-96 text-white opacity-0 hidden md:block">
               <h1 className="text-xl lg:text-2xl font-[Amenti] font-semibold">
                 App – Your Control Center
               </h1>
               <p className="italic text-[#93CFA2] text-xs lg:text-sm">
                 Effortless User Control
               </p>
-              <p className="text-xs lg:text-sm font-[Poppins]">
-                With the App, you can customize lighting effects, set schedules,
-                and create the perfect ambiance with just a tap.
-              </p>
+              <button 
+                onClick={() => setActivePopup('app')}
+                className="mt-3 px-4 py-1.5 bg-[#54bb74]/20 text-[#54bb74] border border-[#54bb74]/30 rounded-full text-xs hover:bg-[#54bb74]/30 transition-colors"
+              >
+                More Info
+              </button>
             </div>
           </div>
+
+          {/* Popup System for Desktop */}
+          {!isMobile && activePopup === 'hub' && (
+            <div className="fixed inset-0 flex items-center justify-center z-50" onClick={() => setActivePopup(null)}>
+              <div className="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+              <div 
+                className="relative bg-[#292929] border border-[#54bb74]/30 rounded-xl p-8 max-w-2xl w-full mx-4 shadow-xl shadow-[#54bb74]/20 transform transition-all"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button 
+                  className="absolute top-4 right-4 text-white/70 hover:text-white"
+                  onClick={() => setActivePopup(null)}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+                <div className="flex flex-col md:flex-row gap-6 items-center md:items-start">
+                  <div className="w-32 h-32 relative rounded-lg overflow-hidden flex-shrink-0">
+                    <Image
+                      src="/images/hub-new.jpg"
+                      alt="Hub"
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <h2 className="text-2xl font-[Amenti] font-bold text-[#54bb74] mb-2">Hub – The Brain of the System</h2>
+                    <p className="text-[#93CFA2] italic mb-4">Seamlessly Connects Everything</p>
+                    <p className="text-white/90 text-base mb-4">
+                      The Hub acts as the core processor, managing smart integrations and connecting all lighting modules for real-time adjustments.
+                    </p>
+                    <div className="bg-[#1a1a1a] p-4 rounded-lg border border-[#54bb74]/20">
+                      <h3 className="text-white font-semibold mb-2">Key Features:</h3>
+                      <ul className="text-white/80 space-y-2">
+                        <li className="flex items-start">
+                          <span className="text-[#54bb74] mr-2">•</span>
+                          <span>Central control system for all connected lighting devices</span>
+                        </li>
+                        <li className="flex items-start">
+                          <span className="text-[#54bb74] mr-2">•</span>
+                          <span>Real-time data processing and analytics</span>
+                        </li>
+                        <li className="flex items-start">
+                          <span className="text-[#54bb74] mr-2">•</span>
+                          <span>Seamless integration with smart home ecosystems</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {!isMobile && activePopup === 'base' && (
+            <div className="fixed inset-0 flex items-center justify-center z-50" onClick={() => setActivePopup(null)}>
+              <div className="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+              <div 
+                className="relative bg-[#292929] border border-[#54bb74]/30 rounded-xl p-8 max-w-2xl w-full mx-4 shadow-xl shadow-[#54bb74]/20 transform transition-all"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button 
+                  className="absolute top-4 right-4 text-white/70 hover:text-white"
+                  onClick={() => setActivePopup(null)}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+                <div className="flex flex-col md:flex-row gap-6 items-center md:items-start">
+                  <div className="w-32 h-32 relative rounded-lg overflow-hidden flex-shrink-0">
+                    <Image
+                      src="/images/base_1.jpg"
+                      alt="Base"
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <h2 className="text-2xl font-[Amenti] font-bold text-[#54bb74] mb-2">Base – The Power & Stability</h2>
+                    <p className="text-[#93CFA2] italic mb-4">Reliable Infrastructure</p>
+                    <p className="text-white/90 text-base mb-4">
+                      The Base serves as the backbone, providing secure data storage, intelligent power distribution, and seamless automation.
+                    </p>
+                    <div className="bg-[#1a1a1a] p-4 rounded-lg border border-[#54bb74]/20">
+                      <h3 className="text-white font-semibold mb-2">Key Features:</h3>
+                      <ul className="text-white/80 space-y-2">
+                        <li className="flex items-start">
+                          <span className="text-[#54bb74] mr-2">•</span>
+                          <span>Secure and reliable data storage system</span>
+                        </li>
+                        <li className="flex items-start">
+                          <span className="text-[#54bb74] mr-2">•</span>
+                          <span>Intelligent power management and distribution</span>
+                        </li>
+                        <li className="flex items-start">
+                          <span className="text-[#54bb74] mr-2">•</span>
+                          <span>Advanced automation capabilities for seamless operation</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {!isMobile && activePopup === 'app' && (
+            <div className="fixed inset-0 flex items-center justify-center z-50" onClick={() => setActivePopup(null)}>
+              <div className="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+              <div 
+                className="relative bg-[#292929] border border-[#54bb74]/30 rounded-xl p-8 max-w-2xl w-full mx-4 shadow-xl shadow-[#54bb74]/20 transform transition-all"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button 
+                  className="absolute top-4 right-4 text-white/70 hover:text-white"
+                  onClick={() => setActivePopup(null)}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+                <div className="flex flex-col md:flex-row gap-6 items-center md:items-start">
+                  <div className="w-32 h-32 relative rounded-lg overflow-hidden flex-shrink-0">
+                    <Image
+                      src="/images/light.webp"
+                      alt="App"
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <h2 className="text-2xl font-[Amenti] font-bold text-[#54bb74] mb-2">App – Your Control Center</h2>
+                    <p className="text-[#93CFA2] italic mb-4">Effortless User Control</p>
+                    <p className="text-white/90 text-base mb-4">
+                      With the App, you can customize lighting effects, set schedules, and create the perfect ambiance with just a tap.
+                    </p>
+                    <div className="bg-[#1a1a1a] p-4 rounded-lg border border-[#54bb74]/20">
+                      <h3 className="text-white font-semibold mb-2">Key Features:</h3>
+                      <ul className="text-white/80 space-y-2">
+                        <li className="flex items-start">
+                          <span className="text-[#54bb74] mr-2">•</span>
+                          <span>Intuitive interface for easy lighting control</span>
+                        </li>
+                        <li className="flex items-start">
+                          <span className="text-[#54bb74] mr-2">•</span>
+                          <span>Customizable scenes and scheduling options</span>
+                        </li>
+                        <li className="flex items-start">
+                          <span className="text-[#54bb74] mr-2">•</span>
+                          <span>Real-time monitoring and energy usage statistics</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
       {/* Mobile Descriptions - Only visible on small screens */}
       {isMobile && (
-        <div className="bg-[#292929]/90 p-4 z-30 mobile-description">
-          <div className="flex flex-col space-y-4 text-white">
-            <div className="flex items-start space-x-2">
-              <div className="w-4 h-4 rounded-full bg-[#176D63] mt-1 flex-shrink-0"></div>
-              <div>
-                <h3 className="text-base font-semibold font-['Amenti']">
-                  Hub – The Brain of the System
-                </h3>
-                <p className="text-xs italic text-[#93CFA2] font-['Poppins']">
-                  Seamlessly Connects Everything
-                </p>
-                <p className="text-xs font-['Poppins']">
-                  The Hub acts as the core processor, managing smart
-                  integrations and connecting all lighting modules for real-time
-                  adjustments.
-                </p>
+        <div className="bg-[#292929]/90 p-6 z-30 mobile-description rounded-lg border border-emerald-400/20 shadow-lg shadow-emerald-400/10">
+          <div className="flex flex-col space-y-8 text-white">
+            <div className="flex flex-col md:flex-row items-start space-y-4 md:space-y-0 md:space-x-4">
+              <div className="flex items-start space-x-3">
+                <div className="w-10 h-10 rounded-full bg-[#176D63] mt-1 flex-shrink-0 flex items-center justify-center shadow-md">
+                  <div className="w-6 h-6 rounded-full bg-[#292929] flex items-center justify-center">
+                    <span className="text-xs font-bold text-[#54bb74]">01</span>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold font-['Amenti'] text-[#54bb74]">
+                    Hub – The Brain of the System
+                  </h3>
+                  <p className="text-xs italic text-[#93CFA2] font-['Poppins'] mb-1">
+                    Seamlessly Connects Everything
+                  </p>
+                  <p className="text-sm font-['Poppins'] text-white/80 mb-4">
+                    The Hub acts as the core processor, managing smart
+                    integrations and connecting all lighting modules for real-time
+                    adjustments.
+                  </p>
+                  <div className="w-full h-40 relative rounded-lg overflow-hidden border border-emerald-400/30">
+                    <Image
+                      src="/images/hub-new.jpg"
+                      alt="Hub"
+                      fill
+                      className="object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#292929] to-transparent opacity-60"></div>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div className="flex items-start space-x-2">
-              <div className="w-4 h-4 rounded-full bg-[#0E5A3D] mt-1 flex-shrink-0"></div>
-              <div>
-                <h3 className="text-base font-semibold font-['Amenti']">
-                  Base – The Power & Stability
-                </h3>
-                <p className="text-xs italic text-[#93CFA2] font-['Poppins']">
-                  Reliable Infrastructure
-                </p>
-                <p className="text-xs font-['Poppins']">
-                  The Base serves as the backbone, providing secure data
-                  storage, intelligent power distribution, and seamless
-                  automation.
-                </p>
+            <div className="flex flex-col md:flex-row items-start space-y-4 md:space-y-0 md:space-x-4">
+              <div className="flex items-start space-x-3">
+                <div className="w-10 h-10 rounded-full bg-[#0E5A3D] mt-1 flex-shrink-0 flex items-center justify-center shadow-md">
+                  <div className="w-6 h-6 rounded-full bg-[#292929] flex items-center justify-center">
+                    <span className="text-xs font-bold text-[#54bb74]">02</span>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold font-['Amenti'] text-[#54bb74]">
+                    Base – The Power & Stability
+                  </h3>
+                  <p className="text-xs italic text-[#93CFA2] font-['Poppins'] mb-1">
+                    Reliable Infrastructure
+                  </p>
+                  <p className="text-sm font-['Poppins'] text-white/80 mb-4">
+                    The Base serves as the backbone, providing secure data
+                    storage, intelligent power distribution, and seamless
+                    automation.
+                  </p>
+                  <div className="w-full h-40 relative rounded-lg overflow-hidden border border-emerald-400/30">
+                    <Image
+                      src="/images/base_1.jpg"
+                      alt="Base"
+                      fill
+                      className="object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#292929] to-transparent opacity-60"></div>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div className="flex items-start space-x-2">
-              <div className="w-4 h-4 rounded-full bg-[#2E1F3E] mt-1 flex-shrink-0"></div>
-              <div>
-                <h3 className="text-base font-semibold font-['Amenti']">
-                  App – Your Control Center
-                </h3>
-                <p className="text-xs italic text-[#93CFA2] font-['Poppins']">
-                  Effortless User Control
-                </p>
-                <p className="text-xs font-['Poppins']">
-                  With the App, you can customize lighting effects, set
-                  schedules, and create the perfect ambiance with just a tap.
-                </p>
+            <div className="flex flex-col md:flex-row items-start space-y-4 md:space-y-0 md:space-x-4">
+              <div className="flex items-start space-x-3">
+                <div className="w-10 h-10 rounded-full bg-[#2E1F3E] mt-1 flex-shrink-0 flex items-center justify-center shadow-md">
+                  <div className="w-6 h-6 rounded-full bg-[#292929] flex items-center justify-center">
+                    <span className="text-xs font-bold text-[#54bb74]">03</span>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold font-['Amenti'] text-[#54bb74]">
+                    App – Your Control Center
+                  </h3>
+                  <p className="text-xs italic text-[#93CFA2] font-['Poppins'] mb-1">
+                    Effortless User Control
+                  </p>
+                  <p className="text-sm font-['Poppins'] text-white/80 mb-4">
+                    With the App, you can customize lighting effects, set
+                    schedules, and create the perfect ambiance with just a tap.
+                  </p>
+                  <div className="w-full h-40 relative rounded-lg overflow-hidden border border-emerald-400/30">
+                    <Image
+                      src="/images/light.webp"
+                      alt="App"
+                      fill
+                      className="object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#292929] to-transparent opacity-60"></div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
+      )}
+      
+      {/* Add keyframe animations for mobile view */}
+      {isMobile && (
+        <style jsx global>{`
+          @keyframes pulse-slow {
+            0%, 100% {
+              opacity: 0.2;
+              transform: scale(1);
+            }
+            50% {
+              opacity: 0.4;
+              transform: scale(1.05);
+            }
+          }
+          
+          .animate-pulse-slow {
+            animation: pulse-slow 3s infinite;
+          }
+        `}</style>
       )}
     </div>
   );

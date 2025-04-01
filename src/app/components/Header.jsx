@@ -79,7 +79,7 @@ const Header = () => {
       <div className="absolute inset-0 bg-charcoal/20 backdrop-blur-sm"></div>
       <div className="container mx-auto px-4 py-4 relative">
         <div className="flex items-center justify-between">
-          <div className="w-20">
+          <div className="w-16">
             <Image
               src="/images/svgLogos/__Logo_Icon_Inverted.svg"
               alt="Limi Logo"

@@ -7,12 +7,13 @@ import InteractiveStory from './components/InteractiveStory';
 import LightingCarousel from './components/LightingCarousel';
 import LightingScene from './components/LightingScene';
 import ModelSection from './components/ModelSection';
-import MotiveSection from './components/MotiveSection';
-import MouseTrail from './components/MouseTrail';
+// import MotiveSection from './components/MotiveSection';
+// import MouseTrail from './components/MouseTrail';
 import ScrollToTop from './components/ScrollToTop';
 import SplashScreen from './components/SplashScreen';
 import AnalyticsInsights from './components/AnalyticsInsights';
 import DistributorHub from './components/DistributorHub';
+// import UserSelectionPopup from './components/UserSelectionPopup';
 import { useEffect, useState, Suspense } from 'react';
 
 // Dynamically import CubeAnimation with SSR disabled
@@ -29,6 +30,9 @@ const CubeAnimation = dynamic(() => import('./components/CubeAnimation'), {
  */
 export default function Home() {
   const [isMobile, setIsMobile] = useState(false);
+  const [userType, setUserType] = useState(null);
+  const [showSplash, setShowSplash] = useState(true);
+  const [showUserSelection, setShowUserSelection] = useState(false);
   
   useEffect(() => {
     // Check if device is mobile
@@ -45,21 +49,44 @@ export default function Home() {
     };
   }, []);
 
+  // Custom hook to handle splash screen completion
+  useEffect(() => {
+    // Listen for splash screen completion
+    const handleSplashComplete = () => {
+      setShowSplash(false);
+      setShowUserSelection(true);
+    };
+
+    // Create a custom event for splash screen completion
+    window.addEventListener('splashComplete', handleSplashComplete);
+
+    return () => {
+      window.removeEventListener('splashComplete', handleSplashComplete);
+    };
+  }, []);
+
+  // Handle user selection
+  // const handleUserTypeSelect = (type) => {
+  //   setUserType(type);
+  //   setShowUserSelection(false);
+  // };
+
   return (
     <main>
-      <SplashScreen />
-      <Header />
-      <HeroSection />
-      {/* <MotiveSection /> */}
-      <InteractiveStory />
-      <AnalyticsInsights />
-      {/* {!isMobile && <Suspense fallback={<div className="h-screen bg-[#292929]"></div>}><CubeAnimation /></Suspense>} */}
-      <LightingCarousel />
-      <ModelSection />
-      <LightingScene />
-      <DistributorHub />
-      {!isMobile && <MouseTrail />}
-      <Footer />
+      <SplashScreen onComplete={() => window.dispatchEvent(new Event('splashComplete'))} />
+      {/* <UserSelectionPopup isVisible={showUserSelection} onSelect={handleUserTypeSelect} /> */}
+      <Header  />
+      <HeroSection  />
+      {/* <MotiveSection  /> */}
+      <InteractiveStory  />
+      <AnalyticsInsights  />
+      <LightingCarousel  />
+      <ModelSection  />
+      
+      <LightingScene  />
+      <DistributorHub  />
+      {/* {!isMobile && <MouseTrail />} */}
+      <Footer  />
       <ScrollToTop />
     </main>
   );

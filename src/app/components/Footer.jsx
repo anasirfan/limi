@@ -9,7 +9,7 @@ const Footer = () => {
         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Logo and About */}
           <div className="col-span-2 md:col-span-2 lg:col-span-1">
-            <div className="mb-6 max-sm:flex max-sm: space-x-4 max-sm:items-center mx-auto">
+            <div className="mb-6 max-sm:flex max-sm:space-x-4 max-sm:items-center mx-auto">
               <Image
                 src="/images/svgLogos/__Logo_Icon_Inverted.svg"
                 alt="Limi Logo"
@@ -17,7 +17,7 @@ const Footer = () => {
                 height={32}
                 className="mb-4 max-sm:w-32"
               />
-              <p className=" text-sm md:text-base font-[Poppins] text-[#f3ebe2] max-w-xs">
+              <p className=" text-sm md:text-base font-[Poppins] mr-4 text-[#f3ebe2] max-w-xs">
                 LIMI 3D creates innovative lighting solutions that transform spaces with elegance and functionality.
               </p>
             </div>

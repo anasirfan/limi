@@ -143,8 +143,8 @@ const ModelSection = () => {
       // Create a separate trigger for the last section
       ScrollTrigger.create({
         trigger: section,
-        start: `${(texts.length - 1) * 400}vh top`,
-        end: `${texts.length * 400}vh top`,
+        start: `${(texts.length - 1) * 600}vh top`,
+        end: `${texts.length * 600}vh top`,
         markers: false,
         onEnter: () => {
           // Show the final section text
@@ -176,7 +176,7 @@ const ModelSection = () => {
       ScrollTrigger.create({
         trigger: section,
         start: "top top",
-        end: `${texts.length * 400}vh top`,
+        end: `${texts.length * 600}vh top`,
         pin: true,
         pinSpacing: true,
         scrub: true,
@@ -190,7 +190,7 @@ const ModelSection = () => {
     <section 
       id="model"
       ref={sectionRef}
-      className="bg-[#292929] h-screen flex items-center relative overflow-hidden"
+      className="bg-[#292929]  h-screen flex items-center relative overflow-hidden"
     >
       <div className="container mx-auto px-4 md:px-8 lg:px-16 xl:px-28">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">

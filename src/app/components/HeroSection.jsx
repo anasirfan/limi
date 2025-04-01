@@ -1,21 +1,32 @@
 "use client";
 import Image from "next/image";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 function HeroSection() {
   const headingRef = useRef(null);
   const descriptionRef = useRef(null);
+  const descriptionLinesRef = useRef([]);
   const buttonRef = useRef(null);
   const sectionRef = useRef(null);
   const videoRef = useRef(null);
+  const [descriptionLines, setDescriptionLines] = useState([
+    "Experience the <span class='highlight'>future of lighting</span> with our innovative solutions.",
+    "<span class='highlight'>Intelligent design</span> that seamlessly adapts to your lifestyle.",
+    "Putting <span class='highlight'>modular innovation</span> and intuitive control at your fingertips.",
+    "Revolutionary <span class='highlight'>illumination technology</span> for the modern home.",
+    "Transform your space into something <span class='highlight'>extraordinary</span>."
+  ]);
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
 
     gsap.set(headingRef.current, { opacity: 0, y: 30 });
-    gsap.set(descriptionRef.current, { opacity: 0, scale: 0.9 });
+    gsap.set(descriptionLinesRef.current, { 
+      opacity: 0,
+      y: 20,
+    });
     gsap.set(buttonRef.current, { opacity: 0, scale: 0.8 });
 
     // Delay video playback
@@ -38,30 +49,34 @@ function HeroSection() {
       scrollTrigger: {
         trigger: sectionRef.current,
         start: "top top",
-        end: "bottom center",
-        scrub: true,
+        end: "+=200%", // Extend the scroll distance to 200% of the section height
+        scrub: 0.5, // Smoother scrubbing with slight delay
         pin: true,
         pinSpacing: true,
+        markers: false,
       }
     });
 
     tl.to(headingRef.current, { 
       opacity: 1, 
       y: 0, 
-      duration: 0.3,
+      duration: 0.15, // Reduced duration to happen earlier in the scroll
     })
-    .to(descriptionRef.current, {
+    // Animate each line of text sequentially
+    .to(descriptionLinesRef.current, {
       opacity: 1,
-      scale: 1,
-      duration: 0.4,
+      y: 0,
+      duration: 0.1,
+      stagger: 0.08,
       ease: "power2.out"
-    })
+    }, "+=0.05") // Small delay after heading animation
+    .to({}, {duration: 0.3}) // Add pause for reading
     .to(buttonRef.current, { 
       opacity: 1, 
       scale: 1,
-      duration: 0.3,
+      duration: 0.15,
       ease: "back.out(1.7)"
-    });
+    }, "+=0.1"); // Delay button appearance to give more reading time
 
     return () => {
       // Clean up ScrollTrigger
@@ -97,28 +112,69 @@ function HeroSection() {
         </div>
         {/* Main Content */}
         <div className="container mx-auto px-4 hero-content relative z-10">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-sm:mt-24 items-center">
             {/* Left Side - Heading */}
-            <div className="text-white self-end -mb-6 max-sm:-mb-12">
+            <div className="text-white self-end max-md:mt-16 -mb-6 max-sm:-mb-12">
               <h1 
                 ref={headingRef}
-                className="text-3xl md:text-6xl max-sm:text-2xl font-bold mb-6"
+                className="text-3xl md:text-6xl max-sm:text-4xl font-bold mb-6 max-md:text-center"
               >
-                From Standard to Smart
+                From Standard <br className="md:block hidden"></br>to Smart
               </h1>
             </div>
             {/* Right Side - Description and CTA */}
-            <div className="text-[#54bb74]/90">
-              <p 
+            <div className="text-white max-md:text-center">
+              <div 
                 ref={descriptionRef}
-                className="hero-description text-lg max-sm:text-sm mb-8 leading-relaxed"
+                className="hero-description mt-20 max-sm:mt-0 text-lg max-sm:text-base mb-8 leading-relaxed max-w-md max-md:mx-auto"
               >
-                Experience the future of lighting with our innovative smart solutions. Our intelligent design seamlessly adapts to your needs, putting modular innovation and intuitive control at your fingertips. Join us in revolutionizing modern illumination technology and transform your space into something extraordinary.
-              </p>
+                {descriptionLines.map((line, index) => (
+                  <p 
+                    key={index}
+                    ref={el => descriptionLinesRef.current[index] = el}
+                    className="typing-line mb-3"
+                    dangerouslySetInnerHTML={{ __html: line }}
+                  />
+                ))}
+              </div>
+              <style jsx>{`
+                .typing-line {
+                  overflow: hidden;
+                  padding: 2px 8px;
+                  text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+                  position: relative;
+                  margin-bottom: 10px;
+                }
+                .typing-line::after {
+                  content: '';
+                  position: absolute;
+                  left: 0;
+                  top: 0;
+                  width: 100%;
+                  height: 100%;
+                  background: rgba(41, 41, 41, 0.7);
+                  z-index: -1;
+                  border-radius: 4px;
+                }
+                @media (max-width: 768px) {
+                  .typing-line {
+                    margin-bottom: 12px;
+                    padding: 4px 10px;
+                  }
+                  .typing-line::after {
+                    background: rgba(41, 41, 41, 0.8);
+                  }
+                }
+                :global(.highlight) {
+                  color: #54bb74;
+                  font-weight: 600;
+                  text-shadow: 0 0 8px rgba(84, 187, 116, 0.3);
+                }
+              `}</style>
               <a 
                 ref={buttonRef}
                 href="#lighting-carousel"
-                className="cta-button px-8 py-4 bg-[#292929] text-white rounded-full text-lg font-bold transform transition-all hover:scale-105 hover:shadow-lg hover:shadow-[#54bb74]/30 hover:bg-[#292929]/10 focus:outline-none focus:ring-2 focus:ring-[#54bb74] focus:ring-opacity-50 inline-block"
+                className="cta-button px-6 py-3 md:px-8 md:py-4 bg-[#54bb74] text-[#292929] rounded-full text-base md:text-lg font-bold transform transition-all hover:scale-105 hover:shadow-lg hover:shadow-[#54bb74]/50 hover:bg-[#93CFA2] focus:outline-none focus:ring-2 focus:ring-[#292929] focus:ring-opacity-50 inline-block"
               >
                 Explore Smart Lighting
               </a>
@@ -127,13 +183,13 @@ function HeroSection() {
         </div>
 
         {/* Logo at Bottom */}
-        <div className="hero-logo mt-20 w-full max-w-5xl mx-auto px-4 relative z-20">
+        <div className="hero-logo mt-60 max-md:mt-40 w-full max-w-5xl mx-auto px-4 relative z-20">
           <Image
             src="/images/svgLogos/__Primary_Logo_Black.svg"
             alt="Limi Logo"
             width={400}
             height={200}
-            className="w-full h-auto invert opacity-80"
+            className="w-[50%] max-sm:w-[70%] mx-auto h-auto invert opacity-90"
             priority
           />
         </div>

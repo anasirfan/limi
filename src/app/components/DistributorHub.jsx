@@ -3,6 +3,7 @@ import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { FaChartLine, FaHandshake, FaLightbulb, FaTrophy, FaEnvelope, FaWhatsapp, FaWpforms } from 'react-icons/fa';
+import Image from 'next/image';
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger);
@@ -16,7 +17,19 @@ const brandColors = {
   black: '#000000',
 };
 
-const DistributorHub = () => {
+/**
+ * DistributorHub component that displays distributor-specific features and benefits
+ * 
+ * @param {Object} props - Component props
+ * @param {string|null} props.userType - The type of user (customer, distributor, or null)
+ * @returns {JSX.Element|null} The DistributorHub component or null if not visible
+ */
+const DistributorHub = ({ userType }) => {
+  // Return null if user is not a distributor or if userType is not set yet
+  // if (userType !== null && userType !== 'distributor') {
+  //   return null;
+  // }
+
   const sectionRef = useRef(null);
   const benefitsRef = useRef(null);
   const ctaRef = useRef(null);
@@ -65,22 +78,22 @@ const DistributorHub = () => {
 
   const benefits = [
     {
-      icon: <FaChartLine className="text-4xl text-emerald-500 mb-4" />,
+      icon: <FaChartLine className="text-4xl text-[#93CFA2] mb-4" />,
       title: 'High Profit Margins',
       description: 'Enjoy competitive profit margins on our premium lighting solutions',
     },
     {
-      icon: <FaTrophy className="text-4xl text-emerald-500 mb-4" />,
+      icon: <FaTrophy className="text-4xl text-[#93CFA2] mb-4" />,
       title: 'Exclusive Products',
       description: 'Access to innovative products not available through other channels',
     },
     {
-      icon: <FaLightbulb className="text-4xl text-emerald-500 mb-4" />,
+      icon: <FaLightbulb className="text-4xl text-[#93CFA2] mb-4" />,
       title: 'Innovation First',
       description: 'Be the first to offer cutting-edge lighting technology to your market',
     },
     {
-      icon: <FaHandshake className="text-4xl text-emerald-500 mb-4" />,
+      icon: <FaHandshake className="text-4xl text-[#93CFA2] mb-4" />,
       title: 'Marketing Support',
       description: 'Comprehensive marketing materials and technical training',
     },
@@ -90,12 +103,12 @@ const DistributorHub = () => {
     <section 
       id="distributor-hub" 
       ref={sectionRef}
-      className="py-20 bg-[#292929] text-white"
+      className="py-32   bg-[#292929] text-white"
     >
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 font-[Amenti]">
-            Become a <span className="text-[#54BB74]">LIMI</span> Distributor
+            Become a <span className="text-[#54BB74]"><Image src="/images/svgLogos/__Wordmark_Green.svg" className='inline w-48 px-4 pb-2 max-sm:w-40' alt="Lumi Logo" width={100} height={100} /></span> Distributor
           </h2>
           <p className="text-lg text-gray-300 max-w-3xl mx-auto">
             Join our global network of distributors and bring innovative lighting solutions to your market
@@ -132,7 +145,7 @@ const DistributorHub = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <a 
               href="mailto:distributors@limi.com" 
-              className="flex items-center justify-center gap-2 bg-[#54BB74] hover:bg-[#48a064] text-white py-3 px-6 rounded-md transition-colors duration-300"
+              className="flex items-center justify-center gap-2 bg-[#292929] hover:bg-[#54BB74] text-[#54BB74] hover:text-white border border-[#54BB74] py-3 px-6 rounded-md transition-colors duration-300"
             >
               <FaEnvelope /> Email Us
             </a>
@@ -140,7 +153,7 @@ const DistributorHub = () => {
               href="https://wa.me/12345678900" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#20bd5a] text-white py-3 px-6 rounded-md transition-colors duration-300"
+              className="flex items-center justify-center gap-2 bg-[#292929] hover:bg-[#54BB74] text-[#54BB74] hover:text-white border border-[#54BB74] py-3 px-6 rounded-md transition-colors duration-300"
             >
               <FaWhatsapp /> WhatsApp
             </a>
@@ -148,7 +161,7 @@ const DistributorHub = () => {
               href="https://forms.google.com" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 bg-[#4285F4] hover:bg-[#3b78e7] text-white py-3 px-6 rounded-md transition-colors duration-300"
+              className="flex items-center justify-center gap-2 bg-[#292929] hover:bg-[#54BB74] text-[#54BB74] hover:text-white border border-[#54BB74] py-3 px-6 rounded-md transition-colors duration-300"
             >
               <FaWpforms /> Inquiry Form
             </a>

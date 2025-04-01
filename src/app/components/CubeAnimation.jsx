@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useMemo, Suspense } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Canvas, useThree } from '@react-three/fiber';
+import { Canvas, useThree, useFrame } from '@react-three/fiber';
 import { Environment, useGLTF } from '@react-three/drei';
 import './CubeAnimation.css';
 
@@ -18,6 +18,7 @@ const Model = ({ scrollProgress }) => {
     const { scene } = useGLTF('/models/chandler.glb');
     const modelRef = useRef();
     const { gl } = useThree();
+    const animationsRef = useRef({});
     
     // Clone the scene once on initial load
     const clonedScene = useMemo(() => {
@@ -54,20 +55,61 @@ const Model = ({ scrollProgress }) => {
             light_holders: null
         };
         
+        // Store original positions for animation
+        const originalPositions = {};
+        const originalRotations = {};
+        
         clonedScene.traverse((child) => {
             if (child.isMesh) {
                 if (child.name === 'main_base_with_wires') {
                     parts.main_base_with_wires = child;
+                    originalPositions.main_base_with_wires = child.position.clone();
+                    originalRotations.main_base_with_wires = child.rotation.clone();
                 } else if (child.name === '3_bases') {
                     parts.bases = child;
+                    originalPositions.bases = child.position.clone();
+                    originalRotations.bases = child.rotation.clone();
                 } else if (child.name === 'small_wires') {
                     parts.small_wires = child;
+                    originalPositions.small_wires = child.position.clone();
+                    originalRotations.small_wires = child.rotation.clone();
                 } else if (child.name === 'Pendants') {
                     parts.pendants = child;
+                    originalPositions.pendants = child.position.clone();
+                    originalRotations.pendants = child.rotation.clone();
                 } else if (child.name === 'wire_holders') {
                     parts.wire_holders = child;
+                    originalPositions.wire_holders = child.position.clone();
+                    originalRotations.wire_holders = child.rotation.clone();
                 } else if (child.name === 'light_holders') {
                     parts.light_holders = child;
+                    originalPositions.light_holders = child.position.clone();
+                    originalRotations.light_holders = child.rotation.clone();
+                }
+            }
+        });
+        
+        // Store original positions and rotations for animations
+        animationsRef.current = {
+            originalPositions,
+            originalRotations,
+            // Define animation offsets (how far each part will move during animation)
+            animationOffsets: {
+                main_base_with_wires: { y: -2 },
+                bases: { y: -1.8 },
+                wire_holders: { y: -1.6 },
+                small_wires: { y: -1.4 },
+                light_holders: { y: -1.2 },
+                pendants: { y: -1 }
+            }
+        };
+        
+        // Initialize positions below their final positions (for upward animation)
+        Object.keys(parts).forEach(partName => {
+            if (parts[partName]) {
+                const offset = animationsRef.current.animationOffsets[partName];
+                if (offset && offset.y) {
+                    parts[partName].position.y += offset.y;
                 }
             }
         });
@@ -75,44 +117,152 @@ const Model = ({ scrollProgress }) => {
         return parts;
     }, [clonedScene]);
     
-    // Update opacity based on scroll progress
+    // Use GSAP for animations
     useEffect(() => {
+        if (!modelRef.current) return;
+        
+        const animations = {};
+        const { originalPositions, animationOffsets } = animationsRef.current;
+        
+        // Create GSAP timelines for each part
+        if (modelParts.main_base_with_wires && originalPositions.main_base_with_wires) {
+            animations.main_base_with_wires = gsap.timeline({ paused: true })
+                .to(modelParts.main_base_with_wires.position, { 
+                    y: originalPositions.main_base_with_wires.y,
+                    duration: 1,
+                    ease: "power2.out"
+                }, 0)
+                .to(modelParts.main_base_with_wires.material, { 
+                    opacity: 1, 
+                    duration: 1,
+                    ease: "power2.out"
+                }, 0);
+        }
+        
+        if (modelParts.bases && originalPositions.bases) {
+            animations.bases = gsap.timeline({ paused: true })
+                .to(modelParts.bases.position, { 
+                    y: originalPositions.bases.y,
+                    duration: 1,
+                    ease: "power2.out"
+                }, 0)
+                .to(modelParts.bases.material, { 
+                    opacity: 1, 
+                    duration: 1,
+                    ease: "power2.out"
+                }, 0);
+        }
+        
+        if (modelParts.wire_holders && originalPositions.wire_holders) {
+            animations.wire_holders = gsap.timeline({ paused: true })
+                .to(modelParts.wire_holders.position, { 
+                    y: originalPositions.wire_holders.y,
+                    duration: 1,
+                    ease: "power2.out"
+                }, 0)
+                .to(modelParts.wire_holders.material, { 
+                    opacity: 1, 
+                    duration: 1,
+                    ease: "power2.out"
+                }, 0);
+        }
+        
+        if (modelParts.small_wires && originalPositions.small_wires) {
+            animations.small_wires = gsap.timeline({ paused: true })
+                .to(modelParts.small_wires.position, { 
+                    y: originalPositions.small_wires.y,
+                    duration: 1,
+                    ease: "power2.out"
+                }, 0)
+                .to(modelParts.small_wires.material, { 
+                    opacity: 1, 
+                    duration: 1,
+                    ease: "power2.out"
+                }, 0);
+        }
+        
+        if (modelParts.light_holders && originalPositions.light_holders) {
+            animations.light_holders = gsap.timeline({ paused: true })
+                .to(modelParts.light_holders.position, { 
+                    y: originalPositions.light_holders.y,
+                    duration: 1,
+                    ease: "power2.out"
+                }, 0)
+                .to(modelParts.light_holders.material, { 
+                    opacity: 1, 
+                    duration: 1,
+                    ease: "power2.out"
+                }, 0);
+        }
+        
+        if (modelParts.pendants && originalPositions.pendants) {
+            animations.pendants = gsap.timeline({ paused: true })
+                .to(modelParts.pendants.position, { 
+                    y: originalPositions.pendants.y,
+                    duration: 1,
+                    ease: "power2.out"
+                }, 0)
+                .to(modelParts.pendants.material, { 
+                    opacity: 1, 
+                    duration: 1,
+                    ease: "power2.out"
+                }, 0);
+        }
+        
+        // Store animations for use in the update function
+        animationsRef.current.animations = animations;
+        
+    }, [modelParts]);
+    
+    // Update animations based on scroll progress
+    useEffect(() => {
+        if (!animationsRef.current.animations) return;
+        
+        const { animations } = animationsRef.current;
+        
         // Main base with wires (40% - 50%)
-        if (modelParts.main_base_with_wires && modelParts.main_base_with_wires.material) {
+        if (animations.main_base_with_wires) {
             const mainBaseProgress = scrollProgress < 0.4 ? 0 : Math.min((scrollProgress - 0.4) / 0.1, 1);
-            modelParts.main_base_with_wires.material.opacity = mainBaseProgress;
+            animations.main_base_with_wires.progress(mainBaseProgress);
         }
         
         // 3 bases (50% - 55%)
-        if (modelParts.bases && modelParts.bases.material) {
+        if (animations.bases) {
             const basesProgress = scrollProgress < 0.5 ? 0 : Math.min((scrollProgress - 0.5) / 0.05, 1);
-            modelParts.bases.material.opacity = basesProgress;
+            animations.bases.progress(basesProgress);
         }
         
         // Wire holders (55% - 60%)
-        if (modelParts.wire_holders && modelParts.wire_holders.material) {
+        if (animations.wire_holders) {
             const wireHoldersProgress = scrollProgress < 0.55 ? 0 : Math.min((scrollProgress - 0.55) / 0.05, 1);
-            modelParts.wire_holders.material.opacity = wireHoldersProgress;
+            animations.wire_holders.progress(wireHoldersProgress);
         }
         
         // Small wires (60% - 65%)
-        if (modelParts.small_wires && modelParts.small_wires.material) {
+        if (animations.small_wires) {
             const smallWiresProgress = scrollProgress < 0.6 ? 0 : Math.min((scrollProgress - 0.6) / 0.05, 1);
-            modelParts.small_wires.material.opacity = smallWiresProgress;
+            animations.small_wires.progress(smallWiresProgress);
         }
         
         // Light holders (65% - 70%)
-        if (modelParts.light_holders && modelParts.light_holders.material) {
+        if (animations.light_holders) {
             const lightHoldersProgress = scrollProgress < 0.65 ? 0 : Math.min((scrollProgress - 0.65) / 0.05, 1);
-            modelParts.light_holders.material.opacity = lightHoldersProgress;
+            animations.light_holders.progress(lightHoldersProgress);
         }
         
         // Pendants (70% - 75%)
-        if (modelParts.pendants && modelParts.pendants.material) {
+        if (animations.pendants) {
             const pendantsProgress = scrollProgress < 0.7 ? 0 : Math.min((scrollProgress - 0.7) / 0.05, 1);
-            modelParts.pendants.material.opacity = pendantsProgress;
+            animations.pendants.progress(pendantsProgress);
         }
-    }, [scrollProgress, modelParts]);
+    }, [scrollProgress]);
+    
+    // Add subtle rotation animation
+    useFrame(({ clock }) => {
+        if (modelRef.current) {
+            modelRef.current.rotation.y = Math.sin(clock.getElapsedTime() * 0.2) * 0.05;
+        }
+    });
     
     return modelRef.current ? (
         <primitive 
@@ -303,7 +453,7 @@ export default function CubeAnimation() {
         <section 
             id="cube"
             ref={stickyRef}
-            className="relative h-screen bg-[#292929] overflow-hidden"
+            className="relative h-screen bg-[#292929] overflow-hidden z-10"
         >
             {/* Background image overlay */}
             <div 

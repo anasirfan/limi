@@ -1,13 +1,21 @@
 'use client';
 import { useEffect, useState, useRef } from 'react';
 import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 /**
  * LightingScene component that displays an interactive scene with day/night modes and controllable lights
  * 
- * @returns {JSX.Element} The LightingScene component
+ * @param {Object} props - Component props
+ * @param {string|null} props.userType - The type of user (customer, distributor, or null)
+ * @returns {JSX.Element|null} The LightingScene component or null if not visible
  */
-const LightingScene = () => {
+const LightingScene = ({ userType }) => {
+  // Register ScrollTrigger plugin
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+  }, []);
+
   // State for controlling day/night mode and lights
   const [isDayMode, setIsDayMode] = useState(false);
   const [isTopLightOn, setIsTopLightOn] = useState(true);
@@ -18,10 +26,41 @@ const LightingScene = () => {
   const topLightRef = useRef(null);
   const middleLightRef = useRef(null);
   const buttonRef = useRef(null);
+  const headerRef = useRef(null);
+  const clipPathRef = useRef(null);
+
+  // Setup scroll animation for triangular clip path
+  useEffect(() => {
+    if (clipPathRef.current && headerRef.current) {
+      // Set initial state - hidden with triangular clip path
+      gsap.set(clipPathRef.current, {
+        clipPath: 'polygon(0% 0%, 100% 30%, 100% 100%, 0% 100%)',
+        opacity: 0,
+        y: 50 // Start slightly below final position
+      });
+
+      // Create animation timeline
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sceneRef.current,
+          start: 'top center',
+          end: 'top 20%',
+          scrub: true
+        }
+      });
+
+      // Add animations to timeline
+      tl.to(clipPathRef.current, {
+        clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
+        opacity: 1,
+        y: 0,
+        ease: 'power2.out'
+      });
+    }
+  }, []);
 
   // GSAP animations for smooth transitions
   useEffect(() => {
-    // console.log("Day/Night Mode:", isDayMode);
     // Animate scene based on day/night mode
     if (sceneRef.current) {
       gsap.to(sceneRef.current, {
@@ -48,7 +87,6 @@ const LightingScene = () => {
    * and the current day/night mode.
    */
   useEffect(() => {
-    // console.log("Top Light:", isTopLightOn);
     if (topLightRef.current) {
       // Update the light image based on day/night mode
       topLightRef.current.style.backgroundImage = `url(/images/configImages/${isDayMode ? 'day' : 'night'}_ceiling.jpg)`;
@@ -63,7 +101,6 @@ const LightingScene = () => {
 
   // Animate middle light
   useEffect(() => {
-    // console.log("Middle Light:", isMiddleLightOn);
     if (middleLightRef.current) {
       // Update the light image based on day/night mode
       middleLightRef.current.style.backgroundImage = `url(/images/configImages/${isDayMode ? 'day' : 'night'}_wall.jpg)`;
@@ -80,7 +117,7 @@ const LightingScene = () => {
     <div 
       id="lighting"
       ref={sceneRef}
-      className="relative h-[90vh] max-sm:h-[60vh]  w-full overflow-hidden bg-black"
+      className="relative h-[90vh] w-full overflow-hidden bg-black"
       style={{
         backgroundImage: `url(/images/configImages/${isDayMode ? 'day' : 'night'}.jpg)`,
         backgroundSize: 'contain',
@@ -89,6 +126,25 @@ const LightingScene = () => {
         transition: 'background-image 0.8s ease'
       }}
     >
+      {/* Clip path container for triangular animation */}
+      <div 
+        ref={clipPathRef}
+        className="absolute top-0 left-0 w-full h-full z-10"
+      >
+        {/* Large themed heading at the top */}
+        <div 
+          ref={headerRef}
+          className="w-full bg-gradient-to-r from-[#2d4133] to-[#1a2a20] py-4 sm:py-6 px-6 sm:px-10 z-50"
+        >
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white text-center">
+            Visualize Your Space
+          </h2>
+          <p className="text-sm sm:text-base md:text-lg text-white text-center mt-2 max-w-3xl mx-auto">
+            Experience our lighting solutions in your own environment. Use the controls below to toggle day/night modes and individual lights to find your perfect ambiance.
+          </p>
+        </div>
+      </div>
+
       <div 
         ref={topLightRef}
         className="absolute inset-0 mix-blend-screen"
@@ -136,7 +192,6 @@ const LightingScene = () => {
           <div 
             className="w-12 sm:w-16 h-6 sm:h-8 bg-black rounded-full p-1 relative cursor-pointer"
             onClick={() => {
-              // console.log("Vanity Light Clicked");
               setIsMiddleLightOn(!isMiddleLightOn);
             }}
           >
@@ -154,7 +209,6 @@ const LightingScene = () => {
           <div 
             className="w-12 sm:w-16 h-6 sm:h-8 bg-black rounded-full p-1 relative cursor-pointer"
             onClick={() => {
-              // console.log("Top Light Clicked");
               setIsTopLightOn(!isTopLightOn);
             }}
           >
@@ -172,7 +226,6 @@ const LightingScene = () => {
           <div 
             className="w-12 sm:w-16 h-6 sm:h-8 bg-black rounded-full p-1 relative cursor-pointer"
             onClick={() => {
-              // console.log("Day/Night Clicked");
               setIsDayMode(!isDayMode);
             }}
           >
@@ -185,16 +238,6 @@ const LightingScene = () => {
           <span className="text-white text-xs sm:text-sm mt-1 sm:mt-2">Night / Day</span>
         </div>
       </div>
-
-      {/* Explore Now Button - Commented out as per user's last edit */}
-      {/* <div className="absolute inset-0 flex items-center justify-center">
-        <button 
-          ref={buttonRef}
-          className="px-8 py-4 text-xl font-bold rounded-full bg-black text-white hover:scale-105 transition-transform duration-300"
-        >
-          Explore Now
-        </button>
-      </div> */}
     </div>
   );
 };
