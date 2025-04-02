@@ -64,7 +64,7 @@ const ModelSection = () => {
       color: "#93cfa2"
     }
   ];
-  
+
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -73,17 +73,17 @@ const ModelSection = () => {
       const textElements = containerRef.current.querySelectorAll('.text-item');
       const indicators = containerRef.current.querySelectorAll('.scroll-indicator');
       const section = sectionRef.current;
-     
+
 
       // Set initial states
-      gsap.set(textElements, { 
-        opacity: 0, 
+      gsap.set(textElements, {
+        opacity: 0,
         y: 20,
         zIndex: 0,
         visibility: 'hidden'
       });
-      gsap.set(textElements[0], { 
-        opacity: 1, 
+      gsap.set(textElements[0], {
+        opacity: 1,
         y: 0,
         zIndex: 1,
         visibility: 'visible'
@@ -95,7 +95,7 @@ const ModelSection = () => {
       texts.forEach((_, index) => {
         const startPosition = `${index * 400}vh`;
         const endPosition = `${(index + 1) * 400 - 10}vh`;
-         
+
         ScrollTrigger.create({
           trigger: section,
           start: `${startPosition} top`,
@@ -104,35 +104,35 @@ const ModelSection = () => {
           onEnter: () => {
             // Hide all texts first
             gsap.set(textElements, { visibility: 'hidden', zIndex: 0 });
-          
+
             // Show the current text
             gsap.set(textElements[index], { visibility: 'visible', zIndex: 1 });
-          
+
             if (index > 0) {
               gsap.to(textElements[index], { opacity: 1, y: 0, duration: 0.3 });
               gsap.to(textElements[index - 1], { opacity: 0, y: -20, duration: 0.3 });
             } else {
               gsap.to(textElements[index], { opacity: 1, y: 0, duration: 0.3 });
             }
-          
-          
+
+
             // Update indicators
             gsap.to(indicators, { backgroundColor: '#4a4a4a', duration: 0.3 });
             gsap.to(indicators[index], { backgroundColor: '#54bb74', duration: 0.3 });
           },
           onEnterBack: () => {
             if (index === 0) return;
-            
+
             // Hide all texts before showing the correct one
             gsap.set(textElements, { visibility: 'hidden', zIndex: 0 });
-          
+
             // Show the previous text
             gsap.set(textElements[index - 1], { visibility: 'visible', zIndex: 1 });
-          
+
             gsap.to(textElements[index], { opacity: 0, y: 20, duration: 0.3 });
             gsap.to(textElements[index - 1], { opacity: 1, y: 0, duration: 0.3 });
-          
-          
+
+
             // Update indicators
             gsap.to(indicators, { backgroundColor: '#4a4a4a', duration: 0.3 });
             gsap.to(indicators[index - 1], { backgroundColor: '#ffffff', duration: 0.3 });
@@ -152,8 +152,8 @@ const ModelSection = () => {
           gsap.set(textElements[texts.length - 1], { visibility: 'visible', zIndex: 1 });
           gsap.to(textElements[texts.length - 1], { opacity: 1, y: 0, duration: 0.3 });
           gsap.to(textElements[texts.length - 2], { opacity: 0, y: -20, duration: 0.3 });
-          
-          
+
+
           // Update indicators
           gsap.to(indicators, { backgroundColor: '#4a4a4a', duration: 0.3 });
           gsap.to(indicators[texts.length - 1], { backgroundColor: '#ffffff', duration: 0.3 });
@@ -164,8 +164,8 @@ const ModelSection = () => {
           gsap.set(textElements[texts.length - 2], { visibility: 'visible', zIndex: 1 });
           gsap.to(textElements[texts.length - 1], { opacity: 0, y: 20, duration: 0.3 });
           gsap.to(textElements[texts.length - 2], { opacity: 1, y: 0, duration: 0.3 });
-          
-          
+
+
           // Update indicators
           gsap.to(indicators, { backgroundColor: '#4a4a4a', duration: 0.3 });
           gsap.to(indicators[texts.length - 2], { backgroundColor: '#ffffff', duration: 0.3 });
@@ -187,7 +187,7 @@ const ModelSection = () => {
   }, []);
 
   return (
-    <section 
+    <section
       id="model"
       ref={sectionRef}
       className="bg-[#292929]  h-screen flex items-center relative overflow-hidden"
@@ -195,7 +195,7 @@ const ModelSection = () => {
       <div className="container mx-auto px-4 md:px-8 lg:px-16 xl:px-28">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
           {/* Left side - Model */}
-          <div 
+          <div
             className="relative w-full h-[300px] md:h-[400px] lg:h-[500px] xl:h-[600px] flex items-center justify-center rounded-xl overflow-hidden"
             style={{
               background: '#1a1a1a',
@@ -217,22 +217,22 @@ const ModelSection = () => {
                     visibility: index === 0 ? 'visible' : 'hidden'
                   }}
                 >
-                 <span className="text-[120px] md:text-[180px] lg:text-[230px] font-['Amenti'] text-[#54bb74] opacity-20 leading-none block -mb-10 md:-mb-20">
-  {text.number}
-</span>
-<h3 className="text-[#f3ebe2] font-['Amenti'] text-[28px] md:text-[36px] lg:text-[42px] mb-4 md:mb-6 uppercase font-bold">
-  {text.heading}
-</h3>
-<p className="text-[#f3ebe2] font-['Poppins'] text-[16px] md:text-[18px] leading-relaxed max-w-full md:max-w-[90%] lg:max-w-[80%] mb-2 md:mb-4">
-  {text.description}
-</p>
-<p className="text-[#93cfa2] font-['Poppins'] text-[16px] md:text-[18px] leading-relaxed max-w-full md:max-w-[90%] lg:max-w-[80%] opacity-80">
-  {text.subtext}
-</p>
+                  <span className="text-[120px] md:text-[180px] lg:text-[230px] font-['Amenti'] text-[#54bb74] opacity-20 leading-none block -mb-10 md:-mb-20">
+                    {text.number}
+                  </span>
+                  <h3 className="text-[#f3ebe2] font-['Amenti'] text-[28px] md:text-[36px] lg:text-[42px] mb-4 md:mb-6 uppercase font-bold">
+                    {text.heading}
+                  </h3>
+                  <p className="text-[#f3ebe2] font-['Poppins'] text-[16px] md:text-[18px] leading-relaxed max-w-full md:max-w-[90%] lg:max-w-[80%] mb-2 md:mb-4">
+                    {text.description}
+                  </p>
+                  <p className="text-[#93cfa2] font-['Poppins'] text-[16px] md:text-[18px] leading-relaxed max-w-full md:max-w-[90%] lg:max-w-[80%] opacity-80">
+                    {text.subtext}
+                  </p>
                 </div>
               ))}
             </div>
-            
+
             {/* Custom vertical carousel indicators */}
             <div className="absolute right-0 top-1/2 -translate-y-1/2 flex flex-col gap-4">
               {texts.map((_, index) => (

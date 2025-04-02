@@ -26,7 +26,7 @@ const LightingCarousel = ({ userType }) => {
   const [selectedColor, setSelectedColor] = useState("Green");
   const [isInProgress, setIsInProgress] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
-  const [activeMode, setActiveMode] = useState(null);
+  const [activeMode, setActiveMode] = useState('relax');
   const [showRainbowPicker, setShowRainbowPicker] = useState(true);
   const [showColorPalette, setShowColorPalette] = useState(false);
   const [pickerKnobPosition, setPickerKnobPosition] = useState({ x: 120, y: 5 }); // Default position for green
@@ -79,8 +79,8 @@ const LightingCarousel = ({ userType }) => {
     const minRGBThreshold = 20;
     const maxRGBThreshold = 240;
 
-    const maxRGBValue = Math.max(rgbValues.r, rgbValues.g, rgbValues.b);
-    const minRGBValue = Math.min(rgbValues.r, rgbValues.g, rgbValues.b);
+    const maxRGBValue = Math.max(rgbValues.r || 0, rgbValues.g || 0, rgbValues.b || 0);
+    const minRGBValue = Math.min(rgbValues.r || 0, rgbValues.g || 0, rgbValues.b || 0);
 
     // 1️⃣ Handle Off Light (when RGB values are very low)
     if (maxRGBValue < minRGBThreshold) {
@@ -98,9 +98,9 @@ const LightingCarousel = ({ userType }) => {
         (minRGBValue - maxRGBThreshold) / (255 - maxRGBThreshold); // Normalize between 0-1
       setOnLight(true);
       setRgbOpacities({
-        r: Math.max(0, rgbValues.r / 255 - whiteOpacity),
-        g: Math.max(0, rgbValues.g / 255 - whiteOpacity),
-        b: Math.max(0, rgbValues.b / 255 - whiteOpacity),
+        r: Math.max(0, rgbValues.r / 255 - globalThis.whiteOpacity),
+        g: Math.max(0, rgbValues.g / 255 - globalThis.whiteOpacity),
+        b: Math.max(0, rgbValues.b / 255 - globalThis.whiteOpacity),
       });
     } else {
       globalThis.whiteOpacity = 0;
@@ -638,7 +638,7 @@ const LightingCarousel = ({ userType }) => {
           <div className="text-center block md:hidden pt-4 pb-2">
             <h2
               ref={headingRef}
-              className="text-lg font-bold text-white mt-12 mb-1"
+              className="text-lg font-bold text-white pt-10  mb-1"
               style={{ color: brandColors.primary }}
             >
               {slides[0].title}
@@ -975,8 +975,8 @@ const LightingCarousel = ({ userType }) => {
                   <Image
                     src={
                       isMobile
-                        ? "/images/modes/party_mob.jpg"
-                        : "/images/modes/party.jpg"
+                        ? "/images/presets/party_mob.jpg"
+                        : "/images/presets/party.jpg"
                     }
                     alt="Party Mode"
                     layout="fill"
@@ -993,8 +993,8 @@ const LightingCarousel = ({ userType }) => {
                   <Image
                     src={
                       isMobile
-                        ? "/images/modes/relax_mob.jpg"
-                        : "/images/modes/relax.jpg"
+                        ? "/images/presets/relax_mob.jpg"
+                        : "/images/presets/relax.jpg"
                     }
                     alt="Relax Mode"
                     layout="fill"
@@ -1011,8 +1011,8 @@ const LightingCarousel = ({ userType }) => {
                   <Image
                     src={
                       isMobile
-                        ? "/images/modes/ambient_mob.jpg"
-                        : "/images/modes/ambient.jpg"
+                        ? "/images/presets/ambient_mob.jpg"
+                        : "/images/presets/ambient.jpg"
                     }
                     alt="Ambient Mode"
                     layout="fill"
@@ -1030,7 +1030,7 @@ const LightingCarousel = ({ userType }) => {
           </div>
 
           {/* Text and Controls Section - Smaller for mobile */}
-          <div className="relative w-1/3 h-full max-sm:w-full max-sm:h-2/5 bg-black/80 flex flex-col items-center justify-center p-8 max-sm:p-2 max-sm:flex-col-reverse">
+          <div className="relative w-1/3 h-full max-sm:w-full max-sm:h-2/5 max-sm:pb-20 bg-black/80 flex flex-col items-center justify-center p-8 max-sm:p-2 max-sm:flex-col-reverse">
             <div className="text-center mb-8 hidden md:block">
               <h2
                 className="text-3xl font-bold text-white mb-4"
@@ -1112,7 +1112,7 @@ const LightingCarousel = ({ userType }) => {
                     objectFit="contain"
                     objectPosition="center"
                     priority
-                    style={{ opacity: offLight ? offLightOpacity : 0 }}
+                    style={{ opacity: offLight ? globalThis.offLightOpacity : 0 }}
                   />
                 </div>
 
@@ -1130,7 +1130,7 @@ const LightingCarousel = ({ userType }) => {
                     objectPosition="center"
                     priority
                     style={{
-                      opacity: !onLight ? rgbValues.r / 255 : rgbOpacities.r,
+                      opacity: !onLight ? (rgbValues.r || 0) / 255 : (rgbOpacities.r || 0),
                     }}
                   />
                 </div>
@@ -1149,7 +1149,7 @@ const LightingCarousel = ({ userType }) => {
                     objectPosition="center"
                     priority
                     style={{
-                      opacity: !onLight ? rgbValues.g / 255 : rgbOpacities.g,
+                      opacity: !onLight ? (rgbValues.g || 0) / 255 : (rgbOpacities.g || 0),
                     }}
                   />
                 </div>
@@ -1168,7 +1168,7 @@ const LightingCarousel = ({ userType }) => {
                     objectPosition="center"
                     priority
                     style={{
-                      opacity: !onLight ? rgbValues.b / 255 : rgbOpacities.b,
+                      opacity: !onLight ? (rgbValues.b || 0) / 255 : (rgbOpacities.b || 0),
                     }}
                   />
                 </div>
@@ -1186,7 +1186,7 @@ const LightingCarousel = ({ userType }) => {
                     objectFit="contain"
                     objectPosition="center"
                     priority
-                    style={{ opacity: onLight ? whiteOpacity : 0 }}
+                    style={{ opacity: onLight ? globalThis.whiteOpacity : 0 }}
                   />
                 </div>
               </div>
@@ -1345,13 +1345,13 @@ const LightingCarousel = ({ userType }) => {
               <div className="max-sm:hidden">
                 <div>
                   <label className="text-red-500 md:mb-2 block font-bold text-sm max-sm:text-xs">
-                    Red: {rgbValues.r}
+                    Red: {rgbValues.r || 0}
                   </label>
                   <input
                     type="range"
                     min="0"
                     max="255"
-                    value={rgbValues.r}
+                    value={rgbValues.r || 0}
                     onChange={(e) =>
                       handleRgbChange("r", parseInt(e.target.value))
                     }
@@ -1365,13 +1365,13 @@ const LightingCarousel = ({ userType }) => {
 
                 <div>
                   <label className="text-green-500 md:mb-2 block font-bold text-sm max-sm:text-xs">
-                    Green: {rgbValues.g}
+                    Green: {rgbValues.g || 0}
                   </label>
                   <input
                     type="range"
                     min="0"
                     max="255"
-                    value={rgbValues.g}
+                    value={rgbValues.g || 0}
                     onChange={(e) =>
                       handleRgbChange("g", parseInt(e.target.value))
                     }
@@ -1385,13 +1385,13 @@ const LightingCarousel = ({ userType }) => {
 
                 <div>
                   <label className="text-blue-500 md:mb-2 block font-bold text-sm max-sm:text-xs">
-                    Blue: {rgbValues.b}
+                    Blue: {rgbValues.b || 0}
                   </label>
                   <input
                     type="range"
                     min="0"
                     max="255"
-                    value={rgbValues.b}
+                    value={rgbValues.b || 0}
                     onChange={(e) =>
                       handleRgbChange("b", parseInt(e.target.value))
                     }
