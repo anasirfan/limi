@@ -54,7 +54,6 @@ const DistributorHub = ({ userType }) => {
       }
     );
 
-    // Animate CTA section
     gsap.fromTo(
       ctaRef.current,
       { opacity: 0, y: 30 },
@@ -71,7 +70,7 @@ const DistributorHub = ({ userType }) => {
     );
 
     return () => {
-      // Clean up ScrollTrigger instances
+
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
     };
   }, []);

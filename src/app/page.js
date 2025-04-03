@@ -14,6 +14,7 @@ import SplashScreen from './components/SplashScreen';
 import AnalyticsInsights from './components/AnalyticsInsights';
 import DistributorHub from './components/DistributorHub';
 // import UserSelectionPopup from './components/UserSelectionPopup';
+// import VideoHighlightsCarousel from './components/VideoHighlightsCarousel';
 import { useEffect, useState, Suspense } from 'react';
 
 // Dynamically import CubeAnimation with SSR disabled
@@ -77,6 +78,7 @@ export default function Home() {
       {/* <UserSelectionPopup isVisible={showUserSelection} onSelect={handleUserTypeSelect} /> */}
       <Header  />
       <HeroSection  />
+      {/* <VideoHighlightsCarousel /> */}
       {/* <MotiveSection  /> */}
       <InteractiveStory  />
       <AnalyticsInsights  />
