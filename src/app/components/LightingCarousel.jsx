@@ -442,27 +442,7 @@ const LightingCarousel = ({ userType }) => {
     };
   };
 
-  const selectMode = (mode) => {
-    // Apply lighting mode settings
-    switch (mode) {
-      case "party":
-        setRgbValues({ r: 255, g: 0, b: 255 });
-        setBrightness(100);
-        break;
-      case "relax":
-        setWarmCoolValue(80);
-        setBrightness(60);
-        setRgbValues({ r: 255, g: 165, b: 0 });
-        break;
-      case "ambient":
-        setWarmCoolValue(40);
-        setBrightness(80);
-        setRgbValues({ r: 0, g: 191, b: 255 });
-        break;
-      default:
-        break;
-    }
-  };
+ 
 
   // Calculate the cool value (inverse of warm)
   const coolValue = 100 - warmCoolValue;
@@ -529,9 +509,9 @@ const LightingCarousel = ({ userType }) => {
   ];
 
   const lightingModes = [
-    { id: "party", name: "Party Mode", color: "#FF00FF" },
     { id: "relax", name: "Relax Mode", color: "#FFA500" },
     { id: "ambient", name: "Ambient Mode", color: "#00BFFF" },
+    { id: "party", name: "Party Mode", color: "#FF00FF" },
   ];
 
   // Function to copy RGB values to clipboard
@@ -550,6 +530,7 @@ const LightingCarousel = ({ userType }) => {
     coolAccent: "#4ECDC4", // Cool accent
     dark: "#292929",
     light: "#FFFFFF",
+    etonBlue: "#93CFA2",
   };
 
   return (
@@ -638,7 +619,7 @@ const LightingCarousel = ({ userType }) => {
           <div className="text-center block md:hidden pt-4 pb-2">
             <h2
               ref={headingRef}
-              className="text-lg font-bold text-white pt-10  mb-1"
+              className="text-lg font-bold text-white  mb-1"
               style={{ color: brandColors.primary }}
             >
               {slides[0].title}
@@ -1050,7 +1031,6 @@ const LightingCarousel = ({ userType }) => {
                     key={mode.id}
                     onClick={() => {
                       setActiveMode(mode.id);
-                      selectMode(mode.id);
                     }}
                     className={`px-6 py-3 max-sm:py-2 rounded-lg text-white font-medium transition-all duration-300 ${
                       activeMode === mode.id
@@ -1060,11 +1040,11 @@ const LightingCarousel = ({ userType }) => {
                     style={{
                       backgroundColor:
                         activeMode === mode.id
-                          ? mode.color
+                          ? brandColors.etonBlue
                           : "rgba(40, 40, 40, 0.8)",
                       boxShadow:
                         activeMode === mode.id
-                          ? `0 0 15px ${mode.color}80`
+                          ? `0 0 15px ${brandColors.etonBlue}80`
                           : "none",
                     }}
                   >

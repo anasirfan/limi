@@ -110,10 +110,10 @@ const InteractiveStory = () => {
         .to(
           headingRef.current,
           {
-            y: 120,
+            y: "10vh",
             scale: 0.8,
             position: "fixed",
-            top: "2rem",
+            top: "5vh",
             duration: 1,
           },
           "intro+=1"
@@ -670,8 +670,8 @@ const InteractiveStory = () => {
               width="400"
               height="400"
               style={{
-                top: "-0px",
-                left: "0%",
+                top: "-60px",
+                left: "-45%",
                 transform: "translateX(-50%)",
               }}
               shapeRendering="geometricPrecision"
@@ -707,7 +707,7 @@ const InteractiveStory = () => {
               />
             </svg>
 
-            <div className="description-text absolute top-[120%] max-xl:w-48 max-xl:-left-[100%] -left-[120%] -translate-x-1/2 -translate-y-24 w-96 text-white opacity-0 hidden md:block">
+            <div className="description-text absolute top-[90%] max-xl:w-48 max-xl:-left-[100%] -left-[120%] -translate-x-1/2 -translate-y-24 w-96 text-white opacity-0 hidden md:block">
               <h1 className="text-xl lg:text-2xl font-[Amenti] font-semibold">
                 App – Your Control Center
               </h1>
@@ -752,8 +752,11 @@ const InteractiveStory = () => {
                     <h2 className="text-2xl font-[Amenti] font-bold text-[#54bb74] mb-2">Hub – The Brain of the System</h2>
                     <p className="text-[#93CFA2] italic mb-4">Seamlessly Connects Everything</p>
                     <p className="text-white/90 text-base mb-4">
-                      The Hub acts as the core processor, managing smart integrations and connecting all lighting modules for real-time adjustments.
-                    </p>
+                    Your lighting, connected. The Hub
+brings everything together, giving you
+effortless control and seamless
+integration. One central system,
+endless possibilities.   </p>
                     <div className="bg-[#1a1a1a] p-4 rounded-lg border border-[#54bb74]/20">
                       <h3 className="text-white font-semibold mb-2">Key Features:</h3>
                       <ul className="text-white/80 space-y-2">
@@ -805,8 +808,12 @@ const InteractiveStory = () => {
                     <h2 className="text-2xl font-[Amenti] font-bold text-[#54bb74] mb-2">Base – The Power & Stability</h2>
                     <p className="text-[#93CFA2] italic mb-4">Reliable Infrastructure</p>
                     <p className="text-white/90 text-base mb-4">
-                      The Base serves as the backbone, providing secure data storage, intelligent power distribution, and seamless automation.
-                    </p>
+                    Swap, upgrade, and
+reimagine—without an
+electrician. The Base is your
+foundation for limitless design,
+making it easier than ever to
+refresh your space. </p>
                     <div className="bg-[#1a1a1a] p-4 rounded-lg border border-[#54bb74]/20">
                       <h3 className="text-white font-semibold mb-2">Key Features:</h3>
                       <ul className="text-white/80 space-y-2">
@@ -858,8 +865,9 @@ const InteractiveStory = () => {
                     <h2 className="text-2xl font-[Amenti] font-bold text-[#54bb74] mb-2">App – Your Control Center</h2>
                     <p className="text-[#93CFA2] italic mb-4">Effortless User Control</p>
                     <p className="text-white/90 text-base mb-4">
-                      With the App, you can customize lighting effects, set schedules, and create the perfect ambiance with just a tap.
-                    </p>
+                    Take control from anywhere. Adjust
+brightness, colour, and mood with a tap.
+Smart lighting, made simple. </p>
                     <div className="bg-[#1a1a1a] p-4 rounded-lg border border-[#54bb74]/20">
                       <h3 className="text-white font-semibold mb-2">Key Features:</h3>
                       <ul className="text-white/80 space-y-2">

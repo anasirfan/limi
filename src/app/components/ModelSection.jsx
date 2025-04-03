@@ -18,47 +18,47 @@ const ModelSection = () => {
     {
       id: 1,
       number: "01",
-      heading: "Placement",
-      description: "Begin with a pendant positioned on the ceiling, setting the foundation for transformation.",
-      subtext: "This marks the starting point of an evolving lighting experience.",
+      heading: "Begin with a tap",
+      description: "Our light configurator lets you effortlessly design your perfect lighting setup with just a tap. ",
+      subtext: "Tailor brightness, colour, and atmosphere to match your style, and bring your vision to life with ease and precision.",
       color: "#54bb74"
     },
     {
       id: 2,
       number: "02",
-      heading: "Repositioning",
-      description: "The pendant transitions from the ceiling to a lamp, adapting to a new function.",
-      subtext: "A shift in placement opens up creative possibilities.",
+      heading: "Future-Proof Your Space",
+      description: "Our VR and AR spaces offers endless possibilities to shape and transform your space.",
+      subtext: "From creating lifelike environments to setting the perfect atmosphere, these technologies ensure your space is adaptable and ready tomorrow’s innovations.",
       color: "#93cfa2"
     },
     {
       id: 3,
       number: "03",
-      heading: "Replacement",
-      description: "A new pendant takes its place on the ceiling, introducing a fresh aesthetic.",
-      subtext: "Lighting evolves as new elements are introduced.",
+      heading: "Laying the foundation",
+      description: "The base and pendant lights positioned on the ceiling are the starting point for your space’s transformation.",
+      subtext: "These elements set the tone, providing the perfect balance of functionality and design to elevate any room.",
       color: "#54bb74"
     },
     {
       id: 4,
       number: "04",
-      heading: "Adaptation",
-      description: "The new pendant moves to the wall while the previous one transitions from the lamp.",
-      subtext: "Dynamic placements create an ever-changing ambiance.",
+      heading: "Redefining Possibilities",
+      description: "Repositioning your pendants from the ceiling to the wall or lamp allows you to reimagine their function and design.",
+      subtext: "New pendants can easily connect to the existing base, offering a fresh aesthetic while maintaining seamless functionality.",
       color: "#93cfa2"
     },
     {
       id: 5,
       number: "05",
-      heading: "Restoration",
-      description: "The previous pendant returns to the ceiling, completing the transformation cycle.",
-      subtext: "A seamless return to the original placement, ready for the next cycle.",
+      heading: "Endless Combinations",
+      description: "Swap and mix-and-match pendants to create limitless combinations that suit your evolving style.",
+      subtext: "With interchangeable designs, you can effortlessly refresh your space, experimenting with new looks whenever inspiration strikes.",
       color: "#54bb74"
     },
     {
       id: 6,
       number: "06",
-      heading: "Continuity",
+      heading: "Infinite Possibilities",
       description: "The cycle repeats, ensuring a continuous loop of lighting evolution.",
       subtext: "Endless adaptability for a dynamic and immersive space.",
       color: "#93cfa2"

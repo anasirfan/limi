@@ -81,11 +81,11 @@ export default function Home() {
       {/* <VideoHighlightsCarousel /> */}
       {/* <MotiveSection  /> */}
       <InteractiveStory  />
-      <AnalyticsInsights  />
       <LightingCarousel  />
       <ModelSection  />
       
       <LightingScene  />
+      <AnalyticsInsights  />
       <DistributorHub  />
       {/* {!isMobile && <MouseTrail />} */}
       <Footer  />

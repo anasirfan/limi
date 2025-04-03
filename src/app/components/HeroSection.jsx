@@ -12,11 +12,7 @@ function HeroSection() {
   const sectionRef = useRef(null);
   const videoRef = useRef(null);
   const [descriptionLines, setDescriptionLines] = useState([
-    "Experience the <span class='highlight'>future of lighting</span> with our innovative solutions.",
-    "<span class='highlight'>Intelligent design</span> that seamlessly adapts to your lifestyle.",
-    "Putting <span class='highlight'>modular innovation</span> and intuitive control at your fingertips.",
-    "Revolutionary <span class='highlight'>illumination technology</span> for the modern home.",
-    "Transform your space into something <span class='highlight'>extraordinary</span>."
+    "Lighting should adapt to you, not the other way around. With <span class='highlight'>seamless control</span> and <span class='highlight'>modular design</span>, we make it effortless to transform your space—<span class='highlight'>no electrician needed</span>."
   ]);
 
   useEffect(() => {
@@ -140,7 +136,7 @@ function HeroSection() {
               <style jsx>{`
                 .typing-line {
                   overflow: hidden;
-                  padding: 2px 8px;
+                  padding: 12px 18px;
                   text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
                   position: relative;
                   margin-bottom: 10px;
@@ -174,7 +170,7 @@ function HeroSection() {
               <a 
                 ref={buttonRef}
                 href="#lighting-carousel"
-                className="cta-button px-6 py-3 md:px-8 md:py-4 bg-[#54bb74] text-[#292929] rounded-full text-base md:text-lg font-bold transform transition-all hover:scale-105 hover:shadow-lg hover:shadow-[#54bb74]/50 hover:bg-[#93CFA2] focus:outline-none focus:ring-2 focus:ring-[#292929] focus:ring-opacity-50 inline-block"
+                className="cta-button px-6 py-3 md:px-8 md:py-4 bg-[#306b43] text-white rounded-full text-base md:text-lg font-bold transform transition-all hover:scale-105 hover:shadow-lg hover:shadow-[#54bb74]/50 hover:bg-[#93CFA2] focus:outline-none focus:ring-2 focus:ring-[#292929] focus:ring-opacity-50 inline-block"
               >
                 Explore Smart Lighting
               </a>
