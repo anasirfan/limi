@@ -616,7 +616,7 @@ const LightingCarousel = ({ userType }) => {
           style={{ backgroundColor: "#121212" }}
         >
           {/* Mobile title - Smaller and more compact */}
-          <div className="text-center block md:hidden pt-4 pb-2">
+          <div className="text-center block md:hidden pt-16 pb-2">
             <h2
               ref={headingRef}
               className="text-lg font-bold text-white  mb-1"

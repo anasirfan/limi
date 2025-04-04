@@ -13,10 +13,11 @@ import ScrollToTop from './components/ScrollToTop';
 import SplashScreen from './components/SplashScreen';
 import AnalyticsInsights from './components/AnalyticsInsights';
 import DistributorHub from './components/DistributorHub';
+import LightingStyleCompare from './components/LightingStyleCompare';
+
 // import UserSelectionPopup from './components/UserSelectionPopup';
 // import VideoHighlightsCarousel from './components/VideoHighlightsCarousel';
 import { useEffect, useState, Suspense } from 'react';
-
 // Dynamically import CubeAnimation with SSR disabled
 const CubeAnimation = dynamic(() => import('./components/CubeAnimation'), { 
   ssr: false,
@@ -81,6 +82,7 @@ export default function Home() {
       {/* <VideoHighlightsCarousel /> */}
       {/* <MotiveSection  /> */}
       <InteractiveStory  />
+      {/* <LightingStyleCompare  /> */}
       <LightingCarousel  />
       <ModelSection  />
       

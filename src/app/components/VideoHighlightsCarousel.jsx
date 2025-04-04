@@ -314,7 +314,7 @@ const VideoHighlightsCarousel = () => {
           </button>
         </div>
 
-        {/* Main carousel container */}
+
         <div className="relative mx-auto max-w-6xl">
           <div 
             ref={carouselRef}
@@ -325,7 +325,7 @@ const VideoHighlightsCarousel = () => {
               boxShadow: "0 20px 50px -12px rgba(0,0,0,0.5), 0 0 30px rgba(0,0,0,0.3) inset"
             }}
           >
-            {/* Video element */}
+   
             <video
               ref={videoRef}
               className="absolute top-0 left-0 w-full h-full object-cover"
@@ -336,7 +336,6 @@ const VideoHighlightsCarousel = () => {
               <source src="/videos/BgVideo.mp4" type="video/mp4" />
             </video>
 
-            {/* Placeholder images (shown while video loads) */}
             {!videoLoaded && (
               <div className="absolute top-0 left-0 w-full h-full">
                 <Image
@@ -350,7 +349,6 @@ const VideoHighlightsCarousel = () => {
               </div>
             )}
 
-            {/* Gradient overlays for better text readability and edge blending */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/20 pointer-events-none"></div>
             <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-transparent to-black/30 pointer-events-none"></div>
 
