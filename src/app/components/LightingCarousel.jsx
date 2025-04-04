@@ -1203,7 +1203,7 @@ const LightingCarousel = ({ userType }) => {
                       setShowColorPalette(false);
                     }}
                   >
-                    Customise
+                    Customise 
                   </button>
                   
                   <button 
