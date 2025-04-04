@@ -67,11 +67,9 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head />
       <body className={poppins.className} suppressHydrationWarning>
-      
         <SmoothScroll>
-        
+          <ToastContainer />
           {children}
         </SmoothScroll>
       </body>
