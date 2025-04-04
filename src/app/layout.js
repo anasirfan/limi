@@ -22,7 +22,7 @@ export const metadata = {
     siteName: "LIMI Lighting",
     images: [
       {
-        url: "https://www.limilighting.co.uk/images/og-image.jpg", // Use full absolute URL
+        url: "https://www.limilighting.co.uk/og-image.png", // Use full absolute URL
         width: 1200,
         height: 630,
         alt: "LIMI Smart Lighting Preview",
@@ -35,7 +35,7 @@ export const metadata = {
     card: "summary_large_image",
     title: "LIMI | Lighting Made Limitless",
     description: "Explore smart modular lighting designed to fit your mood, your style, your life.",
-    images: ["https://www.limilighting.co.uk/images/og-image.jpg"], // Use absolute URL
+    images: ["https://www.limilighting.co.uk/og-image.png"], // Use absolute URL
   },
 
   icons: {
