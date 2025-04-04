@@ -863,8 +863,41 @@ const LightingCarousel = ({ userType }) => {
               <div
                 ref={brightnessDialRef}
                 className="relative w-64 h-64 max-sm:w-40 max-sm:h-40 rounded-full overflow-hidden cursor-pointer mx-auto touch-none"
+                onClick={(e) => {
+                  // Calculate brightness based on click position
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const centerX = rect.width / 2;
+                  const centerY = rect.height / 2;
+                  const x = e.clientX - rect.left - centerX;
+                  const y = e.clientY - rect.top - centerY;
+                  
+                  // Calculate angle and convert to brightness
+                  const angleRad = Math.atan2(y, x);
+                  let angleDeg = (angleRad * 180) / Math.PI + 90; // +90 to start from top
+                  if (angleDeg < 0) angleDeg += 360;
+                  const newValue = Math.round((angleDeg / 360) * 100);
+                  setBrightness(newValue);
+                }}
                 onMouseDown={(e) => handleDialMouseDown(e, "brightness")}
-                onTouchStart={(e) => handleDialMouseDown(e, "brightness")}
+                onTouchStart={(e) => {
+                  // For touch events, calculate brightness directly
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const centerX = rect.width / 2;
+                  const centerY = rect.height / 2;
+                  const touch = e.touches[0];
+                  const x = touch.clientX - rect.left - centerX;
+                  const y = touch.clientY - rect.top - centerY;
+                  
+                  // Calculate angle and convert to brightness
+                  const angleRad = Math.atan2(y, x);
+                  let angleDeg = (angleRad * 180) / Math.PI + 90; // +90 to start from top
+                  if (angleDeg < 0) angleDeg += 360;
+                  const newValue = Math.round((angleDeg / 360) * 100);
+                  setBrightness(newValue);
+                  
+                  // Also start drag handling for continuous adjustment
+                  handleDialMouseDown(e, "brightness");
+                }}
               >
                 {/* SVG for the circular path */}
                 <svg

@@ -14,6 +14,30 @@ const poppins = Poppins({
 export const metadata = {
   title: "LIMI | Lighting Made Limitless",
   description: "A Journey Through Time",
+  openGraph: {
+    title: "LIMI | Lighting Made Limitless",
+    description: "Explore smart modular lighting designed to fit your mood, your style, your life.",
+    url: "https://limilighting.co.uk",
+    siteName: "LIMI Lighting",
+    images: [
+      {
+        url: "/images/svgLogos/__Logo_Icon_Colored.svg", // store a 1200x630 image in your public folder
+        width: 1200,
+        height: 630,
+        alt: "LIMI Smart Lighting Preview",
+      },
+    ],
+    type: "website",
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "LIMI | Lighting Made Limitless",
+    description: "Explore smart modular lighting designed to fit your mood, your style, your life.",
+    images: ["/images/svgLogos/__Logo_Icon_Colored.svg"],
+    // creator: "@limilighting", // optional, replace with real Twitter if available
+  },
+
   icons: {
     icon: [
       { url: '/images/svgLogos/__Logo_Icon_Colored.svg', type: 'image/svg+xml' }
@@ -21,7 +45,22 @@ export const metadata = {
     shortcut: [
       { url: '/images/svgLogos/__Logo_Icon_Colored.svg', type: 'image/svg+xml' }
     ]
-  }
+  },
+  obots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+
+  alternates: {
+    canonical: 'https://www.limilighting.co.uk',
+  },
 };
 
 export default function RootLayout({ children }) {
