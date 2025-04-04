@@ -54,13 +54,13 @@ const Header = () => {
 
   const sections = [
     { id: 'hero', label: 'Home' },
-    { id: 'motive', label: 'Our Vision' },
+    // { id: 'motive', label: 'Our Vision' },
     { id: 'interactive', label: 'Our Journey' },
-    { id: 'cube', label: 'Experience LIMI' },
-    { id: 'analytics-insights', label: 'Analytics Insights' },
+    // { id: 'cube', label: 'Experience LIMI' },
     { id: 'lighting-carousel', label: 'Explore Smart Lighting' },
     { id: 'model', label: 'Transformation' },
     { id: 'lighting', label: 'Configurations' },
+    { id: 'analytics-insights', label: 'Analytics Insights' },
     { id: 'distributor-hub', label: 'Become a Distributor' },
   ];
 
@@ -75,7 +75,7 @@ const Header = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 font-['Poppins']">
+    <header className="fixed top-0 left-0 right-0 z-[9999] font-['Poppins']">
       <div className="absolute inset-0 bg-charcoal/20 backdrop-blur-sm"></div>
       <div className="container mx-auto px-4 py-4 relative">
         <div className="flex items-center justify-between">
