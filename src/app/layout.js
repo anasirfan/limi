@@ -13,15 +13,16 @@ const poppins = Poppins({
 
 export const metadata = {
   title: "LIMI | Lighting Made Limitless",
-  description: "A Journey Through Time",
+  description: "Explore smart modular lighting designed to fit your mood, your style, your life.",
+
   openGraph: {
     title: "LIMI | Lighting Made Limitless",
     description: "Explore smart modular lighting designed to fit your mood, your style, your life.",
-    url: "https://limilighting.co.uk",
+    url: "https://www.limilighting.co.uk",  // Use same format as canonical
     siteName: "LIMI Lighting",
     images: [
       {
-        url: "/images/svgLogos/__Logo_Icon_Colored.svg", // store a 1200x630 image in your public folder
+        url: "https://www.limilighting.co.uk/images/og-image.jpg", // Use full absolute URL
         width: 1200,
         height: 630,
         alt: "LIMI Smart Lighting Preview",
@@ -34,8 +35,7 @@ export const metadata = {
     card: "summary_large_image",
     title: "LIMI | Lighting Made Limitless",
     description: "Explore smart modular lighting designed to fit your mood, your style, your life.",
-    images: ["/images/svgLogos/__Logo_Icon_Colored.svg"],
-    // creator: "@limilighting", // optional, replace with real Twitter if available
+    images: ["https://www.limilighting.co.uk/images/og-image.jpg"], // Use absolute URL
   },
 
   icons: {
@@ -46,7 +46,8 @@ export const metadata = {
       { url: '/images/svgLogos/__Logo_Icon_Colored.svg', type: 'image/svg+xml' }
     ]
   },
-  obots: {
+
+  robots: {
     index: true,
     follow: true,
     googleBot: {
@@ -59,7 +60,7 @@ export const metadata = {
   },
 
   alternates: {
-    canonical: 'https://www.limilighting.co.uk',
+    canonical: 'https://www.limilighting.co.uk', // Same format as OG url
   },
 };
 
