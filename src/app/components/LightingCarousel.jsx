@@ -862,7 +862,7 @@ const LightingCarousel = ({ userType }) => {
             <div className="w-full max-w-xs max-sm:max-w-[80%]">
               <div
                 ref={brightnessDialRef}
-                className="relative w-64 h-64 max-sm:w-40 max-sm:h-40 rounded-full overflow-hidden cursor-pointer mx-auto"
+                className="relative w-64 h-64 max-sm:w-40 max-sm:h-40 rounded-full overflow-hidden cursor-pointer mx-auto touch-none"
                 onMouseDown={(e) => handleDialMouseDown(e, "brightness")}
                 onTouchStart={(e) => handleDialMouseDown(e, "brightness")}
               >

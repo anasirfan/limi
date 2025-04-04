@@ -13,7 +13,7 @@ import ScrollToTop from './components/ScrollToTop';
 import SplashScreen from './components/SplashScreen';
 import AnalyticsInsights from './components/AnalyticsInsights';
 import DistributorHub from './components/DistributorHub';
-import LightingStyleCompare from './components/LightingStyleCompare';
+// import LightingStyleCompare from './components/LightingStyleCompare';
 
 // import UserSelectionPopup from './components/UserSelectionPopup';
 // import VideoHighlightsCarousel from './components/VideoHighlightsCarousel';

@@ -125,28 +125,28 @@ const ImageOpacity = () => {
           end: `${6 * 400}vh top`, // Shorter scroll distance on mobile
           scrub: isMobile ? 0.5 : 1, // Faster scrub on mobile
           markers: false,
-          onEnter: () => {
-            // Optimize by only showing images when in view
-            if (containerRef.current) {
-              containerRef.current.style.visibility = "visible";
-            }
-          },
-          onLeave: () => {
-            // Hide when scrolled past to save resources
-            if (containerRef.current) {
-              containerRef.current.style.visibility = "hidden";
-            }
-          },
-          onEnterBack: () => {
-            if (containerRef.current) {
-              containerRef.current.style.visibility = "visible";
-            }
-          },
-          onLeaveBack: () => {
-            if (containerRef.current) {
-              containerRef.current.style.visibility = "hidden";
-            }
-          },
+          // onEnter: () => {
+          //   // Optimize by only showing images when in view
+          //   if (containerRef.current) {
+          //     containerRef.current.style.visibility = "visible";
+          //   }
+          // },
+          // onLeave: () => {
+          //   // Hide when scrolled past to save resources
+          //   if (containerRef.current) {
+          //     containerRef.current.style.visibility = "hidden";
+          //   }
+          // },
+          // onEnterBack: () => {
+          //   if (containerRef.current) {
+          //     containerRef.current.style.visibility = "visible";
+          //   }
+          // },
+          // onLeaveBack: () => {
+          //   if (containerRef.current) {
+          //     containerRef.current.style.visibility = "hidden";
+          //   }
+          // },
         },
       });
 
@@ -207,7 +207,7 @@ const ImageOpacity = () => {
       ref={containerRef}
       className="relative w-full h-full"
       id="pendant-animation-container"
-      style={{ visibility: "hidden" }} // Start hidden until in view
+      // style={{ visibility: "visible" }}
     >
       {/* Room transformation images - one for each section */}
       <Image
