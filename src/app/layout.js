@@ -23,8 +23,6 @@ export const metadata = {
     images: [
       {
         url: "https://www.limilighting.co.uk/og-image.png", // Use full absolute URL
-        width: 1200,
-        height: 630,
         alt: "LIMI Smart Lighting Preview",
       },
     ],
