@@ -178,7 +178,7 @@ export default function CustomerProfile() {
         }
         
         // If not a test customer, fetch from API
-        const response = await fetch(`https://limi-lighting.co.uk/client/get_customer_details/${customerId}`);
+        const response = await fetch(`https://api.limitless-lighting.co.uk/client/get_customer_details/${customerId}`);
         
         if (!response.ok) {
           throw new Error('Failed to fetch customer data');
@@ -205,8 +205,8 @@ export default function CustomerProfile() {
           });
           
           // Process images from the API response - backend will provide direct URLs
-          const businessCardFront = customerData.images?.frontCard || null;
-          const businessCardBack = customerData.images?.backCard || null;
+          const businessCardFront = customerData.images?.frontCardImage?.url || null;
+          const businessCardBack = customerData.images?.backCardImage?.url || null;
           
           // Combine API data with product information
           setCustomer({
@@ -216,7 +216,9 @@ export default function CustomerProfile() {
             businessCardBack: businessCardBack,
             profileId: customerData.profileId,
             // Format profile URL as /customer/[profileId]
-            profileUrl: `/customer/${customerData.profileId}`,
+            profileUrl: customerData.profileUrl || `/customer/${customerData.profileId}`,
+            clientCompanyInfo: customerData.clientCompanyInfo,
+            notes: customerData.notes,
             products: customerProducts,
             companyInfo: defaultCompanyInfo
           });
@@ -283,9 +285,17 @@ export default function CustomerProfile() {
                 <div className="flex items-center">
                   <FaQrcode className="text-[#93cfa2] mr-2" />
                   <span className="text-gray-300 font-mono">
-                    Customer ID: {customerId}
+                    Customer ID: {customer.profileId || customerId}
                   </span>
                 </div>
+                {customer.clientCompanyInfo && (
+                  <div className="mt-2 flex items-center">
+                    <FaBuilding className="text-[#93cfa2] mr-2" />
+                    <span className="text-gray-300">
+                      {customer.clientCompanyInfo}
+                    </span>
+                  </div>
+                )}
                 {customer.itemCodes && customer.itemCodes.length > 0 && (
                   <div className="mt-2 flex flex-wrap gap-2">
                     {customer.itemCodes.map((code, index) => (
@@ -293,6 +303,11 @@ export default function CustomerProfile() {
                         {code}
                       </span>
                     ))}
+                  </div>
+                )}
+                {customer.notes && (
+                  <div className="mt-3 bg-[#292929]/50 p-2 rounded">
+                    <p className="text-gray-300 text-sm italic">Notes: {customer.notes}</p>
                   </div>
                 )}
               </div>
@@ -305,10 +320,11 @@ export default function CustomerProfile() {
                   <div className="relative h-48 md:h-64 overflow-hidden rounded-lg shadow-lg">
                     {customer.businessCardFront ? (
                       <Image 
-                        src={customer.businessCardFront || '/images/businessCard/default-front.jpg'} 
+                        src={customer.businessCardFront} 
                         alt="Business Card Front" 
-                        layout="fill"
-                        objectFit="cover"
+                        fill
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                        style={{ objectFit: 'cover' }}
                         className="hover:scale-105 transition-transform duration-300"
                       />
                     ) : (
@@ -325,10 +341,11 @@ export default function CustomerProfile() {
                   <div className="relative h-48 md:h-64 overflow-hidden rounded-lg shadow-lg">
                     {customer.businessCardBack ? (
                       <Image 
-                        src={customer.businessCardBack || '/images/businessCard/default-back.jpg'} 
+                        src={customer.businessCardBack} 
                         alt="Business Card Back" 
-                        layout="fill"
-                        objectFit="cover"
+                        fill
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                        style={{ objectFit: 'cover' }}
                         className="hover:scale-105 transition-transform duration-300"
                       />
                     ) : (
@@ -403,8 +420,9 @@ export default function CustomerProfile() {
                                 <Image 
                                   src={product.image}
                                   alt={product.name}
-                                  layout="fill"
-                                  objectFit="cover"
+                                  fill
+                                  sizes="(max-width: 768px) 100vw, 50vw"
+                                  style={{ objectFit: 'cover' }}
                                   className="hover:scale-105 transition-transform duration-300"
                                 />
                               </div>
@@ -431,7 +449,7 @@ export default function CustomerProfile() {
                 {/* Call to Action */}
                 <div className="mt-8 text-center">
                   <p className="text-gray-400 mb-4">Thank you for your interest in LIMI products</p>
-                  <a href="https://limi-lighting.co.uk" target="_blank" rel="noopener noreferrer" className="inline-block bg-[#54bb74] hover:bg-[#93cfa2] text-[#292929] font-bold py-3 px-6 rounded-full transition-colors duration-300">
+                  <a href="https://limilighting.co.uk" target="_blank" rel="noopener noreferrer" className="inline-block bg-[#54bb74] hover:bg-[#93cfa2] text-[#292929] font-bold py-3 px-6 rounded-full transition-colors duration-300">
                     Visit Our Website
                   </a>
                 </div>
