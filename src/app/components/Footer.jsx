@@ -107,7 +107,7 @@ const Footer = () => {
                 <svg className="w-5 h-5 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                 </svg>
-                <a href="mailto:info@limi3d.com" className="text-gray-300 hover:text-emerald-500 transition-colors">info@limi.com</a>
+                <a href="mailto:hello@limilighting.com" className="text-gray-300 hover:text-emerald-500 transition-colors">hello@limilighting.com</a>
               </li>
               
             </ul>
@@ -117,7 +117,7 @@ const Footer = () => {
         {/* Bottom Section */}
         <div className="mt-12 pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-400 text-sm mb-4 md:mb-0">
-            &copy; {new Date().getFullYear()} LIMI 3D. All rights reserved.
+            &copy; {new Date().getFullYear()} LIMI Lighting. All rights reserved.
           </p>
           <div className="flex space-x-6">
             <Link href="/privacy-policy" className="text-gray-300 hover:text-emerald-500 transition-colors">

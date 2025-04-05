@@ -151,14 +151,14 @@ const DistributorHub = ({ userType }) => {
           Reach out to our distributor relations team to explore partnership opportunities and discover how we can grow together.
           </p>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-1 w-1/3 mx-auto gap-4">
             <a 
-              href="mailto:distributors@limi.com" 
+              href="mailto:hello@limilighting.com" 
               className="flex items-center justify-center gap-2 bg-[#292929] hover:bg-[#54BB74] text-[#54BB74] hover:text-white border border-[#54BB74] py-3 px-6 rounded-md transition-colors duration-300"
             >
               <FaEnvelope /> Email Us
             </a>
-            <a 
+            {/* <a 
               href="https://wa.me/12345678900" 
               target="_blank" 
               rel="noopener noreferrer"
@@ -173,7 +173,7 @@ const DistributorHub = ({ userType }) => {
               className="flex items-center justify-center gap-2 bg-[#292929] hover:bg-[#54BB74] text-[#54BB74] hover:text-white border border-[#54BB74] py-3 px-6 rounded-md transition-colors duration-300"
             >
               <FaWpforms /> Inquiry Form
-            </a>
+            </a> */}
           </div>
         </div>
 
