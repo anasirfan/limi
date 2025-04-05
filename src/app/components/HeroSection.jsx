@@ -113,7 +113,7 @@ function HeroSection() {
             <div className="text-white self-end max-md:mt-16 -mb-6 max-sm:-mb-12">
               <h1 
                 ref={headingRef}
-                className="text-3xl md:text-6xl max-sm:text-4xl font-bold mb-6 max-md:text-center"
+                className="text-3xl md:text-6xl max-sm:text-4xl font-bold mb-32 max-md:mb-6 max-md:text-center"
               >
                 From Standard <br className="md:block hidden"></br>to Smart
               </h1>
@@ -122,7 +122,7 @@ function HeroSection() {
             <div className="text-white max-md:text-center">
               <div 
                 ref={descriptionRef}
-                className="hero-description mt-20 max-sm:mt-0 text-lg max-sm:text-base mb-8 leading-relaxed max-w-md max-md:mx-auto"
+                className="hero-description font-[Poppins] mt-40 max-sm:mt-0 text-lg max-sm:text-base mb-8 leading-relaxed max-w-md max-md:mx-auto"
               >
                 {descriptionLines.map((line, index) => (
                   <p 
@@ -140,6 +140,8 @@ function HeroSection() {
                   text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
                   position: relative;
                   margin-bottom: 10px;
+                  text-align: justify;
+                  
                 }
                 .typing-line::after {
                   content: '';
@@ -148,7 +150,7 @@ function HeroSection() {
                   top: 0;
                   width: 100%;
                   height: 100%;
-                  background: rgba(41, 41, 41, 0.7);
+
                   z-index: -1;
                   border-radius: 4px;
                 }
@@ -157,12 +159,10 @@ function HeroSection() {
                     margin-bottom: 12px;
                     padding: 4px 10px;
                   }
-                  .typing-line::after {
-                    background: rgba(41, 41, 41, 0.8);
-                  }
+                 
                 }
                 :global(.highlight) {
-                  color: #54bb74;
+                  color: #96c8a2;
                   font-weight: 600;
                   text-shadow: 0 0 8px rgba(84, 187, 116, 0.3);
                 }

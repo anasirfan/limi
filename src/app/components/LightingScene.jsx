@@ -140,8 +140,7 @@ const LightingScene = ({ userType }) => {
             Visualize Your Space
           </h2>
           <p className="text-sm sm:text-base md:text-lg text-white text-center mt-2 max-w-3xl mx-auto">
-            Experience our lighting solutions in your own environment. Use the controls below to toggle day/night modes and individual lights to find your perfect ambiance.
-          </p>
+          Discover our lighting solutions within your own space. Adjust the settings below to switch between day and night modes and to control individual lights, helping you create the ideal atmosphere. </p>
         </div>
       </div>
 

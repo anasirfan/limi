@@ -55,7 +55,7 @@ const AnalyticsInsights = ({ userType }) => {
       icon: <FaChartLine className="text-3xl" />,
     },
     {
-      title: "Projected Demand",
+      title: "Trend Prediction & Adaptation",
       value: 350,
       suffix: "+",
       description: "Year when modular smart lighting is expected to dominate residential & commercial spaces",
