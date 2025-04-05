@@ -9,13 +9,13 @@ import { FaUser, FaQrcode, FaBuilding, FaEnvelope, FaPhone } from 'react-icons/f
 
 // Test customer profiles for development and exhibition
 const testCustomers = {
-  'TEST001': {
+  'test001': {
     staffName: 'John from LIMI',
     itemCodes: ['LIMI-001', 'LIMI-005', 'LIMI-012'],  // These will map to product images 1, 5, and 12
     businessCardFront: '/images/businessCard/front1.jpg',
     businessCardBack: '/images/businessCard/back1.jpg'
   },
-  'TEST002': {
+  'test002': {
     staffName: 'Sarah from LIMI',
     itemCodes: ['LIMI-003', 'LIMI-007', 'LIMI-015', 'LIMI-018'],  // These will map to product images 3, 7, 15, and 18
     businessCardFront: '/images/businessCard/front2.jpg',
