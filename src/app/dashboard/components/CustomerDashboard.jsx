@@ -442,8 +442,8 @@ export default function CustomerDashboard({ token }) {
 
       {/* Customer details modal */}
       {showModal && selectedCustomer && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1e1e1e] rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center max-sm:mt-12 z-50 p-4 overflow-y-auto pt-16 md:pt-4">
+          <div className="bg-[#1e1e1e] rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto mt-10 md:mt-0">
             <div className="sticky top-0 bg-[#1e1e1e] p-4 border-b border-[#333333] flex justify-between items-center">
               <h3 className="text-xl font-[Amenti] text-[#93cfa2]">
                 Customer Details: {selectedCustomer.clientCompanyInfo}
@@ -507,11 +507,11 @@ export default function CustomerDashboard({ token }) {
               </div>
               
               {/* Business card images */}
-              <h4 className="text-lg font-semibold text-[#93cfa2] mb-3">Business Card Images</h4>
+              <h4 className="text-lg font-semibold text-[#93cfa2] mb-3">Attached Images</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Front of Business Card */}
                 <div className="bg-[#292929]/50 p-4 rounded-lg">
-                  <h5 className="text-md font-semibold text-[#93cfa2] mb-3">Front</h5>
+                  {/* <h5 className="text-md font-semibold text-[#93cfa2] mb-3">Front</h5> */}
                   <div className="relative h-48 md:h-64 overflow-hidden rounded-lg shadow-lg">
                     {selectedCustomer.images?.frontCardImage?.url ? (
                       <Image 
@@ -532,7 +532,7 @@ export default function CustomerDashboard({ token }) {
                 
                 {/* Back of Business Card */}
                 <div className="bg-[#292929]/50 p-4 rounded-lg">
-                  <h5 className="text-md font-semibold text-[#93cfa2] mb-3">Back</h5>
+                  {/* <h5 className="text-md font-semibold text-[#93cfa2] mb-3">Back</h5> */}
                   <div className="relative h-48 md:h-64 overflow-hidden rounded-lg shadow-lg">
                     {selectedCustomer.images?.backCardImage?.url ? (
                       <Image 
