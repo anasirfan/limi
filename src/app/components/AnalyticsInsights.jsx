@@ -48,24 +48,24 @@ const AnalyticsInsights = ({ userType }) => {
   // Market insights data
   const marketInsights = [
     {
-      title: "Market Growth",
+      title: "Trend Prediction & Adaptation",
       value: 42,
       suffix: "%",
-      description: "Smart lighting adoption increased in the last year",
+      description: "Leverage real-time data to forecast design trends and adjust inventory or displays ahead of market shifts.",
       icon: <FaChartLine className="text-3xl" />,
     },
     {
-      title: "Trend Prediction & Adaptation",
+      title: "Stock & Demand Optimisation",
       value: 350,
       suffix: "+",
-      description: "Year when modular smart lighting is expected to dominate residential & commercial spaces",
+      description: "Use usage and engagement data to fine-tune stock levels, reduce overstock, and ensure high-demand items are always available.",
       icon: <FaLightbulb className="text-3xl" />,
     },
     {
-      title: "Distributor Network",
+      title: "Performance-Driven Product Development",
       value: 24,
       suffix: "+",
-      description: "Distributors onboarded in the last 6 months",
+      description: "Identify which styles, colours, and features resonate most to guide future design and production decisions.",
       icon: <FaRegLightbulb className="text-3xl" />,
     },
   ];
@@ -127,26 +127,50 @@ const AnalyticsInsights = ({ userType }) => {
     {
       stage: "In Production",
       product: "LIMI Connect Hub",
-      description: "Central control unit for all LIMI lighting products",
-      availability: "Available for pre-orders",
+      description: "The central brain of the system—seamlessly controls all LIMI lighting products for effortless, unified management.",
+      availability: "Step 1: Foundation Setup",
       progress: 90,
       image: "https://images.unsplash.com/photo-1558002038-1055907df827?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
     },
     {
+      stage: "In Production",
+      product: "LIMI App",
+      description: "The heart of the LIMI ecosystem—designed for total control, effortless setup, and ready to grow with every new feature and product release.",
+      availability: "Step 2: Intuitive Control",
+      progress: 95,
+      image: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
+    },
+    {
       stage: "Testing Phase",
       product: "LIMI Adaptive",
-      description: "Smart lighting with enhanced automation features",
-      availability: "Coming Q3 2025",
+      description: "Smart lighting with enhanced automation, responding to movement, time of day, and environment for intuitive everyday use.",
+      availability: "Step 3: Smart Automation",
       progress: 65,
       image: "https://images.unsplash.com/photo-1563099045-dd7d9aebaa49?q=80&w=2096&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     },
     {
-      stage: "Concept Stage",
-      product: "LIMI AI",
-      description: "AI-driven adaptive lighting that learns user preferences",
-      availability: "Planned for 2026",
-      progress: 30,
+      stage: "Development",
+      product: "LIMI Sense AI",
+      description: "An AI-powered lighting engine that learns your preferences to create personalised moods and effortless ambience.",
+      availability: "Step 4: AI Intelligence",
+      progress: 40,
       image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
+    },
+    {
+      stage: "Concept Stage",
+      product: "LIMI Modular+",
+      description: "Even faster reconfiguration and extended design flexibility with next-gen modular components.",
+      availability: "Step 5: Extended Flexibility",
+      progress: 25,
+      image: "https://images.unsplash.com/photo-1565814329452-e1efa11c5b89?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
+    },
+    {
+      stage: "Planning",
+      product: "LIMI Insight Dashboard",
+      description: "A smart backend for retailers and distributors—track performance, trends, and optimise inventory.",
+      availability: "Step 6: Advanced Analytics",
+      progress: 15,
+      image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
     },
   ];
 
@@ -590,7 +614,7 @@ const AnalyticsInsights = ({ userType }) => {
                   </div>
                 </div>
                 <div className="p-6">
-                  <h4 className="text-xl font-bold mb-2">{item.title}</h4>
+                  <h4 className="text-lg font-bold mb-2 text-emerald-400">{item.title}</h4>
                   <p className="text-gray-300">{item.description}</p>
                 </div>
               </div>
@@ -605,7 +629,7 @@ const AnalyticsInsights = ({ userType }) => {
       {/* Product Pipeline */}
       <div ref={pipelineRef}>
         <h3 className="text-2xl font-bold mb-8 text-center">
-          <span style={{ color: brandColors.primary }}>Current & Future Product Pipeline</span>
+          <span style={{ color: brandColors.primary }}>The LIMI Road Ahead</span>
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {productPipeline.map((product, index) => (
@@ -631,8 +655,8 @@ const AnalyticsInsights = ({ userType }) => {
                 <p className="text-gray-300 mb-4">{product.description}</p>
                 <div className="mb-2">
                   <div className="flex justify-between mb-1">
-                    <span className="text-sm font-medium">Development Progress</span>
-                    <span className="text-sm font-medium">{product.progress}%</span>
+                    <span className="text-sm font-medium text-white">Development Progress</span>
+                    <span className="text-sm font-medium text-white">{product.progress}%</span>
                   </div>
                   <div className="w-full bg-gray-700 rounded-full h-2.5">
                     <div 

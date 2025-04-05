@@ -2,7 +2,7 @@
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { FaChartLine, FaHandshake, FaLightbulb, FaTrophy, FaEnvelope, FaWhatsapp, FaWpforms } from 'react-icons/fa';
+import { FaChartPie, FaCubes, FaStore, FaRocket, FaLeaf, FaHandsHelping, FaEnvelope, FaWhatsapp, FaWpforms } from 'react-icons/fa';
 import Image from 'next/image';
 
 // Register GSAP plugins
@@ -77,24 +77,34 @@ const DistributorHub = ({ userType }) => {
 
   const benefits = [
     {
-      icon: <FaChartLine className="text-4xl text-[#93CFA2] mb-4" />,
-      title: 'High Profit Margins',
-      description: 'Enjoy competitive profit margins on our premium lighting solutions',
+      icon: <FaChartPie className="text-4xl text-[#93CFA2] mb-4" />,
+      title: 'Data-Driven Insights',
+      description: 'Access real-time product performance and consumer trend analytics to make smarter, faster decisions.',
     },
     {
-      icon: <FaTrophy className="text-4xl text-[#93CFA2] mb-4" />,
-      title: 'Exclusive Products',
-      description: 'Access to innovative products not available through other channels',
+      icon: <FaCubes className="text-4xl text-[#93CFA2] mb-4" />,
+      title: 'Modular, Repairable Systems',
+      description: 'Reduce waste, simplify logistics, and offer customers lighting that evolves with their space.',
     },
     {
-      icon: <FaLightbulb className="text-4xl text-[#93CFA2] mb-4" />,
-      title: 'Innovation First',
-      description: 'Be the first to offer cutting-edge lighting technology to your market',
+      icon: <FaStore className="text-4xl text-[#93CFA2] mb-4" />,
+      title: 'Retail-Ready Innovation',
+      description: 'Our products are built for modern shoppers—easy to demonstrate, simple to install, and designed to sell.',
     },
     {
-      icon: <FaHandshake className="text-4xl text-[#93CFA2] mb-4" />,
-      title: 'Marketing Support',
-      description: 'Comprehensive marketing materials and technical training',
+      icon: <FaRocket className="text-4xl text-[#93CFA2] mb-4" />,
+      title: 'Faster Trend Adaptation',
+      description: 'Stay ahead of seasonal or design shifts with interchangeable parts and updatable tech.',
+    },
+    {
+      icon: <FaLeaf className="text-4xl text-[#93CFA2] mb-4" />,
+      title: 'Sustainable by Design',
+      description: 'Eco-conscious materials, repairable components, and reduced product lifecycle waste.',
+    },
+    {
+      icon: <FaHandsHelping className="text-4xl text-[#93CFA2] mb-4" />,
+      title: 'Support from Concept to Sale',
+      description: 'From staff training to merchandising guidance, we support every step of the retail experience.',
     },
   ];
 
@@ -116,8 +126,8 @@ const DistributorHub = ({ userType }) => {
 
         {/* Benefits Section */}
         <div ref={benefitsRef} className="mb-20">
-          <h3 className="text-2xl font-semibold mb-10 text-center">Why Partner With Us?</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <h3 className="text-2xl font-semibold mb-10 text-center">Join the LIMI Revolution</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {benefits.map((benefit, index) => (
               <div 
                 key={index} 
@@ -136,9 +146,9 @@ const DistributorHub = ({ userType }) => {
           ref={ctaRef} 
           className="bg-[#1e1e1e] p-8 md:p-12 rounded-xl max-w-4xl mx-auto text-center"
         >
-          <h3 className="text-2xl md:text-3xl font-semibold mb-6">Ready to Start Your Journey?</h3>
+          <h3 className="text-2xl md:text-3xl font-semibold mb-6">Ready to Begin?</h3>
           <p className="text-gray-300 mb-8 max-w-2xl mx-auto">
-            Connect with our distributor relations team to learn more about partnership opportunities and how we can grow together.
+          Reach out to our distributor relations team to explore partnership opportunities and discover how we can grow together.
           </p>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
