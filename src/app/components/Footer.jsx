@@ -120,13 +120,13 @@ const Footer = () => {
             &copy; {new Date().getFullYear()} LIMI 3D. All rights reserved.
           </p>
           <div className="flex space-x-6">
-            <Link href="#" className="text-gray-300 hover:text-emerald-500 transition-colors">
+            <Link href="/privacy-policy" className="text-gray-300 hover:text-emerald-500 transition-colors">
               Privacy Policy
             </Link>
-            <Link href="#" className="text-gray-300 hover:text-emerald-500 transition-colors">
+            <Link href="/terms-of-service" className="text-gray-300 hover:text-emerald-500 transition-colors">
               Terms of Service
             </Link>
-            <Link href="#" className="text-gray-300 hover:text-emerald-500 transition-colors">
+            <Link href="/cookie-policy" className="text-gray-300 hover:text-emerald-500 transition-colors">
               Cookie Policy
             </Link>
           </div>

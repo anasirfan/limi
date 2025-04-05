@@ -514,11 +514,12 @@ const LightingCarousel = ({ userType }) => {
     { id: "party", name: "Party Mode", color: "#FF00FF" },
   ];
 
-  // Function to copy RGB values to clipboard
+  // Function to copy color values to clipboard in hexadecimal format
   const copyToClipboard = (color) => {
-    const rgbString = `rgb(${color.r}, ${color.g}, ${color.b})`;
-    navigator.clipboard.writeText(rgbString).then(() => {
-      toast.success("RGB value is copied!");
+    // Convert RGB to hexadecimal
+    const hexString = `#${color.r.toString(16).padStart(2, '0')}${color.g.toString(16).padStart(2, '0')}${color.b.toString(16).padStart(2, '0')}`;
+    navigator.clipboard.writeText(hexString).then(() => {
+      toast.success("Hex color code copied!");
     });
   };
 

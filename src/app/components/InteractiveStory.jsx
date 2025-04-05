@@ -315,12 +315,12 @@ const InteractiveStory = () => {
             : "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
         }`}
       >
-        How Our <br /> EcoSystem Works
+         It All Begins with  <br /> the First Connection
       </h1>
       <h1
         className={`font-[Amenti] text-center text-3xl mb-12 font-bold text-emerald-400 px-4 z-10 hidden max-sm:block`}
       >
-        How Our <br /> EcoSystem Works
+        It All Begins with  <br /> the First Connection
       </h1>
 
       {/* Mobile Interactive Elements - Only visible on small screens */}

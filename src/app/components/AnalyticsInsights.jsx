@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { FaChartLine, FaLightbulb, FaRegLightbulb, FaRocket, FaTrophy, FaBoxOpen, FaArrowLeft, FaArrowRight, FaChartBar, FaChartPie } from "react-icons/fa";
+import { FaChartLine, FaLightbulb, FaRegLightbulb, FaRocket, FaGlobeAsia, FaLeaf, FaHandshake, FaArrowLeft, FaArrowRight, FaChartBar, FaChartPie } from "react-icons/fa";
 
 // Register GSAP plugins
 if (typeof window !== "undefined") {
@@ -73,52 +73,44 @@ const AnalyticsInsights = ({ userType }) => {
   // Latest innovations data
   const innovations = [
     {
-      status: "Ongoing",
-      title: "Smart Lighting Configurator",
-      description: "New interactive tool for customized lighting solutions",
+      status: "Innovation",
+      title: "Breaking New Boundaries",
+      description: "Discover how our latest lighting innovations are setting new standards in design and functionality.",
       icon: <FaLightbulb />,
       color: brandColors.coolAccent,
-      image: "https://images.unsplash.com/photo-1565814329452-e1efa11c5b89?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1074&q=80",
+      image: "https://images.unsplash.com/photo-1600494603989-9650cf6ddd3d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
     },
     {
-      status: "Launched",
-      title: "LIMI Modular Pendant",
-      description: "Our latest pendant with enhanced modularity",
-      icon: <FaRocket />,
+      status: "Exhibition",
+      title: "On the Global Stage",
+      description: "LIMI's recent exhibition at the Hong Kong International Lighting Fair showcased our cutting-edge products to a global audience.",
+      icon: <FaGlobeAsia />,
       color: brandColors.primary,
-      image: "https://images.unsplash.com/photo-1540932239986-30128078f3c5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1074&q=80",
+      image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
     },
     {
-      status: "Recognition",
-      title: "Featured in Lighting Magazine",
-      description: "Acknowledged as an emerging smart lighting brand",
-      icon: <FaTrophy />,
-      color: "#FFC107", // Gold
-      image: "https://images.unsplash.com/photo-1507919909716-c8262e491cde?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1171&q=80",
+      status: "Initiative",
+      title: "Sustainability Milestones",
+      description: "We're proud to announce a new initiative that reduces our carbon footprint while enhancing product longevity.",
+      icon: <FaLeaf />,
+      color: "#4CAF50", // Green
+      image: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1174&q=80",
     },
     {
-      status: "Coming Soon",
-      title: "New Color Variants",
-      description: "Expanding our product lineup to meet user preferences",
-      icon: <FaBoxOpen />,
+      status: "Launch",
+      title: "Product Launches",
+      description: "We've unveiled our newest product, The Limitless System, which promises to revolutionize your lighting experience.",
+      icon: <FaRocket />,
       color: brandColors.accent,
-      image: "https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
+      image: "https://images.unsplash.com/photo-1565814329452-e1efa11c5b89?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
     },
     {
       status: "Partnership",
-      title: "Smart Home Integration",
-      description: "New partnerships with leading smart home platforms",
-      icon: <FaRocket />,
+      title: "Industry Partnerships",
+      description: "LIMI partners with Inspired Lighting to bring new smart lighting solutions to the global market.",
+      icon: <FaHandshake />,
       color: "#9C27B0", // Purple
-      image: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1632&q=80",
-    },
-    {
-      status: "Research",
-      title: "Energy Efficiency Study",
-      description: "Research showing 40% energy savings with LIMI lighting",
-      icon: <FaLightbulb />,
-      color: "#2196F3", // Blue
-      image: "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
+      image: "https://images.unsplash.com/photo-1600880292089-90a7e086ee0c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
     },
   ];
 
@@ -567,9 +559,15 @@ const AnalyticsInsights = ({ userType }) => {
 
       {/* Latest Innovations */}
       <div className="mb-20" ref={innovationsRef}>
-        <h3 className="text-2xl font-bold mb-8 text-center">
-          <span style={{ color: brandColors.primary }}>Our Latest Innovations & Achievements</span>
+        <div className="mb-8">
+        <h3 className="text-2xl font-bold mb-2 text-center">
+          <span style={{ color: brandColors.primary }}>On the Horizon</span>
+      
         </h3>
+        <p className="text-white/70  text-center max-w-2xl mx-auto text-base md:text-lg">
+        Stay tuned for the latest innovations, exhibitions, and achievements driving LIMI forward.
+          </p>
+          </div>
         {/* Mobile swipe indicator */}
         <div className="md:hidden flex justify-center items-center mb-4">
           <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 text-sm animate-pulse">
@@ -581,7 +579,7 @@ const AnalyticsInsights = ({ userType }) => {
         <div className="relative">
           <div 
             ref={carouselRef}
-            className="flex overflow-x-auto pb-6 gap-6 cursor-grab active:cursor-grabbing select-none no-scrollbar no-select"
+            className="flex overflow-x-auto md:mx-12 pb-6 gap-6 cursor-grab active:cursor-grabbing select-none no-scrollbar no-select"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             onMouseMove={handleMouseMove}
             onMouseEnter={handleMouseEnter}
@@ -592,7 +590,7 @@ const AnalyticsInsights = ({ userType }) => {
             {innovations.map((item, index) => (
               <div 
                 key={index} 
-                className="innovation-card flex-shrink-0 w-full md:w-80 bg-[#292929]/50 rounded-lg overflow-hidden transition-transform hover:transform hover:scale-105 select-none"
+                className="innovation-card flex-shrink-0 w-full md:w-96 bg-[#292929]/50 rounded-lg overflow-hidden transition-transform hover:transform hover:scale-105 select-none"
               >
                 <div className="relative h-48">
                   <Image 
