@@ -584,14 +584,14 @@ export default function CustomerProfile() {
                     <h1 className="text-3xl font-bold font-[Amenti] text-[#93cfa2] mb-2">
                       {customer.staffName || 'LIMI Staff'}
                     </h1>
-                    {customer.clientCompanyInfo && (
+                    {/* {customer.clientCompanyInfo && (
                       <div className="flex items-center">
                         <FaBuilding className="text-[#93cfa2] mr-2" />
                         <span className="text-gray-300">
                           {customer.clientCompanyInfo}
                         </span>
                       </div>
-                    )}
+                    )} */}
                   </div>
                   <div className="mt-4 md:mt-0 md:text-right">
                     <h2 className="text-2xl font-[Amenti] text-[#93cfa2]">

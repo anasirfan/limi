@@ -35,47 +35,43 @@ const VideoHighlightsCarousel = () => {
   const fullVideoRef = useRef(null);
   const progressIntervalRef = useRef(null);
   
-  // Calculate slide times based on 6 equal segments of the 10-second video
-  const slideTimesRef = useRef([0, 1.67, 3.33, 5, 6.67, 8.33]); // Start times for each slide in seconds
-  const slideDurationsRef = useRef([1.67, 1.67, 1.67, 1.67, 1.67, 1.67]); // Duration of each slide in seconds
+  // Calculate slide times based on provided timecodes
+  // Timecodes: 0:00:00:00, 0:00:06:27, 0:00:16:02, 0:00:23:10
+  // Converting to seconds: 0, 6.9, 16.02, 23.1, 26.57
+  const slideTimesRef = useRef([0, 6.9, 16.02, 23.1, 26.57]); // Start times for each slide in seconds
+  const slideDurationsRef = useRef([6.9, 9.12, 7.08, 3.47, 3.43]); // Duration of each slide in seconds
   
-  // Slide content with actual content relevant to LIMI 3D - now with 6 slides
+  // Slide content with actual content relevant to LIMI Lighting - now with 5 slides
   const slides = [
     {
       id: 0,
       title: "Smart Lighting Revolution",
-      description: "Experience the future of lighting with LIMI 3D's intelligent solutions.",
-      thumbnailSrc: "https://images.unsplash.com/photo-1565814329452-e1efa11c5b89?q=80&w=1974&auto=format&fit=crop",
+      description: "Experience the future of lighting with LIMI's intelligent solutions.",
+      thumbnailSrc: "/images/slides/1.png",
     },
     {
       id: 1,
       title: "Seamless Control",
       description: "Adjust your lighting with intuitive controls and smart integrations.",
-      thumbnailSrc: "https://images.unsplash.com/photo-1565538810643-b5bdb714032a?q=80&w=1974&auto=format&fit=crop",
+      thumbnailSrc: "/images/slides/2.png",
     },
     {
       id: 2,
       title: "Perfect Ambiance",
       description: "Create the perfect mood for any occasion with customizable settings.",
-      thumbnailSrc: "https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?q=80&w=1974&auto=format&fit=crop",
+      thumbnailSrc: "/images/slides/3.png",
     },
     {
       id: 3,
       title: "Energy Efficiency",
       description: "Save energy while enjoying premium lighting experiences.",
-      thumbnailSrc: "https://images.unsplash.com/photo-1507919909716-c8262e491cde?q=80&w=1974&auto=format&fit=crop",
+      thumbnailSrc: "/images/slides/4.png",
     },
     {
       id: 4,
       title: "Smart Home Integration",
       description: "Connect your lighting system with other smart home devices for a unified experience.",
-      thumbnailSrc: "https://images.unsplash.com/photo-1558002038-1055907df827?q=80&w=1974&auto=format&fit=crop",
-    },
-    {
-      id: 5,
-      title: "Future-Ready Design",
-      description: "Stay ahead with lighting solutions that evolve with your needs.",
-      thumbnailSrc: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070&auto=format&fit=crop",
+      thumbnailSrc: "/images/slides/5.png",
     },
   ];
 
@@ -132,28 +128,15 @@ const VideoHighlightsCarousel = () => {
     };
   }, []);
   
-  // Handle video metadata loaded - update duration and recalculate slide times
+  // Handle video metadata loaded - update duration
   const handleMetadataLoaded = () => {
     if (!videoRef.current) return;
     
     const duration = videoRef.current.duration;
     setVideoDuration(duration);
     
-    // Recalculate slide times based on actual video duration
-    const segmentDuration = duration / 6;
-    const newSlideTimes = [
-      0,
-      segmentDuration,
-      segmentDuration * 2,
-      segmentDuration * 3,
-      segmentDuration * 4,
-      segmentDuration * 5
-    ];
-    
-    const newSlideDurations = Array(6).fill(segmentDuration);
-    
-    slideTimesRef.current = newSlideTimes;
-    slideDurationsRef.current = newSlideDurations;
+    // We're using fixed slide times based on the provided timecodes
+    // so we don't need to recalculate them here
   };
   
   // Handle video loaded event
@@ -305,15 +288,14 @@ const VideoHighlightsCarousel = () => {
       <div className="container mx-auto px-4 md:px-8">
         {/* Header with title and "Watch the film" link */}
         <div className="flex justify-between items-center mb-8 px-2">
-          <h2 className="text-3xl md:text-4xl font-bold">Get the highlights.</h2>
+          <h2 className="text-3xl md:text-4xl font-bold font-[Amenti]">Get the highlights.</h2>
           <button 
             onClick={openFullVideo}
-            className="flex items-center text-blue-500 hover:text-blue-400 transition-colors"
+            className="flex items-center text-[#54BB74] hover:text-[#93CFA2] transition-colors"
           >
-            Watch the film <span className="ml-1 inline-flex items-center justify-center w-4 h-4 rounded-full border border-blue-500">○</span>
+            Watch the film <span className="ml-1 inline-flex items-center justify-center w-4 h-4 rounded-full border border-[#54BB74]">○</span>
           </button>
         </div>
-
 
         <div className="relative mx-auto max-w-6xl">
           <div 
@@ -333,7 +315,11 @@ const VideoHighlightsCarousel = () => {
               muted
               preload="auto"
             >
-              <source src="/videos/BgVideo.mp4" type="video/mp4" />
+              {isMobile ? (
+                <source src="/videos/mobileview_slider.m4v" type="video/mp4" />
+              ) : (
+                <source src="/videos/webview_slider.m4v" type="video/mp4" />
+              )}
             </video>
 
             {!videoLoaded && (
@@ -353,7 +339,7 @@ const VideoHighlightsCarousel = () => {
             <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-transparent to-black/30 pointer-events-none"></div>
 
             {/* Slide content overlay */}
-            <div className="absolute bottom-0 left-0 w-full p-6 md:p-8 z-10">
+            <div className="absolute bottom-0 left-0 w-full p-6 md:p-8 z-10 max-sm:w-[80%]">
               <h3 className="text-xl md:text-2xl font-bold mb-2">
                 {slides[currentSlide].title}
               </h3>
@@ -365,18 +351,18 @@ const VideoHighlightsCarousel = () => {
             {/* Play/Pause/Replay button */}
             <button
               onClick={togglePlayPause}
-              className="absolute bottom-6 right-6 md:bottom-8 md:right-8 w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center transition-all hover:bg-white/30 z-10"
+              className="absolute bottom-6 right-6 md:bottom-8 md:right-8 w-12 h-12 rounded-full bg-[#292929] text-[#54BB74] border border-[#54BB74] flex items-center justify-center transition-all hover:bg-[#54BB74] hover:text-white z-10"
               aria-label={isPlaying ? "Pause" : (currentSlide === slides.length - 1 && slideProgress >= 99.9) ? "Replay" : "Play"}
               style={{
                 boxShadow: "0 4px 12px rgba(0,0,0,0.15)"
               }}
             >
               {isPlaying ? (
-                <FaPause className="text-white" />
+                <FaPause />
               ) : (currentSlide === slides.length - 1 && slideProgress >= 99.9) ? (
-                <FaRedo className="text-white" />
+                <FaRedo />
               ) : (
-                <FaPlay className="text-white ml-1" />
+                <FaPlay className="ml-1" />
               )}
             </button>
 
@@ -385,7 +371,7 @@ const VideoHighlightsCarousel = () => {
               <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm transition-opacity duration-300 z-20">
                 <button
                   onClick={handleReplay}
-                  className="flex flex-col items-center justify-center text-white transition-transform hover:scale-110"
+                  className="flex flex-col items-center justify-center text-[#54BB74] transition-transform hover:scale-110"
                   aria-label="Replay highlights"
                 >
                   <FaRedoAlt className="text-4xl mb-2" />
@@ -406,18 +392,18 @@ const VideoHighlightsCarousel = () => {
               >
                 {index === currentSlide ? (
                   // Active slide - expanding indicator with progress
-                  <div className="relative w-10 h-[5px] bg-white/30 rounded-full overflow-hidden transition-all duration-300">
+                  <div className="relative w-10 h-[5px] bg-[#292929] rounded-full overflow-hidden transition-all duration-300">
                     <div 
-                      className="h-full bg-white transition-all duration-100 ease-linear"
+                      className="h-full bg-[#54BB74] transition-all duration-100 ease-linear"
                       style={{ width: `${slideProgress}%` }}
                     />
                   </div>
                 ) : index < currentSlide ? (
                   // Past slide - filled dot
-                  <div className="w-[7px] h-[7px] rounded-full bg-white transition-all duration-300"></div>
+                  <div className="w-[7px] h-[7px] rounded-full bg-[#54BB74] transition-all duration-300"></div>
                 ) : (
                   // Future slide - empty dot
-                  <div className="w-[7px] h-[7px] rounded-full bg-white/30 transition-all duration-300"></div>
+                  <div className="w-[7px] h-[7px] rounded-full bg-[#292929] border border-[#54BB74] transition-all duration-300"></div>
                 )}
               </button>
             ))}
@@ -442,7 +428,11 @@ const VideoHighlightsCarousel = () => {
             autoPlay
             playsInline
           >
-            <source src="/videos/BgVideo.mp4" type="video/mp4" />
+            {isMobile ? (
+              <source src="/videos/mobileview_slider.m4v" type="video/mp4" />
+            ) : (
+              <source src="/videos/webview_slider.m4v" type="video/mp4" />
+            )}
           </video>
         </div>
       )}
