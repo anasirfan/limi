@@ -498,48 +498,12 @@ export default function CustomerProfile() {
   const [error, setError] = useState(null);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
-  const [isMuted, setIsMuted] = useState(true); // Start muted to allow autoplay
-  const [showSoundConsent, setShowSoundConsent] = useState(false);
-  const [soundPreference, setSoundPreference] = useState(null); // null = not decided, true = enabled, false = disabled
+  const [isMuted, setIsMuted] = useState(false); // We'll start with sound when user clicks
+  const [showStartOverlay, setShowStartOverlay] = useState(true); // Show start overlay initially
   const videoRef = useRef(null);
 
-  // Auto-play video when component loads (muted for browser compatibility)
-  useEffect(() => {
-    if (videoRef.current && isVideoLoaded) {
-      videoRef.current.play()
-        .then(() => {
-          setIsVideoPlaying(true);
-          // Set default sound preference to muted
-          if (soundPreference === null) {
-            setSoundPreference(false);
-          }
-        })
-        .catch(err => {
-          console.error('Auto-play failed:', err);
-        });
-    }
-  }, [isVideoLoaded, soundPreference]);
-  
-  // Handle sound preference changes
-  useEffect(() => {
-    if (soundPreference !== null) {
-      setIsMuted(!soundPreference);
-      setShowSoundConsent(false);
-      
-      // Resume video playback after user makes a selection
-      if (videoRef.current) {
-        // If user enabled sound, unmute the video
-        if (soundPreference) {
-          videoRef.current.muted = false;
-        }
-        
-        // Resume playback
-        videoRef.current.play()
-          .then(() => setIsVideoPlaying(true))
-          .catch(err => console.error('Resume after consent failed:', err));
-      }
-    }
-  }, [soundPreference]);
+  // We don't auto-play anymore - we wait for user interaction
+  // This is intentionally left empty to prevent autoplay
 
 
 
@@ -636,35 +600,61 @@ export default function CustomerProfile() {
                   <source src="/videos/customerprofile_anim.mp4" type="video/mp4" />
                 </video>
 
-
+                {/* Start Experience Overlay - shown initially */}
+                {showStartOverlay && (
+                  <div className="absolute inset-0 bg-[#292929]/80 flex items-center justify-center z-20 transition-opacity duration-500">
+                    <div className="text-center px-4 py-5 sm:px-6 sm:py-8 rounded-lg bg-[#1e1e1e] border-2 border-[#54BB74] max-w-[85%] sm:max-w-md animate-fadeIn">
+                      <h3 className="text-xl sm:text-2xl font-[Amenti] text-[#54BB74] mb-2 sm:mb-4">Welcome to LIMI</h3>
+                      <p className="text-white text-sm sm:text-base mb-4 sm:mb-6">Experience our video introduction with sound</p>
+                      <button 
+                        onClick={() => {
+                          setShowStartOverlay(false);
+                          if (videoRef.current) {
+                            // Set video to unmuted
+                            videoRef.current.muted = false;
+                            setIsMuted(false);
+                            
+                            // Play video with sound
+                            videoRef.current.play()
+                              .then(() => {
+                                setIsVideoPlaying(true);
+                              })
+                              .catch(err => {
+                                console.error('Play with sound failed:', err);
+                                // If playing with sound fails, try muted
+                                videoRef.current.muted = true;
+                                setIsMuted(true);
+                                videoRef.current.play()
+                                  .then(() => setIsVideoPlaying(true))
+                                  .catch(e => console.error('Even muted play failed:', e));
+                              });
+                          }
+                        }}
+                        className="px-4 py-2 sm:px-6 sm:py-3 rounded-full bg-[#54BB74] text-[#292929] font-medium text-sm sm:text-base hover:bg-[#93cfa2] transition-all transform hover:scale-105 animate-pulse"
+                      >
+                        Start Experience
+                      </button>
+                    </div>
+                  </div>
+                )}
                 
-                {/* Sound reminder - shown when video is muted and consent was already handled */}
-                {isMuted && isVideoPlaying && soundPreference === false && (
+                {/* Sound reminder - shown when video is muted and playing */}
+                {isMuted && isVideoPlaying && !showStartOverlay && (
                   <div className="absolute top-4 left-4 bg-[#292929]/80 text-white px-3 py-1 rounded-full text-sm flex items-center space-x-2">
                     <FaVolumeMute className="text-[#54BB74]" />
                     <span>Sound is off</span>
                   </div>
                 )}
                 
-                {isVideoLoaded && (
+                {isVideoLoaded && !showStartOverlay && (
                   <div className="absolute bottom-4 right-4 flex space-x-3">
-                    {/* Mute/Unmute button - more prominent when muted */}
+                    {/* Mute/Unmute button */}
                     <button 
                       onClick={() => {
                         if (videoRef.current) {
                           const newMutedState = !isMuted;
                           videoRef.current.muted = newMutedState;
                           setIsMuted(newMutedState);
-                          
-                          // Update sound preference
-                          setSoundPreference(!newMutedState);
-                          
-                          // If unmuting and video is not playing, try to play it
-                          if (!newMutedState && !isVideoPlaying && videoRef.current.paused) {
-                            videoRef.current.play()
-                              .then(() => setIsVideoPlaying(true))
-                              .catch(err => console.error('Play with sound failed:', err));
-                          }
                         }
                       }}
                       className={`${isMuted ? 'animate-pulse' : ''} w-12 h-12 rounded-full bg-[#292929] text-[#54BB74] border-2 border-[#54BB74] flex items-center justify-center transition-all hover:bg-[#54BB74] hover:text-white z-10`}
