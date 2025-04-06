@@ -413,10 +413,10 @@ const VideoHighlightsCarousel = () => {
 
       {/* Full video modal */}
       {showFullVideo && (
-        <div className="fixed inset-0 z-50 bg-black flex items-center justify-center">
+        <div className="fixed inset-0 z-[99] bg-black flex items-center justify-center">
           <button
             onClick={closeFullVideo}
-            className="absolute top-4 right-4 z-10 text-white text-2xl"
+            className="absolute top-24 right-16 z-10 text-white text-2xl"
             aria-label="Close"
           >
             ✕
