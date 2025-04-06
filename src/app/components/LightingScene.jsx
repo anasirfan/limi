@@ -28,6 +28,26 @@ const LightingScene = ({ userType }) => {
   const buttonRef = useRef(null);
   const headerRef = useRef(null);
   const clipPathRef = useRef(null);
+  
+  // Refs for all image layers
+  const dayRef = useRef(null);
+  const dayCeilingRef = useRef(null);
+  const dayWallRef = useRef(null);
+  const dayBothRef = useRef(null);
+  const nightRef = useRef(null);
+  const nightCeilingRef = useRef(null);
+  const nightWallRef = useRef(null);
+  const nightBothRef = useRef(null);
+  
+  // Mobile image refs
+  const dayMobileRef = useRef(null);
+  const dayCeilingMobileRef = useRef(null);
+  const dayWallMobileRef = useRef(null);
+  const dayBothMobileRef = useRef(null);
+  const nightMobileRef = useRef(null);
+  const nightCeilingMobileRef = useRef(null);
+  const nightWallMobileRef = useRef(null);
+  const nightBothMobileRef = useRef(null);
 
   // Setup scroll animation for triangular clip path
   useEffect(() => {
@@ -95,32 +115,78 @@ const LightingScene = ({ userType }) => {
     setIsBothLightsOn(isTopLightOn && isMiddleLightOn);
   }, [isTopLightOn, isMiddleLightOn]);
 
-  // Update the scene background based on lighting state
+  // Update image visibility based on current state
   useEffect(() => {
-    if (sceneRef.current) {
-      let imageName = isDayMode ? 'day' : 'night';
-      
-      // Determine which image to show based on light states
-      if (isTopLightOn && isMiddleLightOn) {
-        imageName += '_both';
-      } else if (isTopLightOn) {
-        imageName += '_ceiling';
-      } else if (isMiddleLightOn) {
-        imageName += '_wall';
+    // Get all refs in a single array
+    const allRefs = [
+      dayRef, dayCeilingRef, dayWallRef, dayBothRef, 
+      nightRef, nightCeilingRef, nightWallRef, nightBothRef,
+      dayMobileRef, dayCeilingMobileRef, dayWallMobileRef, dayBothMobileRef,
+      nightMobileRef, nightCeilingMobileRef, nightWallMobileRef, nightBothMobileRef
+    ];
+    
+    // Determine which image to show
+    let targetRef;
+    
+    if (isMobile) {
+      // Mobile images
+      if (isDayMode) {
+        if (isTopLightOn && isMiddleLightOn) targetRef = dayBothMobileRef;
+        else if (isTopLightOn) targetRef = dayCeilingMobileRef;
+        else if (isMiddleLightOn) targetRef = dayWallMobileRef;
+        else targetRef = dayMobileRef;
+      } else {
+        if (isTopLightOn && isMiddleLightOn) targetRef = nightBothMobileRef;
+        else if (isTopLightOn) targetRef = nightCeilingMobileRef;
+        else if (isMiddleLightOn) targetRef = nightWallMobileRef;
+        else targetRef = nightMobileRef;
       }
-      
-      // Add mobile suffix if on mobile device
-      if (isMobile) {
-        imageName += '-mob';
+    } else {
+      // Desktop images
+      if (isDayMode) {
+        if (isTopLightOn && isMiddleLightOn) targetRef = dayBothRef;
+        else if (isTopLightOn) targetRef = dayCeilingRef;
+        else if (isMiddleLightOn) targetRef = dayWallRef;
+        else targetRef = dayRef;
+      } else {
+        if (isTopLightOn && isMiddleLightOn) targetRef = nightBothRef;
+        else if (isTopLightOn) targetRef = nightCeilingRef;
+        else if (isMiddleLightOn) targetRef = nightWallRef;
+        else targetRef = nightRef;
       }
-      
-      // Animate the background change
-      gsap.to(sceneRef.current, {
-        backgroundImage: `url(/images/configImages/${imageName}.jpg)`,
-        duration: 0.8,
-        ease: 'power2.out'
-      });
     }
+    
+    // Create a single timeline for parallel animations
+    const tl = gsap.timeline();
+    
+    // Find the currently visible image
+    const currentVisibleRef = allRefs.find(ref => ref.current && getComputedStyle(ref.current).opacity > 0.5);
+    
+    // Parallel animations with enhanced blending
+    allRefs.forEach(ref => {
+      if (ref.current) {
+        // Ensure consistent class names without blend modes
+        ref.current.className = 'absolute inset-0';
+        
+        if (ref === targetRef) {
+          // This is our target image - fade it in with enhanced smoothness
+          tl.to(ref.current, {
+            opacity: 1,
+            duration: 1.5,
+            ease: "sine.inOut"
+          }, 0); // Start at position 0 (simultaneously)
+        } else {
+          // This is not our target - fade it out
+          // If it's the currently visible one, use the same duration as the fade-in
+          const duration = (ref === currentVisibleRef) ? 1.5 : 0.8;
+          tl.to(ref.current, {
+            opacity: 0,
+            duration: duration,
+            ease: "sine.inOut"
+          }, 0); // Start at position 0 (simultaneously)
+        }
+      }
+    });
   }, [isDayMode, isTopLightOn, isMiddleLightOn, isMobile]);
 
   return (
@@ -129,11 +195,7 @@ const LightingScene = ({ userType }) => {
       ref={sceneRef}
       className="relative h-[90vh] w-full overflow-hidden bg-black py-12"
       style={{
-        backgroundImage: `url(/images/configImages/${isDayMode ? 'day' : 'night'}${isTopLightOn && isMiddleLightOn ? '_both' : isTopLightOn ? '_ceiling' : isMiddleLightOn ? '_wall' : ''}${isMobile ? '-mob' : ''}.jpg)`,
-        backgroundSize: 'contain',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        transition: 'background-image 0.8s ease'
+        transition: 'all 1.5s cubic-bezier(0.4, 0, 0.2, 1)'
       }}
     >
       {/* Clip path container for triangular animation */}
@@ -154,7 +216,186 @@ const LightingScene = ({ userType }) => {
         </div>
       </div>
 
-      {/* We no longer need separate light layers since we're using direct image swapping */}
+      {/* Preloaded desktop images */}
+      <div 
+        ref={dayRef}
+        className="absolute inset-0"
+        style={{
+          backgroundImage: `url(/images/configImages/day.jpg)`,
+          backgroundSize: 'contain',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          opacity: !isDayMode || isTopLightOn || isMiddleLightOn || isMobile ? 0 : 1,
+          transition: 'opacity 1.5s cubic-bezier(0.445, 0.05, 0.55, 0.95)' // CSS transition as backup using sine.inOut equivalent
+        }}
+      />
+      <div 
+        ref={dayCeilingRef}
+        className="absolute inset-0"
+        style={{
+          backgroundImage: `url(/images/configImages/day_ceiling.jpg)`,
+          backgroundSize: 'contain',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          opacity: !isDayMode || !isTopLightOn || isMiddleLightOn || isMobile ? 0 : 1
+        }}
+      />
+      <div 
+        ref={dayWallRef}
+        className="absolute inset-0"
+        style={{
+          backgroundImage: `url(/images/configImages/day_wall.jpg)`,
+          backgroundSize: 'contain',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          opacity: !isDayMode || isTopLightOn || !isMiddleLightOn || isMobile ? 0 : 1
+        }}
+      />
+      <div 
+        ref={dayBothRef}
+        className="absolute inset-0"
+        style={{
+          backgroundImage: `url(/images/configImages/day_both.jpg)`,
+          backgroundSize: 'contain',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          opacity: !isDayMode || !isTopLightOn || !isMiddleLightOn || isMobile ? 0 : 1
+        }}
+      />
+      <div 
+        ref={nightRef}
+        className="absolute inset-0"
+        style={{
+          backgroundImage: `url(/images/configImages/night.jpg)`,
+          backgroundSize: 'contain',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          opacity: isDayMode || isTopLightOn || isMiddleLightOn || isMobile ? 0 : 1
+        }}
+      />
+      <div 
+        ref={nightCeilingRef}
+        className="absolute inset-0"
+        style={{
+          backgroundImage: `url(/images/configImages/night_ceiling.jpg)`,
+          backgroundSize: 'contain',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          opacity: isDayMode || !isTopLightOn || isMiddleLightOn || isMobile ? 0 : 1
+        }}
+      />
+      <div 
+        ref={nightWallRef}
+        className="absolute inset-0"
+        style={{
+          backgroundImage: `url(/images/configImages/night_wall.jpg)`,
+          backgroundSize: 'contain',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          opacity: isDayMode || isTopLightOn || !isMiddleLightOn || isMobile ? 0 : 1
+        }}
+      />
+      <div 
+        ref={nightBothRef}
+        className="absolute inset-0"
+        style={{
+          backgroundImage: `url(/images/configImages/night_both.jpg)`,
+          backgroundSize: 'contain',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          opacity: isDayMode || !isTopLightOn || !isMiddleLightOn || isMobile ? 0 : 1
+        }}
+      />
+      
+      {/* Preloaded mobile images */}
+      <div 
+        ref={dayMobileRef}
+        className="absolute inset-0"
+        style={{
+          backgroundImage: `url(/images/configImages/day-mob.jpg)`,
+          backgroundSize: 'contain',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          opacity: !isDayMode || isTopLightOn || isMiddleLightOn || !isMobile ? 0 : 1
+        }}
+      />
+      <div 
+        ref={dayCeilingMobileRef}
+        className="absolute inset-0"
+        style={{
+          backgroundImage: `url(/images/configImages/day_ceiling-mob.jpg)`,
+          backgroundSize: 'contain',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          opacity: !isDayMode || !isTopLightOn || isMiddleLightOn || !isMobile ? 0 : 1
+        }}
+      />
+      <div 
+        ref={dayWallMobileRef}
+        className="absolute inset-0"
+        style={{
+          backgroundImage: `url(/images/configImages/day_wall-mob.jpg)`,
+          backgroundSize: 'contain',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          opacity: !isDayMode || isTopLightOn || !isMiddleLightOn || !isMobile ? 0 : 1
+        }}
+      />
+      <div 
+        ref={dayBothMobileRef}
+        className="absolute inset-0"
+        style={{
+          backgroundImage: `url(/images/configImages/day_both-mob.jpg)`,
+          backgroundSize: 'contain',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          opacity: !isDayMode || !isTopLightOn || !isMiddleLightOn || !isMobile ? 0 : 1
+        }}
+      />
+      <div 
+        ref={nightMobileRef}
+        className="absolute inset-0"
+        style={{
+          backgroundImage: `url(/images/configImages/night-mob.jpg)`,
+          backgroundSize: 'contain',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          opacity: isDayMode || isTopLightOn || isMiddleLightOn || !isMobile ? 0 : 1
+        }}
+      />
+      <div 
+        ref={nightCeilingMobileRef}
+        className="absolute inset-0"
+        style={{
+          backgroundImage: `url(/images/configImages/night_ceiling-mob.jpg)`,
+          backgroundSize: 'contain',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          opacity: isDayMode || !isTopLightOn || isMiddleLightOn || !isMobile ? 0 : 1
+        }}
+      />
+      <div 
+        ref={nightWallMobileRef}
+        className="absolute inset-0"
+        style={{
+          backgroundImage: `url(/images/configImages/night_wall-mob.jpg)`,
+          backgroundSize: 'contain',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          opacity: isDayMode || isTopLightOn || !isMiddleLightOn || !isMobile ? 0 : 1
+        }}
+      />
+      <div 
+        ref={nightBothMobileRef}
+        className="absolute inset-0"
+        style={{
+          backgroundImage: `url(/images/configImages/night_both-mob.jpg)`,
+          backgroundSize: 'contain',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          opacity: isDayMode || !isTopLightOn || !isMiddleLightOn || !isMobile ? 0 : 1
+        }}
+      />
 
       <div className="absolute top-4  md:top-10 left-4 sm:left-6 md:left-10 z-50 max-sm:bottom-32 max-sm:top-auto">
         <div className="flex flex-col items-start max-sm:flex-row max-sm:space-x-4 max-sm:justify-center">
