@@ -502,11 +502,13 @@ export default function CustomerProfile() {
   const [showSoundConsent, setShowSoundConsent] = useState(false);
   const [soundPreference, setSoundPreference] = useState(null); // null = not decided, true = enabled, false = disabled
   const [videoEnded, setVideoEnded] = useState(false);
+  const [showInitialPlayButton, setShowInitialPlayButton] = useState(true);
+  const [videoError, setVideoError] = useState(false);
   const videoRef = useRef(null);
 
-  // Auto-play video when component loads (muted for browser compatibility)
+  // Try to auto-play video when component loads, but don't rely on it for mobile
   useEffect(() => {
-    if (videoRef.current && isVideoLoaded) {
+    if (videoRef.current && isVideoLoaded && !showInitialPlayButton) {
       videoRef.current.play()
         .then(() => {
           setIsVideoPlaying(true);
@@ -524,10 +526,11 @@ export default function CustomerProfile() {
         })
         .catch(err => {
           console.error('Auto-play failed:', err);
-          // Show a message or visual cue that user needs to interact
+          // Show initial play button again if autoplay fails
+          setShowInitialPlayButton(true);
         });
     }
-  }, [isVideoLoaded, soundPreference]);
+  }, [isVideoLoaded, soundPreference, showInitialPlayButton]);
   
   // Handle sound preference changes
   useEffect(() => {
@@ -641,10 +644,62 @@ export default function CustomerProfile() {
                     setIsVideoPlaying(false);
                     setVideoEnded(true);
                   }}
+                  onError={() => {
+                    console.error('Video failed to load');
+                    setVideoError(true);
+                  }}
                   poster="/images/video-poster.jpg"
+                  preload="metadata"
                 >
                   <source src="/videos/customerprofile_anim.mp4" type="video/mp4" />
                 </video>
+                
+                {/* Initial play button for mobile compatibility */}
+                {showInitialPlayButton && isVideoLoaded && !videoError && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                    <button 
+                      onClick={() => {
+                        if (videoRef.current) {
+                          setShowInitialPlayButton(false);
+                          videoRef.current.play()
+                            .then(() => {
+                              setIsVideoPlaying(true);
+                              // Show sound consent dialog after video starts playing
+                              setTimeout(() => {
+                                if (soundPreference === null) {
+                                  videoRef.current.pause();
+                                  setIsVideoPlaying(false);
+                                  setShowSoundConsent(true);
+                                }
+                              }, 1000);
+                            })
+                            .catch(err => {
+                              console.error('Play failed:', err);
+                            });
+                        }
+                      }}
+                      className="w-20 h-20 rounded-full bg-[#292929]/90 text-[#54BB74] border-2 border-[#54BB74] flex items-center justify-center transition-all hover:bg-[#54BB74] hover:text-white z-10 animate-pulse"
+                      aria-label="Play video"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+                      </svg>
+                    </button>
+                  </div>
+                )}
+                
+                {/* Video error fallback */}
+                {videoError && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-[#292929]/90 p-4 text-center">
+                    <div>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-[#54BB74] mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                      </svg>
+                      <p className="text-white text-lg font-[Amenti] mb-2">Video Unavailable</p>
+                      <p className="text-gray-300 text-sm">Please check your connection or try again later.</p>
+                    </div>
+                  </div>
+                )}
                 
                 {/* Replay button - shown when video ends */}
                 {videoEnded && (
