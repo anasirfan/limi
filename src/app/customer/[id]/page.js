@@ -469,11 +469,11 @@
 // }
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
-import { FaQrcode, FaBuilding } from 'react-icons/fa';
+import { FaQrcode, FaBuilding, FaPlay, FaPause } from 'react-icons/fa';
 
 // Test customer profiles for development and exhibition
 const testCustomers = {
@@ -496,6 +496,19 @@ export default function CustomerProfile() {
   const [customer, setCustomer] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+  
+  const videoRef = useRef(null);
+
+  // Auto-play video when component loads
+  useEffect(() => {
+    if (videoRef.current && isVideoLoaded) {
+      videoRef.current.play()
+        .then(() => setIsVideoPlaying(true))
+        .catch(err => console.error('Auto-play failed:', err));
+    }
+  }, [isVideoLoaded]);
 
   useEffect(() => {
     async function fetchCustomerData() {
@@ -576,6 +589,40 @@ export default function CustomerProfile() {
         ) : customer ? (
           <div className="container mx-auto px-4">
             <div className="max-w-2xl mx-auto bg-[#1e1e1e] rounded-lg overflow-hidden shadow-xl">
+              {/* Video Intro */}
+              <div className="relative">
+                <video 
+                  ref={videoRef}
+                  className="w-full h-auto" 
+                  playsInline
+                  muted
+                  onLoadedData={() => setIsVideoLoaded(true)}
+                  onEnded={() => setIsVideoPlaying(false)}
+                >
+                  <source src="/videos/customerprofile_anim.mp4" type="video/mp4" />
+                </video>
+                
+                {isVideoLoaded && (
+                  <button 
+                    onClick={() => {
+                      if (videoRef.current) {
+                        if (isVideoPlaying) {
+                          videoRef.current.pause();
+                        } else {
+                          videoRef.current.currentTime = 0;
+                          videoRef.current.play().catch(err => console.error('Video playback failed:', err));
+                        }
+                        setIsVideoPlaying(!isVideoPlaying);
+                      }
+                    }}
+                    className="absolute bottom-4 right-4 w-10 h-10 rounded-full bg-[#292929] text-[#54BB74] border border-[#54BB74] flex items-center justify-center transition-all hover:bg-[#54BB74] hover:text-white z-10"
+                    aria-label={isVideoPlaying ? "Pause video" : "Play video"}
+                  >
+                    {isVideoPlaying ? <FaPause /> : <FaPlay className="ml-1" />}
+                  </button>
+                )}
+              </div>
+              
               {/* Profile Header - Keep this section as requested */}
               <div className="bg-gradient-to-r from-[#292929] to-[#54bb74]/30 p-8">
                 <div className="flex flex-col md:flex-row md:justify-between md:items-center">
