@@ -646,19 +646,19 @@ export default function CustomerProfile() {
                 {/* Sound consent dialog - shown when video starts playing */}
                 {showSoundConsent && (
                   <div className="absolute inset-0 bg-[#292929]/90 flex items-center justify-center z-20" onClick={(e) => e.stopPropagation()}>
-                    <div className="bg-[#1e1e1e] p-6 rounded-lg max-w-md text-center border border-[#54BB74] shadow-lg">
-                      <h3 className="text-xl font-[Amenti] text-[#54BB74] mb-3">Enable Sound?</h3>
-                      <p className="text-white mb-4">Would you like to enable sound for this video introduction?</p>
-                      <div className="flex justify-center space-x-4">
+                    <div className="bg-[#1e1e1e] p-4 sm:p-6 rounded-lg max-w-[90%] sm:max-w-md text-center border border-[#54BB74] shadow-lg mx-4">
+                      <h3 className="text-lg sm:text-xl font-[Amenti] text-[#54BB74] mb-2 sm:mb-3">Enable Sound?</h3>
+                      <p className="text-white text-sm sm:text-base mb-3 sm:mb-4">Would you like to enable sound for this video introduction?</p>
+                      <div className="flex flex-col sm:flex-row justify-center space-y-3 sm:space-y-0 sm:space-x-4">
                         <button 
                           onClick={() => setSoundPreference(true)}
-                          className="px-5 py-2 rounded-full bg-[#54BB74] text-[#292929] font-medium hover:bg-[#93cfa2] transition-colors"
+                          className="px-4 sm:px-5 py-2 rounded-full bg-[#54BB74] text-[#292929] font-medium hover:bg-[#93cfa2] transition-colors text-sm sm:text-base"
                         >
                           Yes, enable sound
                         </button>
                         <button 
                           onClick={() => setSoundPreference(false)}
-                          className="px-5 py-2 rounded-full bg-[#292929] text-[#54BB74] border border-[#54BB74] font-medium hover:bg-[#54BB74] hover:text-white transition-colors"
+                          className="px-4 sm:px-5 py-2 rounded-full bg-[#292929] text-[#54BB74] border border-[#54BB74] font-medium hover:bg-[#54BB74] hover:text-white transition-colors text-sm sm:text-base"
                         >
                           No, keep muted
                         </button>
@@ -669,15 +669,15 @@ export default function CustomerProfile() {
                 
                 {/* Sound reminder - shown when video is muted and consent was already handled */}
                 {isMuted && isVideoPlaying && soundPreference === false && (
-                  <div className="absolute top-4 left-4 bg-[#292929]/80 text-white px-3 py-1 rounded-full text-sm flex items-center space-x-2">
-                    <FaVolumeMute className="text-[#54BB74]" />
+                  <div className="absolute top-2 sm:top-4 left-2 sm:left-4 bg-[#292929]/80 text-white px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm flex items-center space-x-1 sm:space-x-2">
+                    <FaVolumeMute className="text-[#54BB74] text-xs sm:text-sm" />
                     <span>Sound is off</span>
                   </div>
                 )}
                 
                 {isVideoLoaded && (
-                  <div className="absolute bottom-4 right-4 flex space-x-3">
-                    {/* Mute/Unmute button - more prominent when muted */}
+                  <div className="absolute bottom-4 right-4 flex space-x-2 sm:space-x-3">
+                    {/* Mute/Unmute button */}
                     <button 
                       onClick={() => {
                         if (videoRef.current) {
@@ -696,7 +696,7 @@ export default function CustomerProfile() {
                           }
                         }
                       }}
-                      className={`${isMuted ? 'animate-pulse' : ''} w-10 h-10 rounded-full bg-[#292929] text-[#54BB74] border border-[#54BB74] flex items-center justify-center transition-all hover:bg-[#54BB74] hover:text-white z-10`}
+                      className={`${isMuted ? 'animate-pulse' : ''} w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#292929] text-[#54BB74] border border-[#54BB74] flex items-center justify-center transition-all hover:bg-[#54BB74] hover:text-white z-10 text-xs sm:text-base`}
                       aria-label={isMuted ? "Unmute video" : "Mute video"}
                     >
                       {isMuted ? <FaVolumeMute /> : <FaVolumeUp />}
@@ -709,16 +709,16 @@ export default function CustomerProfile() {
                           if (isVideoPlaying) {
                             videoRef.current.pause();
                           } else {
-                            videoRef.current.currentTime = 0;
-                            videoRef.current.play().catch(err => console.error('Video playback failed:', err));
+                            // Don't reset currentTime, just continue from current position
+                            videoRef.current.play().catch(err => console.error('Play with sound failed:', err));
                           }
                           setIsVideoPlaying(!isVideoPlaying);
                         }
                       }}
-                      className="w-10 h-10 rounded-full bg-[#292929] text-[#54BB74] border border-[#54BB74] flex items-center justify-center transition-all hover:bg-[#54BB74] hover:text-white z-10"
+                      className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#292929] text-[#54BB74] border border-[#54BB74] flex items-center justify-center transition-all hover:bg-[#54BB74] hover:text-white z-10 text-xs sm:text-base"
                       aria-label={isVideoPlaying ? "Pause video" : "Play video"}
                     >
-                      {isVideoPlaying ? <FaPause /> : <FaPlay className="ml-1" />}
+                      {isVideoPlaying ? <FaPause /> : <FaPlay className="ml-0.5 sm:ml-1" />}
                     </button>
                   </div>
                 )}
