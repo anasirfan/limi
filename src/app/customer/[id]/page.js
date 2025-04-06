@@ -647,7 +647,7 @@ export default function CustomerProfile() {
                 )}
                 
                 {isVideoLoaded && !showStartOverlay && (
-                  <div className="absolute bottom-4 right-4 flex space-x-3">
+                  <div className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 flex space-x-2 sm:space-x-3">
                     {/* Mute/Unmute button */}
                     <button 
                       onClick={() => {
@@ -657,10 +657,10 @@ export default function CustomerProfile() {
                           setIsMuted(newMutedState);
                         }
                       }}
-                      className={`${isMuted ? 'animate-pulse' : ''} w-12 h-12 rounded-full bg-[#292929] text-[#54BB74] border-2 border-[#54BB74] flex items-center justify-center transition-all hover:bg-[#54BB74] hover:text-white z-10`}
+                      className={`${isMuted ? 'animate-pulse' : ''} w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#292929] text-[#54BB74] border border-[#54BB74] sm:border-2 flex items-center justify-center transition-all hover:bg-[#54BB74] hover:text-white z-10`}
                       aria-label={isMuted ? "Unmute video" : "Mute video"}
                     >
-                      {isMuted ? <FaVolumeMute className="text-xl" /> : <FaVolumeUp className="text-xl" />}
+                      {isMuted ? <FaVolumeMute className="text-sm sm:text-lg" /> : <FaVolumeUp className="text-sm sm:text-lg" />}
                     </button>
                     
                     {/* Play/Pause button */}
@@ -676,10 +676,10 @@ export default function CustomerProfile() {
                           setIsVideoPlaying(!isVideoPlaying);
                         }
                       }}
-                      className="w-12 h-12 rounded-full bg-[#292929] text-[#54BB74] border-2 border-[#54BB74] flex items-center justify-center transition-all hover:bg-[#54BB74] hover:text-white z-10"
+                      className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#292929] text-[#54BB74] border border-[#54BB74] sm:border-2 flex items-center justify-center transition-all hover:bg-[#54BB74] hover:text-white z-10"
                       aria-label={isVideoPlaying ? "Pause video" : "Play video"}
                     >
-                      {isVideoPlaying ? <FaPause className="text-xl" /> : <FaPlay className="ml-1 text-xl" />}
+                      {isVideoPlaying ? <FaPause className="text-sm sm:text-lg" /> : <FaPlay className="ml-0.5 sm:ml-1 text-sm sm:text-lg" />}
                     </button>
                   </div>
                 )}
