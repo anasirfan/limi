@@ -501,7 +501,7 @@ export default function CustomerProfile() {
   const [isMuted, setIsMuted] = useState(true); // Start muted to allow autoplay
   const [showSoundConsent, setShowSoundConsent] = useState(false);
   const [soundPreference, setSoundPreference] = useState(null); // null = not decided, true = enabled, false = disabled
-  
+  const [videoEnded, setVideoEnded] = useState(false);
   const videoRef = useRef(null);
 
   // Auto-play video when component loads (muted for browser compatibility)
@@ -637,16 +637,44 @@ export default function CustomerProfile() {
                   playsInline
                   muted={isMuted}
                   onLoadedData={() => setIsVideoLoaded(true)}
-                  onEnded={() => setIsVideoPlaying(false)}
+                  onEnded={() => {
+                    setIsVideoPlaying(false);
+                    setVideoEnded(true);
+                  }}
                   poster="/images/video-poster.jpg"
                 >
                   <source src="/videos/customerprofile_anim.mp4" type="video/mp4" />
                 </video>
                 
+                {/* Replay button - shown when video ends */}
+                {videoEnded && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <button 
+                      onClick={() => {
+                        if (videoRef.current) {
+                          videoRef.current.currentTime = 0;
+                          videoRef.current.play()
+                            .then(() => {
+                              setIsVideoPlaying(true);
+                              setVideoEnded(false);
+                            })
+                            .catch(err => console.error('Replay failed:', err));
+                        }
+                      }}
+                      className="w-16 h-16 rounded-full bg-[#292929]/90 text-[#54BB74] border-2 border-[#54BB74] flex items-center justify-center transition-all hover:bg-[#54BB74] hover:text-white z-10"
+                      aria-label="Replay video"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      </svg>
+                    </button>
+                  </div>
+                )}
+                
                 {/* Sound consent dialog - shown when video starts playing */}
                 {showSoundConsent && (
                   <div className="absolute inset-0 bg-[#292929]/90 flex items-center justify-center z-20" onClick={(e) => e.stopPropagation()}>
-                    <div className="bg-[#1e1e1e] p-4 sm:p-6 rounded-lg max-w-[90%] sm:max-w-md text-center border border-[#54BB74] shadow-lg mx-4">
+                    <div className="bg-[#1e1e1e] p-4 sm:p-6 rounded-lg max-w-[90%] sm:max-w-md text-center border border-[#54BB74] shadow-lg mx-4 animate-fadeIn">
                       <h3 className="text-lg sm:text-xl font-[Amenti] text-[#54BB74] mb-2 sm:mb-3">Enable Sound?</h3>
                       <p className="text-white text-sm sm:text-base mb-3 sm:mb-4">Would you like to enable sound for this video introduction?</p>
                       <div className="flex flex-col sm:flex-row justify-center space-y-3 sm:space-y-0 sm:space-x-4">
@@ -667,61 +695,9 @@ export default function CustomerProfile() {
                   </div>
                 )}
                 
-                {/* Sound reminder - shown when video is muted and consent was already handled */}
-                {isMuted && isVideoPlaying && soundPreference === false && (
-                  <div className="absolute top-2 sm:top-4 left-2 sm:left-4 bg-[#292929]/80 text-white px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm flex items-center space-x-1 sm:space-x-2">
-                    <FaVolumeMute className="text-[#54BB74] text-xs sm:text-sm" />
-                    <span>Sound is off</span>
-                  </div>
-                )}
+
                 
-                {isVideoLoaded && (
-                  <div className="absolute bottom-4 right-4 flex space-x-2 sm:space-x-3">
-                    {/* Mute/Unmute button */}
-                    <button 
-                      onClick={() => {
-                        if (videoRef.current) {
-                          const newMutedState = !isMuted;
-                          videoRef.current.muted = newMutedState;
-                          setIsMuted(newMutedState);
-                          
-                          // Update sound preference
-                          setSoundPreference(!newMutedState);
-                          
-                          // If unmuting and video is not playing, try to play it
-                          if (!newMutedState && !isVideoPlaying && videoRef.current.paused) {
-                            videoRef.current.play()
-                              .then(() => setIsVideoPlaying(true))
-                              .catch(err => console.error('Play with sound failed:', err));
-                          }
-                        }
-                      }}
-                      className={`${isMuted ? 'animate-pulse' : ''} w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#292929] text-[#54BB74] border border-[#54BB74] flex items-center justify-center transition-all hover:bg-[#54BB74] hover:text-white z-10 text-xs sm:text-base`}
-                      aria-label={isMuted ? "Unmute video" : "Mute video"}
-                    >
-                      {isMuted ? <FaVolumeMute /> : <FaVolumeUp />}
-                    </button>
-                    
-                    {/* Play/Pause button */}
-                    <button 
-                      onClick={() => {
-                        if (videoRef.current) {
-                          if (isVideoPlaying) {
-                            videoRef.current.pause();
-                          } else {
-                            // Don't reset currentTime, just continue from current position
-                            videoRef.current.play().catch(err => console.error('Play with sound failed:', err));
-                          }
-                          setIsVideoPlaying(!isVideoPlaying);
-                        }
-                      }}
-                      className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#292929] text-[#54BB74] border border-[#54BB74] flex items-center justify-center transition-all hover:bg-[#54BB74] hover:text-white z-10 text-xs sm:text-base"
-                      aria-label={isVideoPlaying ? "Pause video" : "Play video"}
-                    >
-                      {isVideoPlaying ? <FaPause /> : <FaPlay className="ml-0.5 sm:ml-1" />}
-                    </button>
-                  </div>
-                )}
+
               </div>
               
               {/* Profile Header - Keep this section as requested */}
