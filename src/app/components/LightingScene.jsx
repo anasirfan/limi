@@ -20,11 +20,11 @@ const LightingScene = ({ userType }) => {
   const [isDayMode, setIsDayMode] = useState(false);
   const [isTopLightOn, setIsTopLightOn] = useState(true);
   const [isMiddleLightOn, setIsMiddleLightOn] = useState(true);
+  const [isBothLightsOn, setIsBothLightsOn] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
   
   // Refs for GSAP animations
   const sceneRef = useRef(null);
-  const topLightRef = useRef(null);
-  const middleLightRef = useRef(null);
   const buttonRef = useRef(null);
   const headerRef = useRef(null);
   const clipPathRef = useRef(null);
@@ -61,14 +61,7 @@ const LightingScene = ({ userType }) => {
 
   // GSAP animations for smooth transitions
   useEffect(() => {
-    // Animate scene based on day/night mode
-    if (sceneRef.current) {
-      gsap.to(sceneRef.current, {
-        backgroundImage: `url(/images/configImages/${isDayMode ? 'day' : 'night'}.jpg)`,
-        duration: 0.8,
-        ease: 'power2.out'
-      });
-    }
+    // We'll handle scene animation in a separate useEffect that considers all light states
 
     // Animate button based on day/night mode
     if (buttonRef.current) {
@@ -81,45 +74,62 @@ const LightingScene = ({ userType }) => {
     }
   }, [isDayMode]);
 
-  // Animate top light
-  /**
-   * Updates the top light's appearance and animation based on its on/off state
-   * and the current day/night mode.
-   */
+  // Check if the device is mobile on mount and when window resizes
   useEffect(() => {
-    if (topLightRef.current) {
-      // Update the light image based on day/night mode
-      topLightRef.current.style.backgroundImage = `url(/images/configImages/${isDayMode ? 'day' : 'night'}_ceiling.jpg)`;
-      
-      gsap.to(topLightRef.current, {
-        opacity: isTopLightOn ? 0.4 : 0,
-        duration: 0.5,
-        ease: 'power2.out'
-      });
-    }
-  }, [isTopLightOn, isDayMode]);
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth < 768); // Standard mobile breakpoint
+    };
+    
+    // Check initially
+    checkIfMobile();
+    
+    // Add event listener for window resize
+    window.addEventListener('resize', checkIfMobile);
+    
+    // Clean up event listener
+    return () => window.removeEventListener('resize', checkIfMobile);
+  }, []);
 
-  // Animate middle light
+  // Update both lights state when individual lights change
   useEffect(() => {
-    if (middleLightRef.current) {
-      // Update the light image based on day/night mode
-      middleLightRef.current.style.backgroundImage = `url(/images/configImages/${isDayMode ? 'day' : 'night'}_wall.jpg)`;
+    setIsBothLightsOn(isTopLightOn && isMiddleLightOn);
+  }, [isTopLightOn, isMiddleLightOn]);
+
+  // Update the scene background based on lighting state
+  useEffect(() => {
+    if (sceneRef.current) {
+      let imageName = isDayMode ? 'day' : 'night';
       
-      gsap.to(middleLightRef.current, {
-        opacity: isMiddleLightOn ? 0.4 : 0,
-        duration: 0.5,
+      // Determine which image to show based on light states
+      if (isTopLightOn && isMiddleLightOn) {
+        imageName += '_both';
+      } else if (isTopLightOn) {
+        imageName += '_ceiling';
+      } else if (isMiddleLightOn) {
+        imageName += '_wall';
+      }
+      
+      // Add mobile suffix if on mobile device
+      if (isMobile) {
+        imageName += '-mob';
+      }
+      
+      // Animate the background change
+      gsap.to(sceneRef.current, {
+        backgroundImage: `url(/images/configImages/${imageName}.jpg)`,
+        duration: 0.8,
         ease: 'power2.out'
       });
     }
-  }, [isMiddleLightOn, isDayMode]);
+  }, [isDayMode, isTopLightOn, isMiddleLightOn, isMobile]);
 
   return (
     <div 
       id="lighting"
       ref={sceneRef}
-      className="relative h-[90vh] w-full overflow-hidden bg-black"
+      className="relative h-[90vh] w-full overflow-hidden bg-black py-12"
       style={{
-        backgroundImage: `url(/images/configImages/${isDayMode ? 'day' : 'night'}.jpg)`,
+        backgroundImage: `url(/images/configImages/${isDayMode ? 'day' : 'night'}${isTopLightOn && isMiddleLightOn ? '_both' : isTopLightOn ? '_ceiling' : isMiddleLightOn ? '_wall' : ''}${isMobile ? '-mob' : ''}.jpg)`,
         backgroundSize: 'contain',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
@@ -134,39 +144,17 @@ const LightingScene = ({ userType }) => {
         {/* Large themed heading at the top */}
         <div 
           ref={headerRef}
-          className="w-full bg-gradient-to-r from-[#2d4133] to-[#1a2a20] py-4 sm:py-6 px-6 sm:px-10 z-50"
+          className="w-full bg-gradient-to-r from-[#2d4133] to-[#1a2a20] py-4 sm:py-3 px-6 sm:px-5 z-50"
         >
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white text-center">
+          <h2 className="text-2xl sm:text-xl md:text-xl font-bold text-white text-center">
             Visualize Your Space
           </h2>
-          <p className="text-sm sm:text-base md:text-lg text-white text-center mt-2 max-w-3xl mx-auto">
+          <p className="text-sm sm:text-base md:text-lg text-white text-center mt-2 max-w-3xl md:max-w-4xl mx-auto">
           Discover our lighting solutions within your own space. Adjust the settings below to switch between day and night modes and to control individual lights, helping you create the ideal atmosphere. </p>
         </div>
       </div>
 
-      <div 
-        ref={topLightRef}
-        className="absolute inset-0 mix-blend-screen"
-        style={{
-          backgroundImage: `url(/images/configImages/${isDayMode ? 'day' : 'night'}_ceiling.jpg)`,
-          backgroundSize: 'contain',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          opacity: 0
-        }}
-      />
-
-      <div 
-        ref={middleLightRef}
-        className="absolute inset-0 mix-blend-screen"
-        style={{
-          backgroundImage: `url(/images/configImages/${isDayMode ? 'day' : 'night'}_wall.jpg)`,
-          backgroundSize: 'contain',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          opacity: 0
-        }}
-      />
+      {/* We no longer need separate light layers since we're using direct image swapping */}
 
       <div className="absolute top-4  md:top-10 left-4 sm:left-6 md:left-10 z-50 max-sm:bottom-32 max-sm:top-auto">
         <div className="flex flex-col items-start max-sm:flex-row max-sm:space-x-4 max-sm:justify-center">
@@ -175,7 +163,7 @@ const LightingScene = ({ userType }) => {
             <div className="w-12 sm:w-16 h-0.5 bg-yellow-400 mt-1"></div>
           </h3>
  
-          <button className=" sm:mt-6 bg-white text-black px-3 py-1.5 sm:px-4 sm:py-2 rounded-full flex items-center text-xs sm:text-sm">
+          <button className=" sm:mt-0 bg-white text-black px-3 py-1.5 sm:px-4 sm:py-2 rounded-full flex items-center text-xs sm:text-sm">
             Explore More Collections
             <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 sm:h-4 sm:w-4 ml-1 sm:ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
