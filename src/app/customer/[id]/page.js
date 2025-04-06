@@ -473,7 +473,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
-import { FaQrcode, FaBuilding, FaPlay, FaPause } from 'react-icons/fa';
+import { FaQrcode, FaBuilding, FaPlay, FaPause, FaVolumeUp, FaVolumeMute } from 'react-icons/fa';
 
 // Test customer profiles for development and exhibition
 const testCustomers = {
@@ -498,17 +498,57 @@ export default function CustomerProfile() {
   const [error, setError] = useState(null);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+  const [isMuted, setIsMuted] = useState(true); // Start muted to allow autoplay
+  const [showSoundConsent, setShowSoundConsent] = useState(false);
+  const [soundPreference, setSoundPreference] = useState(null); // null = not decided, true = enabled, false = disabled
   
   const videoRef = useRef(null);
 
-  // Auto-play video when component loads
+  // Auto-play video when component loads (muted for browser compatibility)
   useEffect(() => {
     if (videoRef.current && isVideoLoaded) {
       videoRef.current.play()
-        .then(() => setIsVideoPlaying(true))
-        .catch(err => console.error('Auto-play failed:', err));
+        .then(() => {
+          setIsVideoPlaying(true);
+          // Show sound consent dialog after video starts playing
+          setTimeout(() => {
+            if (soundPreference === null) {
+              // Pause the video when showing the consent dialog
+              if (videoRef.current) {
+                videoRef.current.pause();
+                setIsVideoPlaying(false);
+              }
+              setShowSoundConsent(true);
+            }
+          }, 1000); // Show consent dialog after 1 second
+        })
+        .catch(err => {
+          console.error('Auto-play failed:', err);
+          // Show a message or visual cue that user needs to interact
+        });
     }
-  }, [isVideoLoaded]);
+  }, [isVideoLoaded, soundPreference]);
+  
+  // Handle sound preference changes
+  useEffect(() => {
+    if (soundPreference !== null) {
+      setIsMuted(!soundPreference);
+      setShowSoundConsent(false);
+      
+      // Resume video playback after user makes a selection
+      if (videoRef.current) {
+        // If user enabled sound, unmute the video
+        if (soundPreference) {
+          videoRef.current.muted = false;
+        }
+        
+        // Resume playback
+        videoRef.current.play()
+          .then(() => setIsVideoPlaying(true))
+          .catch(err => console.error('Resume after consent failed:', err));
+      }
+    }
+  }, [soundPreference]);
 
   useEffect(() => {
     async function fetchCustomerData() {
@@ -595,31 +635,92 @@ export default function CustomerProfile() {
                   ref={videoRef}
                   className="w-full h-auto" 
                   playsInline
-                  muted
+                  muted={isMuted}
                   onLoadedData={() => setIsVideoLoaded(true)}
                   onEnded={() => setIsVideoPlaying(false)}
+                  poster="/images/video-poster.jpg"
                 >
                   <source src="/videos/customerprofile_anim.mp4" type="video/mp4" />
                 </video>
                 
+                {/* Sound consent dialog - shown when video starts playing */}
+                {showSoundConsent && (
+                  <div className="absolute inset-0 bg-[#292929]/90 flex items-center justify-center z-20" onClick={(e) => e.stopPropagation()}>
+                    <div className="bg-[#1e1e1e] p-6 rounded-lg max-w-md text-center border border-[#54BB74] shadow-lg">
+                      <h3 className="text-xl font-[Amenti] text-[#54BB74] mb-3">Enable Sound?</h3>
+                      <p className="text-white mb-4">Would you like to enable sound for this video introduction?</p>
+                      <div className="flex justify-center space-x-4">
+                        <button 
+                          onClick={() => setSoundPreference(true)}
+                          className="px-5 py-2 rounded-full bg-[#54BB74] text-[#292929] font-medium hover:bg-[#93cfa2] transition-colors"
+                        >
+                          Yes, enable sound
+                        </button>
+                        <button 
+                          onClick={() => setSoundPreference(false)}
+                          className="px-5 py-2 rounded-full bg-[#292929] text-[#54BB74] border border-[#54BB74] font-medium hover:bg-[#54BB74] hover:text-white transition-colors"
+                        >
+                          No, keep muted
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Sound reminder - shown when video is muted and consent was already handled */}
+                {isMuted && isVideoPlaying && soundPreference === false && (
+                  <div className="absolute top-4 left-4 bg-[#292929]/80 text-white px-3 py-1 rounded-full text-sm flex items-center space-x-2">
+                    <FaVolumeMute className="text-[#54BB74]" />
+                    <span>Sound is off</span>
+                  </div>
+                )}
+                
                 {isVideoLoaded && (
-                  <button 
-                    onClick={() => {
-                      if (videoRef.current) {
-                        if (isVideoPlaying) {
-                          videoRef.current.pause();
-                        } else {
-                          videoRef.current.currentTime = 0;
-                          videoRef.current.play().catch(err => console.error('Video playback failed:', err));
+                  <div className="absolute bottom-4 right-4 flex space-x-3">
+                    {/* Mute/Unmute button - more prominent when muted */}
+                    <button 
+                      onClick={() => {
+                        if (videoRef.current) {
+                          const newMutedState = !isMuted;
+                          videoRef.current.muted = newMutedState;
+                          setIsMuted(newMutedState);
+                          
+                          // Update sound preference
+                          setSoundPreference(!newMutedState);
+                          
+                          // If unmuting and video is not playing, try to play it
+                          if (!newMutedState && !isVideoPlaying && videoRef.current.paused) {
+                            videoRef.current.play()
+                              .then(() => setIsVideoPlaying(true))
+                              .catch(err => console.error('Play with sound failed:', err));
+                          }
                         }
-                        setIsVideoPlaying(!isVideoPlaying);
-                      }
-                    }}
-                    className="absolute bottom-4 right-4 w-10 h-10 rounded-full bg-[#292929] text-[#54BB74] border border-[#54BB74] flex items-center justify-center transition-all hover:bg-[#54BB74] hover:text-white z-10"
-                    aria-label={isVideoPlaying ? "Pause video" : "Play video"}
-                  >
-                    {isVideoPlaying ? <FaPause /> : <FaPlay className="ml-1" />}
-                  </button>
+                      }}
+                      className={`${isMuted ? 'animate-pulse' : ''} w-10 h-10 rounded-full bg-[#292929] text-[#54BB74] border border-[#54BB74] flex items-center justify-center transition-all hover:bg-[#54BB74] hover:text-white z-10`}
+                      aria-label={isMuted ? "Unmute video" : "Mute video"}
+                    >
+                      {isMuted ? <FaVolumeMute /> : <FaVolumeUp />}
+                    </button>
+                    
+                    {/* Play/Pause button */}
+                    <button 
+                      onClick={() => {
+                        if (videoRef.current) {
+                          if (isVideoPlaying) {
+                            videoRef.current.pause();
+                          } else {
+                            videoRef.current.currentTime = 0;
+                            videoRef.current.play().catch(err => console.error('Video playback failed:', err));
+                          }
+                          setIsVideoPlaying(!isVideoPlaying);
+                        }
+                      }}
+                      className="w-10 h-10 rounded-full bg-[#292929] text-[#54BB74] border border-[#54BB74] flex items-center justify-center transition-all hover:bg-[#54BB74] hover:text-white z-10"
+                      aria-label={isVideoPlaying ? "Pause video" : "Play video"}
+                    >
+                      {isVideoPlaying ? <FaPause /> : <FaPlay className="ml-1" />}
+                    </button>
+                  </div>
                 )}
               </div>
               
