@@ -28,12 +28,14 @@ const VideoHighlightsCarousel = () => {
   const [slideProgress, setSlideProgress] = useState(0);
   const [videoDuration, setVideoDuration] = useState(10); // Default duration in seconds
   const [showReplayButton, setShowReplayButton] = useState(false);
+  const [isInView, setIsInView] = useState(false);
   
   // Refs
   const carouselRef = useRef(null);
   const videoRef = useRef(null);
   const fullVideoRef = useRef(null);
   const progressIntervalRef = useRef(null);
+  const sectionRef = useRef(null);
   
   // Calculate slide times based on provided timecodes
   // Timecodes: 0:00:00:00, 0:00:06:27, 0:00:16:02, 0:00:23:10
@@ -93,6 +95,31 @@ const VideoHighlightsCarousel = () => {
     };
   }, []);
 
+  // Set up Intersection Observer to detect when component is in viewport
+  useEffect(() => {
+    if (!sectionRef.current) return;
+    
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        setIsInView(entry.isIntersecting);
+      },
+      {
+        root: null, // viewport
+        rootMargin: '0px',
+        threshold: 0.3, // trigger when 30% of the element is visible
+      }
+    );
+    
+    observer.observe(sectionRef.current);
+    
+    return () => {
+      if (sectionRef.current) {
+        observer.unobserve(sectionRef.current);
+      }
+    };
+  }, []);
+
   // Initialize video and event listeners
   useEffect(() => {
     const initVideo = () => {
@@ -128,6 +155,18 @@ const VideoHighlightsCarousel = () => {
     };
   }, []);
   
+  // Handle playing/pausing based on viewport visibility
+  useEffect(() => {
+    if (isInView && videoLoaded && !isPlaying && !showReplayButton) {
+      playVideo();
+    } else if (!isInView && isPlaying) {
+      if (videoRef.current) {
+        videoRef.current.pause();
+        setIsPlaying(false);
+      }
+    }
+  }, [isInView, videoLoaded, isPlaying, showReplayButton]);
+  
   // Handle video metadata loaded - update duration
   const handleMetadataLoaded = () => {
     if (!videoRef.current) return;
@@ -142,8 +181,10 @@ const VideoHighlightsCarousel = () => {
   // Handle video loaded event
   const handleVideoLoaded = () => {
     setVideoLoaded(true);
-    // Auto-play the video when loaded
-    playVideo();
+    // Only auto-play if in view
+    if (isInView) {
+      playVideo();
+    }
   };
   
   // Handle video ended event
@@ -280,6 +321,7 @@ const VideoHighlightsCarousel = () => {
 
   return (
     <section 
+      ref={sectionRef}
       className="relative py-24 bg-black text-white overflow-hidden"
       style={{
         background: "linear-gradient(to bottom, rgba(0,0,0,0.95) 0%, #000000 20%, #000000 80%, rgba(0,0,0,0.95) 100%)"
