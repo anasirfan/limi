@@ -27,7 +27,7 @@ export async function GET(request) {
           throw new Error('Failed to fetch tracking data');
         }
         const data = await response.json();
-        console.log(data)
+        // console.log(data)
         return NextResponse.json(data, { status: 200 });
       } 
       // For customer-specific tracking data
