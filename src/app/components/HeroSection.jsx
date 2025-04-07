@@ -101,7 +101,8 @@ function HeroSection() {
           playsInline
           className="absolute top-0 left-0 w-full h-full object-cover z-10"
         >
-          <source src="/videos/BgVideo.mp4" type="video/mp4" />
+          <source src="/videos/BgVideo.mp4" type="video/mp4" media="(min-width: 768px)" />
+          <source src="/videos/BgMobile.mp4" type="video/mp4" media="(max-width: 767px)" />
         </video>
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px]">
 
