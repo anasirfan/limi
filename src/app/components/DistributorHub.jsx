@@ -182,7 +182,7 @@ const DistributorHub = ({ userType }) => {
           <blockquote className="text-xl italic text-gray-300 max-w-3xl mx-auto">
             "Partnering with LIMI has transformed our lighting business. Their innovative products and support have helped us grow our market share significantly."
           </blockquote>
-          <p className="mt-4 text-[#54BB74]">— Michael Chen, Lumina Distributors</p>
+          <p className="mt-4 text-[#54BB74]">— LIMI DISTRIBUTOR</p>
         </div>
       </div>
     </section>

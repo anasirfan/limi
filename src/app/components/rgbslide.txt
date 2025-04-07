@@ -1,0 +1,378 @@
+ <div
+          ref={(el) => (slidesRef.current[3] = el)}
+          className="absolute inset-0 flex flex-row items-stretch justify-between p-0 max-sm:flex-col max-sm:items-center"
+          style={{ backgroundColor: "#121212" }}
+        >
+          {/* Mobile title - Compact */}
+          <div className="text-center block md:hidden pt-2 pb-1">
+            <h2
+              className="text-lg font-bold text-white mt-12 mb-1"
+              style={{ color: brandColors.primary }}
+            >
+              {slides[3].title}
+            </h2>
+          </div>
+          
+          {/* Image Section - Enlarged for mobile */}
+          <div className="relative w-2/3 h-full max-sm:w-full max-sm:h-3/5">
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="relative w-full h-full ">
+                {/* Base Room Image */}
+                <div className="absolute inset-0 bg-cover bg-center" />
+
+                {/* Off Light Layer */}
+                <div className="absolute inset-0 mix-blend-screen">
+                  <Image
+                    src={
+                      isMobile
+                        ? "/images/RGB/off_mob.jpg"
+                        : "/images/RGB/off.jpg"
+                    }
+                    alt="Off Light"
+                    layout="fill"
+                    objectFit="contain"
+                    objectPosition="center"
+                    priority
+                    style={{ opacity: offLight ? globalThis.offLightOpacity : 0 }}
+                  />
+                </div>
+
+                {/* Red Light Layer */}
+                <div className="absolute inset-0 mix-blend-screen">
+                  <Image
+                    src={
+                      isMobile
+                        ? "/images/RGB/red_mob.jpg"
+                        : "/images/RGB/red.jpg"
+                    }
+                    alt="Red Light"
+                    layout="fill"
+                    objectFit="contain"
+                    objectPosition="center"
+                    priority
+                    style={{
+                      opacity: !onLight ? (rgbValues.r || 0) / 255 : (rgbOpacities.r || 0),
+                    }}
+                  />
+                </div>
+
+                {/* Green Light Layer */}
+                <div className="absolute inset-0 mix-blend-screen">
+                  <Image
+                    src={
+                      isMobile
+                        ? "/images/RGB/green_mob.jpg"
+                        : "/images/RGB/green.jpg"
+                    }
+                    alt="Green Light"
+                    layout="fill"
+                    objectFit="contain"
+                    objectPosition="center"
+                    priority
+                    style={{
+                      opacity: !onLight ? (rgbValues.g || 0) / 255 : (rgbOpacities.g || 0),
+                    }}
+                  />
+                </div>
+
+                {/* Blue Light Layer */}
+                <div className="absolute inset-0 mix-blend-screen">
+                  <Image
+                    src={
+                      isMobile
+                        ? "/images/RGB/blue_mob.jpg"
+                        : "/images/RGB/blue.jpg"
+                    }
+                    alt="Blue Light"
+                    layout="fill"
+                    objectFit="contain"
+                    objectPosition="center"
+                    priority
+                    style={{
+                      opacity: !onLight ? (rgbValues.b || 0) / 255 : (rgbOpacities.b || 0),
+                    }}
+                  />
+                </div>
+
+                {/* White Light Layer */}
+                <div className="absolute inset-0 mix-blend-screen">
+                  <Image
+                    src={
+                      isMobile
+                        ? "/images/RGB/white_mob.jpg"
+                        : "/images/RGB/white.jpg"
+                    }
+                    alt="White Light"
+                    layout="fill"
+                    objectFit="contain"
+                    objectPosition="center"
+                    priority
+                    style={{ opacity: onLight ? globalThis.whiteOpacity : 0 }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Text and Controls Section - Smaller for mobile */}
+          <div className="relative w-1/3 h-full max-sm:w-full max-sm:h-2/5 bg-black/80 flex flex-col-reverse items-center justify-center p-8 max-sm:p-0 max-sm:flex-col-reverse">
+            <div className="w-full max-w-xs flex flex-col md:gap-6 max-sm:gap-0 ">
+              <div className="text-center hidden md:block mb-12">
+                <h2
+                  className="text-3xl font-bold text-white mb-4"
+                  style={{ color: brandColors.primary }}
+                >
+                  {slides[3].title}
+                </h2>
+                <p className="text-base text-white/80 mb-8">
+                  {slides[3].description}
+                </p>
+              </div>
+
+              {/* Mobile RGB Controls */}
+              <div className="max-sm:block hidden">
+                {/* Toggle Buttons */}
+                <div className="flex justify-center items-center mb-3 gap-2">
+                  <button 
+                    className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-300 ${
+                      showRainbowPicker 
+                        ? 'bg-gradient-to-r from-red-500 via-green-500 to-blue-500 text-white scale-110 shadow-md' 
+                        : 'bg-gray-700 text-white'
+                    }`}
+                    onClick={() => {
+                      setShowRainbowPicker(true);
+                      setShowColorPalette(false);
+                    }}
+                  >
+                    Customise 
+                  </button>
+                  
+                  <button 
+                    className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-300 ${
+                      showColorPalette 
+                        ? 'bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-white scale-110 shadow-md' 
+                        : 'bg-gray-700 text-white'
+                    }`}
+                    onClick={() => {
+                      setShowRainbowPicker(false);
+                      setShowColorPalette(true);
+                    }}
+                  >
+                    Presets
+                  </button>
+                </div>
+                
+                {/* Current Color Display */}
+                <div className=" mb-3">
+                  <div
+                    className="relative p-2 rounded-lg mx-auto w-[70%] h-10 flex items-center justify-center"
+                    style={{
+                      backgroundColor: `rgb(${rgbValues.r}, ${rgbValues.g}, ${rgbValues.b})`,
+                      boxShadow: `0 0 10px rgba(${rgbValues.r}, ${rgbValues.g}, ${rgbValues.b}, 0.8)`,
+                    }}
+                  >
+                    <div className="text-white font-bold text-center text-xs text-shadow-sm">
+                      RGB({rgbValues.r}, {rgbValues.g}, {rgbValues.b})
+                    </div>
+                  <button
+                    onClick={() => copyToClipboard(rgbValues)}
+                    className="absolute top-1/2 right-4 transform -translate-y-1/2 text-white p-1 text-lg"
+                    title="Copy RGB values"
+                  >
+                    📋
+                  </button>
+                  </div>
+                </div>
+                
+                {/* Rainbow Color Picker */}
+                {showRainbowPicker && (
+                  <div 
+                    ref={rainbowPickerRef}
+                    className="w-full h-10 rounded-lg mb-20 cursor-pointer relative z-50"
+                    style={{
+                      background: 'linear-gradient(to right, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000)',
+                      backgroundSize: '100% 50%',
+                      backgroundImage: 'linear-gradient(to right, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000), linear-gradient(to bottom, rgba(255,255,255,0.8), rgba(0,0,0,1))',
+                      backgroundBlendMode: 'normal, overlay',
+                      backgroundPosition: '0 0, 0 0',
+                    }}
+                    onTouchStart={(e) => {
+                      e.preventDefault();
+                      throttledColorPick(e.touches[0]);
+                    }}
+                    onTouchMove={(e) => {
+                      e.preventDefault();
+                      throttledColorPick(e.touches[0]);
+                    }}
+                    onMouseDown={(e) => {
+                      setIsDragging(true);
+                      throttledColorPick(e);
+                    }}
+                    onClick={throttledColorPick}
+                  >
+                    {/* Always show the knob with conditional positioning */}
+                    <div 
+                      className="absolute h-full w-1 bg-white pointer-events-none"
+                      style={{
+                        left: `${pickerKnobPosition.x}px`,
+                        boxShadow: `0 0 3px rgba(0,0,0,0.5), 0 0 5px rgba(${rgbValues.r}, ${rgbValues.g}, ${rgbValues.b}, 0.8)`,
+                        top: 0,
+                        transition: 'left 0.1s ease-out, box-shadow 0.2s ease'
+                      }}
+                    >
+                      {/* Color indicator at the bottom of the line */}
+                      <div 
+                        className="absolute bottom-[-20px] w-6 h-6 rounded-full border-2 border-white"
+                        style={{
+                          backgroundColor: `rgb(${rgbValues.r}, ${rgbValues.g}, ${rgbValues.b})`,
+                          left: '-10px',
+                          boxShadow: '0 0 5px rgba(0,0,0,0.5)',
+                          transition: 'background-color 0.2s ease'
+                        }}
+                      ></div>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Color Presets - Compact Grid */}
+                {showColorPalette && (
+                  <div className="color-selection mb-12 grid grid-cols-5 gap-2 justify-items-center">
+                    {solidColors.map((color) => (
+                      <button
+                        key={color.name}
+                        className={`rounded-full shadow-md hover:scale-110 transition-all duration-200 ${
+                          selectedColor === color.name ? "ring-2 ring-white scale-110" : ""
+                        }`}
+                        onClick={() => {
+                          setRgbValues(color.rgb);
+                          setSelectedColor(color.name);
+                        }}
+                        style={{
+                          backgroundColor: `rgb(${color.rgb.r}, ${color.rgb.g}, ${color.rgb.b})`,
+                          width: "32px",
+                          height: "32px",
+                          boxShadow: selectedColor === color.name
+                            ? `0 0 10px rgba(${color.rgb.r}, ${color.rgb.g}, ${color.rgb.b}, 0.8)`
+                            : 'none',
+                        }}
+                        title={color.name}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Desktop RGB Controls */}
+              <div className="max-sm:hidden">
+                <div>
+                  <label className="text-red-500 md:mb-2 block font-bold text-sm max-sm:text-xs">
+                    Red: {rgbValues.r || 0}
+                  </label>
+                  <input
+                    type="range"
+                    min="0"
+                    max="255"
+                    value={rgbValues.r || 0}
+                    onChange={(e) =>
+                      handleRgbChange("r", parseInt(e.target.value))
+                    }
+                    className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                    style={{
+                      accentColor: "#FF0000",
+                      background: "linear-gradient(to right, #300, #F00)",
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label className="text-green-500 md:mb-2 block font-bold text-sm max-sm:text-xs">
+                    Green: {rgbValues.g || 0}
+                  </label>
+                  <input
+                    type="range"
+                    min="0"
+                    max="255"
+                    value={rgbValues.g || 0}
+                    onChange={(e) =>
+                      handleRgbChange("g", parseInt(e.target.value))
+                    }
+                    className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                    style={{
+                      accentColor: "#00FF00",
+                      background: "linear-gradient(to right, #030, #0F0)",
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label className="text-blue-500 md:mb-2 block font-bold text-sm max-sm:text-xs">
+                    Blue: {rgbValues.b || 0}
+                  </label>
+                  <input
+                    type="range"
+                    min="0"
+                    max="255"
+                    value={rgbValues.b || 0}
+                    onChange={(e) =>
+                      handleRgbChange("b", parseInt(e.target.value))
+                    }
+                    className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                    style={{
+                      accentColor: "#0000FF",
+                      background: "linear-gradient(to right, #003, #00F)",
+                    }}
+                  />
+                </div>
+
+                <div className="relative">
+                  <div
+                    className="mt-2 p-3 max-sm:p-0 rounded-lg"
+                    style={{
+                      backgroundColor: `rgba(${rgbValues.r}, ${rgbValues.g}, ${rgbValues.b}, 0.5)`,
+                      boxShadow: `0 0 20px rgba(${rgbValues.r}, ${rgbValues.g}, ${rgbValues.b}, 0.8)`,
+                    }}
+                  >
+                    <div className="text-white font-bold text-center text-shadow">
+                      RGB({rgbValues.r}, {rgbValues.g}, {rgbValues.b})
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => copyToClipboard(rgbValues)}
+                    className="ml-2 max-sm:mt-1 text-white absolute top-0 right-0 p-2 text-3xl max-sm:text-xl"
+                  >
+                    📋
+                  </button>
+                </div>
+
+                {/* Desktop Color Selection */}
+                <div className="color-selection max-sm:mt-4 max-sm:gap-4 flex flex-wrap justify-center items-center">
+                  {solidColors.map((color) => (
+                    <button
+                      key={color.name}
+                      className={`rounded-full shadow-lg hover:scale-105 hover:shadow-lg hover:shadow-[#54bb74]/30 hover:bg-[#292929]/10 focus:outline-none focus:ring-2 focus:ring-[#54bb74] focus:ring-opacity-50 ${
+                        selectedColor === color.name ? "shadow-2xl" : ""
+                      }`}
+                      onClick={() => {
+                        setRgbValues(color.rgb);
+                        setSelectedColor(color.name);
+                      }}
+                      style={{
+                        backgroundColor: `rgb(${color.rgb.r}, ${color.rgb.g}, ${color.rgb.b})`,
+                        width: "50px",
+                        height: "50px",
+                        border: "none",
+                        margin: "5px",
+                        cursor: "pointer",
+                        boxShadow:
+                          selectedColor === color.name
+                            ? `0 0 20px rgba(${color.rgb.r}, ${color.rgb.g}, ${color.rgb.b}, 0.8)`
+                            : "none",
+                      }}
+                      title={color.name}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
