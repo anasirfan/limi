@@ -6,7 +6,7 @@
 let startTime = null;
 let idleTimeout = null;
 let pagesVisited = [];
-const IDLE_TIMEOUT_DURATION = 2 * 60 * 1000; // 2 minutes in milliseconds
+const IDLE_TIMEOUT_DURATION = 30 * 1000; // 30 seconds in milliseconds
 
 /**
  * Initialize tracking service

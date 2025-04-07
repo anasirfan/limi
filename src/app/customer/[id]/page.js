@@ -473,7 +473,9 @@ import { useEffect, useState, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
+import CookieConsent from '../../components/CookieConsent';
 import { FaQrcode, FaBuilding, FaPlay, FaPause, FaVolumeUp, FaVolumeMute } from 'react-icons/fa';
+import { initTracking } from '../../services/trackingService';
 
 // Test customer profiles for development and exhibition
 const testCustomers = {
@@ -506,6 +508,12 @@ export default function CustomerProfile() {
   // This is intentionally left empty to prevent autoplay
 
 
+
+  // Initialize tracking when component mounts
+  useEffect(() => {
+    // Initialize tracking service
+    initTracking();
+  }, []);
 
   useEffect(() => {
     async function fetchCustomerData() {
@@ -746,6 +754,9 @@ export default function CustomerProfile() {
       </div>
       
       <Footer />
+      
+      {/* Cookie Consent Banner */}
+      <CookieConsent />
     </main>
   );
 }

@@ -26,6 +26,8 @@ export default function CustomerDashboard({ token }) {
   const [dateFilter, setDateFilter] = useState('all');
   const [userTypeFilter, setUserTypeFilter] = useState('all');
   const [consentFilter, setConsentFilter] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [logsPerPage, setLogsPerPage] = useState(10);
 
   // Format time in minutes and seconds
   const formatTime = (seconds) => {
@@ -975,7 +977,22 @@ export default function CustomerDashboard({ token }) {
           {/* Visitor Logs Table */}
           {!visitorLogsLoading && visitorLogs.length > 0 && (
             <div className="overflow-x-auto">
-              <h3 className="text-[#93cfa2] text-lg font-semibold mb-4">Recent Visitor Logs</h3>
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-[#93cfa2] text-lg font-semibold">Recent Visitor Logs</h3>
+                <div className="flex items-center space-x-2">
+                  <label className="text-gray-300 text-sm">Rows per page:</label>
+                  <select 
+                    value={logsPerPage}
+                    onChange={(e) => setLogsPerPage(Number(e.target.value))}
+                    className="bg-[#292929] text-white px-2 py-1 rounded-md text-sm"
+                  >
+                    <option value={5}>5</option>
+                    <option value={10}>10</option>
+                    <option value={20}>20</option>
+                    <option value={50}>50</option>
+                  </select>
+                </div>
+              </div>
               <table className="w-full bg-[#1e1e1e] rounded-lg overflow-hidden">
                 <thead className="bg-[#292929]">
                   <tr>
@@ -984,49 +1001,153 @@ export default function CustomerDashboard({ token }) {
                     <th className="px-4 py-3 text-left text-gray-300">IP & Country</th>
                     <th className="px-4 py-3 text-left text-gray-300">Referrer</th>
                     <th className="px-4 py-3 text-left text-gray-300">Device</th>
+                    <th className="px-4 py-3 text-left text-gray-300">Browser</th>
                     <th className="px-4 py-3 text-left text-gray-300">Duration</th>
+                    <th className="px-4 py-3 text-left text-gray-300">Pages</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {visitorLogs.slice(0, 10).map((log, index) => (
-                    <tr
-                      key={log._id}
-                      className={`border-t border-[#333333] hover:bg-[#292929]/50 ${index % 2 === 0 ? 'bg-[#1e1e1e]' : 'bg-[#252525]'}`}
-                    >
-                      <td className="px-4 py-3 text-gray-300">
-                        {new Date(log.timestamp).toLocaleString()}
-                      </td>
-                      <td className="px-4 py-3">
-                        {log.customerId ? (
-                          <span className="font-mono text-sm text-[#93cfa2]">{log.customerId}</span>
-                        ) : (
-                          <span className="text-gray-500 italic">Unknown Visitor</span>
-                        )}
-                      </td>
-                      <td className="px-4 py-3 text-gray-300">
-                        <div className="flex items-center gap-2">
-                          <FaGlobe className="text-blue-400" />
-                          <span>{log.ipAddress}</span>
-                          <span className="text-gray-500">|</span>
-                          <span>{log.country}</span>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 text-gray-300 max-w-[200px] truncate">
-                        {log.referrer || 'Direct'}
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-2">
-                          {getDeviceIcon(log.userAgent)}
-                          <span className="text-gray-300">{getDeviceType(log.userAgent)}</span>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 text-gray-300">
-                        {formatTime(log.sessionDuration)}
-                      </td>
-                    </tr>
-                  ))}
+                  {visitorLogs
+                    .slice((currentPage - 1) * logsPerPage, currentPage * logsPerPage)
+                    .map((log, index) => (
+                      <tr
+                        key={log._id || index}
+                        className={`border-t border-[#333333] hover:bg-[#292929]/50 ${index % 2 === 0 ? 'bg-[#1e1e1e]' : 'bg-[#252525]'}`}
+                      >
+                        <td className="px-4 py-3 text-gray-300">
+                          <div>{new Date(log.timestamp).toLocaleDateString()}</div>
+                          <div className="text-xs text-gray-400">{new Date(log.timestamp).toLocaleTimeString()}</div>
+                        </td>
+                        <td className="px-4 py-3">
+                          {log.customerId ? (
+                            <span className="font-mono text-sm text-[#93cfa2]">{log.customerId}</span>
+                          ) : (
+                            <span className="text-gray-500 italic">Unknown</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 text-gray-300">
+                          <div className="text-sm">{log.ipAddress || 'Unknown'}</div>
+                          {log.country && <div className="text-xs text-gray-400">{log.country}</div>}
+                        </td>
+                        <td className="px-4 py-3 text-gray-300">
+                          {log.referrer ? (
+                            <div className="group relative">
+                              <span className="text-xs underline decoration-dotted cursor-help">
+                                {(() => {
+                                  try {
+                                    return new URL(log.referrer).hostname;
+                                  } catch (e) {
+                                    return log.referrer.substring(0, 20);
+                                  }
+                                })()}
+                              </span>
+                              <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block bg-[#1e1e1e] border border-[#333] p-2 rounded shadow-lg z-10 w-64">
+                                <p className="text-xs break-all">{log.referrer}</p>
+                              </div>
+                            </div>
+                          ) : (
+                            <span className="text-gray-500 italic">Direct</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 text-gray-300">
+                          <div className="flex items-center">
+                            {getDeviceIcon(log.userAgent)}
+                            <span className="ml-2">{getDeviceType(log.userAgent)}</span>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 text-gray-300">
+                          <div className="group relative">
+                            <span className="text-xs underline decoration-dotted cursor-help">
+                              {(() => {
+                                const ua = log.userAgent || '';
+                                if (ua.includes('Chrome')) return 'Chrome';
+                                if (ua.includes('Firefox')) return 'Firefox';
+                                if (ua.includes('Safari')) return 'Safari';
+                                if (ua.includes('Edge')) return 'Edge';
+                                if (ua.includes('MSIE') || ua.includes('Trident')) return 'IE';
+                                return 'Unknown';
+                              })()}
+                            </span>
+                            <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block bg-[#1e1e1e] border border-[#333] p-2 rounded shadow-lg z-10 w-64">
+                              <p className="text-xs break-all">{log.userAgent || 'Unknown'}</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 text-gray-300">
+                          {formatTime(log.sessionDuration || 0)}
+                        </td>
+                        <td className="px-4 py-3 text-gray-300">
+                          {log.pagesVisited && log.pagesVisited.length > 0 ? (
+                            <div className="group relative">
+                              <span className="text-xs underline decoration-dotted cursor-help">
+                                {log.pagesVisited.length} {log.pagesVisited.length === 1 ? 'page' : 'pages'}
+                              </span>
+                              <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block bg-[#1e1e1e] border border-[#333] p-2 rounded shadow-lg z-10 w-64">
+                                <ul className="text-xs list-disc pl-4">
+                                  {log.pagesVisited.map((page, i) => (
+                                    <li key={i}>{page}</li>
+                                  ))}
+                                </ul>
+                              </div>
+                            </div>
+                          ) : (
+                            <span className="text-gray-500 italic">None</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
                 </tbody>
               </table>
+              
+              {/* Pagination */}
+              {visitorLogs.length > logsPerPage && (
+                <div className="flex justify-between items-center mt-4">
+                  <div className="text-sm text-gray-400">
+                    Showing {Math.min((currentPage - 1) * logsPerPage + 1, visitorLogs.length)} to {Math.min(currentPage * logsPerPage, visitorLogs.length)} of {visitorLogs.length} entries
+                  </div>
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                      disabled={currentPage === 1}
+                      className={`px-3 py-1 rounded ${currentPage === 1 ? 'bg-[#333] text-gray-500 cursor-not-allowed' : 'bg-[#292929] text-white hover:bg-[#54bb74] hover:text-[#292929]'}`}
+                    >
+                      Previous
+                    </button>
+                    {Array.from({ length: Math.ceil(visitorLogs.length / logsPerPage) }, (_, i) => i + 1)
+                      .filter(page => {
+                        // Show first page, last page, current page, and pages around current
+                        return page === 1 || 
+                              page === Math.ceil(visitorLogs.length / logsPerPage) || 
+                              (page >= currentPage - 1 && page <= currentPage + 1);
+                      })
+                      .map((page, index, array) => {
+                        // Add ellipsis
+                        const showEllipsisBefore = index > 0 && page > array[index - 1] + 1;
+                        const showEllipsisAfter = index < array.length - 1 && page < array[index + 1] - 1;
+                        
+                        return (
+                          <React.Fragment key={page}>
+                            {showEllipsisBefore && <span className="px-3 py-1">...</span>}
+                            <button
+                              onClick={() => setCurrentPage(page)}
+                              className={`px-3 py-1 rounded ${currentPage === page ? 'bg-[#54bb74] text-[#292929]' : 'bg-[#292929] text-white hover:bg-[#54bb74] hover:text-[#292929]'}`}
+                            >
+                              {page}
+                            </button>
+                            {showEllipsisAfter && <span className="px-3 py-1">...</span>}
+                          </React.Fragment>
+                        );
+                      })}
+                    <button
+                      onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(visitorLogs.length / logsPerPage)))}
+                      disabled={currentPage === Math.ceil(visitorLogs.length / logsPerPage)}
+                      className={`px-3 py-1 rounded ${currentPage === Math.ceil(visitorLogs.length / logsPerPage) ? 'bg-[#333] text-gray-500 cursor-not-allowed' : 'bg-[#292929] text-white hover:bg-[#54bb74] hover:text-[#292929]'}`}
+                    >
+                      Next
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
