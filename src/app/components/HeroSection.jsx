@@ -11,9 +11,26 @@ function HeroSection() {
   const buttonRef = useRef(null);
   const sectionRef = useRef(null);
   const videoRef = useRef(null);
+  const [isMobile, setIsMobile] = useState(false);
   const [descriptionLines, setDescriptionLines] = useState([
     "Lighting should adapt to you, not the other way around. With <span class='highlight'>seamless control</span> and <span class='highlight'>modular design</span>, we make it effortless to transform your space—<span class='highlight'>no electrician needed</span>."
   ]);
+
+  useEffect(() => {
+    // Check for mobile on mount and when window resizes
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    // Set initial value
+    handleResize();
+    
+    // Add event listener
+    window.addEventListener('resize', handleResize);
+    
+    // Clean up
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
@@ -100,10 +117,8 @@ function HeroSection() {
           muted
           playsInline
           className="absolute top-0 left-0 w-full h-full object-cover z-10"
-        >
-          <source src="/videos/BgVideo.mp4" type="video/mp4" media="(min-width: 768px)" />
-          <source src="/videos/BgMobile.mp4" type="video/mp4" media="(max-width: 767px)" />
-        </video>
+          src={isMobile ? "/videos/BgMobile.mp4" : "/videos/BgVideo.mp4"}
+        ></video>
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px]">
 
         </div>
