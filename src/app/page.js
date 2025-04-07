@@ -17,7 +17,9 @@ import DistributorHub from './components/DistributorHub';
 
 // import UserSelectionPopup from './components/UserSelectionPopup';
 import VideoHighlightsCarousel from './components/VideoHighlightsCarousel';
+import CookieConsent from './components/CookieConsent';
 import { useEffect, useState, Suspense } from 'react';
+import { initTracking, sendTrackingData, cleanupTracking } from './services/trackingService';
 // Dynamically import CubeAnimation with SSR disabled
 const CubeAnimation = dynamic(() => import('./components/CubeAnimation'), { 
   ssr: false,
@@ -73,6 +75,24 @@ export default function Home() {
   //   setShowUserSelection(false);
   // };
 
+  // Handle tracking consent
+  const handleTrackingConsent = () => {
+    initTracking();
+  };
+
+  // Check if consent was previously given and initialize tracking if needed
+  useEffect(() => {
+    const consentStatus = localStorage.getItem('cookieConsent');
+    if (consentStatus === 'true') {
+      initTracking();
+    }
+    
+    // Cleanup tracking on component unmount
+    return () => {
+      cleanupTracking();
+    };
+  }, []);
+
   return (
     <main>
       <SplashScreen onComplete={() => window.dispatchEvent(new Event('splashComplete'))} />
@@ -92,6 +112,7 @@ export default function Home() {
       {/* {!isMobile && <MouseTrail />} */}
       <Footer  />
       <ScrollToTop />
+      <CookieConsent onAccept={handleTrackingConsent} onDecline={() => {}} />
     </main>
   );
 }

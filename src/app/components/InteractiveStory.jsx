@@ -383,7 +383,7 @@ const InteractiveStory = () => {
             <div className="flex flex-col items-center">
               <div className="w-20 h-20 rounded-lg overflow-hidden mb-2 border-2 border-emerald-400 shadow-lg shadow-emerald-400/20">
                 <Image
-                  src="/images/base_1.jpg"
+                  src="/images/base_1.jpeg"
                   alt="Base"
                   width={80}
                   height={80}
@@ -396,7 +396,7 @@ const InteractiveStory = () => {
             <div className="flex flex-col items-center">
               <div className="w-20 h-20 rounded-lg overflow-hidden mb-2 border-2 border-emerald-400 shadow-lg shadow-emerald-400/20">
                 <Image
-                  src="/images/light.webp"
+                  src="/images/light.png"
                   alt="App"
                   width={80}
                   height={80}
@@ -562,7 +562,7 @@ const InteractiveStory = () => {
               } absolute inset-0 rounded-2xl`}
             >
               <Image
-                src="/images/base_1.jpg"
+                src="/images/base_1.jpeg"
                 alt="Base"
                 className="rounded-xl shadow-glass backdrop-blur-lg  bg-white/10"
                 fill
@@ -654,7 +654,7 @@ const InteractiveStory = () => {
               } absolute inset-0 rounded-2xl`}
             >
               <Image
-                src="/images/light.webp"
+                src="/images/light.png"
                 className="rounded-xl shadow-glass"
                 alt="App"
                 fill
@@ -798,7 +798,7 @@ endless possibilities.   </p>
                 <div className="flex flex-col md:flex-row gap-6 items-center md:items-start">
                   <div className="w-32 h-32 relative rounded-lg overflow-hidden flex-shrink-0">
                     <Image
-                      src="/images/base_1.jpg"
+                      src="/images/base_1.jpeg"
                       alt="Base"
                       fill
                       className="object-cover"
@@ -855,7 +855,7 @@ refresh your space. </p>
                 <div className="flex flex-col md:flex-row gap-6 items-center md:items-start">
                   <div className="w-32 h-32 relative rounded-lg overflow-hidden flex-shrink-0">
                     <Image
-                      src="/images/light.webp"
+                      src="/images/light.png"
                       alt="App"
                       fill
                       className="object-cover"
@@ -950,7 +950,7 @@ Smart lighting, made simple. </p>
                   </p>
                   <div className="w-full h-40 relative rounded-lg overflow-hidden border border-emerald-400/30">
                     <Image
-                      src="/images/base_1.jpg"
+                      src="/images/base_1.jpeg"
                       alt="Base"
                       fill
                       className="object-cover"
@@ -981,7 +981,7 @@ Smart lighting, made simple. </p>
                   </p>
                   <div className="w-full h-40 relative rounded-lg overflow-hidden border border-emerald-400/30">
                     <Image
-                      src="/images/light.webp"
+                      src="/images/light.png"
                       alt="App"
                       fill
                       className="object-cover"

@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { FaSort, FaSortUp, FaSortDown, FaSearch, FaEye, FaTimes, FaFilter } from 'react-icons/fa';
+import { FaSort, FaSortUp, FaSortDown, FaSearch, FaEye, FaTimes, FaFilter, FaChartLine, FaGlobe, FaClock, FaDesktop, FaTabletAlt, FaMobileAlt } from 'react-icons/fa';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
 
 export default function CustomerDashboard({ token }) {
   const [customers, setCustomers] = useState([]);
@@ -18,6 +19,122 @@ export default function CustomerDashboard({ token }) {
   const [companies, setCompanies] = useState([]);
   const [staffNames, setStaffNames] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
+  const [activeTab, setActiveTab] = useState('customers');
+  const [visitorLogs, setVisitorLogs] = useState([]);
+  const [customerSessions, setCustomerSessions] = useState([]);
+  const [visitorLogsLoading, setVisitorLogsLoading] = useState(false);
+  const [dateFilter, setDateFilter] = useState('all');
+  const [userTypeFilter, setUserTypeFilter] = useState('all');
+  const [consentFilter, setConsentFilter] = useState('all');
+
+  // Format time in minutes and seconds
+  const formatTime = (seconds) => {
+    return Math.floor(seconds / 60) + 'm ' + (seconds % 60) + 's';
+  };
+
+  // Get device type from user agent
+  const getDeviceType = (userAgent) => {
+    if (!userAgent) return 'Unknown';
+    
+    if (userAgent.match(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i)) {
+      if (userAgent.match(/tablet|ipad|playbook|silk/i)) {
+        return 'Tablet';
+      }
+      return 'Mobile';
+    }
+    return 'Desktop';
+  };
+
+  // Get device icon based on device type
+  const getDeviceIcon = (userAgent) => {
+    const deviceType = getDeviceType(userAgent);
+    switch (deviceType) {
+      case 'Mobile':
+        return <FaMobileAlt className="text-blue-400" />;
+      case 'Tablet':
+        return <FaTabletAlt className="text-green-400" />;
+      default:
+        return <FaDesktop className="text-purple-400" />;
+    }
+  };
+
+  // Fetch visitor logs
+  const fetchVisitorLogs = async () => {
+    try {
+      setVisitorLogsLoading(true);
+      
+      // Prepare query parameters
+      const params = new URLSearchParams();
+      
+      if (dateFilter === 'today') {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        params.append('startDate', today.toISOString());
+      } else if (dateFilter === 'week') {
+        const weekAgo = new Date();
+        weekAgo.setDate(weekAgo.getDate() - 7);
+        params.append('startDate', weekAgo.toISOString());
+      } else if (dateFilter === 'month') {
+        const monthAgo = new Date();
+        monthAgo.setMonth(monthAgo.getMonth() - 1);
+        params.append('startDate', monthAgo.toISOString());
+      }
+      
+      if (userTypeFilter === 'known') {
+        params.append('hasCustomerId', 'true');
+      } else if (userTypeFilter === 'unknown') {
+        params.append('hasCustomerId', 'false');
+      }
+      
+      if (consentFilter !== 'all') {
+        params.append('consent', consentFilter === 'consented' ? 'true' : 'false');
+      }
+      
+      // Fetch visitor logs from API
+      const response = await fetch(`/api/visitor-logs?${params.toString()}`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch visitor logs');
+      }
+      
+      const data = await response.json();
+      
+      if (data && data.success && Array.isArray(data.data)) {
+        setVisitorLogs(data.data);
+      }
+      
+      setVisitorLogsLoading(false);
+    } catch (error) {
+      console.error('Error fetching visitor logs:', error);
+      setVisitorLogsLoading(false);
+    }
+  };
+
+  // Fetch customer sessions when a customer is selected
+  const fetchCustomerSessions = async (customerId) => {
+    try {
+      const response = await fetch(`/api/visitor-logs?customerId=${customerId}`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch customer sessions');
+      }
+      
+      const data = await response.json();
+      
+      if (data && data.success && Array.isArray(data.data)) {
+        setCustomerSessions(data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching customer sessions:', error);
+    }
+  };
+
+  // Fetch visitor logs when tab changes or filters change
+  useEffect(() => {
+    if (activeTab === 'traffic') {
+      fetchVisitorLogs();
+    }
+  }, [activeTab, dateFilter, userTypeFilter, consentFilter]);
 
   // Fetch customer data
   useEffect(() => {
@@ -219,6 +336,10 @@ export default function CustomerDashboard({ token }) {
   const viewCustomerDetails = (customer) => {
     setSelectedCustomer(customer);
     setShowModal(true);
+    // Fetch customer sessions when viewing details
+    if (customer && customer.profileId) {
+      fetchCustomerSessions(customer.profileId);
+    }
   };
 
   // Filter and sort customers
@@ -265,10 +386,96 @@ export default function CustomerDashboard({ token }) {
     setFilterStaff('');
   };
 
+  // Calculate analytics metrics
+  const calculateAnalytics = () => {
+    if (!visitorLogs || visitorLogs.length === 0) return {};
+    
+    // Total visits
+    const totalVisits = visitorLogs.length;
+    
+    // Unique customers
+    const uniqueCustomerIds = new Set();
+    visitorLogs.forEach(log => {
+      if (log.customerId) {
+        uniqueCustomerIds.add(log.customerId);
+      }
+    });
+    const uniqueCustomers = uniqueCustomerIds.size;
+    
+    // Average session duration
+    const totalDuration = visitorLogs.reduce((sum, log) => sum + log.sessionDuration, 0);
+    const avgDuration = totalDuration / totalVisits;
+    
+    // Consent percentage
+    const consentedLogs = visitorLogs.filter(log => log.consent);
+    const consentPercentage = (consentedLogs.length / totalVisits) * 100;
+    
+    // Known vs unknown users
+    const knownUsers = visitorLogs.filter(log => log.customerId).length;
+    const unknownUsers = totalVisits - knownUsers;
+    
+    // Sessions over time (daily)
+    const sessionsByDate = {};
+    visitorLogs.forEach(log => {
+      const date = new Date(log.timestamp).toLocaleDateString();
+      if (!sessionsByDate[date]) {
+        sessionsByDate[date] = 0;
+      }
+      sessionsByDate[date]++;
+    });
+    
+    const sessionsOverTime = Object.keys(sessionsByDate).map(date => ({
+      date,
+      sessions: sessionsByDate[date]
+    }));
+    
+    // Sort by date
+    sessionsOverTime.sort((a, b) => new Date(a.date) - new Date(b.date));
+    
+    return {
+      totalVisits,
+      uniqueCustomers,
+      avgDuration,
+      consentPercentage,
+      knownUsers,
+      unknownUsers,
+      sessionsOverTime
+    };
+  };
+  
+  const analytics = calculateAnalytics();
+  
+  // Prepare data for pie chart
+  const userTypePieData = [
+    { name: 'Known Users', value: analytics.knownUsers || 0 },
+    { name: 'Unknown Users', value: analytics.unknownUsers || 0 }
+  ];
+  
+  const COLORS = ['#54bb74', '#8884d8'];
+
   return (
     <div>
-      {/* Search and filters */}
-      <div className="mb-6 bg-[#1e1e1e] p-4 rounded-lg">
+      {/* Tabs */}
+      <div className="mb-6 flex border-b border-[#333333]">
+        <button
+          className={`px-4 py-2 font-medium ${activeTab === 'customers' ? 'text-[#93cfa2] border-b-2 border-[#93cfa2]' : 'text-gray-400 hover:text-gray-300'}`}
+          onClick={() => setActiveTab('customers')}
+        >
+          Customers
+        </button>
+        <button
+          className={`px-4 py-2 font-medium flex items-center gap-2 ${activeTab === 'traffic' ? 'text-[#93cfa2] border-b-2 border-[#93cfa2]' : 'text-gray-400 hover:text-gray-300'}`}
+          onClick={() => setActiveTab('traffic')}
+        >
+          <FaChartLine />
+          Website Traffic
+        </button>
+      </div>
+
+      {activeTab === 'customers' && (
+        <>
+        {/* Search and filters */}
+        <div className="mb-6 bg-[#1e1e1e] p-4 rounded-lg">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="relative flex-grow">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -443,7 +650,7 @@ export default function CustomerDashboard({ token }) {
       {/* Customer details modal */}
       {showModal && selectedCustomer && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center max-sm:mt-12 z-50 p-4 overflow-y-auto pt-16 md:pt-4">
-          <div className="bg-[#1e1e1e] rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto mt-10 md:mt-0">
+          <div className="bg-[#1e1e1e] rounded-lg w-full max-w-3xl max-h-[85vh] overflow-y-auto mt-10 md:mt-0">
             <div className="sticky top-0 bg-[#1e1e1e] p-4 border-b border-[#333333] flex justify-between items-center">
               <h3 className="text-xl font-[Amenti] text-[#93cfa2]">
                 Customer Details: {selectedCustomer.clientCompanyInfo}
@@ -506,6 +713,57 @@ export default function CustomerDashboard({ token }) {
                 </div>
               </div>
               
+              {/* Customer Website Sessions */}
+              <h4 className="text-lg font-semibold text-[#93cfa2] mb-3">Customer Website Sessions</h4>
+              <div className="bg-[#292929]/50 p-4 rounded-lg mb-6">
+                {customerSessions.length === 0 ? (
+                  <p className="text-gray-400 italic">No website sessions recorded for this customer</p>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b border-[#333333]">
+                          <th className="px-3 py-2 text-left text-gray-400 text-sm">Timestamp</th>
+                          <th className="px-3 py-2 text-left text-gray-400 text-sm">Duration</th>
+                          <th className="px-3 py-2 text-left text-gray-400 text-sm">IP & Country</th>
+                          <th className="px-3 py-2 text-left text-gray-400 text-sm">Referrer</th>
+                          <th className="px-3 py-2 text-left text-gray-400 text-sm">Device</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {customerSessions.map((session, index) => (
+                          <tr key={session._id} className={`border-b border-[#333333]/50 ${index % 2 === 0 ? 'bg-[#292929]/30' : 'bg-[#292929]/10'}`}>
+                            <td className="px-3 py-2 text-gray-300 text-sm">
+                              {new Date(session.timestamp).toLocaleString()}
+                            </td>
+                            <td className="px-3 py-2 text-gray-300 text-sm">
+                              {formatTime(session.sessionDuration)}
+                            </td>
+                            <td className="px-3 py-2 text-gray-300 text-sm">
+                              <div className="flex items-center gap-1">
+                                <FaGlobe className="text-blue-400 text-xs" />
+                                <span>{session.ipAddress}</span>
+                                <span className="text-gray-500">|</span>
+                                <span>{session.country}</span>
+                              </div>
+                            </td>
+                            <td className="px-3 py-2 text-gray-300 text-sm max-w-[150px] truncate">
+                              {session.referrer || 'Direct'}
+                            </td>
+                            <td className="px-3 py-2 text-gray-300 text-sm">
+                              <div className="flex items-center gap-1">
+                                {getDeviceIcon(session.userAgent)}
+                                <span>{getDeviceType(session.userAgent)}</span>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+              
               {/* Business card images */}
               <h4 className="text-lg font-semibold text-[#93cfa2] mb-3">Attached Images</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -560,6 +818,219 @@ export default function CustomerDashboard({ token }) {
       <div className="mt-4 text-gray-400 text-sm">
         Showing {filteredAndSortedCustomers.length} of {customers.length} customers
       </div>
+      </>
+      )}
+
+      {activeTab === 'traffic' && (
+        <div>
+          {/* Traffic filters */}
+          <div className="mb-6 bg-[#1e1e1e] p-4 rounded-lg">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label htmlFor="dateFilter" className="block text-gray-400 mb-2">
+                  Date Range
+                </label>
+                <select
+                  id="dateFilter"
+                  value={dateFilter}
+                  onChange={(e) => setDateFilter(e.target.value)}
+                  className="bg-[#292929] text-white w-full px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#54bb74]"
+                >
+                  <option value="all">All Time</option>
+                  <option value="today">Today</option>
+                  <option value="week">Last 7 Days</option>
+                  <option value="month">Last 30 Days</option>
+                </select>
+              </div>
+              
+              <div>
+                <label htmlFor="userTypeFilter" className="block text-gray-400 mb-2">
+                  User Type
+                </label>
+                <select
+                  id="userTypeFilter"
+                  value={userTypeFilter}
+                  onChange={(e) => setUserTypeFilter(e.target.value)}
+                  className="bg-[#292929] text-white w-full px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#54bb74]"
+                >
+                  <option value="all">All Users</option>
+                  <option value="known">Known Users</option>
+                  <option value="unknown">Unknown Users</option>
+                </select>
+              </div>
+              
+              <div>
+                <label htmlFor="consentFilter" className="block text-gray-400 mb-2">
+                  Consent Status
+                </label>
+                <select
+                  id="consentFilter"
+                  value={consentFilter}
+                  onChange={(e) => setConsentFilter(e.target.value)}
+                  className="bg-[#292929] text-white w-full px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#54bb74]"
+                >
+                  <option value="all">All</option>
+                  <option value="consented">Consented</option>
+                  <option value="declined">Declined</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          
+          {visitorLogsLoading ? (
+            <div className="flex flex-col items-center justify-center min-h-[300px]">
+              <div className="w-16 h-16 border-t-4 border-[#93cfa2] border-solid rounded-full animate-spin mb-6"></div>
+              <p className="text-gray-300">Loading visitor data...</p>
+            </div>
+          ) : visitorLogs.length === 0 ? (
+            <div className="bg-[#1e1e1e] p-6 rounded-lg text-center">
+              <p className="text-gray-300">No visitor data found matching your filters</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+              {/* Total Visits Card */}
+              <div className="bg-[#1e1e1e] p-4 rounded-lg shadow-lg">
+                <h3 className="text-[#93cfa2] text-lg font-semibold mb-2">Total Visits</h3>
+                <p className="text-white text-3xl font-bold">{analytics.totalVisits}</p>
+              </div>
+              
+              {/* Unique Customers Card */}
+              <div className="bg-[#1e1e1e] p-4 rounded-lg shadow-lg">
+                <h3 className="text-[#93cfa2] text-lg font-semibold mb-2">Unique Customers</h3>
+                <p className="text-white text-3xl font-bold">{analytics.uniqueCustomers}</p>
+              </div>
+              
+              {/* Avg Session Duration Card */}
+              <div className="bg-[#1e1e1e] p-4 rounded-lg shadow-lg">
+                <h3 className="text-[#93cfa2] text-lg font-semibold mb-2">Avg. Session Duration</h3>
+                <p className="text-white text-3xl font-bold">{formatTime(analytics.avgDuration || 0)}</p>
+              </div>
+              
+              {/* Consent Percentage Card */}
+              <div className="bg-[#1e1e1e] p-4 rounded-lg shadow-lg">
+                <h3 className="text-[#93cfa2] text-lg font-semibold mb-2">Consent Rate</h3>
+                <p className="text-white text-3xl font-bold">{analytics.consentPercentage?.toFixed(1)}%</p>
+              </div>
+            </div>
+          )}
+          
+          {/* Charts */}
+          {!visitorLogsLoading && visitorLogs.length > 0 && (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+              {/* User Type Pie Chart */}
+              <div className="bg-[#1e1e1e] p-4 rounded-lg shadow-lg">
+                <h3 className="text-[#93cfa2] text-lg font-semibold mb-4">Known vs Unknown Users</h3>
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={userTypePieData}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                      >
+                        {userTypePieData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip formatter={(value) => [value, 'Visitors']} />
+                      <Legend />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+              
+              {/* Sessions Over Time Line Chart */}
+              <div className="bg-[#1e1e1e] p-4 rounded-lg shadow-lg">
+                <h3 className="text-[#93cfa2] text-lg font-semibold mb-4">Sessions Over Time</h3>
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart
+                      data={analytics.sessionsOverTime}
+                      margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+                      <XAxis dataKey="date" stroke="#ccc" />
+                      <YAxis stroke="#ccc" />
+                      <Tooltip />
+                      <Legend />
+                      <Line
+                        type="monotone"
+                        dataKey="sessions"
+                        name="Sessions"
+                        stroke="#54bb74"
+                        activeDot={{ r: 8 }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {/* Visitor Logs Table */}
+          {!visitorLogsLoading && visitorLogs.length > 0 && (
+            <div className="overflow-x-auto">
+              <h3 className="text-[#93cfa2] text-lg font-semibold mb-4">Recent Visitor Logs</h3>
+              <table className="w-full bg-[#1e1e1e] rounded-lg overflow-hidden">
+                <thead className="bg-[#292929]">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-gray-300">Timestamp</th>
+                    <th className="px-4 py-3 text-left text-gray-300">Customer ID</th>
+                    <th className="px-4 py-3 text-left text-gray-300">IP & Country</th>
+                    <th className="px-4 py-3 text-left text-gray-300">Referrer</th>
+                    <th className="px-4 py-3 text-left text-gray-300">Device</th>
+                    <th className="px-4 py-3 text-left text-gray-300">Duration</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {visitorLogs.slice(0, 10).map((log, index) => (
+                    <tr
+                      key={log._id}
+                      className={`border-t border-[#333333] hover:bg-[#292929]/50 ${index % 2 === 0 ? 'bg-[#1e1e1e]' : 'bg-[#252525]'}`}
+                    >
+                      <td className="px-4 py-3 text-gray-300">
+                        {new Date(log.timestamp).toLocaleString()}
+                      </td>
+                      <td className="px-4 py-3">
+                        {log.customerId ? (
+                          <span className="font-mono text-sm text-[#93cfa2]">{log.customerId}</span>
+                        ) : (
+                          <span className="text-gray-500 italic">Unknown Visitor</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-gray-300">
+                        <div className="flex items-center gap-2">
+                          <FaGlobe className="text-blue-400" />
+                          <span>{log.ipAddress}</span>
+                          <span className="text-gray-500">|</span>
+                          <span>{log.country}</span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-gray-300 max-w-[200px] truncate">
+                        {log.referrer || 'Direct'}
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2">
+                          {getDeviceIcon(log.userAgent)}
+                          <span className="text-gray-300">{getDeviceType(log.userAgent)}</span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-gray-300">
+                        {formatTime(log.sessionDuration)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
