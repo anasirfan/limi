@@ -93,7 +93,7 @@ const LightingCarousel = ({ userType }) => {
 
     // 2️⃣ Handle White Light (when any RGB value exceeds 240)
     if (minRGBValue > maxRGBThreshold) {
-      console.log("White Light");
+      // console.log("White Light");
       globalThis.whiteOpacity =
         (minRGBValue - maxRGBThreshold) / (255 - maxRGBThreshold); // Normalize between 0-1
       setOnLight(true);

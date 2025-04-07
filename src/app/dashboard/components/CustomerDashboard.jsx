@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import Image from 'next/image';
 import { FaSort, FaSortUp, FaSortDown, FaSearch, FaEye, FaTimes, FaFilter, FaChartLine, FaGlobe, FaClock, FaDesktop, FaTabletAlt, FaMobileAlt } from 'react-icons/fa';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
@@ -28,6 +28,8 @@ export default function CustomerDashboard({ token }) {
   const [consentFilter, setConsentFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [logsPerPage, setLogsPerPage] = useState(10);
+  const [logSortField, setLogSortField] = useState('timestamp');
+  const [logSortDirection, setLogSortDirection] = useState('desc');
 
   // Format time in minutes and seconds
   const formatTime = (seconds) => {
@@ -101,10 +103,25 @@ export default function CustomerDashboard({ token }) {
       
       const data = await response.json();
       
-      if (data && data.success && Array.isArray(data.data)) {
-        setVisitorLogs(data.data);
+      // Check if data has the expected structure
+      let visitorData = [];
+      if (data && Array.isArray(data)) {
+        visitorData = data;
+      } else if (data && data.success && Array.isArray(data.data)) {
+        visitorData = data.data;
+      } else {
+        console.warn('Unexpected data structure:', data);
+        visitorData = [];
       }
       
+      // Sort the data by timestamp (most recent first)
+      const sortedData = visitorData.sort((a, b) => {
+        const dateA = new Date(a.timestamp || 0);
+        const dateB = new Date(b.timestamp || 0);
+        return dateB - dateA; // Default sort by most recent
+      });
+      
+      setVisitorLogs(sortedData);
       setVisitorLogsLoading(false);
     } catch (error) {
       console.error('Error fetching visitor logs:', error);
@@ -115,19 +132,38 @@ export default function CustomerDashboard({ token }) {
   // Fetch customer sessions when a customer is selected
   const fetchCustomerSessions = async (customerId) => {
     try {
+      // Using the correct API endpoint for customer-specific tracking data
       const response = await fetch(`/api/visitor-logs?customerId=${customerId}`);
-      
       if (!response.ok) {
         throw new Error('Failed to fetch customer sessions');
       }
       
       const data = await response.json();
       
-      if (data && data.success && Array.isArray(data.data)) {
-        setCustomerSessions(data.data);
+      // Handle different possible response structures
+      let sessionData = [];
+      if (data && Array.isArray(data)) {
+        sessionData = data;
+      } else if (data && data.success && Array.isArray(data.data)) {
+        sessionData = data.data;
+      } else if (data && data.sessions && Array.isArray(data.sessions)) {
+        sessionData = data.sessions;
+      } else {
+        console.warn('Unexpected session data structure:', data);
+        sessionData = [];
       }
+      
+      // Sort sessions by timestamp (most recent first)
+      const sortedSessions = sessionData.sort((a, b) => {
+        const dateA = new Date(a.timestamp || 0);
+        const dateB = new Date(b.timestamp || 0);
+        return dateB - dateA;
+      });
+      
+      setCustomerSessions(sortedSessions);
     } catch (error) {
       console.error('Error fetching customer sessions:', error);
+      setCustomerSessions([]);
     }
   };
 
@@ -286,13 +322,13 @@ export default function CustomerDashboard({ token }) {
             }
           }
         } catch (error) {
-          console.log('Error fetching customer data:', error);
+          // console.log('Error fetching customer data:', error);
           // Will fall back to mock data
         }
         
         // If API call failed or returned invalid data, use mock data
         if (!useRealData) {
-          console.log('Using mock data instead.');
+          // console.log('Using mock data instead.');
           setCustomers(mockCustomers);
           
           // Extract unique company names and staff names for filters
@@ -977,33 +1013,146 @@ export default function CustomerDashboard({ token }) {
           {/* Visitor Logs Table */}
           {!visitorLogsLoading && visitorLogs.length > 0 && (
             <div className="overflow-x-auto">
-              <div className="flex justify-between items-center mb-4">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
                 <h3 className="text-[#93cfa2] text-lg font-semibold">Recent Visitor Logs</h3>
-                <div className="flex items-center space-x-2">
-                  <label className="text-gray-300 text-sm">Rows per page:</label>
-                  <select 
-                    value={logsPerPage}
-                    onChange={(e) => setLogsPerPage(Number(e.target.value))}
-                    className="bg-[#292929] text-white px-2 py-1 rounded-md text-sm"
-                  >
-                    <option value={5}>5</option>
-                    <option value={10}>10</option>
-                    <option value={20}>20</option>
-                    <option value={50}>50</option>
-                  </select>
+                <div className="flex flex-wrap items-center gap-4">
+                  <div className="flex items-center space-x-2">
+                    <label className="text-gray-300 text-sm">Sort by:</label>
+                    <select
+                      value={logSortField}
+                      onChange={(e) => {
+                        setLogSortField(e.target.value);
+                        // Sort the visitor logs
+                        const field = e.target.value;
+                        const sorted = [...visitorLogs].sort((a, b) => {
+                          if (field === 'timestamp') {
+                            const dateA = new Date(a.timestamp || 0);
+                            const dateB = new Date(b.timestamp || 0);
+                            return logSortDirection === 'asc' ? dateA - dateB : dateB - dateA;
+                          } else if (field === 'duration') {
+                            const durationA = a.sessionDuration || 0;
+                            const durationB = b.sessionDuration || 0;
+                            return logSortDirection === 'asc' ? durationA - durationB : durationB - durationA;
+                          } else if (field === 'pages') {
+                            const pagesA = (a.pagesVisited || []).length;
+                            const pagesB = (b.pagesVisited || []).length;
+                            return logSortDirection === 'asc' ? pagesA - pagesB : pagesB - pagesA;
+                          }
+                          return 0;
+                        });
+                        setVisitorLogs(sorted);
+                      }}
+                      className="bg-[#292929] text-white px-2 py-1 rounded-md text-sm"
+                    >
+                      <option value="timestamp">Time</option>
+                      <option value="duration">Duration</option>
+                      <option value="pages">Pages</option>
+                    </select>
+                    <button
+                      onClick={() => {
+                        const newDirection = logSortDirection === 'asc' ? 'desc' : 'asc';
+                        setLogSortDirection(newDirection);
+                        // Re-sort with new direction
+                        const sorted = [...visitorLogs].sort((a, b) => {
+                          if (logSortField === 'timestamp') {
+                            const dateA = new Date(a.timestamp || 0);
+                            const dateB = new Date(b.timestamp || 0);
+                            return newDirection === 'asc' ? dateA - dateB : dateB - dateA;
+                          } else if (logSortField === 'duration') {
+                            const durationA = a.sessionDuration || 0;
+                            const durationB = b.sessionDuration || 0;
+                            return newDirection === 'asc' ? durationA - durationB : durationB - durationA;
+                          } else if (logSortField === 'pages') {
+                            const pagesA = (a.pagesVisited || []).length;
+                            const pagesB = (b.pagesVisited || []).length;
+                            return newDirection === 'asc' ? pagesA - pagesB : pagesB - pagesA;
+                          }
+                          return 0;
+                        });
+                        setVisitorLogs(sorted);
+                      }}
+                      className="bg-[#292929] text-white px-2 py-1 rounded-md text-sm flex items-center"
+                    >
+                      {logSortDirection === 'asc' ? <FaSortUp /> : <FaSortDown />}
+                    </button>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <label className="text-gray-300 text-sm">Rows:</label>
+                    <select 
+                      value={logsPerPage}
+                      onChange={(e) => setLogsPerPage(Number(e.target.value))}
+                      className="bg-[#292929] text-white px-2 py-1 rounded-md text-sm"
+                    >
+                      <option value={5}>5</option>
+                      <option value={10}>10</option>
+                      <option value={20}>20</option>
+                      <option value={50}>50</option>
+                    </select>
+                  </div>
                 </div>
               </div>
               <table className="w-full bg-[#1e1e1e] rounded-lg overflow-hidden">
                 <thead className="bg-[#292929]">
                   <tr>
-                    <th className="px-4 py-3 text-left text-gray-300">Timestamp</th>
+                    <th className="px-4 py-3 text-left">
+                      <button 
+                        onClick={() => {
+                          setLogSortField('timestamp');
+                          setLogSortDirection(logSortDirection === 'asc' ? 'desc' : 'asc');
+                          // Sort the visitor logs
+                          const sorted = [...visitorLogs].sort((a, b) => {
+                            const dateA = new Date(a.timestamp || 0);
+                            const dateB = new Date(b.timestamp || 0);
+                            return logSortDirection === 'asc' ? dateB - dateA : dateA - dateB;
+                          });
+                          setVisitorLogs(sorted);
+                        }}
+                        className="flex items-center text-gray-300 hover:text-white"
+                      >
+                        Timestamp {logSortField === 'timestamp' ? (logSortDirection === 'asc' ? <FaSortUp className="ml-1 text-[#93cfa2]" /> : <FaSortDown className="ml-1 text-[#93cfa2]" />) : <FaSort className="ml-1 text-gray-400" />}
+                      </button>
+                    </th>
                     <th className="px-4 py-3 text-left text-gray-300">Customer ID</th>
                     <th className="px-4 py-3 text-left text-gray-300">IP & Country</th>
                     <th className="px-4 py-3 text-left text-gray-300">Referrer</th>
                     <th className="px-4 py-3 text-left text-gray-300">Device</th>
                     <th className="px-4 py-3 text-left text-gray-300">Browser</th>
-                    <th className="px-4 py-3 text-left text-gray-300">Duration</th>
-                    <th className="px-4 py-3 text-left text-gray-300">Pages</th>
+                    <th className="px-4 py-3 text-left">
+                      <button 
+                        onClick={() => {
+                          setLogSortField('duration');
+                          setLogSortDirection(logSortDirection === 'asc' ? 'desc' : 'asc');
+                          // Sort the visitor logs
+                          const sorted = [...visitorLogs].sort((a, b) => {
+                            const durationA = a.sessionDuration || 0;
+                            const durationB = b.sessionDuration || 0;
+                            return logSortDirection === 'asc' ? durationB - durationA : durationA - durationB;
+                          });
+                          setVisitorLogs(sorted);
+                        }}
+                        className="flex items-center text-gray-300 hover:text-white"
+                      >
+                        Duration {logSortField === 'duration' ? (logSortDirection === 'asc' ? <FaSortUp className="ml-1 text-[#93cfa2]" /> : <FaSortDown className="ml-1 text-[#93cfa2]" />) : <FaSort className="ml-1 text-gray-400" />}
+                      </button>
+                    </th>
+                    <th className="px-4 py-3 text-left">
+                      <button 
+                        onClick={() => {
+                          setLogSortField('pages');
+                          setLogSortDirection(logSortDirection === 'asc' ? 'desc' : 'asc');
+                          // Sort the visitor logs
+                          const sorted = [...visitorLogs].sort((a, b) => {
+                            const pagesA = (a.pagesVisited || []).length;
+                            const pagesB = (b.pagesVisited || []).length;
+                            return logSortDirection === 'asc' ? pagesB - pagesA : pagesA - pagesB;
+                          });
+                          setVisitorLogs(sorted);
+                        }}
+                        className="flex items-center text-gray-300 hover:text-white"
+                      >
+                        Pages {logSortField === 'pages' ? (logSortDirection === 'asc' ? <FaSortUp className="ml-1 text-[#93cfa2]" /> : <FaSortDown className="ml-1 text-[#93cfa2]" />) : <FaSort className="ml-1 text-gray-400" />}
+                      </button>
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1126,7 +1275,7 @@ export default function CustomerDashboard({ token }) {
                         const showEllipsisAfter = index < array.length - 1 && page < array[index + 1] - 1;
                         
                         return (
-                          <React.Fragment key={page}>
+                          <Fragment key={page}>
                             {showEllipsisBefore && <span className="px-3 py-1">...</span>}
                             <button
                               onClick={() => setCurrentPage(page)}
@@ -1135,7 +1284,7 @@ export default function CustomerDashboard({ token }) {
                               {page}
                             </button>
                             {showEllipsisAfter && <span className="px-3 py-1">...</span>}
-                          </React.Fragment>
+                          </Fragment>
                         );
                       })}
                     <button

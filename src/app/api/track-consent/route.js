@@ -22,7 +22,7 @@ export async function POST(request) {
     
     // In a real implementation, this would save to MongoDB
     // For now, we'll just log the data and return success
-    console.log('Received tracking data:', data);
+    // console.log('Received tracking data:', data);
     
     // Return success response
     return NextResponse.json(

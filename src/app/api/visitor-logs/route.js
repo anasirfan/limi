@@ -27,15 +27,17 @@ export async function GET(request) {
           throw new Error('Failed to fetch tracking data');
         }
         const data = await response.json();
+        // console.log(data)
         return NextResponse.json(data, { status: 200 });
       } 
       // For customer-specific tracking data
       else {
-        const response = await fetch(`https://api.limitless-lighting.co.uk/client/get_tracking_capture?customerId=${customerId}`);
+        const response = await fetch(`https://api.limitless-lighting.co.uk/client/user_tracking/${customerId}`);
         if (!response.ok) {
           throw new Error('Failed to fetch customer tracking data');
         }
         const data = await response.json();
+        // console.log('Customer specific data:', data);
         return NextResponse.json(data, { status: 200 });
       }
     } catch (error) {
