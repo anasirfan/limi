@@ -40,8 +40,8 @@ const VideoHighlightsCarousel = () => {
   // Calculate slide times based on provided timecodes
   // Timecodes: 0:00:00:00, 0:00:06:27, 0:00:16:02, 0:00:23:10
   // Converting to seconds: 0, 6.9, 16.02, 23.1, 26.57
-  const slideTimesRef = useRef([0, 6.9, 16.02, 23.1, 26.57]); // Start times for each slide in seconds
-  const slideDurationsRef = useRef([6.9, 9.12, 7.08, 3.47, 3.43]); // Duration of each slide in seconds
+  const slideTimesRef = useRef([0, 4, 9.8, 15, 20.57]); // Start times for each slide in seconds
+  const slideDurationsRef = useRef([4, 5.8, 5, 4.57, 4.57]); // Duration of each slide in seconds
   
   // Slide content with actual content relevant to LIMI Lighting - now with 5 slides
   const slides = [

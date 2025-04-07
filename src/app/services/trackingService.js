@@ -37,8 +37,13 @@ export const initTracking = () => {
   document.addEventListener('touchmove', resetIdleTimer);
   document.addEventListener('scroll', resetIdleTimer);
   
-  // Set up beforeunload event to track session duration
-  window.addEventListener('beforeunload', sendTrackingData);
+  // Set up multiple events to ensure tracking data is sent when the page is closed
+  window.addEventListener('beforeunload', handlePageClose);
+  window.addEventListener('pagehide', handlePageClose);
+  window.addEventListener('unload', handlePageClose);
+  
+  // Set up periodic data sending to ensure data is captured even if close events fail
+  startPeriodicDataSending();
 };
 
 /**
@@ -138,9 +143,41 @@ const calculateSessionDuration = () => {
 };
 
 /**
- * Send tracking data to the server
+ * Start periodic data sending to ensure data is captured
  */
-export const sendTrackingData = async () => {
+const startPeriodicDataSending = () => {
+  // Send data every 30 seconds to ensure we capture data even if close events fail
+  const intervalId = setInterval(() => {
+    // Only send if the session has been active for more than 5 seconds
+    if (startTime && (Date.now() - startTime) > 5000) {
+      sendTrackingData(false);
+    }
+  }, 30000); // 30 seconds
+  
+  // Store the interval ID in sessionStorage to clear it when needed
+  if (typeof window !== 'undefined') {
+    window.__trackingIntervalId = intervalId;
+  }
+};
+
+/**
+ * Handle page close events
+ */
+const handlePageClose = (event) => {
+  // Use sendBeacon for more reliable data sending when page is closing
+  sendTrackingData(true);
+  
+  // Clear the interval
+  if (typeof window !== 'undefined' && window.__trackingIntervalId) {
+    clearInterval(window.__trackingIntervalId);
+  }
+};
+
+/**
+ * Send tracking data to the server
+ * @param {boolean} isClosing - Whether the page is closing
+ */
+export const sendTrackingData = async (isClosing = false) => {
   try {
     // Check if consent was given
     const consentStatus = localStorage.getItem('cookieConsent');
@@ -162,18 +199,31 @@ export const sendTrackingData = async () => {
       timestamp: new Date().toISOString()
     };
     
-    // Send data directly to the server API
-    await fetch('https://api.limitless-lighting.co.uk/client/tracking_capture', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(trackingData),
-    });
+    // Use navigator.sendBeacon for more reliable data sending when page is closing
+    if (isClosing && navigator.sendBeacon) {
+      // SendBeacon is more reliable for sending data when the page is closing
+      navigator.sendBeacon(
+        'https://api.limitless-lighting.co.uk/client/tracking_capture',
+        JSON.stringify(trackingData)
+      );
+    } else {
+      // Regular fetch for normal operation
+      await fetch('https://api.limitless-lighting.co.uk/client/tracking_capture', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(trackingData),
+        // Use keepalive to ensure the request completes even if the page is closing
+        keepalive: true
+      });
+    }
     
-    // Reset tracking data
-    startTime = Date.now();
-    pagesVisited = [window.location.pathname];
+    // Only reset tracking data if this isn't a final send before page close
+    if (!isClosing) {
+      startTime = Date.now();
+      pagesVisited = [window.location.pathname];
+    }
     
   } catch (error) {
     console.error('Error sending tracking data:', error);

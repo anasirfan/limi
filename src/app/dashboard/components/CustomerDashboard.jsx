@@ -29,11 +29,13 @@ export default function CustomerDashboard({ token }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [logsPerPage, setLogsPerPage] = useState(10);
   const [logSortField, setLogSortField] = useState('timestamp');
-  const [logSortDirection, setLogSortDirection] = useState('desc');
+  const [logSortDirection, setLogSortDirection] = useState('desc'); // Default to descending (newest first)
 
   // Format time in minutes and seconds
   const formatTime = (seconds) => {
-    return Math.floor(seconds / 60) + 'm ' + (seconds % 60) + 's';
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = (seconds % 60).toFixed(2);
+    return minutes + 'm ' + remainingSeconds + 's';
   };
 
   // Get device type from user agent
@@ -114,10 +116,10 @@ export default function CustomerDashboard({ token }) {
         visitorData = [];
       }
       
-      // Sort the data by timestamp (most recent first)
+      // Sort the data by createdAt (most recent first)
       const sortedData = visitorData.sort((a, b) => {
-        const dateA = new Date(a.timestamp || 0);
-        const dateB = new Date(b.timestamp || 0);
+        const dateA = new Date(a.createdAt || 0);
+        const dateB = new Date(b.createdAt || 0);
         return dateB - dateA; // Default sort by most recent
       });
       
@@ -153,10 +155,10 @@ export default function CustomerDashboard({ token }) {
         sessionData = [];
       }
       
-      // Sort sessions by timestamp (most recent first)
+      // Sort sessions by createdAt (most recent first)
       const sortedSessions = sessionData.sort((a, b) => {
-        const dateA = new Date(a.timestamp || 0);
-        const dateB = new Date(b.timestamp || 0);
+        const dateA = new Date(a.createdAt || 0);
+        const dateB = new Date(b.createdAt || 0);
         return dateB - dateA;
       });
       
@@ -174,8 +176,12 @@ export default function CustomerDashboard({ token }) {
     }
   }, [activeTab, dateFilter, userTypeFilter, consentFilter]);
 
-  // Fetch customer data
+  // Fetch customers
   useEffect(() => {
+    // Set default sort to descending order (newest first)
+    setLogSortDirection('desc');
+    setSortDirection('desc');
+    
     const fetchCustomers = async () => {
       try {
         setLoading(true);
@@ -353,12 +359,10 @@ export default function CustomerDashboard({ token }) {
   // Handle sorting
   const handleSort = (field) => {
     if (sortField === field) {
-      // Toggle direction if same field
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
-      // Set new field and default to ascending
       setSortField(field);
-      setSortDirection('asc');
+      setSortDirection('desc'); // Default to descending order for new sort field
     }
   };
 
@@ -441,8 +445,8 @@ export default function CustomerDashboard({ token }) {
     const uniqueCustomers = uniqueCustomerIds.size;
     
     // Average session duration
-    const totalDuration = visitorLogs.reduce((sum, log) => sum + log.sessionDuration, 0);
-    const avgDuration = totalDuration / totalVisits;
+    const totalDuration = visitorLogs.reduce((sum, log) => sum + (log.sessionDuration || 0), 0);
+    const avgDuration = parseFloat((totalDuration / totalVisits).toFixed(2));
     
     // Consent percentage
     const consentedLogs = visitorLogs.filter(log => log.consent);
@@ -1026,8 +1030,8 @@ export default function CustomerDashboard({ token }) {
                         const field = e.target.value;
                         const sorted = [...visitorLogs].sort((a, b) => {
                           if (field === 'timestamp') {
-                            const dateA = new Date(a.timestamp || 0);
-                            const dateB = new Date(b.timestamp || 0);
+                            const dateA = new Date(a.createdAt || 0);
+                            const dateB = new Date(b.createdAt || 0);
                             return logSortDirection === 'asc' ? dateA - dateB : dateB - dateA;
                           } else if (field === 'duration') {
                             const durationA = a.sessionDuration || 0;
@@ -1055,8 +1059,8 @@ export default function CustomerDashboard({ token }) {
                         // Re-sort with new direction
                         const sorted = [...visitorLogs].sort((a, b) => {
                           if (logSortField === 'timestamp') {
-                            const dateA = new Date(a.timestamp || 0);
-                            const dateB = new Date(b.timestamp || 0);
+                            const dateA = new Date(a.createdAt || 0);
+                            const dateB = new Date(b.createdAt || 0);
                             return newDirection === 'asc' ? dateA - dateB : dateB - dateA;
                           } else if (logSortField === 'duration') {
                             const durationA = a.sessionDuration || 0;
@@ -1101,8 +1105,8 @@ export default function CustomerDashboard({ token }) {
                           setLogSortDirection(logSortDirection === 'asc' ? 'desc' : 'asc');
                           // Sort the visitor logs
                           const sorted = [...visitorLogs].sort((a, b) => {
-                            const dateA = new Date(a.timestamp || 0);
-                            const dateB = new Date(b.timestamp || 0);
+                            const dateA = new Date(a.createdAt || 0);
+                            const dateB = new Date(b.createdAt || 0);
                             return logSortDirection === 'asc' ? dateB - dateA : dateA - dateB;
                           });
                           setVisitorLogs(sorted);
@@ -1158,14 +1162,15 @@ export default function CustomerDashboard({ token }) {
                 <tbody>
                   {visitorLogs
                     .slice((currentPage - 1) * logsPerPage, currentPage * logsPerPage)
+                    .reverse() // Reverse the order to display from last to first
                     .map((log, index) => (
                       <tr
                         key={log._id || index}
                         className={`border-t border-[#333333] hover:bg-[#292929]/50 ${index % 2 === 0 ? 'bg-[#1e1e1e]' : 'bg-[#252525]'}`}
                       >
                         <td className="px-4 py-3 text-gray-300">
-                          <div>{new Date(log.timestamp).toLocaleDateString()}</div>
-                          <div className="text-xs text-gray-400">{new Date(log.timestamp).toLocaleTimeString()}</div>
+                          <div>{new Date(log.createdAt).toLocaleDateString()}</div>
+                          <div className="text-xs text-gray-400">{new Date(log.createdAt).toLocaleTimeString()}</div>
                         </td>
                         <td className="px-4 py-3">
                           {log.customerId ? (
