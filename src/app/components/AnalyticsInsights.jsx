@@ -651,7 +651,7 @@ const AnalyticsInsights = ({ userType }) => {
               <div className="p-6">
                 <h4 className="text-xl font-bold mb-2" style={{ color: brandColors.primary }}>{product.product}</h4>
                 <p className="text-gray-300 mb-4">{product.description}</p>
-                <div className="mb-2">
+                {/* <div className="mb-2">
                   <div className="flex justify-between mb-1">
                     <span className="text-sm font-medium text-white">Development Progress</span>
                     <span className="text-sm font-medium text-white">{product.progress}%</span>
@@ -662,7 +662,7 @@ const AnalyticsInsights = ({ userType }) => {
                       style={{ backgroundColor: brandColors.primary, width: "0%" }}
                     ></div>
                   </div>
-                </div>
+                </div> */}
                 <p className="text-sm text-gray-400 mt-4">{product.availability}</p>
               </div>
             </div>
