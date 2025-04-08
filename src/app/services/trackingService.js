@@ -9,6 +9,8 @@ let pagesVisited = [];
 let sessionId = null;
 let totalSessionDuration = 0;
 let lastUpdateTime = null;
+let isInitialized = false; // Track if the service has been initialized
+let isDataBeingSent = false; // Track if data is currently being sent
 const IDLE_TIMEOUT_DURATION = 30 * 1000; // 30 seconds in milliseconds
 const UPDATE_INTERVAL = 30 * 1000; // 30 seconds in milliseconds
 
@@ -16,6 +18,15 @@ const UPDATE_INTERVAL = 30 * 1000; // 30 seconds in milliseconds
  * Initialize tracking service
  */
 export const initTracking = () => {
+  // Prevent multiple initializations
+  if (isInitialized) {
+    console.log('🔔 TRACKING SERVICE ALREADY INITIALIZED, SKIPPING');
+    return;
+  }
+  
+  console.log('🔔 INITIALIZING TRACKING SERVICE');
+  isInitialized = true;
+  
   // Generate a unique session ID if one doesn't exist
   if (!sessionId) {
     sessionId = generateSessionId();
@@ -241,20 +252,47 @@ const calculateTotalSessionDuration = () => {
 const startPeriodicDataSending = () => {
   console.log(`⏱️ Setting up periodic tracking every ${UPDATE_INTERVAL/1000} seconds`);
   
-  // Immediately send the first tracking data
-  console.log(`⏱️ SENDING INITIAL TRACKING DATA`);
-  sendTrackingData(false, false); // Send initial data as a new session
+  // Check for consent before sending initial tracking data
+  const initialConsent = localStorage.getItem('cookieConsent');
+  console.log(`⏱️ CHECKING INITIAL CONSENT STATUS: ${initialConsent === 'true' ? 'Granted' : 'Not granted'}`);
+  
+  if (initialConsent === 'true') {
+    console.log(`⏱️ SENDING INITIAL TRACKING DATA`);
+    sendTrackingData(false, false); // Send initial data as a new session
+  } else {
+    console.log(`⏱️ CONSENT NOT GIVEN YET, WAITING FOR USER CONSENT`);
+  }
   
   // Send data every 30 seconds to ensure we capture data even if close events fail
   const intervalId = setInterval(() => {
-    console.log(`⏱️ 30-SECOND INTERVAL TRIGGERED - Sending update...`);
-    // Force send tracking data every interval regardless of conditions
-    console.log(`⏱️ Current session duration: ${calculateTotalSessionDuration()} seconds`);
-    console.log(`⏱️ Pages visited: ${pagesVisited.join(', ')}`);
+    console.log(`⏱️ 30-SECOND INTERVAL TRIGGERED - Checking consent status...`);
     
-    // Always send the update
-    sendTrackingData(false, true); // Update existing session
-    lastUpdateTime = Date.now();
+    // Check consent status on every interval
+    const consentStatus = localStorage.getItem('cookieConsent');
+    console.log(`⏱️ CURRENT CONSENT STATUS: ${consentStatus === 'true' ? 'Granted' : 'Not granted'}`);
+    
+    if (consentStatus === 'true') {
+      console.log(`⏱️ Current session duration: ${calculateTotalSessionDuration()} seconds`);
+      console.log(`⏱️ Pages visited: ${pagesVisited.join(', ')}`);
+      
+      // Check if we've sent data before
+      const hasSentDataBefore = localStorage.getItem('trackingDataSent');
+      
+      if (hasSentDataBefore === 'true') {
+        // If we've sent data before, this is an update
+        console.log(`⏱️ SENDING UPDATE TO EXISTING SESSION`);
+        sendTrackingData(false, true); // Update existing session
+      } else {
+        // If this is the first time sending data after consent, send as new
+        console.log(`⏱️ SENDING FIRST TRACKING DATA AFTER CONSENT`);
+        sendTrackingData(false, false); // New session
+        localStorage.setItem('trackingDataSent', 'true');
+      }
+      
+      lastUpdateTime = Date.now();
+    } else {
+      console.log(`⏱️ CONSENT NOT GIVEN, SKIPPING DATA SEND`);
+    }
   }, UPDATE_INTERVAL);
   
   // Store the interval ID to clear it when needed
@@ -266,6 +304,14 @@ const startPeriodicDataSending = () => {
     }
     window.__trackingIntervalId = intervalId;
     console.log('⏱️ Tracking interval set with ID:', intervalId);
+    
+    // Add cleanup on page unload to prevent memory leaks
+    window.addEventListener('unload', () => {
+      if (window.__trackingIntervalId) {
+        clearInterval(window.__trackingIntervalId);
+        console.log('⏱️ Cleared tracking interval on page unload');
+      }
+    });
   }
 };
 
@@ -314,6 +360,17 @@ export const sendTrackingData = async (isClosing = false, isUpdate = false) => {
       console.log('⚠️ Tracking consent not given, skipping data send');
       return;
     }
+    
+    // Prevent duplicate sends (except for page close events which are critical)
+    if (isDataBeingSent && !isClosing) {
+      console.log('⚠️ Data send already in progress, skipping duplicate send');
+      return;
+    }
+    
+    isDataBeingSent = true;
+    
+    // Mark that we've sent tracking data at least once
+    localStorage.setItem('trackingDataSent', 'true');
     
     console.log(`💬 SENDING ${isUpdate ? 'UPDATE' : 'NEW'} TRACKING DATA...`);
     
@@ -429,6 +486,9 @@ export const sendTrackingData = async (isClosing = false, isUpdate = false) => {
     
   } catch (error) {
     console.error('Error sending tracking data:', error);
+  } finally {
+    // Reset the flag to allow future sends
+    isDataBeingSent = false;
   }
 };
 
@@ -470,5 +530,25 @@ export const cleanupTracking = () => {
   
   if (idleTimeout) {
     clearTimeout(idleTimeout);
+  }
+};
+
+/**
+ * Set cookie consent status
+ * @param {boolean} consent - Whether consent was given
+ */
+export const setCookieConsent = (consent) => {
+  localStorage.setItem('cookieConsent', consent);
+  
+  // If consent was just given, send tracking data immediately
+  if (consent === true) {
+    console.log('👍 CONSENT JUST GIVEN! Sending initial tracking data...');
+    // Check if we've sent data before
+    const hasSentDataBefore = localStorage.getItem('trackingDataSent');
+    
+    if (hasSentDataBefore !== 'true') {
+      // Send as new session since this is the first time after consent
+      sendTrackingData(false, false);
+    }
   }
 };
