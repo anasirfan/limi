@@ -11,8 +11,8 @@ let totalSessionDuration = 0;
 let lastUpdateTime = null;
 let isInitialized = false; // Track if the service has been initialized
 let isDataBeingSent = false; // Track if data is currently being sent
-const IDLE_TIMEOUT_DURATION = 30 * 1000; // 30 seconds in milliseconds
-const UPDATE_INTERVAL = 30 * 1000; // 30 seconds in milliseconds
+const IDLE_TIMEOUT_DURATION = 300 * 1000; // 30 seconds in milliseconds
+const UPDATE_INTERVAL = 300 * 1000; // 30 seconds in milliseconds
 
 /**
  * Initialize tracking service
@@ -404,6 +404,7 @@ export const sendTrackingData = async (isClosing = false, isUpdate = false) => {
     // Handle referrer tracking
     let referrer = document.referrer || null;
     const storedReferrer = localStorage.getItem('initialReferrer');
+    const storedSessionReferrer = localStorage.getItem('sessionReferrer');
     const currentUrl = window.location.href;
     
     // Check if we're on a customer page
@@ -415,8 +416,13 @@ export const sendTrackingData = async (isClosing = false, isUpdate = false) => {
       console.log('🔗 STORED CUSTOMER PAGE AS POTENTIAL REFERRER:', currentUrl);
     }
     
+    // For session updates, prioritize the stored session referrer to prevent overwrites
+    if (isUpdate && storedSessionReferrer) {
+      referrer = storedSessionReferrer;
+      console.log('🔗 USING STORED SESSION REFERRER FOR UPDATE:', referrer);
+    }
     // If we have a direct referrer, use it
-    if (referrer) {
+    else if (referrer) {
       console.log('🔗 CURRENT PAGE REFERRER:', referrer);
       
       // If this is the first page load with a referrer, store it
@@ -437,6 +443,12 @@ export const sendTrackingData = async (isClosing = false, isUpdate = false) => {
     else if (storedReferrer && !referrer) {
       referrer = storedReferrer;
       console.log('🔗 USING STORED INITIAL REFERRER:', referrer);
+    }
+    
+    // Store the current referrer for future updates
+    if (referrer) {
+      localStorage.setItem('sessionReferrer', referrer);
+      console.log('🔗 SAVED REFERRER FOR FUTURE UPDATES:', referrer);
     }
     
     // Save current session data before sending

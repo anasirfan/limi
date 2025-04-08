@@ -1117,7 +1117,8 @@ export default function CustomerDashboard({ token }) {
                       </button>
                     </th>
                     <th className="px-4 py-3 text-left text-gray-300">Customer ID</th>
-                    <th className="px-4 py-3 text-left text-gray-300">IP & Country</th>
+                    <th className="px-4 py-3 text-left text-gray-300">IP & Location</th>
+                    <th className="px-4 py-3 text-left text-gray-300">Organization</th>
                     <th className="px-4 py-3 text-left text-gray-300">Referrer</th>
                     <th className="px-4 py-3 text-left text-gray-300">Device</th>
                     <th className="px-4 py-3 text-left text-gray-300">Browser</th>
@@ -1181,7 +1182,16 @@ export default function CustomerDashboard({ token }) {
                         </td>
                         <td className="px-4 py-3 text-gray-300">
                           <div className="text-sm">{log.ipAddress || 'Unknown'}</div>
-                          {log.country && <div className="text-xs text-gray-400">{log.country}</div>}
+                          <div className="flex flex-col text-xs text-gray-400">
+                            {log.country && <span>{log.country}</span>}
+                            {log.city && <span>{log.city}</span>}
+                            {log.region && <span>{log.region}</span>}
+                            {log.postalCode && <span>Postal: {log.postalCode}</span>}
+                            {log.timezone && <span>TZ: {log.timezone}</span>}
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 text-gray-300">
+                          <div className="text-sm">{log.organization || 'Unknown'}</div>
                         </td>
                         <td className="px-4 py-3 text-gray-300">
                           {log.referrer ? (
