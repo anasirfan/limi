@@ -8,6 +8,27 @@ import { NextResponse } from 'next/server';
  * @returns {NextResponse} The API response
  */
 export async function POST(request) {
+  return handleTrackingData(request, 'POST');
+}
+
+/**
+ * API route to handle tracking consent data updates
+ * 
+ * @param {Request} request - The incoming request object
+ * @returns {NextResponse} The API response
+ */
+export async function PATCH(request) {
+  return handleTrackingData(request, 'PATCH');
+}
+
+/**
+ * Handle tracking data for both new entries and updates
+ * 
+ * @param {Request} request - The incoming request object
+ * @param {string} method - The HTTP method (POST or PATCH)
+ * @returns {NextResponse} The API response
+ */
+async function handleTrackingData(request, method) {
   try {
     // Parse the request body
     const data = await request.json();
@@ -22,11 +43,14 @@ export async function POST(request) {
     
     // In a real implementation, this would save to MongoDB
     // For now, we'll just log the data and return success
-    // console.log('Received tracking data:', data);
+    // console.log(`${method === 'PATCH' ? 'Updated' : 'Received'} tracking data:`, data);
     
     // Return success response
     return NextResponse.json(
-      { success: true, message: 'Tracking data received' },
+      { 
+        success: true, 
+        message: method === 'PATCH' ? 'Tracking data updated' : 'Tracking data received' 
+      },
       { status: 200 }
     );
   } catch (error) {
