@@ -2,16 +2,31 @@ import { NextResponse } from 'next/server';
 
 /**
  * API route to proxy IP information requests to avoid CORS issues
- * This endpoint fetches IP and country information from a public API
+ * This endpoint fetches IP and country information from multiple public APIs
+ * and combines the results for better accuracy
  * 
  * @param {Request} request - The incoming request object
  * @returns {NextResponse} The API response with IP information
  */
-export async function GET() {
+export async function GET(request) {
   try {
-    // Try to fetch from ipapi.co
+    // Get client IP from request headers if available
+    const clientIp = request.headers.get('x-forwarded-for')?.split(',')[0] || 
+                     request.headers.get('x-real-ip') || 
+                     'Unknown';
+    
+    console.log('Client IP from headers:', clientIp);
+    
+    // Create an object to store combined data from multiple sources
+    let combinedData = {
+      ip: clientIp,
+      sources: []
+    };
+    
+    // Try to fetch from ipapi.co using the client's IP address
     try {
-      const response = await fetch('https://ipapi.co/json', { 
+      // Use the client's IP address when making the request to ipapi.co
+      const response = await fetch(`https://ipapi.co/${clientIp}/json`, { 
         cache: 'no-store',
         headers: {
           'User-Agent': 'LIMI-Lighting-App/1.0'
@@ -20,12 +35,60 @@ export async function GET() {
       
       if (response.ok) {
         const data = await response.json();
-        console.log('Primary API (ipapi.co) response:', data);
-        return NextResponse.json(data, { status: 200 });
+        console.log('Primary API (ipapi.co) response for client IP:', data);
+        combinedData = { ...combinedData, ...data, sources: [...combinedData.sources, 'ipapi.co'] };
       }
     } catch (error) {
       console.error('Primary IP API failed:', error);
     }
+    
+    // Also try ipinfo.io for validation
+    try {
+      const response = await fetch(`https://ipinfo.io/${clientIp}/json`, {
+        cache: 'no-store'
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Secondary API (ipinfo.io) response:', data);
+        
+        // If we don't have data from the primary source, use this data
+        if (combinedData.sources.length === 0) {
+          combinedData = { 
+            ...combinedData, 
+            ...data,
+            // Map ipinfo.io fields to match our expected format
+            country_name: data.country,
+            region: data.region,
+            city: data.city,
+            postal: data.postal,
+            timezone: data.timezone,
+            org: data.org,
+            sources: [...combinedData.sources, 'ipinfo.io']
+          };
+        } else {
+          // Otherwise just add the source
+          combinedData.sources.push('ipinfo.io');
+          // Add validation info
+          combinedData.validation = {
+            ipinfo_country: data.country,
+            ipinfo_region: data.region,
+            ipinfo_city: data.city
+          };
+        }
+      }
+    } catch (error) {
+      console.error('Secondary IP API failed:', error);
+    }
+    
+    // Add a validation URL for manual checking
+    combinedData.validationUrls = {
+      ipapi: `https://ipapi.co/${clientIp}/json/`,
+      ipinfo: `https://ipinfo.io/${clientIp}/json`,
+      iplocation: `https://iplocation.com/ip/${clientIp}`
+    };
+    
+    return NextResponse.json(combinedData, { status: 200 });
     
     // Fallback to ipify + ipinfo.io if the first API fails
     try {

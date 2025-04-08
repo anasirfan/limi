@@ -140,40 +140,119 @@ const extractCustomerId = () => {
 };
 
 /**
- * Get IP address and country information
+ * Get IP address and country information directly from client-side
  * @returns {Promise<Object>} IP and country data
  */
 const getIpInfo = async () => {
   try {
-    // Try multiple IP APIs in case one fails
-    // First try our own API proxy to avoid CORS issues
-    try {
-      const response = await fetch('/api/get-ip-info');
-      if (response.ok) {
-        return await response.json();
+    // Store cached IP info to avoid multiple requests in the same session
+    const cachedIpInfo = localStorage.getItem('cachedIpInfo');
+    if (cachedIpInfo) {
+      try {
+        const parsedCache = JSON.parse(cachedIpInfo);
+        const cacheTime = parsedCache.timestamp || 0;
+        const now = Date.now();
+        // Use cache if it's less than 1 hour old
+        if (now - cacheTime < 60 * 60 * 1000) {
+          console.log('Using cached IP info:', parsedCache);
+          return parsedCache;
+        }
+      } catch (e) {
+        console.warn('Error parsing cached IP info:', e);
       }
-    } catch (innerError) {
-      console.warn('Error using proxy API for IP info:', innerError);
     }
     
-    // Fallback to direct API call (may have CORS issues in some environments)
-    try {
-      const response = await fetch('https://ipapi.co/json', { mode: 'cors' });
-      if (response.ok) {
-        return await response.json();
+    // Try multiple client-side IP APIs in sequence until one works
+    let ipInfo = null;
+    
+    // Try ipapi.co directly (most reliable but may have CORS issues)
+    if (!ipInfo) {
+      try {
+        console.log('Trying direct ipapi.co request...');
+        const response = await fetch('https://ipapi.co/json', { 
+          mode: 'cors',
+          headers: {
+            'User-Agent': 'LIMI-Lighting-App/1.0'
+          }
+        });
+        
+        if (response.ok) {
+          ipInfo = await response.json();
+          console.log('Successfully got IP info from ipapi.co:', ipInfo);
+        }
+      } catch (err) {
+        console.warn('ipapi.co direct request failed:', err);
       }
-    } catch (innerError) {
-      console.warn('Error using direct API for IP info:', innerError);
+    }
+    
+    // Try ipinfo.io as a backup
+    if (!ipInfo) {
+      try {
+        console.log('Trying ipinfo.io request...');
+        const response = await fetch('https://ipinfo.io/json', { 
+          mode: 'cors' 
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Successfully got IP info from ipinfo.io:', data);
+          
+          // Map ipinfo.io fields to our expected format
+          ipInfo = {
+            ip: data.ip,
+            city: data.city,
+            region: data.region,
+            country_name: data.country,
+            postal: data.postal,
+            timezone: data.timezone,
+            org: data.org
+          };
+        }
+      } catch (err) {
+        console.warn('ipinfo.io request failed:', err);
+      }
+    }
+    
+    // If direct client-side APIs fail, fall back to our server API
+    if (!ipInfo) {
+      try {
+        console.log('Falling back to server API...');
+        const response = await fetch('/api/get-ip-info');
+        if (response.ok) {
+          ipInfo = await response.json();
+          console.log('Got IP info from server API:', ipInfo);
+        }
+      } catch (err) {
+        console.warn('Server API request failed:', err);
+      }
+    }
+    
+    // If we got valid IP info, cache it
+    if (ipInfo && ipInfo.ip && ipInfo.ip !== '127.0.0.1') {
+      // Add timestamp for cache expiration
+      ipInfo.timestamp = Date.now();
+      localStorage.setItem('cachedIpInfo', JSON.stringify(ipInfo));
+      console.log('Cached IP info for future use');
+      return ipInfo;
     }
     
     // If all APIs fail, throw error to use fallback values
-    throw new Error('All IP info APIs failed');
+    if (!ipInfo) {
+      throw new Error('All IP info APIs failed');
+    }
+    
+    return ipInfo;
   } catch (error) {
     console.error('Error fetching IP info:', error);
     // Return fallback values
     return { 
       ip: '127.0.0.1', 
-      country_name: 'Unknown' 
+      country_name: 'Unknown',
+      city: 'Unknown',
+      region: 'Unknown',
+      postal: 'Unknown',
+      timezone: 'Unknown',
+      org: 'Unknown'
     };
   }
 };
