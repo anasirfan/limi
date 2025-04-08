@@ -192,8 +192,15 @@ const tryRestoreSession = () => {
       totalSessionDuration = sessionData.totalDuration || 0;
       pagesVisited = sessionData.pagesVisited || [];
       console.log('🔄 SESSION RESTORED - ID:', sessionId, 'DURATION:', totalSessionDuration, 'PAGES:', pagesVisited);
+      
+      // Set the trackingDataSent flag to true since we have an existing session
+      localStorage.setItem('trackingDataSent', 'true');
     } else {
       console.log('🔄 NO EXISTING SESSION FOUND');
+      // Create a new session ID only if one doesn't exist
+      sessionId = generateSessionId();
+      console.log('🔄 CREATED NEW SESSION - ID:', sessionId);
+      localStorage.setItem('trackingDataSent', 'false');
     }
   } catch (error) {
     console.error('❌ ERROR RESTORING SESSION:', error);
@@ -201,6 +208,7 @@ const tryRestoreSession = () => {
     sessionId = generateSessionId();
     totalSessionDuration = 0;
     console.log('🔄 CREATED NEW SESSION AFTER ERROR - ID:', sessionId);
+    localStorage.setItem('trackingDataSent', 'false');
   }
 };
 
@@ -257,8 +265,16 @@ const startPeriodicDataSending = () => {
   console.log(`⏱️ CHECKING INITIAL CONSENT STATUS: ${initialConsent === 'true' ? 'Granted' : 'Not granted'}`);
   
   if (initialConsent === 'true') {
-    console.log(`⏱️ SENDING INITIAL TRACKING DATA`);
-    sendTrackingData(false, false); // Send initial data as a new session
+    // Check if we've sent data before
+    const hasSentDataBefore = localStorage.getItem('trackingDataSent');
+    
+    if (hasSentDataBefore === 'true') {
+      console.log(`⏱️ SENDING INITIAL UPDATE TO EXISTING SESSION`);
+      sendTrackingData(false, true); // Update existing session
+    } else {
+      console.log(`⏱️ SENDING INITIAL TRACKING DATA AS NEW SESSION`);
+      sendTrackingData(false, false); // Send initial data as a new session
+    }
   } else {
     console.log(`⏱️ CONSENT NOT GIVEN YET, WAITING FOR USER CONSENT`);
   }
@@ -374,6 +390,21 @@ export const sendTrackingData = async (isClosing = false, isUpdate = false) => {
     
     console.log(`💬 SENDING ${isUpdate ? 'UPDATE' : 'NEW'} TRACKING DATA...`);
     
+    // Store the referrer when we first load the page
+    let referrer = document.referrer || null;
+    const storedReferrer = localStorage.getItem('initialReferrer');
+    
+    // If this is the first page load and we have a referrer, store it
+    if (!storedReferrer && referrer) {
+      localStorage.setItem('initialReferrer', referrer);
+      console.log('🔗 STORED INITIAL REFERRER:', referrer);
+    } 
+    // If we're on a subsequent page and have a stored referrer, use that
+    else if (storedReferrer) {
+      referrer = storedReferrer;
+      console.log('🔗 USING STORED REFERRER:', referrer);
+    }
+    
     // Save current session data before sending
     if (!isClosing) {
       saveSessionData();
@@ -394,7 +425,7 @@ export const sendTrackingData = async (isClosing = false, isUpdate = false) => {
       // org: ipInfo.org || null,
       // postal: ipInfo.postal || null,
       // timezone: ipInfo.timezone || null,
-      referrer: document.referrer || null,
+      referrer: referrer, // Use our improved referrer handling
       userAgent: navigator.userAgent,
       sessionDuration: calculateTotalSessionDuration(),
       pagesVisited: [...pagesVisited],
@@ -546,8 +577,13 @@ export const setCookieConsent = (consent) => {
     // Check if we've sent data before
     const hasSentDataBefore = localStorage.getItem('trackingDataSent');
     
-    if (hasSentDataBefore !== 'true') {
+    if (hasSentDataBefore === 'true') {
+      // Update existing session
+      console.log('👍 UPDATING EXISTING SESSION AFTER CONSENT');
+      sendTrackingData(false, true);
+    } else {
       // Send as new session since this is the first time after consent
+      console.log('👍 CREATING NEW SESSION AFTER CONSENT');
       sendTrackingData(false, false);
     }
   }
