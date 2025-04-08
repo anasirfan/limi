@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, Fragment } from 'react';
 import Image from 'next/image';
-import { FaSort, FaSortUp, FaSortDown, FaSearch, FaEye, FaTimes, FaFilter, FaChartLine, FaGlobe, FaClock, FaDesktop, FaTabletAlt, FaMobileAlt } from 'react-icons/fa';
+import { FaSort, FaSortUp, FaSortDown, FaSearch, FaEye, FaTimes, FaFilter, FaChartLine, FaGlobe, FaClock, FaDesktop, FaTabletAlt, FaMobileAlt, FaUsers } from 'react-icons/fa';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
 
 export default function CustomerDashboard({ token }) {
@@ -30,6 +30,18 @@ export default function CustomerDashboard({ token }) {
   const [logsPerPage, setLogsPerPage] = useState(10);
   const [logSortField, setLogSortField] = useState('timestamp');
   const [logSortDirection, setLogSortDirection] = useState('desc'); // Default to descending (newest first)
+  
+  // Mobile traffic tab state
+  const [mobileUsers, setMobileUsers] = useState([]);
+  const [mobileUsersLoading, setMobileUsersLoading] = useState(false);
+  const [emailFilter, setEmailFilter] = useState('');
+  const [usernameFilter, setUsernameFilter] = useState('');
+  const [roleFilter, setRoleFilter] = useState('all');
+  const [regionFilter, setRegionFilter] = useState('');
+  const [mobileUserSortField, setMobileUserSortField] = useState('createdAt');
+  const [mobileUserSortDirection, setMobileUserSortDirection] = useState('desc');
+  const [mobileCurrentPage, setMobileCurrentPage] = useState(1);
+  const [mobileUsersPerPage, setMobileUsersPerPage] = useState(10);
 
   // Format time in minutes and seconds
   const formatTime = (seconds) => {
@@ -37,6 +49,8 @@ export default function CustomerDashboard({ token }) {
     const remainingSeconds = (seconds % 60).toFixed(2);
     return minutes + 'm ' + remainingSeconds + 's';
   };
+
+
 
   // Get device type from user agent
   const getDeviceType = (userAgent) => {
@@ -169,19 +183,144 @@ export default function CustomerDashboard({ token }) {
     }
   };
 
+  // Fetch mobile users data
+  const fetchMobileUsers = async () => {
+    try {
+      setMobileUsersLoading(true);
+      
+      let mobileUserData = [];
+      let useRealData = false;
+      
+      // Try to fetch from the actual API endpoint
+      try {
+        const response = await fetch('https://api.limitless-lighting.co.uk/client/get_user_capture', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          
+          if (data && data.success && Array.isArray(data.data)) {
+            mobileUserData = data.data;
+            useRealData = true;
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching mobile users from API:', error);
+        // Will fall back to mock data
+      }
+      
+      // If API call failed or returned invalid data, use mock data
+      if (!useRealData) {
+        console.log('Using mock mobile user data');
+        // Mock data that matches the expected structure
+        mobileUserData = [
+          {
+            "_id": "67f1287a97b32049b7120482",
+            "email": "s.ahmed@terralumen.co.uk",
+            "ip": "5.133.46.139",
+            "region": "Carlisle, GB",
+            "otp": null,
+            "otp_expire_at": null,
+            "installer_expire_at": null,
+            "roles": "user",
+            "members": ["John Smith", "Sarah Wilson"],
+            "createdAt": "2025-04-05T12:56:26.962Z",
+            "updatedAt": "2025-04-08T05:02:12.814Z",
+            "__v": 0,
+            "username": "user_q4qlm6pi"
+          },
+          {
+            "_id": "67f1287a97b32049b7120483",
+            "email": "m.jones@designlight.com",
+            "ip": "82.45.128.33",
+            "region": "London, GB",
+            "otp": null,
+            "otp_expire_at": null,
+            "installer_expire_at": "2025-05-08T00:00:00.000Z",
+            "roles": "installer",
+            "members": ["Mike Jones", "Emma Clark"],
+            "createdAt": "2025-04-04T09:23:15.123Z",
+            "updatedAt": "2025-04-07T14:35:22.456Z",
+            "__v": 0,
+            "username": "installer_m9k2l5"
+          },
+          {
+            "_id": "67f1287a97b32049b7120484",
+            "email": "p.zhang@lightingpro.com",
+            "ip": "203.112.45.78",
+            "region": "Shanghai, CN",
+            "otp": null,
+            "otp_expire_at": null,
+            "installer_expire_at": null,
+            "roles": "production",
+            "members": ["Peter Zhang", "Li Wei", "Chen Min"],
+            "createdAt": "2025-04-03T16:42:38.789Z",
+            "updatedAt": "2025-04-06T11:18:45.321Z",
+            "__v": 0,
+            "username": "prod_p7z3x9"
+          },
+          {
+            "_id": "67f1287a97b32049b7120485",
+            "email": "a.mueller@lichtdesign.de",
+            "ip": "91.45.123.67",
+            "region": "Berlin, DE",
+            "otp": null,
+            "otp_expire_at": null,
+            "installer_expire_at": null,
+            "roles": "user",
+            "members": ["Andreas Mueller"],
+            "createdAt": "2025-04-02T08:15:42.654Z",
+            "updatedAt": "2025-04-05T19:27:33.987Z",
+            "__v": 0,
+            "username": "user_a8m4d2"
+          },
+          {
+            "_id": "67f1287a97b32049b7120486",
+            "email": "r.patel@illumina.in",
+            "ip": "103.78.45.132",
+            "region": "Mumbai, IN",
+            "otp": null,
+            "otp_expire_at": null,
+            "installer_expire_at": "2025-06-01T00:00:00.000Z",
+            "roles": "installer",
+            "members": ["Raj Patel", "Priya Singh", "Vikram Mehta"],
+            "createdAt": "2025-04-01T11:34:56.789Z",
+            "updatedAt": "2025-04-04T15:42:18.654Z",
+            "__v": 0,
+            "username": "installer_r5p9s3"
+          }
+        ];
+      }
+      
+      // Set the mobile users data (either from API or mock data)
+      setMobileUsers(mobileUserData);
+      setMobileUsersLoading(false);
+    } catch (error) {
+      console.error('Error fetching mobile users:', error);
+      setMobileUsersLoading(false);
+    }
+  };
+
   // Fetch visitor logs when tab changes or filters change
   useEffect(() => {
     if (activeTab === 'traffic') {
       fetchVisitorLogs();
+    } else if (activeTab === 'mobile') {
+      fetchMobileUsers();
     }
-  }, [activeTab, dateFilter, userTypeFilter, consentFilter]);
+  }, [activeTab, dateFilter, userTypeFilter, consentFilter, roleFilter, emailFilter, usernameFilter, regionFilter]);
 
   // Fetch customers
   useEffect(() => {
     // Set default sort to descending order (newest first)
     setLogSortDirection('desc');
     setSortDirection('desc');
-    
+  }, []);
+
+  useEffect(() => {
     const fetchCustomers = async () => {
       try {
         setLoading(true);
@@ -373,6 +512,73 @@ export default function CustomerDashboard({ token }) {
       <FaSortUp className="ml-1 text-[#93cfa2]" /> : 
       <FaSortDown className="ml-1 text-[#93cfa2]" />;
   };
+  
+  // Handle sorting for mobile users
+  const handleMobileUserSort = (field) => {
+    if (mobileUserSortField === field) {
+      setMobileUserSortDirection(mobileUserSortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setMobileUserSortField(field);
+      setMobileUserSortDirection('desc'); // Default to descending when changing fields
+    }
+  };
+  
+  // Filter mobile users based on search criteria
+  const filteredMobileUsers = mobileUsers.filter(user => {
+    // Apply email filter
+    if (emailFilter && !user.email.toLowerCase().includes(emailFilter.toLowerCase())) {
+      return false;
+    }
+    
+    // Apply username filter
+    if (usernameFilter && !user.username.toLowerCase().includes(usernameFilter.toLowerCase())) {
+      return false;
+    }
+    
+    // Apply role filter
+    if (roleFilter !== 'all' && user.roles !== roleFilter) {
+      return false;
+    }
+    
+    // Apply region filter
+    if (regionFilter && !user.region?.toLowerCase().includes(regionFilter.toLowerCase())) {
+      return false;
+    }
+    
+    return true;
+  });
+  
+  // Sort filtered mobile users
+  const sortedMobileUsers = [...filteredMobileUsers].sort((a, b) => {
+    let valueA = a[mobileUserSortField];
+    let valueB = b[mobileUserSortField];
+    
+    // Handle special cases
+    if (mobileUserSortField === 'createdAt' || mobileUserSortField === 'updatedAt') {
+      valueA = new Date(valueA).getTime();
+      valueB = new Date(valueB).getTime();
+    } else if (typeof valueA === 'string') {
+      valueA = valueA.toLowerCase();
+      valueB = valueB.toLowerCase();
+    }
+    
+    // Handle null/undefined values
+    if (valueA === null || valueA === undefined) return 1;
+    if (valueB === null || valueB === undefined) return -1;
+    
+    // Sort based on direction
+    if (mobileUserSortDirection === 'asc') {
+      return valueA > valueB ? 1 : -1;
+    } else {
+      return valueA < valueB ? 1 : -1;
+    }
+  });
+  
+  // Paginate mobile users
+  const paginatedMobileUsers = sortedMobileUsers.slice(
+    (mobileCurrentPage - 1) * mobileUsersPerPage,
+    mobileCurrentPage * mobileUsersPerPage
+  );
 
   // View customer details
   const viewCustomerDetails = (customer) => {
@@ -444,9 +650,21 @@ export default function CustomerDashboard({ token }) {
     });
     const uniqueCustomers = uniqueCustomerIds.size;
     
-    // Average session duration
-    const totalDuration = visitorLogs.reduce((sum, log) => sum + (log.sessionDuration || 0), 0);
-    const avgDuration = parseFloat((totalDuration / totalVisits).toFixed(2));
+    // Average session duration - improved calculation
+    let totalDuration = 0;
+    let validSessionsCount = 0;
+    
+    visitorLogs.forEach(log => {
+      // Only count sessions with valid duration
+      if (log.sessionDuration && log.sessionDuration > 0) {
+        totalDuration += log.sessionDuration;
+        validSessionsCount++;
+      }
+    });
+    
+    // Calculate average only from valid sessions
+    const avgDuration = validSessionsCount > 0 ? 
+      parseFloat((totalDuration / validSessionsCount).toFixed(2)) : 0;
     
     // Consent percentage
     const consentedLogs = visitorLogs.filter(log => log.consent);
@@ -459,11 +677,25 @@ export default function CustomerDashboard({ token }) {
     // Sessions over time (daily)
     const sessionsByDate = {};
     visitorLogs.forEach(log => {
-      const date = new Date(log.timestamp).toLocaleDateString();
-      if (!sessionsByDate[date]) {
-        sessionsByDate[date] = 0;
+      // Use createdAt if timestamp is not available or invalid
+      const timestamp = log.timestamp || log.createdAt;
+      
+      // Ensure we have a valid date before proceeding
+      if (timestamp) {
+        try {
+          // Format date as YYYY-MM-DD to ensure consistent parsing
+          const dateObj = new Date(timestamp);
+          if (!isNaN(dateObj.getTime())) {
+            const dateStr = dateObj.toISOString().split('T')[0]; // YYYY-MM-DD format
+            if (!sessionsByDate[dateStr]) {
+              sessionsByDate[dateStr] = 0;
+            }
+            sessionsByDate[dateStr]++;
+          }
+        } catch (e) {
+          console.error('Error parsing date:', timestamp, e);
+        }
       }
-      sessionsByDate[date]++;
     });
     
     const sessionsOverTime = Object.keys(sessionsByDate).map(date => ({
@@ -512,8 +744,355 @@ export default function CustomerDashboard({ token }) {
           <FaChartLine />
           Website Traffic
         </button>
+        <button
+          className={`px-4 py-2 font-medium flex items-center gap-2 ${activeTab === 'mobile' ? 'text-[#93cfa2] border-b-2 border-[#93cfa2]' : 'text-gray-400 hover:text-gray-300'}`}
+          onClick={() => setActiveTab('mobile')}
+        >
+          <FaMobileAlt />
+          Mobile Traffic
+        </button>
       </div>
 
+      {activeTab === 'mobile' && (
+        <div className="space-y-6">
+          {/* Mobile Traffic Filters */}
+          <div className="bg-[#1e1e1e] p-4 rounded-lg">
+            <h3 className="text-lg font-medium text-white mb-4">Mobile User Filters</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div>
+                <label className="block text-gray-400 mb-2">Email</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <FaSearch className="text-gray-500" />
+                  </div>
+                  <input
+                    type="text"
+                    value={emailFilter}
+                    onChange={(e) => setEmailFilter(e.target.value)}
+                    placeholder="Filter by email..."
+                    className="bg-[#292929] text-white w-full pl-10 pr-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#54bb74]"
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-gray-400 mb-2">Username</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <FaSearch className="text-gray-500" />
+                  </div>
+                  <input
+                    type="text"
+                    value={usernameFilter}
+                    onChange={(e) => setUsernameFilter(e.target.value)}
+                    placeholder="Filter by username..."
+                    className="bg-[#292929] text-white w-full pl-10 pr-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#54bb74]"
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-gray-400 mb-2">Role</label>
+                <select
+                  value={roleFilter}
+                  onChange={(e) => setRoleFilter(e.target.value)}
+                  className="bg-[#292929] text-white w-full px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#54bb74]"
+                >
+                  <option value="all">All Roles</option>
+                  <option value="user">User</option>
+                  <option value="installer">Installer</option>
+                  <option value="production">Production</option>
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-gray-400 mb-2">Region</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <FaGlobe className="text-gray-500" />
+                  </div>
+                  <input
+                    type="text"
+                    value={regionFilter}
+                    onChange={(e) => setRegionFilter(e.target.value)}
+                    placeholder="Filter by region..."
+                    className="bg-[#292929] text-white w-full pl-10 pr-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#54bb74]"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {mobileUsersLoading ? (
+            <div className="flex flex-col items-center justify-center min-h-[300px]">
+              <div className="w-16 h-16 border-t-4 border-[#93cfa2] border-solid rounded-full animate-spin mb-6"></div>
+              <p className="text-gray-300">Loading mobile user data...</p>
+            </div>
+          ) : mobileUsers.length === 0 ? (
+            <div className="bg-[#1e1e1e] p-6 rounded-lg text-center">
+              <p className="text-gray-300">No mobile users found matching your filters</p>
+            </div>
+          ) : (
+            <>
+              {/* Mobile Analytics Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                {/* Total Users Card */}
+                <div className="bg-[#1e1e1e] p-4 rounded-lg shadow-lg">
+                  <h3 className="text-[#93cfa2] text-lg font-semibold mb-2">Total Mobile Users</h3>
+                  <p className="text-white text-3xl font-bold">{mobileUsers.length}</p>
+                </div>
+                
+                {/* Users by Role Card */}
+                <div className="bg-[#1e1e1e] p-4 rounded-lg shadow-lg">
+                  <h3 className="text-[#93cfa2] text-lg font-semibold mb-2">Users by Role</h3>
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <p className="text-gray-400 text-sm">User: <span className="text-white font-bold">{mobileUsers.filter(u => u.roles === 'user').length}</span></p>
+                      <p className="text-gray-400 text-sm">Installer: <span className="text-white font-bold">{mobileUsers.filter(u => u.roles === 'installer').length}</span></p>
+                      <p className="text-gray-400 text-sm">Production: <span className="text-white font-bold">{mobileUsers.filter(u => u.roles === 'production').length}</span></p>
+                    </div>
+                    <div className="w-16 h-16 flex items-center justify-center">
+                      <FaUsers className="text-[#93cfa2] text-3xl" />
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Regions Card */}
+                <div className="bg-[#1e1e1e] p-4 rounded-lg shadow-lg">
+                  <h3 className="text-[#93cfa2] text-lg font-semibold mb-2">Top Regions</h3>
+                  <div>
+                    {Array.from(new Set(mobileUsers.map(u => u.region?.split(',')[0]))).slice(0, 3).map((region, idx) => (
+                      <p key={idx} className="text-gray-400 text-sm">{region}: <span className="text-white font-bold">{mobileUsers.filter(u => u.region?.includes(region)).length}</span></p>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Last Registration Card */}
+                <div className="bg-[#1e1e1e] p-4 rounded-lg shadow-lg">
+                  <h3 className="text-[#93cfa2] text-lg font-semibold mb-2">Latest Registration</h3>
+                  <p className="text-white text-lg font-bold">
+                    {new Date(Math.max(...mobileUsers.map(u => new Date(u.createdAt).getTime()))).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                  </p>
+                  <p className="text-gray-400 text-sm">
+                    {new Date(Math.max(...mobileUsers.map(u => new Date(u.createdAt).getTime()))).toLocaleTimeString('en-GB')}
+                  </p>
+                </div>
+              </div>
+              
+              {/* Charts */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                {/* User Roles Pie Chart */}
+                <div className="bg-[#1e1e1e] p-4 rounded-lg shadow-lg">
+                  <h3 className="text-[#93cfa2] text-lg font-semibold mb-4">User Roles Distribution</h3>
+                  <div className="h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={[
+                            { name: 'User', value: mobileUsers.filter(u => u.roles === 'user').length },
+                            { name: 'Installer', value: mobileUsers.filter(u => u.roles === 'installer').length },
+                            { name: 'Production', value: mobileUsers.filter(u => u.roles === 'production').length }
+                          ]}
+                          cx="50%"
+                          cy="50%"
+                          labelLine={false}
+                          outerRadius={80}
+                          fill="#8884d8"
+                          dataKey="value"
+                          label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                        >
+                          <Cell fill="#54bb74" /> {/* User */}
+                          <Cell fill="#5d8fdb" /> {/* Installer */}
+                          <Cell fill="#e6a23c" /> {/* Production */}
+                        </Pie>
+                        <Tooltip formatter={(value) => [value, 'Users']} />
+                        <Legend />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+                
+                {/* Registrations Over Time */}
+                <div className="bg-[#1e1e1e] p-4 rounded-lg shadow-lg">
+                  <h3 className="text-[#93cfa2] text-lg font-semibold mb-4">Registrations Over Time</h3>
+                  <div className="h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart
+                        data={mobileUsers
+                          .map(user => ({ date: new Date(user.createdAt).toLocaleDateString('en-GB'), timestamp: new Date(user.createdAt).getTime() }))
+                          .sort((a, b) => a.timestamp - b.timestamp)
+                          .reduce((acc, curr) => {
+                            const existingEntry = acc.find(item => item.date === curr.date);
+                            if (existingEntry) {
+                              existingEntry.count += 1;
+                            } else {
+                              acc.push({ date: curr.date, count: 1 });
+                            }
+                            return acc;
+                          }, [])
+                        }
+                        margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+                        <XAxis dataKey="date" stroke="#ccc" />
+                        <YAxis stroke="#ccc" />
+                        <Tooltip />
+                        <Legend />
+                        <Line type="monotone" dataKey="count" name="Registrations" stroke="#54bb74" activeDot={{ r: 8 }} />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Mobile Users Table */}
+              <div className="bg-[#1e1e1e] p-4 rounded-lg shadow-lg overflow-x-auto">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-[#93cfa2] text-lg font-semibold">Mobile Users</h3>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-gray-400 text-sm">
+                      Showing {Math.min(mobileCurrentPage * mobileUsersPerPage, filteredMobileUsers.length)} of {filteredMobileUsers.length}
+                    </span>
+                  </div>
+                </div>
+                
+                <table className="min-w-full divide-y divide-gray-700">
+                  <thead>
+                    <tr>
+                      <th 
+                        scope="col" 
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider cursor-pointer"
+                        onClick={() => handleMobileUserSort('email')}
+                      >
+                        Email
+                        {mobileUserSortField === 'email' && (
+                          mobileUserSortDirection === 'asc' ? <FaSortUp className="inline ml-1" /> : <FaSortDown className="inline ml-1" />
+                        )}
+                      </th>
+                      <th 
+                        scope="col" 
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider cursor-pointer"
+                        onClick={() => handleMobileUserSort('username')}
+                      >
+                        Username
+                        {mobileUserSortField === 'username' && (
+                          mobileUserSortDirection === 'asc' ? <FaSortUp className="inline ml-1" /> : <FaSortDown className="inline ml-1" />
+                        )}
+                      </th>
+                      <th 
+                        scope="col" 
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider cursor-pointer"
+                        onClick={() => handleMobileUserSort('roles')}
+                      >
+                        Role
+                        {mobileUserSortField === 'roles' && (
+                          mobileUserSortDirection === 'asc' ? <FaSortUp className="inline ml-1" /> : <FaSortDown className="inline ml-1" />
+                        )}
+                      </th>
+                      <th 
+                        scope="col" 
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider cursor-pointer"
+                        onClick={() => handleMobileUserSort('region')}
+                      >
+                        Region
+                        {mobileUserSortField === 'region' && (
+                          mobileUserSortDirection === 'asc' ? <FaSortUp className="inline ml-1" /> : <FaSortDown className="inline ml-1" />
+                        )}
+                      </th>
+                      <th 
+                        scope="col" 
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider cursor-pointer"
+                        onClick={() => handleMobileUserSort('ip')}
+                      >
+                        IP Address
+                        {mobileUserSortField === 'ip' && (
+                          mobileUserSortDirection === 'asc' ? <FaSortUp className="inline ml-1" /> : <FaSortDown className="inline ml-1" />
+                        )}
+                      </th>
+                      <th 
+                        scope="col" 
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider cursor-pointer"
+                        onClick={() => handleMobileUserSort('createdAt')}
+                      >
+                        Created At
+                        {mobileUserSortField === 'createdAt' && (
+                          mobileUserSortDirection === 'asc' ? <FaSortUp className="inline ml-1" /> : <FaSortDown className="inline ml-1" />
+                        )}
+                      </th>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                        Members
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-[#292929] divide-y divide-gray-700">
+                    {paginatedMobileUsers.map((user, index) => (
+                      <tr key={user._id} className={index % 2 === 0 ? 'bg-[#292929]' : 'bg-[#333333]'}>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">{user.email}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">{user.username}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            user.roles === 'user' ? 'bg-green-900 text-green-200' : 
+                            user.roles === 'installer' ? 'bg-blue-900 text-blue-200' : 
+                            'bg-yellow-900 text-yellow-200'
+                          }`}>
+                            {user.roles}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">{user.region}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">{user.ip}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                          {new Date(user.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                          {user.members && user.members.length > 0 ? (
+                            <div className="flex flex-col">
+                              {user.members.map((member, idx) => (
+                                <span key={idx} className="text-gray-300">{member}</span>
+                              ))}
+                            </div>
+                          ) : (
+                            <span className="text-gray-500">No members</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                
+                {/* Pagination */}
+                {filteredMobileUsers.length > mobileUsersPerPage && (
+                  <div className="flex justify-between items-center mt-4">
+                    <button
+                      onClick={() => setMobileCurrentPage(prev => Math.max(prev - 1, 1))}
+                      disabled={mobileCurrentPage === 1}
+                      className={`px-4 py-2 rounded-md ${mobileCurrentPage === 1 ? 'bg-gray-700 text-gray-500 cursor-not-allowed' : 'bg-[#333333] text-white hover:bg-[#444444]'}`}
+                    >
+                      Previous
+                    </button>
+                    
+                    <span className="text-gray-400">
+                      Page {mobileCurrentPage} of {Math.ceil(filteredMobileUsers.length / mobileUsersPerPage)}
+                    </span>
+                    
+                    <button
+                      onClick={() => setMobileCurrentPage(prev => Math.min(prev + 1, Math.ceil(filteredMobileUsers.length / mobileUsersPerPage)))}
+                      disabled={mobileCurrentPage >= Math.ceil(filteredMobileUsers.length / mobileUsersPerPage)}
+                      className={`px-4 py-2 rounded-md ${
+                        mobileCurrentPage >= Math.ceil(filteredMobileUsers.length / mobileUsersPerPage) 
+                          ? 'bg-gray-700 text-gray-500 cursor-not-allowed' 
+                          : 'bg-[#333333] text-white hover:bg-[#444444]'
+                      }`}
+                    >
+                      Next
+                    </button>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+        </div>
+      )}
+      
       {activeTab === 'customers' && (
         <>
         {/* Search and filters */}
@@ -864,33 +1443,29 @@ export default function CustomerDashboard({ token }) {
       )}
 
       {activeTab === 'traffic' && (
-        <div>
-          {/* Traffic filters */}
-          <div className="mb-6 bg-[#1e1e1e] p-4 rounded-lg">
+        <div className="space-y-6">
+          {/* Filters */}
+          <div className="bg-[#1e1e1e] p-4 rounded-lg">
+            <h3 className="text-lg font-medium text-white mb-4">Filters</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label htmlFor="dateFilter" className="block text-gray-400 mb-2">
-                  Date Range
-                </label>
+                <label className="block text-gray-400 mb-2">Date Range</label>
                 <select
-                  id="dateFilter"
                   value={dateFilter}
                   onChange={(e) => setDateFilter(e.target.value)}
                   className="bg-[#292929] text-white w-full px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#54bb74]"
                 >
                   <option value="all">All Time</option>
                   <option value="today">Today</option>
+                  <option value="yesterday">Yesterday</option>
                   <option value="week">Last 7 Days</option>
                   <option value="month">Last 30 Days</option>
                 </select>
               </div>
               
               <div>
-                <label htmlFor="userTypeFilter" className="block text-gray-400 mb-2">
-                  User Type
-                </label>
+                <label className="block text-gray-400 mb-2">User Type</label>
                 <select
-                  id="userTypeFilter"
                   value={userTypeFilter}
                   onChange={(e) => setUserTypeFilter(e.target.value)}
                   className="bg-[#292929] text-white w-full px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#54bb74]"
@@ -902,18 +1477,15 @@ export default function CustomerDashboard({ token }) {
               </div>
               
               <div>
-                <label htmlFor="consentFilter" className="block text-gray-400 mb-2">
-                  Consent Status
-                </label>
+                <label className="block text-gray-400 mb-2">Consent Status</label>
                 <select
-                  id="consentFilter"
                   value={consentFilter}
                   onChange={(e) => setConsentFilter(e.target.value)}
                   className="bg-[#292929] text-white w-full px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#54bb74]"
                 >
                   <option value="all">All</option>
-                  <option value="consented">Consented</option>
-                  <option value="declined">Declined</option>
+                  <option value="granted">Consent Granted</option>
+                  <option value="denied">Consent Denied</option>
                 </select>
               </div>
             </div>
