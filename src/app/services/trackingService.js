@@ -18,14 +18,25 @@ const UPDATE_INTERVAL = 30 * 1000; // 30 seconds in milliseconds
  * Initialize tracking service
  */
 export const initTracking = () => {
-  // Prevent multiple initializations
+  // Prevent multiple initializations in the same page load
   if (isInitialized) {
     console.log('🔔 TRACKING SERVICE ALREADY INITIALIZED, SKIPPING');
     return;
   }
   
+  // Prevent multiple initializations across different components
+  if (typeof window !== 'undefined' && window.__hasInitializedTracking) {
+    console.log('🔔 TRACKING ALREADY INITIALIZED BY ANOTHER COMPONENT, SKIPPING');
+    isInitialized = true;
+    return;
+  }
+  
   console.log('🔔 INITIALIZING TRACKING SERVICE');
   isInitialized = true;
+  
+  if (typeof window !== 'undefined') {
+    window.__hasInitializedTracking = true;
+  }
   
   // Generate a unique session ID if one doesn't exist
   if (!sessionId) {
@@ -98,34 +109,31 @@ const resetIdleTimer = () => {
 };
 
 /**
- * Extract customer ID from URL query parameter or referrer
- * @returns {string|null} Customer ID or null if not present
+ * Extract customer ID from URL if available
+ * @returns {string|null} Customer ID or null if not found
  */
 const extractCustomerId = () => {
-  // First check for 'from' query parameter
-  const urlParams = new URLSearchParams(window.location.search);
-  const fromParam = urlParams.get('from');
-  if (fromParam) {
-    return fromParam;
+  if (typeof window === 'undefined') return null;
+  
+  // First check if we have a stored customer ID from previous navigation
+  const storedCustomerId = localStorage.getItem('lastCustomerId');
+  
+  // Then check the current URL
+  const path = window.location.pathname;
+  const customerIdMatch = path.match(/\/customer\/([^\/]+)/);
+  
+  // If we find a customer ID in the URL, store it for future reference
+  if (customerIdMatch && customerIdMatch[1]) {
+    const currentCustomerId = customerIdMatch[1];
+    console.log('💼 FOUND CUSTOMER ID IN URL:', currentCustomerId);
+    localStorage.setItem('lastCustomerId', currentCustomerId);
+    return currentCustomerId;
   }
   
-  // If no query parameter, check if referrer is from a customer profile page
-  const referrer = document.referrer;
-  if (referrer && referrer.includes('/customer/')) {
-    try {
-      // Extract the customer ID from the referrer URL
-      // Format: https://limilighting.co.uk/customer/{customerId}
-      const referrerUrl = new URL(referrer);
-      const pathParts = referrerUrl.pathname.split('/');
-      const customerId = pathParts[pathParts.length - 1];
-      
-      // Validate that we have a proper ID (basic validation)
-      if (customerId && customerId.length > 3) {
-        return customerId;
-      }
-    } catch (error) {
-      console.error('Error extracting customer ID from referrer:', error);
-    }
+  // If not in the URL but we have a stored one, use that
+  if (storedCustomerId) {
+    console.log('💼 USING STORED CUSTOMER ID:', storedCustomerId);
+    return storedCustomerId;
   }
   
   return null;
@@ -195,6 +203,9 @@ const tryRestoreSession = () => {
       
       // Set the trackingDataSent flag to true since we have an existing session
       localStorage.setItem('trackingDataSent', 'true');
+      
+      // Ensure we don't create a new session on this page load
+      window.__hasInitializedTracking = true;
     } else {
       console.log('🔄 NO EXISTING SESSION FOUND');
       // Create a new session ID only if one doesn't exist
@@ -390,19 +401,42 @@ export const sendTrackingData = async (isClosing = false, isUpdate = false) => {
     
     console.log(`💬 SENDING ${isUpdate ? 'UPDATE' : 'NEW'} TRACKING DATA...`);
     
-    // Store the referrer when we first load the page
+    // Handle referrer tracking
     let referrer = document.referrer || null;
     const storedReferrer = localStorage.getItem('initialReferrer');
+    const currentUrl = window.location.href;
     
-    // If this is the first page load and we have a referrer, store it
-    if (!storedReferrer && referrer) {
-      localStorage.setItem('initialReferrer', referrer);
-      console.log('🔗 STORED INITIAL REFERRER:', referrer);
+    // Check if we're on a customer page
+    const isCustomerPage = window.location.pathname.includes('/customer/');
+    
+    // If we're on a customer page, store it as a potential referrer
+    if (isCustomerPage) {
+      localStorage.setItem('customerPageReferrer', currentUrl);
+      console.log('🔗 STORED CUSTOMER PAGE AS POTENTIAL REFERRER:', currentUrl);
+    }
+    
+    // If we have a direct referrer, use it
+    if (referrer) {
+      console.log('🔗 CURRENT PAGE REFERRER:', referrer);
+      
+      // If this is the first page load with a referrer, store it
+      if (!storedReferrer) {
+        localStorage.setItem('initialReferrer', referrer);
+        console.log('🔗 STORED INITIAL REFERRER:', referrer);
+      }
     } 
+    // If no direct referrer but we came from a customer page
+    else if (!referrer && !isCustomerPage) {
+      const customerReferrer = localStorage.getItem('customerPageReferrer');
+      if (customerReferrer) {
+        referrer = customerReferrer;
+        console.log('🔗 USING CUSTOMER PAGE AS REFERRER:', referrer);
+      }
+    }
     // If we're on a subsequent page and have a stored referrer, use that
-    else if (storedReferrer) {
+    else if (storedReferrer && !referrer) {
       referrer = storedReferrer;
-      console.log('🔗 USING STORED REFERRER:', referrer);
+      console.log('🔗 USING STORED INITIAL REFERRER:', referrer);
     }
     
     // Save current session data before sending
@@ -420,11 +454,11 @@ export const sendTrackingData = async (isClosing = false, isUpdate = false) => {
       customerId: extractCustomerId(),
       ipAddress: ipInfo.ip || null,
       country: ipInfo.country_name || null,
-      // city: ipInfo.city || null,
-      // region: ipInfo.region || null,
-      // org: ipInfo.org || null,
-      // postal: ipInfo.postal || null,
-      // timezone: ipInfo.timezone || null,
+      city: ipInfo.city || null,
+      region: ipInfo.region || null,
+      org: ipInfo.org || null,
+      postal: ipInfo.postal || null,
+      timezone: ipInfo.timezone || null,
       referrer: referrer, // Use our improved referrer handling
       userAgent: navigator.userAgent,
       sessionDuration: calculateTotalSessionDuration(),
