@@ -78,7 +78,7 @@ const AnalyticsInsights = ({ userType }) => {
       description: "Discover how our latest lighting innovations are setting new standards in design and functionality.",
       icon: <FaLightbulb />,
       color: brandColors.coolAccent,
-      image: "https://images.unsplash.com/photo-1600494603989-9650cf6ddd3d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
+      image: "/images/innovations.png",
     },
     {
       status: "Exhibition",
@@ -102,7 +102,7 @@ const AnalyticsInsights = ({ userType }) => {
       description: "We've unveiled our newest product, The Limitless System, which promises to revolutionize your lighting experience.",
       icon: <FaRocket />,
       color: brandColors.accent,
-      image: "https://images.unsplash.com/photo-1565814329452-e1efa11c5b89?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
+      image: "/images/product_launch.png",
     },
     {
       status: "Partnership",
@@ -130,7 +130,7 @@ const AnalyticsInsights = ({ userType }) => {
       description: "The heart of the LIMI ecosystem—designed for total control, effortless setup, and ready to grow with every new feature and product release.",
       availability: "Step 2: Intuitive Control",
       progress: 95,
-      image: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
+      image: "/images/limi-app.png",
     },
     {
       stage: "Testing Phase",
@@ -154,7 +154,7 @@ const AnalyticsInsights = ({ userType }) => {
       description: "Even faster reconfiguration and extended design flexibility with next-gen modular components.",
       availability: "Step 5: Extended Flexibility",
       progress: 25,
-      image: "https://images.unsplash.com/photo-1565814329452-e1efa11c5b89?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
+      image: "/images/limi-light.png",
     },
     {
       stage: "Planning",
@@ -162,7 +162,7 @@ const AnalyticsInsights = ({ userType }) => {
       description: "A smart backend for retailers and distributors—track performance, trends, and optimise inventory.",
       availability: "Step 6: Advanced Analytics",
       progress: 15,
-      image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
+      image: "/images/limi-dashboard.jpg",
     },
   ];
 
