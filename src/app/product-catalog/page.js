@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -8,7 +8,8 @@ import { products, categories, getProductsByCategory } from '../data/products';
 import ProductCard from './components/ProductCard';
 import CategoryFilter from './components/CategoryFilter';
 
-export default function ProductCatalog() {
+// Content component that uses useSearchParams
+function ProductCatalogContent() {
   const searchParams = useSearchParams();
   const initialCategory = searchParams.get('category') || 'all';
   
@@ -29,9 +30,7 @@ export default function ProductCatalog() {
   };
   
   return (
-    <main className="bg-[#292929] text-white min-h-screen">
-      <Header />
-      
+    <div>
       <div className="pt-[120px] pb-16">
         <div className="container mx-auto px-4">
           <div className="mb-8">
@@ -84,6 +83,25 @@ export default function ProductCatalog() {
           )}
         </div>
       </div>
+    </div>
+  );
+}
+
+// Main component wrapped with Suspense
+export default function ProductCatalog() {
+  return (
+    <main className="bg-[#292929] text-white min-h-screen">
+      <Header />
+      
+      <Suspense fallback={
+        <div className="pt-[120px] pb-16 container mx-auto px-4">
+          <div className="flex justify-center items-center min-h-[50vh]">
+            <div className="animate-pulse text-2xl text-[#54BB74]">Loading product catalog...</div>
+          </div>
+        </div>
+      }>
+        <ProductCatalogContent />
+      </Suspense>
       
       <Footer />
     </main>

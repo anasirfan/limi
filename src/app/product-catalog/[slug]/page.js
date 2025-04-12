@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -13,7 +13,8 @@ import ProductToggleOptions from '../components/ProductToggleOptions';
 import ProductCTA from '../components/ProductCTA';
 import ProductNotFound from '../components/ProductNotFound';
 
-export default function ProductDetail() {
+// Content component that uses useParams
+function ProductDetailContent() {
   const params = useParams();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -47,13 +48,9 @@ export default function ProductDetail() {
   
   if (loading) {
     return (
-      <main className="bg-[#292929] text-white min-h-screen">
-        <Header />
-        <div className="pt-[120px] pb-16 flex justify-center items-center">
-          <div className="animate-pulse text-2xl text-[#54BB74]">Loading...</div>
-        </div>
-        <Footer />
-      </main>
+      <div className="pt-[120px] pb-16 flex justify-center items-center">
+        <div className="animate-pulse text-2xl text-[#54BB74]">Loading...</div>
+      </div>
     );
   }
   
@@ -62,11 +59,8 @@ export default function ProductDetail() {
   }
   
   return (
-    <main className="bg-[#292929] text-white min-h-screen">
-      <Header />
-      
-      <div className="pt-[120px] pb-16">
-        <div className="container mx-auto px-4">
+    <div className="pt-[120px] pb-16">
+      <div className="container mx-auto px-4">
           {/* Breadcrumb navigation */}
           <div className="mb-6 text-sm text-gray-400">
             <Link href="/product-catalog" className="hover:text-[#54BB74] transition-colors">
@@ -128,8 +122,26 @@ export default function ProductDetail() {
               <ProductCTA product={product} selectedOptions={selectedOptions} />
             </div>
           </div>
-        </div>
       </div>
+    </div>
+  );
+}
+
+// Main component wrapped with Suspense
+export default function ProductDetail() {
+  return (
+    <main className="bg-[#292929] text-white min-h-screen">
+      <Header />
+      
+      <Suspense fallback={
+        <div className="pt-[120px] pb-16 container mx-auto px-4">
+          <div className="flex justify-center items-center min-h-[50vh]">
+            <div className="animate-pulse text-2xl text-[#54BB74]">Loading product details...</div>
+          </div>
+        </div>
+      }>
+        <ProductDetailContent />
+      </Suspense>
       
       <Footer />
     </main>
