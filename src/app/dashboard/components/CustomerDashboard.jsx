@@ -4,6 +4,7 @@ import React, { useState, useEffect, Fragment } from 'react';
 import Image from 'next/image';
 import { FaSort, FaSortUp, FaSortDown, FaSearch, FaEye, FaTimes, FaFilter, FaChartLine, FaGlobe, FaClock, FaDesktop, FaTabletAlt, FaMobileAlt, FaUsers } from 'react-icons/fa';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
+import ProductManagement from './ProductManagement';
 
 export default function CustomerDashboard({ token }) {
   const [customers, setCustomers] = useState([]);
@@ -750,6 +751,13 @@ export default function CustomerDashboard({ token }) {
         >
           <FaMobileAlt />
           Mobile Traffic
+        </button>
+        <button
+          className={`px-4 py-2 font-medium flex items-center gap-2 ${activeTab === 'products' ? 'text-[#93cfa2] border-b-2 border-[#93cfa2]' : 'text-gray-400 hover:text-gray-300'}`}
+          onClick={() => setActiveTab('products')}
+        >
+          <FaSort />
+          Product Management
         </button>
       </div>
 
@@ -1849,6 +1857,7 @@ export default function CustomerDashboard({ token }) {
                     >
                       Previous
                     </button>
+                    
                     {Array.from({ length: Math.ceil(visitorLogs.length / logsPerPage) }, (_, i) => i + 1)
                       .filter(page => {
                         // Show first page, last page, current page, and pages around current
@@ -1886,6 +1895,13 @@ export default function CustomerDashboard({ token }) {
               )}
             </div>
           )}
+        </div>
+      )}
+      
+      {/* Product Management Tab */}
+      {activeTab === 'products' && (
+        <div className="mt-6">
+          <ProductManagement />
         </div>
       )}
     </div>
