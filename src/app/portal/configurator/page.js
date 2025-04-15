@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -38,7 +38,7 @@ const availableScenes = [
   'Focus Work'
 ];
 
-export default function Configurator() {
+function ConfiguratorContent() {
   const searchParams = useSearchParams();
   const configId = searchParams.get('id') || 'config-001';
   
@@ -177,11 +177,8 @@ export default function Configurator() {
   }
   
   return (
-    <main className="bg-[#292929] text-white min-h-screen">
-      <Header />
-      
-      <div className="pt-[120px] pb-16">
-        <div className="container mx-auto px-4">
+    <div className="pt-[120px] pb-16">
+      <div className="container mx-auto px-4">
           {/* Header */}
           <div className="mb-8">
             <Link
@@ -405,7 +402,21 @@ export default function Configurator() {
           </div>
         </div>
       </div>
-      
+    </div>
+  );
+}
+
+export default function Configurator() {
+  return (
+    <main className="bg-[#292929] text-white min-h-screen">
+      <Header />
+      <Suspense fallback={
+        <div className="pt-[120px] pb-16 flex justify-center items-center min-h-[50vh]">
+          <div className="animate-pulse text-2xl text-[#54BB74]">Loading configurator...</div>
+        </div>
+      }>
+        <ConfiguratorContent />
+      </Suspense>
       <Footer />
     </main>
   );
