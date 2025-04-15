@@ -7,6 +7,7 @@ import Footer from '../components/Footer';
 import { products, categories, getProductsByCategory } from '../data/products';
 import ProductCard from './components/ProductCard';
 import CategoryFilter from './components/CategoryFilter';
+import AppDownloadCTA from '../components/AppDownloadCTA';
 
 // Content component that uses useSearchParams
 function ProductCatalogContent() {
@@ -81,6 +82,21 @@ function ProductCatalogContent() {
               ))}
             </div>
           )}
+          
+          {/* App Download CTA - Strategically placed for maximum impact */}
+          <div className="mt-16 mb-8">
+            <h2 className="text-2xl md:text-3xl font-bold font-[Amenti] text-white mb-6">
+              Take Your Lighting Experience Further
+            </h2>
+            <AppDownloadCTA 
+              variant="default" 
+              showQRCode={true}
+              highlightFeature={selectedCategory === 'all' ? 'ar' : 
+                selectedCategory === 'bases' ? 'configurator' : 
+                selectedCategory === 'ball-system' ? 'control' : 
+                selectedCategory === 'bar-system' ? 'exclusive' : 'ar'}
+            />
+          </div>
         </div>
       </div>
     </div>

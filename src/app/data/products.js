@@ -4,6 +4,335 @@
  */
 
 export const products = [
+  // Bases
+  {
+    id: 'base-1',
+    slug: 'smart-base-standard',
+    name: 'Smart Base Standard',
+    shortDescription: 'Foundation base for all LIMI lighting systems',
+    fullDescription: 'The Smart Base Standard is the foundation for all LIMI lighting systems. This versatile base features integrated smart controls, wireless connectivity, and supports all LIMI attachments. The sleek design complements any decor while providing stable support for your lighting configuration.',
+    category: 'Bases',
+    images: [
+      'https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?q=80&w=2070&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1540932239986-30128078f3c5?q=80&w=1974&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1565814329452-e1efa11c5b89?q=80&w=1974&auto=format&fit=crop',
+    ],
+    thumbnail: 'https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?q=80&w=2070&auto=format&fit=crop',
+    specs: {
+      wattage: '10W (base only)',
+      dimensions: '20cm diameter x 5cm height',
+      connectivity: 'Wi-Fi, Bluetooth',
+      voltage: '100-240V AC',
+      supportedSystems: 'All LIMI systems',
+      controlInterface: 'Touch, App, Voice',
+      lifespan: '50,000 hours',
+    },
+    toggleOptions: [
+      {
+        name: 'Premium Finish',
+        description: 'Upgrade to brushed aluminum finish',
+        defaultValue: false,
+      },
+      {
+        name: 'Extended Power Cable',
+        description: 'Add 3m extension to standard power cable',
+        defaultValue: false,
+      }
+    ],
+    price: 149.99,
+    featured: true,
+    new: false,
+    inStock: true,
+  },
+  {
+    id: 'base-2',
+    slug: 'smart-base-premium',
+    name: 'Smart Base Premium',
+    shortDescription: 'Advanced foundation base with enhanced features',
+    fullDescription: 'The Smart Base Premium offers enhanced features over our standard base, including expanded connectivity options, higher power output for larger installations, and premium materials. The base includes a built-in battery backup for uninterrupted operation during power outages and advanced sensors for automated lighting control.',
+    category: 'Bases',
+    images: [
+      'https://images.unsplash.com/photo-1507146153580-69a1fe6d8aa1?q=80&w=2070&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1550226891-ef816aed4a98?q=80&w=2070&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1511447333015-45b65e60f6d5?q=80&w=2023&auto=format&fit=crop',
+    ],
+    thumbnail: 'https://images.unsplash.com/photo-1507146153580-69a1fe6d8aa1?q=80&w=2070&auto=format&fit=crop',
+    specs: {
+      wattage: '15W (base only)',
+      dimensions: '25cm diameter x 5cm height',
+      connectivity: 'Wi-Fi, Bluetooth, Zigbee, Matter',
+      voltage: '100-240V AC',
+      supportedSystems: 'All LIMI systems',
+      controlInterface: 'Touch, App, Voice, Gesture',
+      batteryBackup: '4 hours',
+      lifespan: '60,000 hours',
+    },
+    toggleOptions: [
+      {
+        name: 'Premium Finish',
+        description: 'Choose between brushed aluminum or matte black',
+        defaultValue: false,
+      },
+      {
+        name: 'Extended Battery',
+        description: 'Upgrade to 8-hour battery backup',
+        defaultValue: false,
+      }
+    ],
+    price: 249.99,
+    featured: true,
+    new: true,
+    inStock: true,
+  },
+
+  // Universal Attachments
+  {
+    id: 'attachment-1',
+    slug: 'universal-connector-standard',
+    name: 'Universal Connector Standard',
+    shortDescription: 'Connect any LIMI system to your base',
+    fullDescription: 'The Universal Connector Standard allows you to connect any LIMI lighting system to your base. This versatile attachment features a quick-release mechanism for easy system swapping and a 360-degree rotation joint for perfect positioning. Compatible with all LIMI bases and lighting systems.',
+    category: 'Universal Attachments',
+    images: [
+      'https://images.unsplash.com/photo-1555664424-778a1e5e1b48?q=80&w=2070&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1563453392212-326f5e854473?q=80&w=2070&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1618941716939-553df3c6c278?q=80&w=2070&auto=format&fit=crop',
+    ],
+    thumbnail: 'https://images.unsplash.com/photo-1555664424-778a1e5e1b48?q=80&w=2070&auto=format&fit=crop',
+    specs: {
+      material: 'Reinforced polymer',
+      dimensions: '5cm x 5cm x 8cm',
+      rotationRange: '360°',
+      tiltRange: '180°',
+      loadCapacity: 'Up to 2kg',
+      compatibility: 'All LIMI systems and bases',
+      lifespan: '50,000 cycles',
+    },
+    toggleOptions: [
+      {
+        name: 'Metal Finish',
+        description: 'Upgrade to metal construction for heavier loads',
+        defaultValue: false,
+      },
+      {
+        name: 'Extension Arm',
+        description: 'Add 15cm extension arm for greater reach',
+        defaultValue: false,
+      }
+    ],
+    price: 39.99,
+    featured: false,
+    new: false,
+    inStock: true,
+  },
+  {
+    id: 'attachment-2',
+    slug: 'universal-connector-premium',
+    name: 'Universal Connector Premium',
+    shortDescription: 'Advanced connector with enhanced flexibility',
+    fullDescription: 'The Universal Connector Premium offers enhanced flexibility and durability over our standard connector. Featuring a multi-joint design, this premium attachment allows for precise positioning in any direction. The all-metal construction ensures stability for even the heaviest LIMI lighting systems.',
+    category: 'Universal Attachments',
+    images: [
+      'https://images.unsplash.com/photo-1565374790464-0b28f87a1bc5?q=80&w=1974&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1565374790610-deee4a829ad0?q=80&w=1974&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1565374790340-28c355642f64?q=80&w=1974&auto=format&fit=crop',
+    ],
+    thumbnail: 'https://images.unsplash.com/photo-1565374790464-0b28f87a1bc5?q=80&w=1974&auto=format&fit=crop',
+    specs: {
+      material: 'Aircraft-grade aluminum',
+      dimensions: '6cm x 6cm x 10cm',
+      rotationRange: '360°',
+      tiltRange: '270°',
+      loadCapacity: 'Up to 5kg',
+      compatibility: 'All LIMI systems and bases',
+      additionalFeatures: 'Cable management system, locking mechanisms',
+      lifespan: '100,000 cycles',
+    },
+    toggleOptions: [
+      {
+        name: 'Color Options',
+        description: 'Choose between silver, black, or white finish',
+        defaultValue: false,
+      },
+      {
+        name: 'Dual Mount',
+        description: 'Add capability to mount two systems simultaneously',
+        defaultValue: false,
+      }
+    ],
+    price: 69.99,
+    featured: true,
+    new: true,
+    inStock: true,
+  },
+
+  // Pendants
+  {
+    id: 'pendant-1',
+    slug: 'pendant-light-standard',
+    name: 'Pendant Light Standard',
+    shortDescription: 'Elegant hanging light with smart features',
+    fullDescription: 'The Pendant Light Standard combines elegant design with smart lighting technology. This hanging fixture features adjustable height, full RGB spectrum control, and compatibility with all LIMI bases. Perfect for dining areas, kitchen islands, or as accent lighting in any room.',
+    category: 'Pendants',
+    images: [
+      'https://images.unsplash.com/photo-1540932239986-30128078f3c5?q=80&w=1974&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1519710164239-da123dc03ef4?q=80&w=1974&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?q=80&w=2070&auto=format&fit=crop',
+    ],
+    thumbnail: 'https://images.unsplash.com/photo-1540932239986-30128078f3c5?q=80&w=1974&auto=format&fit=crop',
+    specs: {
+      wattage: '12W',
+      lumens: '1000lm',
+      colorTemperature: '2700K-6500K',
+      dimensions: '15cm diameter x 25cm height',
+      cableLength: '150cm (adjustable)',
+      connectivity: 'Compatible with all LIMI bases',
+      voltage: 'Powered through LIMI base',
+      lifespan: '50,000 hours',
+    },
+    toggleOptions: [
+      {
+        name: 'Glass Options',
+        description: 'Choose between clear, frosted, or smoked glass',
+        defaultValue: false,
+      },
+      {
+        name: 'Extended Cable',
+        description: 'Add additional 100cm of suspension cable',
+        defaultValue: false,
+      }
+    ],
+    price: 129.99,
+    featured: true,
+    new: false,
+    inStock: true,
+  },
+  {
+    id: 'pendant-2',
+    slug: 'pendant-light-premium',
+    name: 'Pendant Light Premium',
+    shortDescription: 'Designer pendant with advanced lighting features',
+    fullDescription: 'The Pendant Light Premium is our designer-grade hanging fixture with advanced lighting features. The handcrafted glass shade creates stunning light patterns while the integrated smart controls allow for precise illumination. Compatible with all LIMI bases and perfect for statement lighting in any space.',
+    category: 'Pendants',
+    images: [
+      'https://images.unsplash.com/photo-1602595188045-9f3c4d4d7825?q=80&w=1974&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1602595188038-9e5f95a63293?q=80&w=1974&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1602595188028-3c78a1e02bd3?q=80&w=1974&auto=format&fit=crop',
+    ],
+    thumbnail: 'https://images.unsplash.com/photo-1602595188045-9f3c4d4d7825?q=80&w=1974&auto=format&fit=crop',
+    specs: {
+      wattage: '18W',
+      lumens: '1500lm',
+      colorTemperature: '2200K-6500K',
+      dimensions: '20cm diameter x 30cm height',
+      cableLength: '200cm (adjustable)',
+      materials: 'Hand-blown glass, brushed metal accents',
+      connectivity: 'Compatible with all LIMI bases',
+      voltage: 'Powered through LIMI base',
+      lifespan: '60,000 hours',
+    },
+    toggleOptions: [
+      {
+        name: 'Glass Finish',
+        description: 'Choose between clear, frosted, amber, or blue glass',
+        defaultValue: false,
+      },
+      {
+        name: 'Metal Finish',
+        description: 'Select brushed nickel, brass, or matte black accents',
+        defaultValue: false,
+      }
+    ],
+    price: 199.99,
+    featured: true,
+    new: true,
+    inStock: true,
+  },
+
+  // Chandeliers
+  {
+    id: 'chandelier-1',
+    slug: 'smart-chandelier-standard',
+    name: 'Smart Chandelier Standard',
+    shortDescription: 'Modern chandelier with integrated smart lighting',
+    fullDescription: 'The Smart Chandelier Standard brings modern design to traditional chandeliers with integrated smart lighting technology. Featuring multiple light points that can be individually controlled, this fixture creates stunning lighting scenes for dining rooms, entryways, or living spaces. Compatible with all LIMI bases for seamless integration into your smart home.',
+    category: 'Chandeliers',
+    images: [
+      'https://images.unsplash.com/photo-1565814329452-e1efa11c5b89?q=80&w=1974&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1565814636199-ae8133055c1c?q=80&w=1974&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1565814329332-a5a0d0be2254?q=80&w=1974&auto=format&fit=crop',
+    ],
+    thumbnail: 'https://images.unsplash.com/photo-1565814329452-e1efa11c5b89?q=80&w=1974&auto=format&fit=crop',
+    specs: {
+      wattage: '45W total (5 x 9W)',
+      lumens: '3600lm total',
+      colorTemperature: '2700K-6500K',
+      dimensions: '60cm diameter x 40cm height',
+      lightPoints: '5 individually controllable points',
+      cableLength: '150cm (adjustable)',
+      connectivity: 'Compatible with all LIMI bases',
+      voltage: 'Powered through LIMI base',
+      lifespan: '50,000 hours',
+    },
+    toggleOptions: [
+      {
+        name: 'Glass Options',
+        description: 'Choose between clear, frosted, or smoked glass shades',
+        defaultValue: false,
+      },
+      {
+        name: 'Metal Finish',
+        description: 'Select brushed nickel, brass, or matte black frame',
+        defaultValue: false,
+      }
+    ],
+    price: 499.99,
+    featured: true,
+    new: false,
+    inStock: true,
+  },
+  {
+    id: 'chandelier-2',
+    slug: 'smart-chandelier-premium',
+    name: 'Smart Chandelier Premium',
+    shortDescription: 'Luxury chandelier with advanced lighting control',
+    fullDescription: 'The Smart Chandelier Premium is our luxury lighting fixture with advanced control capabilities. This statement piece features 9 individually addressable light points arranged in a contemporary design. Each light can be programmed for color, brightness, and effects, creating dynamic lighting scenes for luxury homes and commercial spaces. Compatible with all LIMI bases.',
+    category: 'Chandeliers',
+    images: [
+      'https://images.unsplash.com/photo-1541123437800-1bb1317badc2?q=80&w=1974&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1600607686527-6fb886090705?q=80&w=1974&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?q=80&w=1974&auto=format&fit=crop',
+    ],
+    thumbnail: 'https://images.unsplash.com/photo-1541123437800-1bb1317badc2?q=80&w=1974&auto=format&fit=crop',
+    specs: {
+      wattage: '81W total (9 x 9W)',
+      lumens: '6300lm total',
+      colorTemperature: '2200K-6500K',
+      dimensions: '80cm diameter x 50cm height',
+      lightPoints: '9 individually controllable points',
+      cableLength: '200cm (adjustable)',
+      materials: 'Hand-blown glass, premium metal frame',
+      connectivity: 'Compatible with all LIMI bases',
+      voltage: 'Powered through LIMI base',
+      lifespan: '60,000 hours',
+    },
+    toggleOptions: [
+      {
+        name: 'Glass Customization',
+        description: 'Choose from our designer glass collection',
+        defaultValue: false,
+      },
+      {
+        name: 'Custom Layout',
+        description: 'Work with our designers for custom arrangement',
+        defaultValue: false,
+      }
+    ],
+    price: 899.99,
+    featured: true,
+    new: true,
+    inStock: true,
+  },
   {
     id: 'ball-system-1',
     slug: 'ball-system-standard',
@@ -247,6 +576,11 @@ export const categories = [
     description: 'View our complete collection of smart lighting solutions',
   },
   {
+    id: 'Bases',
+    name: 'Bases',
+    description: 'Foundation lighting bases for all LIMI systems',
+  },
+  {
     id: 'Ball System',
     name: 'Ball System',
     description: 'Spherical lighting solutions for modern spaces',
@@ -255,6 +589,21 @@ export const categories = [
     id: 'Bar System',
     name: 'Bar System',
     description: 'Linear lighting systems for versatile installations',
+  },
+  {
+    id: 'Universal Attachments',
+    name: 'Universal Attachments',
+    description: 'Versatile attachments compatible with all LIMI systems',
+  },
+  {
+    id: 'Pendants',
+    name: 'Pendants',
+    description: 'Elegant hanging light fixtures for ambient lighting',
+  },
+  {
+    id: 'Chandeliers',
+    name: 'Chandeliers',
+    description: 'Sophisticated multi-light fixtures for statement lighting',
   },
   {
     id: 'Panel System',

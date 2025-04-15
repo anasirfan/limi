@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { FaDownload, FaCog } from 'react-icons/fa';
+import { FaDownload, FaCog, FaMobileAlt, FaCubes } from 'react-icons/fa';
+import AppDownloadCTA from '../../components/AppDownloadCTA';
 
 export default function ProductCTA({ product, selectedOptions }) {
   // Calculate if any options are selected
@@ -15,7 +16,7 @@ export default function ProductCTA({ product, selectedOptions }) {
           className="flex-1 flex items-center justify-center gap-2 bg-[#292929] border border-[#54BB74] text-[#54BB74] py-3 px-6 rounded-md hover:bg-[#54BB74] hover:text-white transition-colors text-center"
         >
           <FaCog />
-          <span>Open Configurator</span>
+          <span>Open Web Configurator</span>
         </Link>
         
         <button 
@@ -25,6 +26,64 @@ export default function ProductCTA({ product, selectedOptions }) {
           <FaDownload />
           <span>Download Data Sheet</span>
         </button>
+      </div>
+
+      {/* App CTAs - Enhanced with more compelling messaging */}
+      <div className="mt-6 p-5 bg-gradient-to-r from-[#1e1e1e] to-[#292929] rounded-lg border border-[#54BB74]/30">
+        <div className="flex items-center gap-3 mb-3">
+          <div className="bg-[#54BB74]/20 p-2 rounded-full">
+            <FaMobileAlt className="text-[#54BB74] text-xl" />
+          </div>
+          <h3 className="text-lg font-semibold text-white">
+            {product.category === 'Chandeliers' || product.category === 'Pendants' ? 
+              'See How This Looks in Your Space' : 
+              'Unlock Advanced Features'}
+          </h3>
+        </div>
+        
+        <p className="text-gray-300 mb-4 text-sm">
+          {product.category === 'Chandeliers' || product.category === 'Pendants' ? 
+            `Use the LIMI app to visualize this ${product.category.toLowerCase().slice(0, -1)} in your actual space with our advanced AR technology.` : 
+            `The LIMI app offers powerful configuration and control options for your ${product.name} that aren't available on the web.`}
+        </p>
+        
+        <div className="flex flex-col sm:flex-row gap-3">
+          <Link 
+            href="https://apps.apple.com/app/limi-lighting"
+            target="_blank"
+            className="flex-1 flex items-center justify-center gap-2 bg-[#54BB74] text-white py-3 px-4 rounded-md hover:bg-[#48a064] transition-colors text-center group"
+          >
+            <FaMobileAlt className="group-hover:scale-110 transition-transform" />
+            <span>iOS App</span>
+          </Link>
+          
+          <Link 
+            href="https://play.google.com/store/apps/details?id=com.limi.lighting"
+            target="_blank"
+            className="flex-1 flex items-center justify-center gap-2 bg-[#292929] border border-[#54BB74] text-[#54BB74] py-3 px-4 rounded-md hover:bg-[#54BB74] hover:text-white transition-colors text-center group"
+          >
+            <FaMobileAlt className="group-hover:scale-110 transition-transform" />
+            <span>Android App</span>
+          </Link>
+        </div>
+        
+        <div className="mt-4 flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <FaCubes className="text-[#54BB74]" />
+            <span className="text-sm text-gray-300">
+              {product.category === 'Chandeliers' || product.category === 'Pendants' ? 
+                'AR Visualization' : 'Advanced Configuration'}
+            </span>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <FaCog className="text-[#54BB74]" />
+            <span className="text-sm text-gray-300">
+              {product.category === 'Chandeliers' || product.category === 'Pendants' ? 
+                'Smart Control' : 'Real-time Preview'}
+            </span>
+          </div>
+        </div>
       </div>
       
       {/* Price information */}

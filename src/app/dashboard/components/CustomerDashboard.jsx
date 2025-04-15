@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, Fragment } from 'react';
 import Image from 'next/image';
-import { FaSort, FaSortUp, FaSortDown, FaSearch, FaEye, FaTimes, FaFilter, FaChartLine, FaGlobe, FaClock, FaDesktop, FaTabletAlt, FaMobileAlt, FaUsers } from 'react-icons/fa';
+import { FaSort, FaSortUp, FaSortDown, FaSearch, FaEye, FaTimes, FaFilter, FaChartLine, FaGlobe, FaClock, FaDesktop, FaTabletAlt, FaMobileAlt, FaUsers, FaBoxOpen, FaShoppingCart } from 'react-icons/fa';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
 import ProductManagement from './ProductManagement';
 
@@ -730,6 +730,7 @@ export default function CustomerDashboard({ token }) {
 
   return (
     <div>
+
       {/* Tabs */}
       <div className="mb-6 flex border-b border-[#333333]">
         <button
@@ -744,6 +745,13 @@ export default function CustomerDashboard({ token }) {
         >
           <FaChartLine />
           Website Traffic
+        </button>
+        <button
+          className={`px-4 py-2 font-medium flex items-center gap-2 ${activeTab === 'products' ? 'text-[#93cfa2] border-b-2 border-[#93cfa2]' : 'text-gray-400 hover:text-gray-300'}`}
+          onClick={() => setActiveTab('products')}
+        >
+          <FaBoxOpen />
+          Products
         </button>
         <button
           className={`px-4 py-2 font-medium flex items-center gap-2 ${activeTab === 'mobile' ? 'text-[#93cfa2] border-b-2 border-[#93cfa2]' : 'text-gray-400 hover:text-gray-300'}`}
