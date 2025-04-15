@@ -142,37 +142,22 @@ function ConfiguratorContent() {
     };
   };
   
-  if (loading) {
-    return (
-      <main className="bg-[#292929] text-white min-h-screen">
-        <Header />
-        <div className="pt-[120px] pb-16 flex justify-center items-center min-h-[50vh]">
-          <div className="animate-pulse text-2xl text-[#54BB74]">Loading configurator...</div>
-        </div>
-        <Footer />
-      </main>
-    );
-  }
-  
+  // Show a message if configuration is not found
   if (!config) {
     return (
-      <main className="bg-[#292929] text-white min-h-screen">
-        <Header />
-        <div className="pt-[120px] pb-16 container mx-auto px-4">
-          <div className="text-center py-12">
-            <h2 className="text-2xl font-bold text-white mb-4">Configuration Not Found</h2>
-            <p className="text-gray-400 mb-6">The configuration you're looking for doesn't exist or has been removed.</p>
-            <Link
-              href="/portal"
-              className="inline-flex items-center gap-2 bg-[#54BB74] text-white px-4 py-2 rounded-md hover:bg-[#48a064] transition-colors"
-            >
-              <FaArrowLeft />
-              <span>Back to Dashboard</span>
-            </Link>
-          </div>
+      <div className="pt-[120px] pb-16 container mx-auto px-4">
+        <div className="text-center py-12">
+          <h2 className="text-2xl font-bold text-white mb-4">Configuration Not Found</h2>
+          <p className="text-gray-400 mb-6">The configuration you're looking for doesn't exist or has been removed.</p>
+          <Link
+            href="/portal"
+            className="inline-flex items-center gap-2 bg-[#54BB74] text-white px-4 py-2 rounded-md hover:bg-[#48a064] transition-colors"
+          >
+            <FaArrowLeft />
+            <span>Back to Dashboard</span>
+          </Link>
         </div>
-        <Footer />
-      </main>
+      </div>
     );
   }
   
@@ -402,8 +387,8 @@ function ConfiguratorContent() {
           </div>
         </div>
       </div>
-    </div>
-  );
+  )
+
 }
 
 export default function Configurator() {
