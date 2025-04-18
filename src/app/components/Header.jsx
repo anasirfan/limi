@@ -64,6 +64,11 @@ const Header = () => {
     { id: 'distributor-hub', label: 'Become a Distributor' },
   ];
 
+  const links = [
+    { href: '/product-catalog', label: 'Product Catalog' },
+    { href: '/tools', label: 'Tools' },
+  ];
+
   const handleNavClick = (id) => {
     setMenuOpen(false);
 
@@ -134,6 +139,20 @@ const Header = () => {
                   <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-emerald-600 to-white group-hover:w-full transition-all duration-1000 ease-in-out"></span>
                 </span>
               </button>
+            ))}
+            
+            {/* External page links */}
+            {links.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="navigation text-2xl md:text-3xl font-['Amenti'] hover:text-emerald transition-colors duration-300 relative group"
+              >
+                <span className="relative group inline-block pb-1 !text-white">
+                  {link.label}
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-emerald-600 to-white group-hover:w-full transition-all duration-1000 ease-in-out"></span>
+                </span>
+              </Link>
             ))}
           </nav>
         </div>
