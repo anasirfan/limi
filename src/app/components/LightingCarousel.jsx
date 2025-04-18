@@ -501,11 +501,7 @@ const LightingCarousel = ({ userType }) => {
       title: "Lighting Modes",
       description: "Choose from preset modes for different moods.",
     },
-    // {
-    //   id: "rgb",
-    //   title: "RGB Neon Lights",
-    //   description: "Create custom color combinations with RGB controls.",
-    // },
+   
   ];
 
   const lightingModes = [
@@ -1091,6 +1087,7 @@ const LightingCarousel = ({ userType }) => {
         </div>
 
         {/* RGB Control Slide */}
+    
        {/* RGB slode code here */}
       </div>
       {/* Logo at Bottom */}
