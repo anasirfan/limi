@@ -58,12 +58,6 @@ const PlayCanvasViewer = ({
     };
   }, []);
 
-  // Send configuration updates whenever config changes
-  useEffect(() => {
-    if (!isLoading && !hasError) {
-      sendConfigToPlayCanvas(config);
-    }
-  }, [config, isLoading, hasError]);
 
   // Function to send configuration to PlayCanvas
   const sendConfigToPlayCanvas = (config) => {

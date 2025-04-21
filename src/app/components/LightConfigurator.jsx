@@ -317,26 +317,7 @@ const PendantConfigurator = ({ pendants, updatePendantDesign, isDarkMode }) => {
         </div>
       </div>
       
-      {/* Price and Configuration Summary */}
-      <div className="mb-6">
-        <h4 className="text-sm font-medium mb-2">Price and Configuration Summary</h4>
-        <div className="flex space-x-3">
-          <div className="flex-shrink-0 w-24 h-24 rounded-full overflow-hidden relative">
-            <Image
-              src="/images/configOptions/1.png"
-              alt="Pendant Design"
-              fill
-              className="object-cover select-none"
-              draggable={false}
-            />
-          </div>
-          <div className="flex-1">
-            <p className="text-sm">Pendant Design: {pendants && pendants[0] ? pendants[0].design : 'Default'}</p>
-            <p className="text-sm">Quantity: {pendants ? pendants.length : 0}</p>
-            <p className="text-sm">Total Price: ${pendants ? pendants.length * 100 : 0}</p>
-          </div>
-        </div>
-      </div>
+      {/* Pendant Configuration Controls */}
       
       {/* Scrollable pendant list with collapsible sections */}
       <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
@@ -962,10 +943,9 @@ const LightConfigurator = () => {
   const handleLightTypeChange = (type) => {
     setLightType(type);
     
-    // Send message to PlayCanvas
+    // Send message to PlayCanvas - only once
     const iframe = document.getElementById('playcanvas-app');
     if (iframe && iframe.contentWindow) {
-      iframe.contentWindow.postMessage(`light_type:${type}`, "*");
       iframe.contentWindow.postMessage(`light_type:${type}`, "*");
     }
     
