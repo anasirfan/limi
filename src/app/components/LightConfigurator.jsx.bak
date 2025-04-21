@@ -317,27 +317,6 @@ const PendantConfigurator = ({ pendants, updatePendantDesign, isDarkMode }) => {
         </div>
       </div>
       
-      {/* Price and Configuration Summary */}
-      <div className="mb-6">
-        <h4 className="text-sm font-medium mb-2">Price and Configuration Summary</h4>
-        <div className="flex space-x-3">
-          <div className="flex-shrink-0 w-24 h-24 rounded-full overflow-hidden relative">
-            <Image
-              src="/images/configOptions/1.png"
-              alt="Pendant Design"
-              fill
-              className="object-cover select-none"
-              draggable={false}
-            />
-          </div>
-          <div className="flex-1">
-            <p className="text-sm">Pendant Design: {pendants[0].design}</p>
-            <p className="text-sm">Quantity: {pendants.length}</p>
-            <p className="text-sm">Total Price: ${pendants.length * 100}</p>
-          </div>
-        </div>
-      </div>
-      
       {/* Scrollable pendant list with collapsible sections */}
       <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
         {pendants.map((pendant, index) => {
@@ -966,7 +945,6 @@ const LightConfigurator = () => {
     const iframe = document.getElementById('playcanvas-app');
     if (iframe && iframe.contentWindow) {
       iframe.contentWindow.postMessage(`light_type:${type}`, "*");
-      iframe.contentWindow.postMessage(`light_type:${type}`, "*");
     }
     
     toast.info(`Light type changed to ${type}`, {
@@ -979,71 +957,8 @@ const LightConfigurator = () => {
   // Handle light amount change
   const handleLightAmountChange = (amount) => {
     setLightAmount(amount);
-    
-    // Update pendants array based on new amount
-    if (amount > pendants.length) {
-      // Add new pendants with default design
-      const newPendants = [...pendants];
-      for (let i = pendants.length; i < amount; i++) {
-        newPendants.push({ design: lightDesign || 'bumble', color: 'white' });
-      }
-      setPendants(newPendants);
-    } else if (amount < pendants.length) {
-      // Remove excess pendants
-      setPendants(pendants.slice(0, amount));
-    }
-    
-    // If only one pendant, update its design to match the global design
-    if (amount === 1 && pendants.length > 0 && lightDesign) {
-      const updatedPendants = [...pendants];
-      updatedPendants[0] = {
-        ...updatedPendants[0],
-        design: lightDesign
-      };
-      setPendants(updatedPendants);
-    }
-    
-    // Send message to PlayCanvas
-    const iframe = document.getElementById('playcanvas-app');
-    if (iframe && iframe.contentWindow) {
-      iframe.contentWindow.postMessage(`light_amount:${amount}`, "*");
-    }
-    
     toast.info(`Light amount changed to ${amount}`, {
       position: "bottom-right",
-      autoClose: 1500,
-      theme: isDarkMode ? "dark" : "light"
-    });
-  };
-  
-  // Handle light design change
-  const handleLightDesignChange = (design, pendantIndex = null) => {
-    if (pendantIndex !== null && pendantIndex >= 0 && pendantIndex < pendants.length) {
-      // Update specific pendant design
-      const updatedPendants = [...pendants];
-      if (updatedPendants[pendantIndex]) {
-        updatedPendants[pendantIndex] = {
-          ...updatedPendants[pendantIndex],
-          design: design
-        };
-        setPendants(updatedPendants);
-        
-        // Send message to PlayCanvas
-        const iframe = document.getElementById('playcanvas-app');
-        if (iframe && iframe.contentWindow) {
-          iframe.contentWindow.postMessage(`pendant_${pendantIndex}_design:${design}`, "*");
-        }
-        
-        toast.info(`Pendant ${pendantIndex + 1} design changed to ${design}`, {
-          position: "bottom-right",
-          autoClose: 1500,
-          theme: isDarkMode ? "dark" : "light"
-        });
-      }
-    } else {
-      // Update default design
-      setLightDesign(design);
-      
       // If only one pendant, update its design too
       if (lightAmount === 1 && pendants.length > 0) {
         const updatedPendants = [...pendants];
@@ -1052,12 +967,6 @@ const LightConfigurator = () => {
           design: design
         };
         setPendants(updatedPendants);
-      }
-      
-      // Send message to PlayCanvas
-      const iframe = document.getElementById('playcanvas-app');
-      if (iframe && iframe.contentWindow) {
-        iframe.contentWindow.postMessage(`pendant_design:${design}`, "*");
       }
       
       toast.info(`Light design changed to ${design}`, {
@@ -1069,36 +978,14 @@ const LightConfigurator = () => {
   };
 
   // Handle cable options change
-  const handleCableChange = (type, value) => {
-    if (type === 'color') {
-      setCableColor(value);
-      
-      // Send message to PlayCanvas
-      const iframe = document.getElementById('playcanvas-app');
-      if (iframe && iframe.contentWindow) {
-        iframe.contentWindow.postMessage(`cable_color:${value}`, "*");
-      }
-      
-      toast.info(`Cable color changed to ${value}`, {
-        position: "bottom-right",
-        autoClose: 1500,
-        theme: isDarkMode ? "dark" : "light"
-      });
-    } else if (type === 'length') {
-      setCableLength(value);
-      
-      // Send message to PlayCanvas
-      const iframe = document.getElementById('playcanvas-app');
-      if (iframe && iframe.contentWindow) {
-        iframe.contentWindow.postMessage(`cable_length:${value}`, "*");
-      }
-      
-      toast.info(`Cable length changed to ${value}`, {
-        position: "bottom-right",
-        autoClose: 1500,
-        theme: isDarkMode ? "dark" : "light"
-      });
-    }
+  const handleCableChange = (color, length) => {
+    setCableColor(color);
+    setCableLength(length);
+    toast.info(`Cable changed to ${color}, ${length}`, {
+      position: "bottom-right",
+      autoClose: 1500,
+      theme: isDarkMode ? "dark" : "light"
+    });
   };
 
   // Save configuration
@@ -1178,9 +1065,6 @@ const LightConfigurator = () => {
                 className="w-full h-full"
               />
               
-              {/* Overlay to prevent interaction issues during loading */}
-              <div className="absolute inset-0 pointer-events-none z-10"></div>
-              
               {/* Configuration Summary - Overlay at bottom */}
               <div className={`absolute bottom-0 left-0 right-0 p-3 ${isDarkMode ? 'bg-gray-800/80' : 'bg-white/80'} backdrop-blur-sm`}>
                 <div className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
@@ -1188,12 +1072,102 @@ const LightConfigurator = () => {
                     {lightAmount} x {lightType} light{lightAmount > 1 ? 's' : ''} with {cableColor} {cableLength} cable
                   </p>
                     
+                    {lightAmount > 1 && (
+                      <div className="text-xs space-y-1 mt-3 max-w-xs mx-auto">
+                        <p className="font-medium mb-1">Pendant Configuration:</p>
+                        <div className={`grid grid-cols-2 gap-x-4 gap-y-1 p-2 rounded ${isDarkMode ? 'bg-gray-700/50' : 'bg-gray-100/80'}`}>
+                          {pendants.map((pendant, index) => (
+                            <div key={index} className="flex items-center gap-1">
+                              <div 
+                                className="w-3 h-3 rounded-full flex-shrink-0" 
+                                style={{ 
+                                  backgroundImage: `url(/images/configOptions/${pendant.design === 'bumble' ? '1' : pendant.design === 'radial' ? '2' : pendant.design === 'fina' ? '3' : pendant.design === 'ico' ? '4' : '5'}.png)`,
+                                  backgroundSize: "cover"
+                                }}
+                              ></div>
+                              <span>Pendant {index + 1}: {pendant.design}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Price and Action Buttons */}
+            <motion.div 
+              className={`mt-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow-lg p-6`}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+            >
+              <div className="flex flex-col mb-4">
+                <div className="flex justify-between items-center mb-2">
+                  <div>
+                    <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Total Price</p>
+                    <p className="text-3xl font-bold">€{totalPrice}</p>
+                  </div>
+                  <div className="flex gap-3">
+                    <motion.button 
+                      onClick={saveConfiguration}
+                      className={`flex items-center gap-2 ${isDarkMode ? 'bg-gray-700 hover:bg-gray-600 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-800'} px-4 py-2 rounded-lg transition-colors`}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <FaSave /> Save
+                    </motion.button>
+                    <motion.button 
+                      onClick={addToCart}
+                      className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-2 rounded-lg transition-colors"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <FaShoppingCart /> Add to Cart
+                    </motion.button>
+                  </div>
+                </div>
+                
+                {/* Configuration Summary */}
+                <div className={`mt-3 p-3 rounded-lg text-sm ${isDarkMode ? 'bg-gray-700/50 text-gray-300' : 'bg-gray-100 text-gray-700'}`}>
+                  <h4 className="font-bold mb-2">Configuration Summary</h4>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+                    <div className="flex items-center gap-1">
+                      <span className="font-medium">Type:</span> 
+                      <span className="capitalize">{lightType}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <span className="font-medium">Amount:</span> 
+                      <span>{lightAmount} pendant{lightAmount > 1 ? 's' : ''}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <span className="font-medium">Cable:</span> 
+                      <span className="capitalize">{cableColor}, {cableLength}</span>
+                    </div>
+                    {lightAmount === 1 && (
+                      <div className="flex items-center gap-1">
+                        <span className="font-medium">Design:</span> 
+                        <div className="flex items-center gap-1">
+                          <div 
+                            className="w-3 h-3 rounded-full" 
+                            style={{ 
+                              backgroundImage: `url(/images/configOptions/${pendants[0]?.design === 'bumble' ? '1' : pendants[0]?.design === 'radial' ? '2' : pendants[0]?.design === 'fina' ? '3' : pendants[0]?.design === 'ico' ? '4' : '5'}.png)`,
+                              backgroundSize: "cover"
+                            }}
+                          ></div>
+                          <span className="capitalize">{pendants[0]?.design || 'bumble'}</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  
                   {lightAmount > 1 && (
-                    <div className="text-xs space-y-1 mt-3 max-w-xs mx-auto">
-                      <p className="font-medium mb-1">Pendant Configuration:</p>
-                      <div className={`grid grid-cols-2 gap-x-4 gap-y-1 p-2 rounded ${isDarkMode ? 'bg-gray-700/50' : 'bg-gray-100/80'}`}>
+                    <div className="mt-2">
+                      <p className="font-medium mb-1">Pendant Designs:</p>
+                      <div className="grid grid-cols-2 gap-x-2 gap-y-1">
                         {pendants.map((pendant, index) => (
-                          <div key={index} className="flex items-center gap-1">
+                          <div key={index} className="flex items-center gap-1 text-xs">
                             <div 
                               className="w-3 h-3 rounded-full flex-shrink-0" 
                               style={{ 
@@ -1208,8 +1182,13 @@ const LightConfigurator = () => {
                     </div>
                   )}
                 </div>
+                
+                <div className={`mt-3 text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                  <p>Estimated delivery: 2-3 weeks</p>
+                  <p>Free shipping on orders over €500</p>
+                </div>
               </div>
-            </div>
+            </motion.div>
           </motion.div>
 
           {/* Configuration Panel (Right Side) */}
@@ -1268,206 +1247,7 @@ const LightConfigurator = () => {
           </motion.div>
         </div>
         
-        {/* Price and Configuration Summary Section */}
-        <motion.div 
-          className={`w-full mt-8 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow-lg p-6`}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-        >
-          <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-6">
-            {/* Price Information */}
-            <div className="md:w-1/3">
-              <h3 className="text-xl font-bold mb-3 font-['Amenti']">Your Selection</h3>
-              <div>
-                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Total Price</p>
-                <p className="text-3xl font-bold">€{totalPrice}</p>
-              </div>
-              <div className={`mt-3 text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                <p>Estimated delivery: 2-3 weeks</p>
-                <p>Free shipping on orders over €500</p>
-              </div>
-            </div>
-            
-            {/* Configuration Summary */}
-            <div className="md:w-2/3">
-              <div className={`p-4 rounded-lg text-sm ${isDarkMode ? 'bg-gray-700/50 text-gray-300' : 'bg-gray-100 text-gray-700'}`}>
-                <h4 className="font-bold mb-2">Configuration Summary</h4>
-                <div className="grid grid-cols-2 gap-x-4 gap-y-1">
-                  <div className="flex items-center gap-1">
-                    <span className="font-medium">Type:</span> 
-                    <span className="capitalize">{lightType}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <span className="font-medium">Amount:</span> 
-                    <span>{lightAmount} pendant{lightAmount > 1 ? 's' : ''}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <span className="font-medium">Cable:</span> 
-                    <span className="capitalize">{cableColor}, {cableLength}</span>
-                  </div>
-                  {lightAmount === 1 && (
-                    <div className="flex items-center gap-1">
-                      <span className="font-medium">Design:</span> 
-                      <div className="flex items-center gap-1">
-                        <div 
-                          className="w-3 h-3 rounded-full" 
-                          style={{ 
-                            backgroundImage: `url(/images/configOptions/${pendants[0]?.design === 'bumble' ? '1' : pendants[0]?.design === 'radial' ? '2' : pendants[0]?.design === 'fina' ? '3' : pendants[0]?.design === 'ico' ? '4' : '5'}.png)`,
-                            backgroundSize: "cover"
-                          }}
-                        ></div>
-                        <span className="capitalize">{pendants[0]?.design || 'bumble'}</span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-                
-                {lightAmount > 1 && (
-                  <div className="mt-2">
-                    <p className="font-medium mb-1">Pendant Designs:</p>
-                    <div className="grid grid-cols-2 gap-x-2 gap-y-1">
-                      {pendants.map((pendant, index) => (
-                        <div key={index} className="flex items-center gap-1 text-xs">
-                          <div 
-                            className="w-3 h-3 rounded-full flex-shrink-0" 
-                            style={{ 
-                              backgroundImage: `url(/images/configOptions/${pendant.design === 'bumble' ? '1' : pendant.design === 'radial' ? '2' : pendant.design === 'fina' ? '3' : pendant.design === 'ico' ? '4' : '5'}.png)`,
-                              backgroundSize: "cover"
-                            }}
-                          ></div>
-                          <span>Pendant {index + 1}: {pendant.design}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-          
-          {/* Action Buttons */}
-          <div className="flex justify-end mt-4 gap-3">
-            <motion.button 
-              onClick={saveConfiguration}
-              className={`flex items-center gap-2 ${isDarkMode ? 'bg-gray-700 hover:bg-gray-600 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-800'} px-4 py-2 rounded-lg transition-colors`}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <FaSave /> Save Configuration
-            </motion.button>
-            <motion.button 
-              onClick={addToCart}
-              className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-2 rounded-lg transition-colors"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <FaShoppingCart /> Add to Cart
-            </motion.button>
-          </div>
-        </motion.div>
-        
         {/* Additional Information Section - Moved outside the configuration panel */}
-        {/* Price and Configuration Summary Section */}
-        <motion.div 
-          className={`w-full mt-8 mb-8 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow-lg p-6`}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-        >
-          <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-6">
-            {/* Price Information */}
-            <div className="md:w-1/3">
-              <h3 className="text-xl font-bold mb-3 font-['Amenti']">Your Selection</h3>
-              <div>
-                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Total Price</p>
-                <p className="text-3xl font-bold">€{totalPrice}</p>
-              </div>
-              <div className={`mt-3 text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                <p>Estimated delivery: 2-3 weeks</p>
-                <p>Free shipping on orders over €500</p>
-              </div>
-            </div>
-            
-            {/* Configuration Summary */}
-            <div className="md:w-2/3">
-              <div className={`p-4 rounded-lg text-sm ${isDarkMode ? 'bg-gray-700/50 text-gray-300' : 'bg-gray-100 text-gray-700'}`}>
-                <h4 className="font-bold mb-2">Configuration Summary</h4>
-                <div className="grid grid-cols-2 gap-x-4 gap-y-1">
-                  <div className="flex items-center gap-1">
-                    <span className="font-medium">Type:</span> 
-                    <span className="capitalize">{lightType}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <span className="font-medium">Amount:</span> 
-                    <span>{lightAmount} pendant{lightAmount > 1 ? 's' : ''}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <span className="font-medium">Cable:</span> 
-                    <span className="capitalize">{cableColor}, {cableLength}</span>
-                  </div>
-                  {lightAmount === 1 && (
-                    <div className="flex items-center gap-1">
-                      <span className="font-medium">Design:</span> 
-                      <div className="flex items-center gap-1">
-                        <div 
-                          className="w-3 h-3 rounded-full" 
-                          style={{ 
-                            backgroundImage: `url(/images/configOptions/${pendants[0]?.design === 'bumble' ? '1' : pendants[0]?.design === 'radial' ? '2' : pendants[0]?.design === 'fina' ? '3' : pendants[0]?.design === 'ico' ? '4' : '5'}.png)`,
-                            backgroundSize: "cover"
-                          }}
-                        ></div>
-                        <span className="capitalize">{pendants[0]?.design || 'bumble'}</span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-                
-                {lightAmount > 1 && (
-                  <div className="mt-2">
-                    <p className="font-medium mb-1">Pendant Designs:</p>
-                    <div className="grid grid-cols-2 gap-x-2 gap-y-1">
-                      {pendants.map((pendant, index) => (
-                        <div key={index} className="flex items-center gap-1 text-xs">
-                          <div 
-                            className="w-3 h-3 rounded-full flex-shrink-0" 
-                            style={{ 
-                              backgroundImage: `url(/images/configOptions/${pendant.design === 'bumble' ? '1' : pendant.design === 'radial' ? '2' : pendant.design === 'fina' ? '3' : pendant.design === 'ico' ? '4' : '5'}.png)`,
-                              backgroundSize: "cover"
-                            }}
-                          ></div>
-                          <span>Pendant {index + 1}: {pendant.design}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-          
-          {/* Action Buttons */}
-          <div className="flex justify-end mt-4 gap-3">
-            <motion.button 
-              onClick={saveConfiguration}
-              className={`flex items-center gap-2 ${isDarkMode ? 'bg-gray-700 hover:bg-gray-600 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-800'} px-4 py-2 rounded-lg transition-colors`}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <FaSave /> Save Configuration
-            </motion.button>
-            <motion.button 
-              onClick={addToCart}
-              className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-2 rounded-lg transition-colors"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <FaShoppingCart /> Add to Cart
-            </motion.button>
-          </div>
-        </motion.div>
-        
-        {/* Additional Information Section */}
         <AdditionalInfo isDarkMode={isDarkMode} />
         
       </div>
