@@ -292,14 +292,44 @@ const LightDesignSelector = ({ selectedDesign, onDesignChange, pendantIndex = nu
   );
 };
 
-// Per-Pendant Configuration Component
+// Per-Pendant Configuration Component with Pagination
 const PendantConfigurator = ({ pendants, updatePendantDesign, isDarkMode }) => {
   const [expandedPendant, setExpandedPendant] = useState(null);
+  const [currentPage, setCurrentPage] = useState(0);
+  const pendantsPerPage = 3;
+  
+  // Calculate total pages
+  const totalPages = Math.ceil(pendants.length / pendantsPerPage);
+  
+  // Get current page pendants
+  const getCurrentPagePendants = () => {
+    const startIndex = currentPage * pendantsPerPage;
+    return pendants.slice(startIndex, startIndex + pendantsPerPage);
+  };
+  
+  // Navigate to next/previous page
+  const goToNextPage = () => {
+    if (currentPage < totalPages - 1) {
+      setCurrentPage(currentPage + 1);
+      setExpandedPendant(null); // Close any expanded pendant when changing page
+    }
+  };
+  
+  const goToPrevPage = () => {
+    if (currentPage > 0) {
+      setCurrentPage(currentPage - 1);
+      setExpandedPendant(null); // Close any expanded pendant when changing page
+    }
+  };
   
   // Toggle pendant expansion
   const togglePendant = (index) => {
-    setExpandedPendant(expandedPendant === index ? null : index);
+    const actualIndex = index + (currentPage * pendantsPerPage);
+    setExpandedPendant(expandedPendant === actualIndex ? null : actualIndex);
   };
+  
+  // Get the current pendants to display
+  const currentPendants = getCurrentPagePendants();
   
   return (
     <motion.div 
@@ -317,20 +347,52 @@ const PendantConfigurator = ({ pendants, updatePendantDesign, isDarkMode }) => {
         </div>
       </div>
       
-      {/* Pendant Configuration Controls */}
+      {/* Pagination Controls - Top */}
+      {totalPages > 1 && (
+        <div className="flex justify-between items-center mb-4">
+          <button 
+            onClick={goToPrevPage}
+            disabled={currentPage === 0}
+            className={`px-3 py-1 rounded-lg flex items-center gap-1 ${
+              currentPage === 0 
+                ? isDarkMode ? 'bg-gray-700 text-gray-500 cursor-not-allowed' : 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                : isDarkMode ? 'bg-gray-700 hover:bg-gray-600 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-800'
+            }`}
+          >
+            <FaChevronLeft className="text-xs" /> Previous
+          </button>
+          
+          <div className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+            Page {currentPage + 1} of {totalPages}
+          </div>
+          
+          <button 
+            onClick={goToNextPage}
+            disabled={currentPage >= totalPages - 1}
+            className={`px-3 py-1 rounded-lg flex items-center gap-1 ${
+              currentPage >= totalPages - 1 
+                ? isDarkMode ? 'bg-gray-700 text-gray-500 cursor-not-allowed' : 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                : isDarkMode ? 'bg-gray-700 hover:bg-gray-600 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-800'
+            }`}
+          >
+            Next <FaChevronRight className="text-xs" />
+          </button>
+        </div>
+      )}
       
-      {/* Scrollable pendant list with collapsible sections */}
-      <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
-        {pendants.map((pendant, index) => {
-          const isExpanded = expandedPendant === index;
+      {/* Pendant list with collapsible sections */}
+      <div className="space-y-3 pr-2">
+        {currentPendants.map((pendant, index) => {
+          const actualIndex = index + (currentPage * pendantsPerPage);
+          const isExpanded = expandedPendant === actualIndex;
           
           return (
             <motion.div 
-              key={index} 
+              key={actualIndex} 
               className={`rounded-lg overflow-hidden ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05 }} // Reduced delay for faster rendering
+              transition={{ delay: index * 0.05 }}
             >
               {/* Pendant header - always visible and clickable */}
               <div 
@@ -345,7 +407,7 @@ const PendantConfigurator = ({ pendants, updatePendantDesign, isDarkMode }) => {
                       backgroundSize: "cover"
                     }}
                   ></div>
-                  <h4 className="font-medium">Pendant {index + 1}</h4>
+                  <h4 className="font-medium">Pendant {actualIndex + 1}</h4>
                 </div>
                 
                 <div className="flex items-center gap-2">
@@ -372,8 +434,8 @@ const PendantConfigurator = ({ pendants, updatePendantDesign, isDarkMode }) => {
                     <div className="p-4 pt-2">
                       <LightDesignSelector 
                         selectedDesign={pendant?.design || 'bumble'} 
-                        onDesignChange={(designId) => updatePendantDesign(designId, index)}
-                        pendantIndex={index}
+                        onDesignChange={(designId) => updatePendantDesign(designId, actualIndex)}
+                        pendantIndex={actualIndex}
                         isDarkMode={isDarkMode}
                       />
                     </div>
@@ -384,6 +446,28 @@ const PendantConfigurator = ({ pendants, updatePendantDesign, isDarkMode }) => {
           );
         })}
       </div>
+      
+      {/* Pagination Controls - Bottom */}
+      {totalPages > 1 && (
+        <div className="flex justify-center mt-4 gap-1">
+          {Array.from({ length: totalPages }).map((_, index) => (
+            <button
+              key={index}
+              onClick={() => {
+                setCurrentPage(index);
+                setExpandedPendant(null);
+              }}
+              className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                currentPage === index
+                  ? 'bg-emerald-500 text-white'
+                  : isDarkMode ? 'bg-gray-700 hover:bg-gray-600 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-800'
+              }`}
+            >
+              {index + 1}
+            </button>
+          ))}
+        </div>
+      )}
     </motion.div>
   );
 };
@@ -914,7 +998,7 @@ const LightConfigurator = () => {
     setTotalPrice(calculatedPrice.toFixed(2));
   }, [lightType, pendants, cableColor, cableLength]);
 
-  // Animation for preview box
+  // Initial animation for preview box
   useEffect(() => {
     if (previewBoxRef.current) {
       gsap.fromTo(
@@ -924,6 +1008,49 @@ const LightConfigurator = () => {
       );
     }
   }, []);
+  
+  // ScrollTrigger for pinning - separate effect to refresh when pendants change
+  useEffect(() => {
+    let pinInstance;
+    
+    // Wait a bit for DOM to update with new pendants
+    const timer = setTimeout(() => {
+      if (previewBoxRef.current && configuratorRef.current) {
+        // Create pinning with ScrollTrigger
+        const previewSection = document.getElementById('light-configurator');
+        
+        if (previewSection) {
+          // Kill any existing instance first
+          if (pinInstance) pinInstance.kill();
+          
+          // Use CSS sticky positioning instead of GSAP pinning
+          // This avoids the opacity flickering issues
+          ScrollTrigger.create({
+            trigger: previewSection,
+            start: "top top",
+            endTrigger: "#pricing-section",
+            end: "top bottom",
+            invalidateOnRefresh: true,
+            onRefresh: () => {
+              // Force refresh when ScrollTrigger updates
+              if (previewBoxRef.current) {
+                previewBoxRef.current.style.visibility = 'visible';
+              }
+            }
+          });
+          
+          // Force a refresh of all ScrollTriggers
+          ScrollTrigger.refresh();
+        }
+      }
+    }, 100); // Short delay to ensure DOM is updated
+    
+    // Cleanup on unmount or when dependencies change
+    return () => {
+      clearTimeout(timer);
+      if (pinInstance) pinInstance.kill();
+    };
+  }, [pendants.length, lightAmount]); // Refresh when pendants or light amount changes
 
   // Toggle dark/light mode
   const toggleTheme = () => {
@@ -1108,6 +1235,8 @@ const LightConfigurator = () => {
     });
   };
 
+
+
   return (
     <section 
       id="light-configurator" 
@@ -1132,18 +1261,19 @@ const LightConfigurator = () => {
           </p>
         </motion.div>
 
-        <div className="flex flex-col lg:flex-row gap-8 relative min-h-[800px]">
-          {/* Preview Box (Left Side - Fixed) */}
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Preview Box (Left Side - Sticky) */}
           <motion.div 
-            className="lg:w-2/5 lg:sticky lg:top-24 lg:self-start"
+            className="lg:w-2/5"
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            <div 
-              ref={previewBoxRef}
-              className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow-xl overflow-hidden aspect-square relative`}
-            >
+            {/* Wrapper div for pinning */}
+            <div ref={previewBoxRef} className="sticky top-24" style={{ willChange: 'transform' }}>
+              <div 
+                className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow-xl overflow-hidden aspect-square`}
+              >
               {/* PlayCanvas 3D Viewer */}
               <PlayCanvasViewer 
                 config={{
@@ -1160,48 +1290,21 @@ const LightConfigurator = () => {
               
               {/* Overlay to prevent interaction issues during loading */}
               <div className="absolute inset-0 pointer-events-none z-10"></div>
-              
-              {/* Configuration Summary - Overlay at bottom */}
-              <div className={`absolute bottom-0 left-0 right-0 p-3 ${isDarkMode ? 'bg-gray-800/80' : 'bg-white/80'} backdrop-blur-sm`}>
-                <div className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                  <p className="font-medium">
-                    {lightAmount} x {lightType} light{lightAmount > 1 ? 's' : ''} with {cableColor} {cableLength} cable
-                  </p>
-                    
-                  {lightAmount > 1 && (
-                    <div className="text-xs space-y-1 mt-3 max-w-xs mx-auto">
-                      <p className="font-medium mb-1">Pendant Configuration:</p>
-                      <div className={`grid grid-cols-2 gap-x-4 gap-y-1 p-2 rounded ${isDarkMode ? 'bg-gray-700/50' : 'bg-gray-100/80'}`}>
-                        {pendants.map((pendant, index) => (
-                          <div key={index} className="flex items-center gap-1">
-                            <div 
-                              className="w-3 h-3 rounded-full flex-shrink-0" 
-                              style={{ 
-                                backgroundImage: `url(/images/configOptions/${pendant.design === 'bumble' ? '1' : pendant.design === 'radial' ? '2' : pendant.design === 'fina' ? '3' : pendant.design === 'ico' ? '4' : '5'}.png)`,
-                                backgroundSize: "cover"
-                              }}
-                            ></div>
-                            <span>Pendant {index + 1}: {pendant.design}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
               </div>
             </div>
           </motion.div>
 
           {/* Configuration Panel (Right Side) */}
           <motion.div 
-            className={`lg:w-3/5 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow-lg p-6`}
+            className={`lg:w-3/5 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow-lg p-6 flex flex-col`}
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
             <h3 className="text-2xl font-bold mb-6 font-['Amenti']">Configure Your Light</h3>
             
-            {/* Configuration Options */}
+            {/* Configuration Options Container */}
+            <div className="flex-1">
             <LightTypeSelector 
               selectedType={lightType} 
               onTypeChange={handleLightTypeChange} 
@@ -1227,14 +1330,11 @@ const LightConfigurator = () => {
               />
             )}
             
-            <CableOptions 
-              selectedCableColor={cableColor} 
-              selectedCableLength={cableLength} 
-              onCableChange={handleCableChange} 
-              isDarkMode={isDarkMode} 
-            />
+            {/* Cable Options hidden as requested */}
             
-            {/* Customer Support */}
+            </div>
+            
+            {/* Customer Support - Outside scrollable area */}
             <div className={`mt-8 pt-4 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
               <motion.button 
                 onClick={openSupportChat}
@@ -1250,6 +1350,7 @@ const LightConfigurator = () => {
         
         {/* Price and Configuration Summary Section */}
         <motion.div 
+          id="pricing-section"
           className={`w-full mt-8 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow-lg p-6`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -1350,6 +1451,8 @@ const LightConfigurator = () => {
         {/* Additional Information Section */}
         <AdditionalInfo isDarkMode={isDarkMode} />
         
+        {/* End marker for ScrollTrigger pinning */}
+        <div id="configurator-end-marker"></div>
       </div>
       <ToastContainer />
     </section>
