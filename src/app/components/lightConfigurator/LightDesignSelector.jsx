@@ -95,19 +95,19 @@ const LightDesignSelector = ({ selectedDesign, onDesignChange, pendantIndex = nu
 
   return (
     <motion.div 
-      className={`mb-6 relative ${isDarkMode ? 'text-white' : ''}`}
+      className="mb-6 relative text-white"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: pendantIndex ? 0.1 * pendantIndex : 0.2 }}
     >
-      <h3 className="text-lg font-bold mb-3 font-['Amenti']">{title}</h3>
+      <h3 className="text-lg font-bold mb-3 font-['Amenti'] text-emerald-light">{title}</h3>
       
       {/* Mobile swipe indicator */}
       <div className="md:hidden flex justify-center items-center mb-2">
-        <div className={`flex items-center gap-2 ${isDarkMode ? 'bg-gray-700/50' : 'bg-gray-200/70'} backdrop-blur-sm rounded-full px-3 py-1 text-xs animate-pulse`}>
-          <FaChevronLeft className={`${isDarkMode ? 'text-white/70' : 'text-gray-600/70'} animate-pulse-slow`} />
-          <span className={isDarkMode ? 'text-white/90' : 'text-gray-700/90'}>Swipe</span>
-          <FaChevronRight className={`${isDarkMode ? 'text-white/70' : 'text-gray-600/70'} animate-pulse-slow`} />
+        <div className="flex items-center gap-2 bg-charleston-green-light/50 backdrop-blur-sm rounded-full px-3 py-1 text-xs animate-pulse">
+          <FaChevronLeft className="text-white/70 animate-pulse-slow" />
+          <span className="text-white/90">Swipe</span>
+          <FaChevronRight className="text-white/70 animate-pulse-slow" />
         </div>
       </div>
       
@@ -120,7 +120,7 @@ const LightDesignSelector = ({ selectedDesign, onDesignChange, pendantIndex = nu
           disabled={scrollPosition <= 10}
           whileTap={{ scale: 0.95 }}
         >
-          <FaChevronLeft className={`text-xl ${isDarkMode ? 'text-white' : 'text-gray-700'}`} />
+          <FaChevronLeft className="text-xl text-emerald" />
         </motion.button>
         
         <div
@@ -141,7 +141,7 @@ const LightDesignSelector = ({ selectedDesign, onDesignChange, pendantIndex = nu
               whileTap={{ scale: 0.95 }}
               onClick={() => onDesignChange(design.id, pendantIndex)}
             >
-              <div className={`w-24 h-24 rounded-full overflow-hidden relative ${selectedDesign === design.id ? 'ring-2 ring-emerald-500 ring-offset-2' : ''}`}>
+              <div className={`w-24 h-24 rounded-full overflow-hidden relative ${selectedDesign === design.id ? 'ring-2 ring-emerald ring-offset-2 ring-offset-charleston-green-dark' : ''}`}>
                 <Image
                   src={design.image}
                   alt={design.name}
@@ -150,10 +150,10 @@ const LightDesignSelector = ({ selectedDesign, onDesignChange, pendantIndex = nu
                   draggable={false}
                 />
               </div>
-              <p className="text-center text-sm mt-2">{design.name}</p>
+              <p className="text-center text-sm mt-2 text-eton-blue">{design.name}</p>
               {selectedDesign === design.id && (
                 <motion.div 
-                  className="h-1 bg-emerald-500 rounded-full mt-1 mx-auto w-12"
+                  className="h-1 bg-emerald rounded-full mt-1 mx-auto w-12"
                   layoutId={`designIndicator${pendantIndex !== null ? `-${pendantIndex}` : ''}`}
                 ></motion.div>
               )}
@@ -169,7 +169,7 @@ const LightDesignSelector = ({ selectedDesign, onDesignChange, pendantIndex = nu
           disabled={scrollPosition >= maxScroll - 10}
           whileTap={{ scale: 0.95 }}
         >
-          <FaChevronRight className={`text-xl ${isDarkMode ? 'text-white' : 'text-gray-700'}`} />
+          <FaChevronRight className="text-xl text-emerald" />
         </motion.button>
       </div>
     </motion.div>

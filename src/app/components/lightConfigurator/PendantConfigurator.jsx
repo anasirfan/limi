@@ -13,7 +13,7 @@ const PendantConfigurator = ({ pendants, updatePendantDesign, isDarkMode }) => {
   
   return (
     <motion.div 
-      className={`mt-6 pt-4 border-t ${isDarkMode ? 'border-gray-700 text-white' : 'border-gray-200'}`}
+      className="mt-6 pt-4 border-t border-charleston-green-light text-white"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
@@ -22,7 +22,7 @@ const PendantConfigurator = ({ pendants, updatePendantDesign, isDarkMode }) => {
         <h3 className="text-lg font-bold font-['Amenti']">Individual Pendant Configuration</h3>
         
         {/* Total pendants info */}
-        <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+        <div className="text-xs text-gray-400">
           {pendants.length} pendant{pendants.length !== 1 ? 's' : ''}
         </div>
       </div>
@@ -35,14 +35,14 @@ const PendantConfigurator = ({ pendants, updatePendantDesign, isDarkMode }) => {
           return (
             <motion.div 
               key={index} 
-              className={`rounded-lg overflow-hidden ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}
+              className="rounded-lg overflow-hidden bg-charleston-green-dark"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }} // Reduced delay for faster rendering
             >
               {/* Pendant header - always visible and clickable */}
               <div 
-                className={`p-3 flex items-center justify-between cursor-pointer hover:brightness-110 transition-all ${isExpanded ? (isDarkMode ? 'bg-gray-700' : 'bg-gray-200') : ''}`}
+                className={`p-3 flex items-center justify-between cursor-pointer hover:brightness-110 transition-all ${isExpanded ? 'bg-charleston-green-light' : ''}`}
                 onClick={() => togglePendant(index)}
               >
                 <div className="flex items-center gap-2">
@@ -53,16 +53,16 @@ const PendantConfigurator = ({ pendants, updatePendantDesign, isDarkMode }) => {
                       backgroundSize: "cover"
                     }}
                   ></div>
-                  <h4 className="font-medium">Pendant {index + 1}</h4>
+                  <h4 className="font-medium text-emerald-light">Pendant {index + 1}</h4>
                 </div>
                 
                 <div className="flex items-center gap-2">
-                  <span className="text-sm capitalize">{pendant?.design || 'bumble'}</span>
+                  <span className="text-sm capitalize text-eton-blue">{pendant?.design || 'bumble'}</span>
                   <motion.div
                     animate={{ rotate: isExpanded ? 180 : 0 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <FaChevronDown className="text-xs" />
+                    <FaChevronDown className="text-xs text-emerald" />
                   </motion.div>
                 </div>
               </div>

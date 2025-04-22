@@ -4,7 +4,7 @@ import Image from "next/image";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaChevronLeft, FaChevronRight, FaSave, FaShoppingCart, FaInfoCircle, FaQuestionCircle, FaSun, FaMoon, FaPlus, FaMinus, FaChevronDown } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight, FaSave, FaShoppingCart, FaInfoCircle, FaQuestionCircle, FaSun, FaMoon, FaPlus, FaMinus, FaChevronDown, FaLightbulb, FaLayerGroup, FaRegLightbulb } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import PlayCanvasViewer from "./PlayCanvasViewer";
@@ -117,31 +117,30 @@ const LightAmountSelector = ({ amount, onAmountChange, isDarkMode }) => {
 };
 
 // Light Design Selector Component
-const LightDesignSelector = ({ selectedDesign, onDesignChange, pendantIndex = null, isDarkMode }) => {
+const LightDesignSelector = ({ selectedDesign, onDesignChange, isDarkMode }) => {
+  const designs = [
+    { id: 'bumble', name: 'Bumble', image: '/images/configOptions/1.png' },
+    { id: 'radial', name: 'Radial', image: '/images/configOptions/2.png' },
+    { id: 'fina', name: 'Fina', image: '/images/configOptions/3.png' },
+    { id: 'ico', name: 'Ico', image: '/images/configOptions/4.png' },
+    { id: 'ripple', name: 'Ripple', image: '/images/configOptions/5.png' },
+  ];
+  
   const scrollContainerRef = useRef(null);
   const [scrollPosition, setScrollPosition] = useState(0);
   const [maxScroll, setMaxScroll] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
-  const [showCursor, setShowCursor] = useState(false);
-  const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
-
-  const designs = [
-    { id: "bumble", name: "Bumble", image: "/images/configOptions/1.png" },
-    { id: "radial", name: "Radial", image: "/images/configOptions/2.png" },
-    { id: "fina", name: "Fina", image: "/images/configOptions/3.png" },
-    { id: "ico", name: "Ico", image: "/images/configOptions/4.png" },
-    { id: "ripple", name: "Ripple", image: "/images/configOptions/5.png" },
-  ];
-
+  
+  // Update maxScroll when designs change
   useEffect(() => {
     if (scrollContainerRef.current) {
       setMaxScroll(
         scrollContainerRef.current.scrollWidth - scrollContainerRef.current.clientWidth
       );
     }
-
+    
     // Add window resize listener
     const handleResize = () => {
       if (scrollContainerRef.current) {
@@ -153,14 +152,16 @@ const LightDesignSelector = ({ selectedDesign, onDesignChange, pendantIndex = nu
 
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
+  }, [designs.length]);
+  
+  // Handle scroll
   const handleScroll = () => {
     if (scrollContainerRef.current) {
       setScrollPosition(scrollContainerRef.current.scrollLeft);
     }
   };
-
+  
+  // Scroll controls
   const scrollToLeft = () => {
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollBy({ left: -200, behavior: "smooth" });
@@ -172,8 +173,8 @@ const LightDesignSelector = ({ selectedDesign, onDesignChange, pendantIndex = nu
       scrollContainerRef.current.scrollBy({ left: 200, behavior: "smooth" });
     }
   };
-
-  // Drag to scroll functionality
+  
+  // Mouse drag functionality
   const handleMouseDown = (e) => {
     setIsDragging(true);
     setStartX(e.pageX - scrollContainerRef.current.offsetLeft);
@@ -185,8 +186,6 @@ const LightDesignSelector = ({ selectedDesign, onDesignChange, pendantIndex = nu
   };
 
   const handleMouseMove = (e) => {
-    setCursorPosition({ x: e.clientX, y: e.clientY });
-    
     if (!isDragging) return;
     
     const x = e.pageX - scrollContainerRef.current.offsetLeft;
@@ -194,27 +193,18 @@ const LightDesignSelector = ({ selectedDesign, onDesignChange, pendantIndex = nu
     scrollContainerRef.current.scrollLeft = scrollLeft - walk;
   };
 
-  const handleMouseEnter = () => {
-    setShowCursor(true);
-  };
-
   const handleMouseLeave = () => {
-    setShowCursor(false);
     setIsDragging(false);
   };
-
-  const title = pendantIndex !== null 
-    ? `Pendant ${pendantIndex + 1} Design` 
-    : "Light Design";
 
   return (
     <motion.div 
       className={`mb-6 relative ${isDarkMode ? 'text-white' : ''}`}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: pendantIndex ? 0.1 * pendantIndex : 0.2 }}
+      transition={{ duration: 0.5 }}
     >
-      <h3 className="text-lg font-bold mb-3 font-['Amenti']">{title}</h3>
+      <h3 className="text-lg font-bold mb-3 font-['Amenti']">Select Pendant Design</h3>
       
       {/* Mobile swipe indicator */}
       <div className="md:hidden flex justify-center items-center mb-2">
@@ -253,7 +243,7 @@ const LightDesignSelector = ({ selectedDesign, onDesignChange, pendantIndex = nu
               className={`flex-shrink-0 cursor-pointer select-none mx-8`}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => onDesignChange(design.id, pendantIndex)}
+              onClick={() => onDesignChange(design.id)}
             >
               <div className={`w-24 h-24 rounded-full overflow-hidden relative ${selectedDesign === design.id ? 'ring-2 ring-emerald-500 ring-offset-2' : ''}`}>
                 <Image
@@ -268,7 +258,7 @@ const LightDesignSelector = ({ selectedDesign, onDesignChange, pendantIndex = nu
               {selectedDesign === design.id && (
                 <motion.div 
                   className="h-1 bg-emerald-500 rounded-full mt-1 mx-auto w-12"
-                  layoutId={`designIndicator${pendantIndex !== null ? `-${pendantIndex}` : ''}`}
+                  layoutId="designIndicator"
                 ></motion.div>
               )}
             </motion.div>
@@ -285,51 +275,119 @@ const LightDesignSelector = ({ selectedDesign, onDesignChange, pendantIndex = nu
         >
           <FaChevronRight className={`text-xl ${isDarkMode ? 'text-white' : 'text-gray-700'}`} />
         </motion.button>
-        
-        {/* No gradient overlays - removed for cleaner design */}
       </div>
     </motion.div>
   );
 };
 
-// Per-Pendant Configuration Component with Pagination
+// Multi-Select Pendant Configuration Component
 const PendantConfigurator = ({ pendants, updatePendantDesign, isDarkMode }) => {
-  const [expandedPendant, setExpandedPendant] = useState(null);
-  const [currentPage, setCurrentPage] = useState(0);
-  const pendantsPerPage = 3;
+  // State for selected pendants and current design
+  const [selectedPendants, setSelectedPendants] = useState([]);
+  const [currentDesign, setCurrentDesign] = useState('bumble');
+  const [showSelectionUI, setShowSelectionUI] = useState(false);
   
-  // Calculate total pages
-  const totalPages = Math.ceil(pendants.length / pendantsPerPage);
+  // Scroll container ref for pendant selector
+  const scrollContainerRef = useRef(null);
+  const [scrollPosition, setScrollPosition] = useState(0);
+  const [maxScroll, setMaxScroll] = useState(0);
   
-  // Get current page pendants
-  const getCurrentPagePendants = () => {
-    const startIndex = currentPage * pendantsPerPage;
-    return pendants.slice(startIndex, startIndex + pendantsPerPage);
-  };
+  // Update maxScroll when pendants change
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      setMaxScroll(
+        scrollContainerRef.current.scrollWidth - scrollContainerRef.current.clientWidth
+      );
+    }
+    
+    // Add window resize listener
+    const handleResize = () => {
+      if (scrollContainerRef.current) {
+        setMaxScroll(
+          scrollContainerRef.current.scrollWidth - scrollContainerRef.current.clientWidth
+        );
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [pendants.length]);
   
-  // Navigate to next/previous page
-  const goToNextPage = () => {
-    if (currentPage < totalPages - 1) {
-      setCurrentPage(currentPage + 1);
-      setExpandedPendant(null); // Close any expanded pendant when changing page
+  // Handle scroll for pendant selector
+  const handleScroll = () => {
+    if (scrollContainerRef.current) {
+      setScrollPosition(scrollContainerRef.current.scrollLeft);
     }
   };
   
-  const goToPrevPage = () => {
-    if (currentPage > 0) {
-      setCurrentPage(currentPage - 1);
-      setExpandedPendant(null); // Close any expanded pendant when changing page
+  // Scroll controls for pendant selector
+  const scrollToLeft = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: -200, behavior: "smooth" });
+    }
+  };
+
+  const scrollToRight = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: 200, behavior: "smooth" });
     }
   };
   
-  // Toggle pendant expansion
-  const togglePendant = (index) => {
-    const actualIndex = index + (currentPage * pendantsPerPage);
-    setExpandedPendant(expandedPendant === actualIndex ? null : actualIndex);
+  // Toggle pendant selection
+  const togglePendantSelection = (index) => {
+    if (selectedPendants.includes(index)) {
+      setSelectedPendants(selectedPendants.filter(i => i !== index));
+    } else {
+      setSelectedPendants([...selectedPendants, index]);
+    }
+    
+    // Show selection UI if at least one pendant is selected
+    setShowSelectionUI(selectedPendants.length > 0 || !selectedPendants.includes(index));
   };
   
-  // Get the current pendants to display
-  const currentPendants = getCurrentPagePendants();
+  // Select all pendants
+  const selectAllPendants = () => {
+    setSelectedPendants(pendants.map((_, index) => index));
+    setShowSelectionUI(true);
+  };
+  
+  // Clear all selections
+  const clearSelections = () => {
+    setSelectedPendants([]);
+    setShowSelectionUI(false);
+  };
+  
+  // Apply design to selected pendants
+  const applyDesignToSelected = (designId) => {
+    // Update current design state
+    setCurrentDesign(designId);
+    
+    // Apply to all selected pendants at once by passing the array of indices
+    updatePendantDesign(designId, selectedPendants);
+    
+    // Show toast notification
+    toast.success(`Applied ${designId} design to ${selectedPendants.length} pendant${selectedPendants.length !== 1 ? 's' : ''}`, {
+      position: "bottom-right",
+      autoClose: 2000,
+      theme: isDarkMode ? "dark" : "light"
+    });
+  };
+  
+  // Apply current design to all pendants
+  const applyToAll = () => {
+    // Create array of all pendant indices
+    const allIndices = pendants.map((_, index) => index);
+    
+    // Apply design to all pendants at once
+    updatePendantDesign(currentDesign, allIndices);
+    
+    // Show toast notification
+    toast.success(`Applied ${currentDesign} design to all pendants`, {
+      position: "bottom-right",
+      autoClose: 2000,
+      theme: isDarkMode ? "dark" : "light"
+    });
+  };
   
   return (
     <motion.div 
@@ -347,125 +405,141 @@ const PendantConfigurator = ({ pendants, updatePendantDesign, isDarkMode }) => {
         </div>
       </div>
       
-      {/* Pagination Controls - Top */}
-      {totalPages > 1 && (
-        <div className="flex justify-between items-center mb-4">
-          <button 
-            onClick={goToPrevPage}
-            disabled={currentPage === 0}
-            className={`px-3 py-1 rounded-lg flex items-center gap-1 ${
-              currentPage === 0 
-                ? isDarkMode ? 'bg-gray-700 text-gray-500 cursor-not-allowed' : 'bg-gray-100 text-gray-400 cursor-not-allowed' 
-                : isDarkMode ? 'bg-gray-700 hover:bg-gray-600 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-800'
-            }`}
-          >
-            <FaChevronLeft className="text-xs" /> Previous
-          </button>
-          
-          <div className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-            Page {currentPage + 1} of {totalPages}
-          </div>
-          
-          <button 
-            onClick={goToNextPage}
-            disabled={currentPage >= totalPages - 1}
-            className={`px-3 py-1 rounded-lg flex items-center gap-1 ${
-              currentPage >= totalPages - 1 
-                ? isDarkMode ? 'bg-gray-700 text-gray-500 cursor-not-allowed' : 'bg-gray-100 text-gray-400 cursor-not-allowed' 
-                : isDarkMode ? 'bg-gray-700 hover:bg-gray-600 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-800'
-            }`}
-          >
-            Next <FaChevronRight className="text-xs" />
-          </button>
-        </div>
-      )}
-      
-      {/* Pendant list with collapsible sections */}
-      <div className="space-y-3 pr-2">
-        {currentPendants.map((pendant, index) => {
-          const actualIndex = index + (currentPage * pendantsPerPage);
-          const isExpanded = expandedPendant === actualIndex;
-          
-          return (
-            <motion.div 
-              key={actualIndex} 
-              className={`rounded-lg overflow-hidden ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05 }}
-            >
-              {/* Pendant header - always visible and clickable */}
-              <div 
-                className={`p-3 flex items-center justify-between cursor-pointer hover:brightness-110 transition-all ${isExpanded ? (isDarkMode ? 'bg-gray-700' : 'bg-gray-200') : ''}`}
-                onClick={() => togglePendant(index)}
-              >
-                <div className="flex items-center gap-2">
-                  <div 
-                    className="w-6 h-6 rounded-full flex-shrink-0" 
-                    style={{ 
-                      backgroundImage: `url(/images/configOptions/${pendant.design === 'bumble' ? '1' : pendant.design === 'radial' ? '2' : pendant.design === 'fina' ? '3' : pendant.design === 'ico' ? '4' : '5'}.png)`,
-                      backgroundSize: "cover"
-                    }}
-                  ></div>
-                  <h4 className="font-medium">Pendant {actualIndex + 1}</h4>
-                </div>
-                
-                <div className="flex items-center gap-2">
-                  <span className="text-sm capitalize">{pendant?.design || 'bumble'}</span>
-                  <motion.div
-                    animate={{ rotate: isExpanded ? 180 : 0 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <FaChevronDown className="text-xs" />
-                  </motion.div>
-                </div>
-              </div>
-              
-              {/* Expandable content */}
-              <AnimatePresence>
-                {isExpanded && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="overflow-hidden"
-                  >
-                    <div className="p-4 pt-2">
-                      <LightDesignSelector 
-                        selectedDesign={pendant?.design || 'bumble'} 
-                        onDesignChange={(designId) => updatePendantDesign(designId, actualIndex)}
-                        pendantIndex={actualIndex}
-                        isDarkMode={isDarkMode}
-                      />
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-          );
-        })}
+      {/* Instructions */}
+      <div className={`mb-4 text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+        Select one or multiple pendant locations to configure them together.
       </div>
       
-      {/* Pagination Controls - Bottom */}
-      {totalPages > 1 && (
-        <div className="flex justify-center mt-4 gap-1">
-          {Array.from({ length: totalPages }).map((_, index) => (
-            <button
+      {/* Horizontal scrollable pendant selector */}
+      <div className="relative mb-6">
+        {/* Left scroll button - only visible when overflowing */}
+        {maxScroll > 10 && (
+          <motion.button
+            onClick={scrollToLeft}
+            className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 flex items-center justify-center rounded-full ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-white text-gray-800'} shadow-md ${scrollPosition <= 10 ? 'opacity-40 cursor-not-allowed' : 'opacity-100'}`}
+            disabled={scrollPosition <= 10}
+            whileTap={{ scale: 0.95 }}
+          >
+            <FaChevronLeft />
+          </motion.button>
+        )}
+        
+        {/* Scrollable pendant selector */}
+        <div 
+          ref={scrollContainerRef}
+          className="flex overflow-x-auto hide-scrollbar py-4 px-10"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          onScroll={handleScroll}
+        >
+          {pendants.map((pendant, index) => (
+            <motion.div 
               key={index}
-              onClick={() => {
-                setCurrentPage(index);
-                setExpandedPendant(null);
-              }}
-              className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                currentPage === index
-                  ? 'bg-emerald-500 text-white'
-                  : isDarkMode ? 'bg-gray-700 hover:bg-gray-600 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-800'
-              }`}
+              className={`flex-shrink-0 mx-2 cursor-pointer`}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => togglePendantSelection(index)}
             >
-              {index + 1}
-            </button>
+              <div 
+                className={`w-16 h-16 rounded-full flex items-center justify-center text-lg font-bold transition-all overflow-hidden relative ${selectedPendants.includes(index) 
+                  ? 'ring-2 ring-emerald-500 ring-offset-2' 
+                  : isDarkMode ? 'bg-gray-700 text-white hover:bg-gray-600' : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}`}
+              >
+                {/* Background image of pendant design */}
+                {pendant?.design && (
+                  <div 
+                    className="absolute inset-0 w-full h-full opacity-80"
+                    style={{
+                      backgroundImage: `url(/images/configOptions/${pendant.design === 'bumble' ? '1' : pendant.design === 'radial' ? '2' : pendant.design === 'fina' ? '3' : pendant.design === 'ico' ? '4' : '5'}.png)`,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center"
+                    }}
+                  ></div>
+                )}
+                
+                {/* Overlay for better text visibility */}
+                <div className={`absolute inset-0 ${selectedPendants.includes(index) ? 'bg-emerald-500/70' : isDarkMode ? 'bg-gray-800/50' : 'bg-white/50'}`}></div>
+                
+                {/* Pendant number */}
+                <span className={`relative z-10 ${selectedPendants.includes(index) ? 'text-white' : isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+                  {index + 1}
+                </span>
+              </div>
+              <div className="text-center text-xs mt-1">
+                <span className="capitalize">{pendant?.design || 'bumble'}</span>
+              </div>
+            </motion.div>
           ))}
+        </div>
+        
+        {/* Right scroll button - only visible when overflowing */}
+        {maxScroll > 10 && (
+          <motion.button
+            onClick={scrollToRight}
+            className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 flex items-center justify-center rounded-full ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-white text-gray-800'} shadow-md ${scrollPosition >= maxScroll - 10 ? 'opacity-40 cursor-not-allowed' : 'opacity-100'}`}
+            disabled={scrollPosition >= maxScroll - 10}
+            whileTap={{ scale: 0.95 }}
+          >
+            <FaChevronRight />
+          </motion.button>
+        )}
+      </div>
+      
+      {/* Selection controls */}
+      <div className="flex justify-between mb-4">
+        <button 
+          onClick={selectAllPendants}
+          className={`px-3 py-1 rounded-lg text-sm ${isDarkMode ? 'bg-gray-700 hover:bg-gray-600 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-800'}`}
+        >
+          Select All
+        </button>
+        
+        {selectedPendants.length > 0 && (
+          <button 
+            onClick={clearSelections}
+            className={`px-3 py-1 rounded-lg text-sm ${isDarkMode ? 'bg-gray-700 hover:bg-gray-600 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-800'}`}
+          >
+            Clear Selection ({selectedPendants.length})
+          </button>
+        )}
+      </div>
+      
+      {/* Configuration UI */}
+      {showSelectionUI && selectedPendants.length > 0 && (
+        <motion.div 
+          className={`p-4 rounded-lg mb-4 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <div className="flex justify-between items-center mb-3">
+            <h4 className="font-bold">
+              Configure {selectedPendants.length === pendants.length ? 'All' : selectedPendants.length} Pendant{selectedPendants.length !== 1 ? 's' : ''}
+            </h4>
+            
+            {selectedPendants.length < pendants.length && (
+              <button 
+                onClick={applyToAll}
+                className="px-3 py-1 text-sm bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg"
+              >
+                Apply to All
+              </button>
+            )}
+          </div>
+          
+          <div className="p-2">
+            <LightDesignSelector 
+              selectedDesign={currentDesign} 
+              onDesignChange={applyDesignToSelected}
+              isDarkMode={isDarkMode}
+            />
+          </div>
+        </motion.div>
+      )}
+      
+      {/* Show message when no pendants are selected */}
+      {!showSelectionUI && (
+        <div className={`p-4 rounded-lg text-center ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
+          <p className="text-sm">Select one or more pendants above to configure them.</p>
         </div>
       )}
     </motion.div>
@@ -906,16 +980,24 @@ const AdditionalInfo = ({ isDarkMode }) => {
 // Main Component
 const LightConfigurator = () => {
   // State for configuration options
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const [lightType, setLightType] = useState("ceiling");
+  // Always use dark mode
+  const isDarkMode = true;
+  const [lightType, setLightType] = useState('pendant');
   const [lightAmount, setLightAmount] = useState(3);
-  const [lightDesign, setLightDesign] = useState("bumble");
-  const [cableColor, setCableColor] = useState("black");
-  const [cableLength, setCableLength] = useState("2mm");
-  const [totalPrice, setTotalPrice] = useState(0);
+  const [lightDesign, setLightDesign] = useState('bumble');
+  const [cableColor, setCableColor] = useState('black');
+  const [cableLength, setCableLength] = useState('1.5m');
   const [pendants, setPendants] = useState([]);
+  const [totalPrice, setTotalPrice] = useState('0.00');
   const [productSlug, setProductSlug] = useState(null);
   const [productOptions, setProductOptions] = useState({});
+  
+  // State for mobile UI
+  const [activeTab, setActiveTab] = useState('type');
+  
+  // State for animations
+  const [scrollY, setScrollY] = useState(0);
+  const [animatedElements, setAnimatedElements] = useState([]);
   
   // Refs
   const previewBoxRef = useRef(null);
@@ -934,7 +1016,7 @@ const LightConfigurator = () => {
         // You could fetch product data based on slug here
         // For now, we'll just set a default configuration based on product type
         if (productParam.includes('pendant')) {
-          setLightType('ceiling');
+          setLightType('pendant');
           setLightDesign('bumble');
         } else if (productParam.includes('wall')) {
           setLightType('wall');
@@ -998,15 +1080,80 @@ const LightConfigurator = () => {
     setTotalPrice(calculatedPrice.toFixed(2));
   }, [lightType, pendants, cableColor, cableLength]);
 
-  // Initial animation for preview box
+  // Enhanced animations for preview box and other elements
   useEffect(() => {
     if (previewBoxRef.current) {
+      // Register ScrollTrigger plugin
+      gsap.registerPlugin(ScrollTrigger);
+      
+      // Animate preview box
       gsap.fromTo(
         previewBoxRef.current,
-        { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }
+        { opacity: 0, y: 20, rotationY: -5 },
+        { 
+          opacity: 1, 
+          y: 0, 
+          rotationY: 0,
+          duration: 1.2, 
+          ease: "power3.out",
+          clearProps: "rotationY" // Clear rotation after animation to prevent rendering issues
+        }
       );
+      
+      // Collect all animatable elements
+      const elements = document.querySelectorAll('.animate-on-scroll');
+      setAnimatedElements(Array.from(elements));
+      
+      // Create parallax effect for preview box
+      ScrollTrigger.create({
+        trigger: configuratorRef.current,
+        start: 'top top',
+        end: 'bottom bottom',
+        scrub: 0.5,
+        onUpdate: (self) => {
+          if (previewBoxRef.current) {
+            // Subtle rotation based on scroll position
+            gsap.to(previewBoxRef.current, {
+              rotationY: self.progress * 5 - 2.5,
+              rotationX: self.progress * 3 - 1.5,
+              duration: 0.5,
+              ease: 'power1.out'
+            });
+          }
+        }
+      });
+      
+      // Add floating animation to key elements
+      gsap.to('.floating-element', {
+        y: '-10px',
+        duration: 2,
+        repeat: -1,
+        yoyo: true,
+        ease: 'power1.inOut',
+        stagger: 0.2
+      });
+      
+      // Create staggered animations for list items
+      gsap.from('.stagger-item', {
+        opacity: 0,
+        y: 20,
+        duration: 0.8,
+        stagger: 0.1,
+        ease: 'back.out(1.2)',
+        scrollTrigger: {
+          trigger: '.stagger-container',
+          start: 'top 80%',
+        }
+      });
     }
+    
+    // Add scroll listener for parallax effects
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
   
   // ScrollTrigger for pinning - separate effect to refresh when pendants change
@@ -1052,16 +1199,17 @@ const LightConfigurator = () => {
     };
   }, [pendants.length, lightAmount]); // Refresh when pendants or light amount changes
 
-  // Toggle dark/light mode
-  const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode);
-    
-    // Apply animation to the entire configurator
+  // Apply animations to the configurator
+  const applyConfiguratorAnimations = () => {
     if (configuratorRef.current) {
       gsap.fromTo(
         configuratorRef.current,
-        { opacity: 0.8 },
-        { opacity: 1, duration: 0.5, ease: "power2.out" }
+        { opacity: 0.9 },
+        { 
+          opacity: 1, 
+          duration: 0.5,
+          ease: 'power2.inOut'
+        }
       );
     }
   };
@@ -1125,29 +1273,8 @@ const LightConfigurator = () => {
   
   // Handle light design change
   const handleLightDesignChange = (design, pendantIndex = null) => {
-    if (pendantIndex !== null && pendantIndex >= 0 && pendantIndex < pendants.length) {
-      // Update specific pendant design
-      const updatedPendants = [...pendants];
-      if (updatedPendants[pendantIndex]) {
-        updatedPendants[pendantIndex] = {
-          ...updatedPendants[pendantIndex],
-          design: design
-        };
-        setPendants(updatedPendants);
-        
-        // Send message to PlayCanvas
-        const iframe = document.getElementById('playcanvas-app');
-        if (iframe && iframe.contentWindow) {
-          iframe.contentWindow.postMessage(`pendant_${pendantIndex}_design:${design}`, "*");
-        }
-        
-        toast.info(`Pendant ${pendantIndex + 1} design changed to ${design}`, {
-          position: "bottom-right",
-          autoClose: 1500,
-          theme: isDarkMode ? "dark" : "light"
-        });
-      }
-    } else {
+    // For single pendant mode or global design change
+    if (pendantIndex === null) {
       // Update default design
       setLightDesign(design);
       
@@ -1164,7 +1291,13 @@ const LightConfigurator = () => {
       // Send message to PlayCanvas
       const iframe = document.getElementById('playcanvas-app');
       if (iframe && iframe.contentWindow) {
-        iframe.contentWindow.postMessage(`pendant_design:${design}`, "*");
+        // Format: pendant_design:product_1 (where product_1 corresponds to the design)
+        const productId = design === 'bumble' ? 'product_1' : 
+                         design === 'radial' ? 'product_2' : 
+                         design === 'fina' ? 'product_3' : 
+                         design === 'ico' ? 'product_4' : 'product_5';
+        
+        iframe.contentWindow.postMessage(`pendant_design:${productId}`, "*");
       }
       
       toast.info(`Light design changed to ${design}`, {
@@ -1172,6 +1305,62 @@ const LightConfigurator = () => {
         autoClose: 1500,
         theme: isDarkMode ? "dark" : "light"
       });
+    } 
+    // For specific pendant update (used by PendantConfigurator)
+    else if (typeof pendantIndex === 'number' && pendantIndex >= 0 && pendantIndex < pendants.length) {
+      // Update specific pendant design
+      const updatedPendants = [...pendants];
+      if (updatedPendants[pendantIndex]) {
+        updatedPendants[pendantIndex] = {
+          ...updatedPendants[pendantIndex],
+          design: design
+        };
+        setPendants(updatedPendants);
+        
+        // Send message to PlayCanvas
+        const iframe = document.getElementById('playcanvas-app');
+        if (iframe && iframe.contentWindow) {
+          // Format: pendant_0:product_1 (where product_1 corresponds to the design)
+          const productId = design === 'bumble' ? 'product_1' : 
+                           design === 'radial' ? 'product_2' : 
+                           design === 'fina' ? 'product_3' : 
+                           design === 'ico' ? 'product_4' : 'product_5';
+          
+          iframe.contentWindow.postMessage(`pendant_${pendantIndex}:${productId}`, "*");
+        }
+      }
+    }
+    // For array of pendant indices (multi-select)
+    else if (Array.isArray(pendantIndex) && pendantIndex.length > 0) {
+      const updatedPendants = [...pendants];
+      const validIndices = pendantIndex.filter(idx => idx >= 0 && idx < pendants.length);
+      
+      // Update all selected pendants
+      validIndices.forEach(idx => {
+        if (updatedPendants[idx]) {
+          updatedPendants[idx] = {
+            ...updatedPendants[idx],
+            design: design
+          };
+        }
+      });
+      
+      setPendants(updatedPendants);
+      
+      // Send individual messages to PlayCanvas for each pendant
+      const iframe = document.getElementById('playcanvas-app');
+      if (iframe && iframe.contentWindow) {
+        // Send separate messages for each pendant update
+        validIndices.forEach(idx => {
+          // Format: pendant_0:product_1 (where product_1 corresponds to the design)
+          const productId = design === 'bumble' ? 'product_1' : 
+                           design === 'radial' ? 'product_2' : 
+                           design === 'fina' ? 'product_3' : 
+                           design === 'ico' ? 'product_4' : 'product_5';
+          
+          iframe.contentWindow.postMessage(`pendant_${idx}:${productId}`, "*");
+        });
+      }
     }
   };
 
@@ -1241,10 +1430,13 @@ const LightConfigurator = () => {
     <section 
       id="light-configurator" 
       ref={configuratorRef}
-      className={`py-16 transition-colors duration-300 ${isDarkMode ? 'bg-[#232B2B] text-white' : 'bg-gray-50 text-gray-800'}`}
+      className="py-16 bg-charleston-green text-gray-100 relative overflow-hidden"
     >
-      {/* Theme Toggle */}
-      <ThemeToggle isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
+      {/* Decorative elements */}
+      <div className="absolute top-20 left-10 w-32 h-32 bg-emerald/10 rounded-full blur-3xl animate-float-slow"></div>
+      <div className="absolute bottom-40 right-10 w-40 h-40 bg-eton-blue/5 rounded-full blur-3xl animate-float"></div>
+      <div className="absolute top-1/2 left-1/3 w-24 h-24 bg-emerald/10 rounded-full blur-2xl animate-float-fast"></div>
+      {/* No Theme Toggle - Using Dark Theme Only */}
       
       <div className="container mx-auto px-4">
         <motion.div 
@@ -1256,12 +1448,12 @@ const LightConfigurator = () => {
           <h2 className="text-4xl font-bold mb-3 font-['Amenti']">
             LIMI Light Configurator
           </h2>
-          <p className={`text-lg max-w-2xl mx-auto ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+          <p className="text-lg max-w-2xl mx-auto text-gray-400">
             Design your perfect lighting solution. Customize every aspect and visualize in real-time.
           </p>
         </motion.div>
 
-        <div className="flex flex-col lg:flex-row gap-8">
+        <div className="flex flex-col items-center lg:flex-row gap-8">
           {/* Preview Box (Left Side - Sticky) */}
           <motion.div 
             className="lg:w-2/5"
@@ -1270,10 +1462,15 @@ const LightConfigurator = () => {
             transition={{ duration: 0.5, delay: 0.2 }}
           >
             {/* Wrapper div for pinning */}
-            <div ref={previewBoxRef} className="sticky top-24" style={{ willChange: 'transform' }}>
+            <div ref={previewBoxRef} className="sticky top-24 floating-element" style={{ willChange: 'transform', perspective: '1000px' }}>
               <div 
-                className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow-xl overflow-hidden aspect-square`}
+                className="bg-charleston-green-dark rounded-xl shadow-2xl overflow-hidden aspect-square relative animate-glow"
+                style={{
+                  boxShadow: '0 10px 30px -5px rgba(0, 0, 0, 0.3), 0 0 15px rgba(80, 200, 120, 0.2)',
+                }}
               >
+                {/* Subtle gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald/10 via-eton-blue/5 to-transparent pointer-events-none z-[1]"></div>
               {/* PlayCanvas 3D Viewer */}
               <PlayCanvasViewer 
                 config={{
@@ -1296,53 +1493,182 @@ const LightConfigurator = () => {
 
           {/* Configuration Panel (Right Side) */}
           <motion.div 
-            className={`lg:w-3/5 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow-lg p-6 flex flex-col`}
+            className="lg:w-3/5 bg-charleston-green-dark/90 backdrop-blur-sm rounded-xl shadow-2xl p-6 flex flex-col relative overflow-hidden"
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
+            style={{
+              boxShadow: '0 15px 35px -10px rgba(0, 0, 0, 0.5), 0 0 15px rgba(80, 200, 120, 0.1)',
+              borderTop: '1px solid rgba(80, 200, 120, 0.2)',
+              borderLeft: '1px solid rgba(80, 200, 120, 0.1)'
+            }}
           >
-            <h3 className="text-2xl font-bold mb-6 font-['Amenti']">Configure Your Light</h3>
+            {/* Decorative elements */}
+            <div className="absolute -top-20 -right-20 w-40 h-40 bg-emerald/10 rounded-full blur-2xl"></div>
+            <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-eton-blue/5 rounded-full blur-xl"></div>
+            <h3 className="text-2xl font-bold mb-6 font-['Amenti'] relative z-10 animate-float-slow">
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald to-eton-blue-dark">Configure Your Light</span>
+            </h3>
+            
+            {/* Mobile Tabs - Only visible on mobile */}
+            <div className="md:hidden mb-6 relative z-10">
+              <div className="flex border-b border-charleston-green-light overflow-x-auto hide-scrollbar">
+                <button 
+                  onClick={() => setActiveTab('type')}
+                  className={`px-4 py-2 text-sm font-medium whitespace-nowrap transition-all duration-300 ${activeTab === 'type' 
+                    ? 'text-emerald border-emerald border-b-2' 
+                    : 'text-gray-400 border-transparent'}`}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <motion.span 
+                    initial={{ opacity: 0.8 }}
+                    animate={{ opacity: activeTab === 'type' ? 1 : 0.8 }}
+                    className="flex items-center gap-1"
+                  >
+                    <FaLightbulb className={activeTab === 'type' ? 'text-emerald' : 'text-gray-500'} />
+                    Light Type
+                  </motion.span>
+                </button>
+                <button 
+                  onClick={() => setActiveTab('amount')}
+                  className={`px-4 py-2 text-sm font-medium whitespace-nowrap transition-all duration-300 ${activeTab === 'amount' 
+                    ? 'text-emerald border-emerald border-b-2' 
+                    : 'text-gray-400 border-transparent'}`}
+                >
+                  <motion.span 
+                    initial={{ opacity: 0.8 }}
+                    animate={{ opacity: activeTab === 'amount' ? 1 : 0.8 }}
+                    className="flex items-center gap-1"
+                  >
+                    <FaLayerGroup className={activeTab === 'amount' ? 'text-emerald' : 'text-gray-500'} />
+                    Light Amount
+                  </motion.span>
+                </button>
+                {lightAmount > 1 && (
+                  <button 
+                    onClick={() => setActiveTab('pendants')}
+                    className={`px-4 py-2 text-sm font-medium whitespace-nowrap transition-all duration-300 ${activeTab === 'pendants' 
+                      ? 'text-emerald border-emerald border-b-2' 
+                      : 'text-gray-400 border-transparent'}`}
+                  >
+                    <motion.span 
+                      initial={{ opacity: 0.8 }}
+                      animate={{ opacity: activeTab === 'pendants' ? 1 : 0.8 }}
+                      className="flex items-center gap-1"
+                    >
+                      <FaRegLightbulb className={activeTab === 'pendants' ? 'text-emerald' : 'text-gray-500'} />
+                      Pendants
+                    </motion.span>
+                  </button>
+                )}
+                {lightAmount === 1 && (
+                  <button 
+                    onClick={() => setActiveTab('design')}
+                    className={`px-4 py-2 text-sm font-medium whitespace-nowrap transition-all duration-300 ${activeTab === 'design' 
+                      ? 'text-emerald border-emerald border-b-2' 
+                      : 'text-gray-400 border-transparent'}`}
+                  >
+                    <motion.span 
+                      initial={{ opacity: 0.8 }}
+                      animate={{ opacity: activeTab === 'design' ? 1 : 0.8 }}
+                      className="flex items-center gap-1"
+                    >
+                      <FaPalette className={activeTab === 'design' ? 'text-emerald' : 'text-gray-500'} />
+                      Design
+                    </motion.span>
+                  </button>
+                )}
+              </div>
+            </div>
             
             {/* Configuration Options Container */}
             <div className="flex-1">
-            <LightTypeSelector 
-              selectedType={lightType} 
-              onTypeChange={handleLightTypeChange} 
-              isDarkMode={isDarkMode} 
-            />
-            <LightAmountSelector 
-              amount={lightAmount} 
-              onAmountChange={handleLightAmountChange} 
-              isDarkMode={isDarkMode} 
-            />
-            
-            {lightAmount === 1 ? (
-              <LightDesignSelector 
-                selectedDesign={lightDesign} 
-                onDesignChange={handleLightDesignChange} 
-                isDarkMode={isDarkMode} 
-              />
-            ) : (
-              <PendantConfigurator 
-                pendants={pendants} 
-                updatePendantDesign={handleLightDesignChange} 
-                isDarkMode={isDarkMode} 
-              />
-            )}
+              {/* Desktop View - All components stacked */}
+              <div className="hidden md:block stagger-container">
+                <LightTypeSelector 
+                  selectedType={lightType} 
+                  onTypeChange={handleLightTypeChange} 
+                  isDarkMode={isDarkMode} 
+                />
+                <LightAmountSelector 
+                  amount={lightAmount} 
+                  onAmountChange={handleLightAmountChange} 
+                  isDarkMode={isDarkMode} 
+                />
+                
+                {lightAmount === 1 ? (
+                  <LightDesignSelector 
+                    selectedDesign={lightDesign} 
+                    onDesignChange={handleLightDesignChange} 
+                    isDarkMode={isDarkMode} 
+                  />
+                ) : (
+                  <PendantConfigurator 
+                    pendants={pendants} 
+                    updatePendantDesign={handleLightDesignChange} 
+                    isDarkMode={isDarkMode} 
+                  />
+                )}
+              </div>
+              
+              {/* Mobile View - Tabbed components */}
+              <div className="md:hidden">
+                {activeTab === 'type' && (
+                  <LightTypeSelector 
+                    selectedType={lightType} 
+                    onTypeChange={(type) => {
+                      handleLightTypeChange(type);
+                      // Auto-advance to next tab
+                      setActiveTab('amount');
+                    }} 
+                    isDarkMode={isDarkMode} 
+                  />
+                )}
+                
+                {activeTab === 'amount' && (
+                  <LightAmountSelector 
+                    amount={lightAmount} 
+                    onAmountChange={(amount) => {
+                      handleLightAmountChange(amount);
+                      // Auto-advance to appropriate next tab
+                      setActiveTab(amount === 1 ? 'design' : 'pendants');
+                    }} 
+                    isDarkMode={isDarkMode} 
+                  />
+                )}
+                
+                {activeTab === 'design' && lightAmount === 1 && (
+                  <LightDesignSelector 
+                    selectedDesign={lightDesign} 
+                    onDesignChange={handleLightDesignChange} 
+                    isDarkMode={isDarkMode} 
+                  />
+                )}
+                
+                {activeTab === 'pendants' && lightAmount > 1 && (
+                  <PendantConfigurator 
+                    pendants={pendants} 
+                    updatePendantDesign={handleLightDesignChange} 
+                    isDarkMode={isDarkMode} 
+                  />
+                )}
+              </div>
             
             {/* Cable Options hidden as requested */}
             
             </div>
             
             {/* Customer Support - Outside scrollable area */}
-            <div className={`mt-8 pt-4 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+            <div className="mt-8 pt-4 border-t border-gray-700/50 relative z-10">
               <motion.button 
                 onClick={openSupportChat}
-                className={`w-full flex items-center justify-center gap-2 ${isDarkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-100 hover:bg-gray-200'} p-3 rounded-lg transition-colors`}
-                whileHover={{ scale: 1.02 }}
+                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-dark to-eton-blue-dark p-3 rounded-lg transition-all duration-300 shadow-lg hover:shadow-emerald/20"
+                whileHover={{ scale: 1.02, boxShadow: '0 5px 15px rgba(80, 200, 120, 0.3)' }}
                 whileTap={{ scale: 0.98 }}
               >
-                <FaQuestionCircle /> Have Questions? Chat with an Expert
+                <FaQuestionCircle className="text-white" /> 
+                <span className="text-white font-medium">Have Questions? Chat with an Expert</span>
               </motion.button>
             </div>
           </motion.div>
