@@ -1,53 +1,29 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/navigation';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import PortalLogin from './components/PortalLogin';
 import CustomerDashboard from './components/CustomerDashboard';
+import { login, logout } from '../redux/slices/userSlice';
 
-// Mock authentication state
 export default function CustomerPortal() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+  const { isLoggedIn, user, loginStatus } = useSelector((state) => state.user);
   const router = useRouter();
-  
-  // Simulate checking authentication status
-  useEffect(() => {
-    // Check if user is logged in (from localStorage in this mock example)
-    const savedUser = localStorage.getItem('limiUser');
-    
-    if (savedUser) {
-      try {
-        const parsedUser = JSON.parse(savedUser);
-        setUser(parsedUser);
-        setIsAuthenticated(true);
-      } catch (error) {
-        console.error('Error parsing user data:', error);
-        localStorage.removeItem('limiUser');
-      }
-    }
-    
-    setLoading(false);
-  }, []);
+  const loading = loginStatus === 'loading';
   
   // Handle login
   const handleLogin = (userData) => {
-    // In a real app, this would validate credentials with a backend
-    setUser(userData);
-    setIsAuthenticated(true);
-    
-    // Save to localStorage for persistence (would be a token in real app)
-    localStorage.setItem('limiUser', JSON.stringify(userData));
+    // This will be handled by the Redux login action
+    dispatch(login(userData));
   };
   
   // Handle logout
   const handleLogout = () => {
-    setUser(null);
-    setIsAuthenticated(false);
-    localStorage.removeItem('limiUser');
+    dispatch(logout());
     router.push('/portal');
   };
   
@@ -69,7 +45,7 @@ export default function CustomerPortal() {
       
       <div className="pt-[120px] pb-16">
         <div className="container mx-auto px-4">
-          {!isAuthenticated ? (
+          {!isLoggedIn ? (
             <PortalLogin onLogin={handleLogin} />
           ) : (
             <CustomerDashboard user={user} onLogout={handleLogout} />

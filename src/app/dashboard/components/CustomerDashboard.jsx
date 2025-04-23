@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, Fragment } from 'react';
 import Image from 'next/image';
-import { FaSort, FaSortUp, FaSortDown, FaSearch, FaEye, FaTimes, FaFilter, FaChartLine, FaGlobe, FaClock, FaDesktop, FaTabletAlt, FaMobileAlt, FaUsers, FaBoxOpen, FaShoppingCart } from 'react-icons/fa';
+import { FaSort, FaSortUp, FaSortDown, FaSearch, FaEye, FaTimes, FaFilter, FaChartLine, FaGlobe, FaClock, FaDesktop, FaTabletAlt, FaMobileAlt, FaUsers, FaBoxOpen, FaShoppingCart, FaBox } from 'react-icons/fa';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
 import ProductManagement from './ProductManagement';
 
@@ -731,44 +731,303 @@ export default function CustomerDashboard({ token }) {
   return (
     <div>
 
-      {/* Tabs */}
-      <div className="mb-6 flex border-b border-[#333333]">
+      {/* Dashboard Navigation */}
+      <div className="bg-[#292929] p-4 flex flex-wrap gap-2">
         <button
-          className={`px-4 py-2 font-medium ${activeTab === 'customers' ? 'text-[#93cfa2] border-b-2 border-[#93cfa2]' : 'text-gray-400 hover:text-gray-300'}`}
           onClick={() => setActiveTab('customers')}
+          className={`px-4 py-2 rounded-md flex items-center ${activeTab === 'customers' ? 'bg-[#54BB74] text-[#1e1e1e] font-medium' : 'bg-[#333333] text-white hover:bg-[#444444]'}`}
         >
+          <FaUsers className="mr-2" />
           Customers
         </button>
+        
         <button
-          className={`px-4 py-2 font-medium flex items-center gap-2 ${activeTab === 'traffic' ? 'text-[#93cfa2] border-b-2 border-[#93cfa2]' : 'text-gray-400 hover:text-gray-300'}`}
-          onClick={() => setActiveTab('traffic')}
+          onClick={() => setActiveTab('analytics')}
+          className={`px-4 py-2 rounded-md flex items-center ${activeTab === 'analytics' ? 'bg-[#54BB74] text-[#1e1e1e] font-medium' : 'bg-[#333333] text-white hover:bg-[#444444]'}`}
         >
-          <FaChartLine />
-          Website Traffic
+          <FaChartLine className="mr-2" />
+          Analytics
         </button>
+        
         <button
-          className={`px-4 py-2 font-medium flex items-center gap-2 ${activeTab === 'products' ? 'text-[#93cfa2] border-b-2 border-[#93cfa2]' : 'text-gray-400 hover:text-gray-300'}`}
-          onClick={() => setActiveTab('products')}
+          onClick={() => setActiveTab('tracking')}
+          className={`px-4 py-2 rounded-md flex items-center ${activeTab === 'tracking' ? 'bg-[#54BB74] text-[#1e1e1e] font-medium' : 'bg-[#333333] text-white hover:bg-[#444444]'}`}
         >
-          <FaBoxOpen />
-          Products
+          <FaGlobe className="mr-2" />
+          Visitor Tracking
         </button>
+        
         <button
-          className={`px-4 py-2 font-medium flex items-center gap-2 ${activeTab === 'mobile' ? 'text-[#93cfa2] border-b-2 border-[#93cfa2]' : 'text-gray-400 hover:text-gray-300'}`}
           onClick={() => setActiveTab('mobile')}
+          className={`px-4 py-2 rounded-md flex items-center ${activeTab === 'mobile' ? 'bg-[#54BB74] text-[#1e1e1e] font-medium' : 'bg-[#333333] text-white hover:bg-[#444444]'}`}
         >
-          <FaMobileAlt />
-          Mobile Traffic
+          <FaMobileAlt className="mr-2" />
+          Mobile Users
         </button>
+
         <button
-          className={`px-4 py-2 font-medium flex items-center gap-2 ${activeTab === 'products' ? 'text-[#93cfa2] border-b-2 border-[#93cfa2]' : 'text-gray-400 hover:text-gray-300'}`}
-          onClick={() => setActiveTab('products')}
+          onClick={() => setActiveTab('productManagement')}
+          className={`px-4 py-2 rounded-md flex items-center ${activeTab === 'productManagement' ? 'bg-[#54BB74] text-[#1e1e1e] font-medium' : 'bg-[#333333] text-white hover:bg-[#444444]'}`}
         >
-          <FaSort />
+          <FaBox className="mr-2" />
           Product Management
         </button>
       </div>
 
+      {activeTab === 'tracking' && (
+        <div className="space-y-6">
+          {/* Filters */}
+          <div className="bg-[#1e1e1e] p-4 rounded-lg">
+            <h3 className="text-lg font-medium text-white mb-4">Filters</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-gray-400 mb-2">Date Range</label>
+                <select
+                  value={dateFilter}
+                  onChange={(e) => setDateFilter(e.target.value)}
+                  className="bg-[#292929] text-white w-full px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#54bb74]"
+                >
+                  <option value="all">All Time</option>
+                  <option value="today">Today</option>
+                  <option value="yesterday">Yesterday</option>
+                  <option value="week">Last 7 Days</option>
+                  <option value="month">Last 30 Days</option>
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-gray-400 mb-2">User Type</label>
+                <select
+                  value={userTypeFilter}
+                  onChange={(e) => setUserTypeFilter(e.target.value)}
+                  className="bg-[#292929] text-white w-full px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#54bb74]"
+                >
+                  <option value="all">All Users</option>
+                  <option value="known">Known Users</option>
+                  <option value="unknown">Unknown Users</option>
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-gray-400 mb-2">Consent Status</label>
+                <select
+                  value={consentFilter}
+                  onChange={(e) => setConsentFilter(e.target.value)}
+                  className="bg-[#292929] text-white w-full px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#54bb74]"
+                >
+                  <option value="all">All</option>
+                  <option value="granted">Consent Granted</option>
+                  <option value="denied">Consent Denied</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          
+          {visitorLogsLoading ? (
+            <div className="flex flex-col items-center justify-center min-h-[300px]">
+              <div className="w-16 h-16 border-t-4 border-[#54BB74] border-solid rounded-full animate-spin mb-6"></div>
+              <p className="text-gray-300">Loading visitor data...</p>
+            </div>
+          ) : visitorLogs.length === 0 ? (
+            <div className="bg-[#1e1e1e] p-6 rounded-lg text-center">
+              <p className="text-gray-300">No visitor data found matching your filters</p>
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                {/* Total Visits Card */}
+                <div className="bg-[#1e1e1e] p-4 rounded-lg shadow-lg">
+                  <h3 className="text-[#54BB74] text-lg font-semibold mb-2">Total Visits</h3>
+                  <p className="text-white text-3xl font-bold">{analytics.totalVisits}</p>
+                </div>
+                
+                {/* Unique Customers Card */}
+                <div className="bg-[#1e1e1e] p-4 rounded-lg shadow-lg">
+                  <h3 className="text-[#54BB74] text-lg font-semibold mb-2">Unique Customers</h3>
+                  <p className="text-white text-3xl font-bold">{analytics.uniqueCustomers}</p>
+                </div>
+                
+                {/* Avg Session Duration Card */}
+                <div className="bg-[#1e1e1e] p-4 rounded-lg shadow-lg">
+                  <h3 className="text-[#54BB74] text-lg font-semibold mb-2">Avg. Session Duration</h3>
+                  <p className="text-white text-3xl font-bold">{formatTime(analytics.avgDuration || 0)}</p>
+                </div>
+                
+                {/* Consent Percentage Card */}
+                <div className="bg-[#1e1e1e] p-4 rounded-lg shadow-lg">
+                  <h3 className="text-[#54BB74] text-lg font-semibold mb-2">Consent Rate</h3>
+                  <p className="text-white text-3xl font-bold">{analytics.consentPercentage?.toFixed(1)}%</p>
+                </div>
+              </div>
+              
+              {/* Charts */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                {/* User Type Pie Chart */}
+                <div className="bg-[#1e1e1e] p-4 rounded-lg shadow-lg">
+                  <h3 className="text-[#54BB74] text-lg font-semibold mb-4">Known vs Unknown Users</h3>
+                  <div className="h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={userTypePieData}
+                          cx="50%"
+                          cy="50%"
+                          labelLine={false}
+                          outerRadius={80}
+                          fill="#8884d8"
+                          dataKey="value"
+                          label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                        >
+                          {userTypePieData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                          ))}
+                        </Pie>
+                        <Tooltip formatter={(value) => [value, 'Visitors']} />
+                        <Legend />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+                
+                {/* Sessions Over Time Line Chart */}
+                <div className="bg-[#1e1e1e] p-4 rounded-lg shadow-lg">
+                  <h3 className="text-[#54BB74] text-lg font-semibold mb-4">Sessions Over Time</h3>
+                  <div className="h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart
+                        data={analytics.sessionsOverTime}
+                        margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+                        <XAxis dataKey="date" stroke="#ccc" />
+                        <YAxis stroke="#ccc" />
+                        <Tooltip />
+                        <Legend />
+                        <Line
+                          type="monotone"
+                          dataKey="sessions"
+                          name="Sessions"
+                          stroke="#54BB74"
+                          activeDot={{ r: 8 }}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Visitor Logs Table */}
+              <div className="overflow-x-auto">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
+                  <h3 className="text-[#54BB74] text-lg font-semibold">Recent Visitor Logs</h3>
+                  <div className="flex flex-wrap items-center gap-4">
+                    <div className="flex items-center space-x-2">
+                      <label className="text-gray-300 text-sm">Sort by:</label>
+                      <select
+                        value={logSortField}
+                        onChange={(e) => {
+                          setLogSortField(e.target.value);
+                          // Sort the visitor logs
+                          const field = e.target.value;
+                          const sorted = [...visitorLogs].sort((a, b) => {
+                            if (field === 'timestamp') {
+                              const dateA = new Date(a.createdAt || 0);
+                              const dateB = new Date(b.createdAt || 0);
+                              return logSortDirection === 'asc' ? dateA - dateB : dateB - dateA;
+                            } else if (field === 'duration') {
+                              const durationA = a.sessionDuration || 0;
+                              const durationB = b.sessionDuration || 0;
+                              return logSortDirection === 'asc' ? durationA - durationB : durationB - durationA;
+                            } else if (field === 'pages') {
+                              const pagesA = (a.pagesVisited || []).length;
+                              const pagesB = (b.pagesVisited || []).length;
+                              return logSortDirection === 'asc' ? pagesA - pagesB : pagesB - pagesA;
+                            }
+                            return 0;
+                          });
+                          setVisitorLogs(sorted);
+                        }}
+                        className="bg-[#292929] text-white px-2 py-1 rounded-md text-sm"
+                      >
+                        <option value="timestamp">Time</option>
+                        <option value="duration">Duration</option>
+                        <option value="pages">Pages</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                
+                <table className="w-full bg-[#1e1e1e] rounded-lg overflow-hidden">
+                  <thead className="bg-[#292929]">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-gray-300">Timestamp</th>
+                      <th className="px-4 py-3 text-left text-gray-300">Customer ID</th>
+                      <th className="px-4 py-3 text-left text-gray-300">IP & Location</th>
+                      <th className="px-4 py-3 text-left text-gray-300">Referrer</th>
+                      <th className="px-4 py-3 text-left text-gray-300">Device</th>
+                      <th className="px-4 py-3 text-left text-gray-300">Duration</th>
+                      <th className="px-4 py-3 text-left text-gray-300">Pages</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {visitorLogs.slice(0, 10).map((log, index) => (
+                      <tr 
+                        key={log._id || index} 
+                        className={index % 2 === 0 ? 'bg-[#1e1e1e]' : 'bg-[#292929]/50'}
+                      >
+                        <td className="px-4 py-3 text-gray-300">
+                          {new Date(log.createdAt || log.timestamp).toLocaleString()}
+                        </td>
+                        <td className="px-4 py-3">
+                          {log.customerId ? (
+                            <span className="text-[#54BB74]">{log.customerId}</span>
+                          ) : (
+                            <span className="text-gray-500 italic">Anonymous</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 text-gray-300">
+                          <div className="flex items-center gap-1">
+                            <FaGlobe className="text-[#87CEAB] text-xs" />
+                            <span>{log.ipAddress}</span>
+                            {log.country && (
+                              <>
+                                <span className="text-gray-500">|</span>
+                                <span>{log.country}</span>
+                              </>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 text-gray-300 max-w-[150px] truncate">
+                          {log.referrer || 'Direct'}
+                        </td>
+                        <td className="px-4 py-3 text-gray-300">
+                          <div className="flex items-center">
+                            {getDeviceIcon(log.userAgent)}
+                            <span className="ml-2">{getDeviceType(log.userAgent)}</span>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 text-gray-300">
+                          {formatTime(log.sessionDuration || 0)}
+                        </td>
+                        <td className="px-4 py-3 text-gray-300">
+                          {log.pagesVisited && log.pagesVisited.length > 0 ? (
+                            <span>
+                              {log.pagesVisited.length} {log.pagesVisited.length === 1 ? 'page' : 'pages'}
+                            </span>
+                          ) : (
+                            <span className="text-gray-500 italic">None</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+      
       {activeTab === 'mobile' && (
         <div className="space-y-6">
           {/* Mobile Traffic Filters */}
@@ -1109,6 +1368,12 @@ export default function CustomerDashboard({ token }) {
         </div>
       )}
       
+      {activeTab === 'productManagement' && (
+        <div className="mt-6">
+          <ProductManagement />
+        </div>
+      )}
+
       {activeTab === 'customers' && (
         <>
         {/* Search and filters */}

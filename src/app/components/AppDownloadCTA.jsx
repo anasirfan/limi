@@ -74,7 +74,7 @@ export default function AppDownloadCTA({
     }, 1000);
     
     return () => clearInterval(timer);
-  }, []);
+  }, []); // Empty dependency array ensures this effect runs only once on mount
 
   // Automatically show promo after 3 seconds if user hasn't interacted
   useEffect(() => {

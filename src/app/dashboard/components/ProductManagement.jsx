@@ -1,24 +1,21 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { FaPlus, FaEdit, FaTrash, FaSearch, FaFilter } from 'react-icons/fa';
-import { products, categories } from '../../data/products';
+import { categories } from '../../data/products';
+import { addProduct, updateProduct, deleteProduct, selectAllProducts } from '../../redux/slices/productsSlice';
 import ProductForm from './ProductForm';
 
 export default function ProductManagement() {
-  const [productList, setProductList] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+  const productList = useSelector(selectAllProducts);
+  const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [currentProduct, setCurrentProduct] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [showFilters, setShowFilters] = useState(false);
-  
-  // Initialize with mock data
-  useEffect(() => {
-    setProductList(products);
-    setLoading(false);
-  }, []);
   
   // Filtered products
   const filteredProducts = productList.filter(product => {
@@ -44,26 +41,22 @@ export default function ProductManagement() {
   // Handle deleting a product
   const handleDeleteProduct = (productId) => {
     if (window.confirm('Are you sure you want to delete this product?')) {
-      // In a real application, this would make an API call
-      setProductList(prevProducts => prevProducts.filter(p => p.id !== productId));
+      // Dispatch delete action to Redux
+      dispatch(deleteProduct(productId));
     }
   };
   
   // Handle form submission
   const handleFormSubmit = (formData) => {
     if (currentProduct) {
-      // Update existing product
-      setProductList(prevProducts => 
-        prevProducts.map(p => p.id === currentProduct.id ? { ...formData, id: currentProduct.id } : p)
-      );
+      // Update existing product in Redux
+      dispatch(updateProduct({
+        id: currentProduct.id,
+        ...formData
+      }));
     } else {
-      // Add new product
-      const newProduct = {
-        ...formData,
-        id: `product-${Date.now()}`,
-        slug: formData.name.toLowerCase().replace(/\s+/g, '-'),
-      };
-      setProductList(prevProducts => [...prevProducts, newProduct]);
+      // Add new product to Redux
+      dispatch(addProduct(formData));
     }
     
     setShowForm(false);

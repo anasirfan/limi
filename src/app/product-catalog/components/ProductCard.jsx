@@ -3,9 +3,37 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { addToCart } from '../../redux/slices/cartSlice';
+import { addToFavorites, removeFromFavorites } from '../../redux/slices/favoritesSlice';
+import { FaHeart, FaRegHeart, FaShoppingCart } from 'react-icons/fa';
 
 export default function ProductCard({ product, viewMode }) {
   const [isHovered, setIsHovered] = useState(false);
+  const dispatch = useDispatch();
+  const favorites = useSelector((state) => state.favorites.items);
+  
+  // Check if product is in favorites
+  const isFavorite = favorites.some(item => item.id === product.id);
+  
+  // Handle add to cart
+  const handleAddToCart = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dispatch(addToCart({ product, quantity: 1 }));
+  };
+  
+  // Handle toggle favorites
+  const handleToggleFavorite = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (isFavorite) {
+      dispatch(removeFromFavorites(product.id));
+    } else {
+      dispatch(addToFavorites(product));
+    }
+  };
   
   // Grid view card
   if (viewMode === 'grid') {
@@ -31,7 +59,7 @@ export default function ProductCard({ product, viewMode }) {
         
         <div className="p-6">
           <div className="mb-4">
-            <span className="text-sm text-[#54BB74] font-medium">
+            <span className="text-sm text-emerald font-medium">
               {product.category}
             </span>
             <h3 className="text-xl font-bold font-[Amenti] mt-1 text-white">
@@ -43,9 +71,31 @@ export default function ProductCard({ product, viewMode }) {
             {product.shortDescription}
           </p>
           
+          <div className="flex gap-2 mb-4">
+            <button
+              onClick={handleAddToCart}
+              className="flex-1 flex items-center justify-center gap-2 bg-charleston-green border border-emerald text-emerald py-2 rounded-md hover:bg-emerald hover:text-charleston-green transition-colors"
+            >
+              <FaShoppingCart size={16} />
+              <span>Add to Cart</span>
+            </button>
+            
+            <button
+              onClick={handleToggleFavorite}
+              className={`p-2 rounded-md border ${isFavorite ? 'bg-emerald/10 border-emerald' : 'bg-charleston-green border-emerald/50'} transition-colors`}
+              aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+            >
+              {isFavorite ? (
+                <FaHeart className="text-emerald" size={16} />
+              ) : (
+                <FaRegHeart className="text-emerald" size={16} />
+              )}
+            </button>
+          </div>
+          
           <Link 
             href={`/product-catalog/${product.slug}`}
-            className="block w-full text-center bg-[#292929] border border-[#54BB74] text-[#54BB74] py-2 rounded-md hover:bg-[#54BB74] hover:text-white transition-colors"
+            className="block w-full text-center bg-charleston-green border border-emerald text-emerald py-2 rounded-md hover:bg-emerald hover:text-charleston-green transition-colors"
           >
             View Details
           </Link>
@@ -100,12 +150,34 @@ export default function ProductCard({ product, viewMode }) {
           </div>
         </div>
         
-        <Link 
-          href={`/product-catalog/${product.slug}`}
-          className="self-start bg-[#292929] border border-[#54BB74] text-[#54BB74] px-6 py-2 rounded-md hover:bg-[#54BB74] hover:text-white transition-colors"
-        >
-          View Details
-        </Link>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handleAddToCart}
+            className="flex items-center justify-center gap-2 bg-charleston-green border border-emerald text-emerald px-4 py-2 rounded-md hover:bg-emerald hover:text-charleston-green transition-colors"
+          >
+            <FaShoppingCart size={16} />
+            <span>Add to Cart</span>
+          </button>
+          
+          <button
+            onClick={handleToggleFavorite}
+            className={`p-2 rounded-md border ${isFavorite ? 'bg-emerald/10 border-emerald' : 'bg-charleston-green border-emerald/50'} transition-colors`}
+            aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+          >
+            {isFavorite ? (
+              <FaHeart className="text-emerald" size={16} />
+            ) : (
+              <FaRegHeart className="text-emerald" size={16} />
+            )}
+          </button>
+          
+          <Link 
+            href={`/product-catalog/${product.slug}`}
+            className="self-start bg-charleston-green border border-emerald text-emerald px-6 py-2 rounded-md hover:bg-emerald hover:text-charleston-green transition-colors"
+          >
+            View Details
+          </Link>
+        </div>
       </div>
     </div>
   );

@@ -4,7 +4,7 @@ import Image from "next/image";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaChevronLeft, FaChevronRight, FaSave, FaShoppingCart, FaInfoCircle, FaQuestionCircle, FaSun, FaMoon, FaPlus, FaMinus, FaChevronDown, FaLightbulb, FaLayerGroup, FaRegLightbulb } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight, FaSave, FaShoppingCart, FaInfoCircle, FaQuestionCircle, FaSun, FaMoon, FaPlus, FaMinus, FaChevronDown, FaLightbulb, FaLayerGroup, FaRegLightbulb, FaPallet } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import PlayCanvasViewer from "./PlayCanvasViewer";
@@ -1513,7 +1513,7 @@ const LightConfigurator = () => {
             {/* Mobile Tabs - Only visible on mobile */}
             <div className="md:hidden mb-6 relative z-10">
               <div className="flex border-b border-charleston-green-light overflow-x-auto hide-scrollbar">
-                <button 
+                <motion.button 
                   onClick={() => setActiveTab('type')}
                   className={`px-4 py-2 text-sm font-medium whitespace-nowrap transition-all duration-300 ${activeTab === 'type' 
                     ? 'text-emerald border-emerald border-b-2' 
@@ -1529,7 +1529,7 @@ const LightConfigurator = () => {
                     <FaLightbulb className={activeTab === 'type' ? 'text-emerald' : 'text-gray-500'} />
                     Light Type
                   </motion.span>
-                </button>
+                </motion.button>
                 <button 
                   onClick={() => setActiveTab('amount')}
                   className={`px-4 py-2 text-sm font-medium whitespace-nowrap transition-all duration-300 ${activeTab === 'amount' 
@@ -1574,7 +1574,7 @@ const LightConfigurator = () => {
                       animate={{ opacity: activeTab === 'design' ? 1 : 0.8 }}
                       className="flex items-center gap-1"
                     >
-                      <FaPalette className={activeTab === 'design' ? 'text-emerald' : 'text-gray-500'} />
+                      <FaPallet className={activeTab === 'design' ? 'text-emerald' : 'text-gray-500'} />
                       Design
                     </motion.span>
                   </button>

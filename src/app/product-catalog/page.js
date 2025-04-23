@@ -2,9 +2,11 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { useSelector } from 'react-redux';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import { products, categories, getProductsByCategory } from '../data/products';
+import { categories } from '../data/products';
+import { selectProductsByCategory } from '../redux/slices/productsSlice';
 import ProductCard from './components/ProductCard';
 import CategoryFilter from './components/CategoryFilter';
 import AppDownloadCTA from '../components/AppDownloadCTA';
@@ -18,9 +20,14 @@ function ProductCatalogContent() {
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
   
+  // Get products from Redux store
+  const productsFromRedux = useSelector(state => 
+    selectProductsByCategory(state, selectedCategory)
+  );
+  
   useEffect(() => {
-    setFilteredProducts(getProductsByCategory(selectedCategory));
-  }, [selectedCategory]);
+    setFilteredProducts(productsFromRedux);
+  }, [selectedCategory, productsFromRedux]);
   
   const handleCategoryChange = (categoryId) => {
     setSelectedCategory(categoryId);
