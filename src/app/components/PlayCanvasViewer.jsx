@@ -9,18 +9,53 @@ const PlayCanvasViewer = ({
   const iframeRef = useRef(null);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
+  const [appReady, setAppReady] = useState(false);
   
-  // Send initial configuration when iframe loads
+  // Listen for messages from the PlayCanvas iframe
+  useEffect(() => {
+    const handleMessage = (event) => {
+      // Check if the message is from our iframe
+      if (event.data === 'app:ready1') {
+        console.log('PlayCanvas app is ready');
+        setAppReady(true);
+        setIsLoading(false);
+        
+        // Send default selections after app is ready
+        sendDefaultSelections();
+      }
+    };
+    
+    window.addEventListener('message', handleMessage);
+    
+    return () => {
+      window.removeEventListener('message', handleMessage);
+    };
+  }, []);
+  
+  // Send default selections when app is ready
+  const sendDefaultSelections = () => {
+    if (iframeRef.current && iframeRef.current.contentWindow) {
+      // Only send default selections if they're not provided in the config
+      if (!config.lightType && !config.lightAmount && !config.lightDesign) {
+        // Default selections
+        iframeRef.current.contentWindow.postMessage("light_type:ceiling", "*");
+        iframeRef.current.contentWindow.postMessage("light_amount:1", "*");
+        iframeRef.current.contentWindow.postMessage("pendant_design:product_2", "*");
+      } else {
+        // Send configurations from props instead of defaults
+        sendConfigToPlayCanvas(config);
+      }
+    }
+  };
+  
+  // Handle iframe load event
   useEffect(() => {
     const handleIframeLoad = () => {
       try {
         if (iframeRef.current && iframeRef.current.contentWindow) {
           // Set initial quality
           iframeRef.current.contentWindow.postMessage("highdis", "*");
-          
-          // Send initial configuration
-          sendConfigToPlayCanvas(config);
-          setIsLoading(false);
+          // Note: We don't set isLoading=false here anymore, we wait for app:ready1
         }
       } catch (error) {
         console.error("Error during iframe load:", error);
@@ -47,7 +82,7 @@ const PlayCanvasViewer = ({
         console.warn("PlayCanvas iframe load timeout");
         setIsLoading(false);
       }
-    }, 10000); // 10 second timeout
+    }, 15000); // 15 second timeout
 
     return () => {
       if (iframe) {
@@ -64,6 +99,7 @@ const PlayCanvasViewer = ({
     try {
       if (!iframeRef.current || !iframeRef.current.contentWindow || !config) return;
       
+      // Only send configurations if the app is ready or we're forcing it
       // Send light type
       if (config.lightType) {
         iframeRef.current.contentWindow.postMessage(`light_type:${config.lightType}`, "*");
@@ -74,14 +110,14 @@ const PlayCanvasViewer = ({
         iframeRef.current.contentWindow.postMessage(`light_amount:${config.lightAmount}`, "*");
       }
       
-      // Send cable options
-      if (config.cableColor) {
-        iframeRef.current.contentWindow.postMessage(`cable_color:${config.cableColor}`, "*");
-      }
+      // // Send cable options
+      // if (config.cableColor) {
+      //   iframeRef.current.contentWindow.postMessage(`cable_color:${config.cableColor}`, "*");
+      // }
       
-      if (config.cableLength) {
-        iframeRef.current.contentWindow.postMessage(`cable_length:${config.cableLength}`, "*");
-      }
+      // if (config.cableLength) {
+      //   iframeRef.current.contentWindow.postMessage(`cable_length:${config.cableLength}`, "*");
+      // }
       
       // Send pendant configurations if available
       if (config.pendants && Array.isArray(config.pendants)) {
@@ -120,12 +156,13 @@ const PlayCanvasViewer = ({
         />
       )}
       
-      {/* Loading state */}
+      {/* Loading state - only shown until app:ready1 message is received */}
       {isLoading && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800">
           <div className="text-center p-4 rounded-lg bg-white dark:bg-gray-700 shadow-lg">
             <div className="w-12 h-12 border-4 border-t-emerald-500 border-gray-200 rounded-full animate-spin mx-auto mb-4"></div>
             <p className={`text-lg ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Loading 3D Preview...</p>
+            <p className={`text-sm mt-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Please wait while we prepare your experience</p>
           </div>
         </div>
       )}

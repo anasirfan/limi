@@ -992,9 +992,9 @@ const LightConfigurator = () => {
   // State for configuration options
   // Always use dark mode
   const isDarkMode = true;
-  const [lightType, setLightType] = useState('pendant');
-  const [lightAmount, setLightAmount] = useState(3);
-  const [lightDesign, setLightDesign] = useState('bumble');
+  const [lightType, setLightType] = useState('ceiling');
+  const [lightAmount, setLightAmount] = useState(1);
+  const [lightDesign, setLightDesign] = useState('product_2');
   const [cableColor, setCableColor] = useState('black');
   const [cableLength, setCableLength] = useState('1.5m');
   const [pendants, setPendants] = useState([]);
