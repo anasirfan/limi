@@ -43,19 +43,27 @@ function HeroSection() {
     gsap.set(buttonRef.current, { opacity: 0, scale: 0.8 });
 
     // Delay video playback
+    // Only try to manipulate video if it exists
     if (videoRef.current) {
-      // Pause the video initially
-      videoRef.current.pause();
-      
-      // Set the current time to 0 to ensure it starts from the beginning
-      videoRef.current.currentTime = 0;
-      
-      // Start the video after a delay (adjust the delay as needed)
-      setTimeout(() => {
-        videoRef.current.play().catch(error => {
-          console.error("Video playback failed:", error);
-        });
-      }, 2000); // 2-second delay, adjust based on your splash screen duration
+      try {
+        // Pause the video initially
+        videoRef.current.pause();
+        
+        // Set the current time to 0 to ensure it starts from the beginning
+        videoRef.current.currentTime = 0;
+        
+        // Start the video after a delay (adjust the delay as needed)
+        setTimeout(() => {
+          // Check again if videoRef.current exists before playing
+          if (videoRef.current) {
+            videoRef.current.play().catch(error => {
+              console.error("Video playback failed:", error);
+            });
+          }
+        }, 2000); // 2-second delay, adjust based on your splash screen duration
+      } catch (error) {
+        console.error("Error manipulating video:", error);
+      }
     }
 
     const tl = gsap.timeline({

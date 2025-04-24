@@ -16,6 +16,10 @@ export default function ProductCard({ product, viewMode }) {
   // Check if product is in favorites
   const isFavorite = favorites.some(item => item.id === product.id);
   
+  // Get the primary and hover images
+  const primaryImage = product.thumbnail || (product.images && product.images.length > 0 ? product.images[0] : '/images/products/placeholder.jpg');
+  const hoverImage = product.images && product.images.length > 1 ? product.images[1] : primaryImage;
+  
   // Handle add to cart
   const handleAddToCart = (e) => {
     e.preventDefault();
@@ -43,15 +47,24 @@ export default function ProductCard({ product, viewMode }) {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <div className="relative h-64 overflow-hidden">
+        <div className="relative aspect-square overflow-hidden">
+          {/* Primary image (close-up) */}
           <Image
-            src={product.thumbnail || '/images/products/placeholder.jpg'}
+            src={primaryImage}
             alt={product.name}
             fill
-            className={`object-cover transition-transform duration-700 ${isHovered ? 'scale-110' : 'scale-100'}`}
+            className={`object-cover transition-opacity duration-500 ${isHovered ? 'opacity-0' : 'opacity-100'}`}
+          />
+          
+          {/* Hover image (pendant in living space) */}
+          <Image
+            src={hoverImage}
+            alt={`${product.name} in living space`}
+            fill
+            className={`object-cover transition-opacity duration-500 ${isHovered ? 'opacity-100' : 'opacity-0'}`}
           />
           {product.new && (
-            <div className="absolute top-4 right-4 bg-[#54BB74] text-white text-sm font-bold px-3 py-1 rounded-full">
+            <div className="absolute top-4 right-4 bg-[#50C878] text-white text-sm font-bold px-3 py-1 rounded-full">
               New
             </div>
           )}
@@ -59,7 +72,7 @@ export default function ProductCard({ product, viewMode }) {
         
         <div className="p-6">
           <div className="mb-4">
-            <span className="text-sm text-emerald font-medium">
+            <span className="text-sm text-[#50C878] font-medium">
               {product.category}
             </span>
             <h3 className="text-xl font-bold font-[Amenti] mt-1 text-white">
@@ -74,7 +87,7 @@ export default function ProductCard({ product, viewMode }) {
           <div className="flex gap-2 mb-4">
             <button
               onClick={handleAddToCart}
-              className="flex-1 flex items-center justify-center gap-2 bg-charleston-green border border-emerald text-emerald py-2 rounded-md hover:bg-emerald hover:text-charleston-green transition-colors"
+              className="flex-1 flex items-center justify-center gap-2 bg-[#2B2D2F] border border-[#50C878] text-[#50C878] py-2 rounded-md hover:bg-[#50C878] hover:text-[#2B2D2F] transition-colors"
             >
               <FaShoppingCart size={16} />
               <span>Add to Cart</span>
@@ -82,20 +95,20 @@ export default function ProductCard({ product, viewMode }) {
             
             <button
               onClick={handleToggleFavorite}
-              className={`p-2 rounded-md border ${isFavorite ? 'bg-emerald/10 border-emerald' : 'bg-charleston-green border-emerald/50'} transition-colors`}
+              className={`p-2 rounded-md border ${isFavorite ? 'bg-[#50C878]/10 border-[#50C878]' : 'bg-[#2B2D2F] border-[#50C878]/50'} transition-colors`}
               aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
             >
               {isFavorite ? (
-                <FaHeart className="text-emerald" size={16} />
+                <FaHeart className="text-[#50C878]" size={16} />
               ) : (
-                <FaRegHeart className="text-emerald" size={16} />
+                <FaRegHeart className="text-[#50C878]" size={16} />
               )}
             </button>
           </div>
           
           <Link 
             href={`/product-catalog/${product.slug}`}
-            className="block w-full text-center bg-charleston-green border border-emerald text-emerald py-2 rounded-md hover:bg-emerald hover:text-charleston-green transition-colors"
+            className="block w-full text-center bg-[#2B2D2F] border border-[#50C878] text-[#50C878] py-2 rounded-md hover:bg-[#50C878] hover:text-[#2B2D2F] transition-colors"
           >
             View Details
           </Link>
@@ -111,15 +124,24 @@ export default function ProductCard({ product, viewMode }) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="relative h-64 md:h-auto md:w-1/3 overflow-hidden">
+      <div className="relative aspect-square md:aspect-auto md:h-auto md:w-1/3 overflow-hidden">
+        {/* Primary image (close-up) */}
         <Image
-          src={product.thumbnail || '/images/products/placeholder.jpg'}
+          src={primaryImage}
           alt={product.name}
           fill
-          className={`object-cover transition-transform duration-700 ${isHovered ? 'scale-110' : 'scale-100'}`}
+          className={`object-cover transition-opacity duration-500 ${isHovered ? 'opacity-0' : 'opacity-100'}`}
+        />
+        
+        {/* Hover image (pendant in living space) */}
+        <Image
+          src={hoverImage}
+          alt={`${product.name} in living space`}
+          fill
+          className={`object-cover transition-opacity duration-500 ${isHovered ? 'opacity-100' : 'opacity-0'}`}
         />
         {product.new && (
-          <div className="absolute top-4 right-4 bg-[#54BB74] text-white text-sm font-bold px-3 py-1 rounded-full">
+          <div className="absolute top-4 right-4 bg-[#50C878] text-white text-sm font-bold px-3 py-1 rounded-full">
             New
           </div>
         )}
@@ -128,7 +150,7 @@ export default function ProductCard({ product, viewMode }) {
       <div className="p-6 md:w-2/3 flex flex-col justify-between">
         <div>
           <div className="mb-4">
-            <span className="text-sm text-[#54BB74] font-medium">
+            <span className="text-sm text-[#50C878] font-medium">
               {product.category}
             </span>
             <h3 className="text-xl font-bold font-[Amenti] mt-1 text-white">
@@ -150,33 +172,34 @@ export default function ProductCard({ product, viewMode }) {
           </div>
         </div>
         
-        <div className="flex items-center gap-3">
-          <button
-            onClick={handleAddToCart}
-            className="flex items-center justify-center gap-2 bg-charleston-green border border-emerald text-emerald px-4 py-2 rounded-md hover:bg-emerald hover:text-charleston-green transition-colors"
-          >
-            <FaShoppingCart size={16} />
-            <span>Add to Cart</span>
-          </button>
-          
-          <button
-            onClick={handleToggleFavorite}
-            className={`p-2 rounded-md border ${isFavorite ? 'bg-emerald/10 border-emerald' : 'bg-charleston-green border-emerald/50'} transition-colors`}
-            aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-          >
-            {isFavorite ? (
-              <FaHeart className="text-emerald" size={16} />
-            ) : (
-              <FaRegHeart className="text-emerald" size={16} />
-            )}
-          </button>
-          
-          <Link 
-            href={`/product-catalog/${product.slug}`}
-            className="self-start bg-charleston-green border border-emerald text-emerald px-6 py-2 rounded-md hover:bg-emerald hover:text-charleston-green transition-colors"
-          >
-            View Details
-          </Link>
+        <div className="flex items-center justify-between mt-6">
+          <span className="text-xl font-bold text-white">${product.price.toFixed(2)}</span>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleToggleFavorite}
+              className={`p-2 rounded-md border ${isFavorite ? 'bg-[#50C878]/10 border-[#50C878]' : 'bg-[#2B2D2F] border-[#50C878]/50'} transition-colors`}
+              aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+            >
+              {isFavorite ? (
+                <FaHeart className="text-[#50C878]" size={16} />
+              ) : (
+                <FaRegHeart className="text-[#50C878]" size={16} />
+              )}
+            </button>
+            <button
+              onClick={handleAddToCart}
+              className="flex items-center justify-center gap-2 bg-[#2B2D2F] border border-[#50C878] text-[#50C878] px-4 py-2 rounded-md hover:bg-[#50C878] hover:text-[#2B2D2F] transition-colors"
+            >
+              <FaShoppingCart size={16} />
+              <span>Add to Cart</span>
+            </button>
+            <Link 
+              href={`/product-catalog/${product.slug}`} 
+              className="px-4 py-2 bg-[#50C878] text-white rounded-md hover:bg-[#3da861] transition-colors"
+            >
+              View Details
+            </Link>
+          </div>
         </div>
       </div>
     </div>

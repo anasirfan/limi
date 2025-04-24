@@ -15,6 +15,11 @@ import AnalyticsInsights from './components/AnalyticsInsights';
 import DistributorHub from './components/DistributorHub';
 // import LightingStyleCompare from './components/LightingStyleCompare';
 
+// New homepage sections
+import ProductCategories from './components/ProductCategories';
+import PortalCTA from './components/PortalCTA';
+import ConfiguratorPreview from './components/ConfiguratorPreview';
+
 // import UserSelectionPopup from './components/UserSelectionPopup';
 import VideoHighlightsCarousel from './components/VideoHighlightsCarousel';
 import CookieConsent from './components/CookieConsent';
@@ -107,6 +112,10 @@ export default function Home() {
       {/* <LightingStyleCompare  /> */}
       
       <LightingScene  />
+      {/* New homepage sections */}
+      <ProductCategories />
+      <PortalCTA />
+      <ConfiguratorPreview />
       <AnalyticsInsights  />
       <DistributorHub  />
       {/* {!isMobile && <MouseTrail />} */}

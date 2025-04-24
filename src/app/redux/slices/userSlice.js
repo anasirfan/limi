@@ -13,11 +13,53 @@ const loadUserFromStorage = () => {
   }
 };
 
+// Save user to localStorage
+const saveUserToStorage = (user) => {
+  if (typeof window === 'undefined') return;
+  
+  try {
+    localStorage.setItem('limiUser', JSON.stringify(user));
+  } catch (error) {
+    console.error('Error saving user to localStorage:', error);
+  }
+};
+
 const savedUser = loadUserFromStorage();
 
+// Default user data structure with mock data
+const defaultUserData = {
+  id: '',
+  name: '',
+  email: '',
+  phone: '',
+  avatar: '',
+  notifications: {
+    email: true,
+    sms: false,
+    app: true
+  },
+  addresses: [],
+  paymentMethods: [],
+  savedConfigurations: []
+};
+
+// Merge saved user with default structure to ensure all fields exist
+const mergedUser = savedUser ? {
+  ...defaultUserData,
+  ...savedUser,
+  // Ensure nested objects exist
+  notifications: {
+    ...defaultUserData.notifications,
+    ...(savedUser.notifications || {})
+  },
+  addresses: savedUser.addresses || [],
+  paymentMethods: savedUser.paymentMethods || [],
+  savedConfigurations: savedUser.savedConfigurations || []
+} : null;
+
 const initialState = {
-  isLoggedIn: !!savedUser,
-  user: savedUser,
+  isLoggedIn: !!mergedUser,
+  user: mergedUser,
   registeredUsers: [],
   loginStatus: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
   signupStatus: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
@@ -106,26 +148,172 @@ export const userSlice = createSlice({
       state.error = null;
       
       // Save to localStorage
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('limiUser', JSON.stringify(action.payload));
-      }
+      saveUserToStorage(action.payload);
     },
-    logout: (state) => {
+    logout(state) {
       state.isLoggedIn = false;
       state.user = null;
       state.loginStatus = 'idle';
       state.error = null;
       
-      // Remove from localStorage
+      // Clear user from localStorage
       if (typeof window !== 'undefined') {
         localStorage.removeItem('limiUser');
       }
     },
-    clearAuthStatus: (state) => {
+    clearAuthStatus(state) {
       state.loginStatus = 'idle';
       state.signupStatus = 'idle';
       state.error = null;
       state.successMessage = null;
+    },
+    updatePersonalInfo(state, action) {
+      if (state.user) {
+        state.user = {
+          ...state.user,
+          ...action.payload
+        };
+        saveUserToStorage(state.user);
+      }
+    },
+    updateNotificationPreferences(state, action) {
+      if (state.user) {
+        state.user.notifications = {
+          ...state.user.notifications,
+          ...action.payload
+        };
+        saveUserToStorage(state.user);
+      }
+    },
+    addAddress(state, action) {
+      if (state.user) {
+        const newAddress = {
+          id: `addr-${Date.now()}`,
+          default: state.user.addresses.length === 0, // First address is default
+          ...action.payload
+        };
+        
+        state.user.addresses.push(newAddress);
+        saveUserToStorage(state.user);
+      }
+    },
+    updateAddress(state, action) {
+      if (state.user) {
+        const { id, ...addressData } = action.payload;
+        state.user.addresses = state.user.addresses.map(addr => 
+          addr.id === id ? { ...addr, ...addressData } : addr
+        );
+        saveUserToStorage(state.user);
+      }
+    },
+    removeAddress(state, action) {
+      if (state.user) {
+        const addressId = action.payload;
+        const removedAddress = state.user.addresses.find(addr => addr.id === addressId);
+        
+        state.user.addresses = state.user.addresses.filter(addr => addr.id !== addressId);
+        
+        // If we removed the default address and there are other addresses, make the first one default
+        if (removedAddress?.default && state.user.addresses.length > 0) {
+          state.user.addresses[0].default = true;
+        }
+        
+        saveUserToStorage(state.user);
+      }
+    },
+    setDefaultAddress(state, action) {
+      if (state.user) {
+        const addressId = action.payload;
+        state.user.addresses = state.user.addresses.map(addr => ({
+          ...addr,
+          default: addr.id === addressId
+        }));
+        saveUserToStorage(state.user);
+      }
+    },
+    addPaymentMethod(state, action) {
+      if (state.user) {
+        const newPaymentMethod = {
+          id: `card-${Date.now()}`,
+          default: state.user.paymentMethods.length === 0, // First payment method is default
+          ...action.payload
+        };
+        
+        state.user.paymentMethods.push(newPaymentMethod);
+        saveUserToStorage(state.user);
+      }
+    },
+    updatePaymentMethod(state, action) {
+      if (state.user) {
+        const { id, ...paymentData } = action.payload;
+        state.user.paymentMethods = state.user.paymentMethods.map(method => 
+          method.id === id ? { ...method, ...paymentData } : method
+        );
+        saveUserToStorage(state.user);
+      }
+    },
+    removePaymentMethod(state, action) {
+      if (state.user) {
+        const paymentId = action.payload;
+        const removedMethod = state.user.paymentMethods.find(method => method.id === paymentId);
+        
+        state.user.paymentMethods = state.user.paymentMethods.filter(method => method.id !== paymentId);
+        
+        // If we removed the default payment method and there are others, make the first one default
+        if (removedMethod?.default && state.user.paymentMethods.length > 0) {
+          state.user.paymentMethods[0].default = true;
+        }
+        
+        saveUserToStorage(state.user);
+      }
+    },
+    setDefaultPaymentMethod: (state, action) => {
+      const id = action.payload;
+      
+      if (state.user) {
+        state.user.paymentMethods = state.user.paymentMethods.map(method => ({
+          ...method,
+          isDefault: method.id === id
+        }));
+        
+        // Save to localStorage
+        saveUserToStorage(state.user);
+      }
+    },
+    saveConfiguration: (state, action) => {
+      const configData = action.payload;
+      
+      if (state.user) {
+        // Generate a unique ID for the configuration
+        const configId = `config_${Date.now()}`;
+        
+        // Add the configuration to the user's saved configurations
+        state.user.savedConfigurations = [
+          {
+            id: configId,
+            name: configData.name || `Configuration ${state.user.savedConfigurations.length + 1}`,
+            date: new Date().toISOString(),
+            configuration: configData,
+            thumbnail: configData.thumbnail || '/images/default-config-thumbnail.jpg'
+          },
+          ...state.user.savedConfigurations
+        ];
+        
+        // Save to localStorage
+        saveUserToStorage(state.user);
+      }
+    },
+    removeSavedConfiguration: (state, action) => {
+      const configId = action.payload;
+      
+      if (state.user && state.user.savedConfigurations) {
+        state.user.savedConfigurations = state.user.savedConfigurations.filter(
+          config => config.id !== configId
+        );
+        
+        // Save to localStorage
+        saveUserToStorage(state.user);
+      }
     },
   },
   extraReducers: (builder) => {
@@ -162,6 +350,22 @@ export const userSlice = createSlice({
   },
 });
 
-export const { login, logout, clearAuthStatus } = userSlice.actions;
+export const { 
+  login, 
+  logout, 
+  clearAuthStatus, 
+  updatePersonalInfo, 
+  updateNotificationPreferences, 
+  addAddress, 
+  updateAddress, 
+  removeAddress, 
+  setDefaultAddress, 
+  addPaymentMethod, 
+  updatePaymentMethod, 
+  removePaymentMethod, 
+  setDefaultPaymentMethod,
+  saveConfiguration,
+  removeSavedConfiguration
+} = userSlice.actions;
 
 export default userSlice.reducer;

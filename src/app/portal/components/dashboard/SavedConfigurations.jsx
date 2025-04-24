@@ -13,7 +13,8 @@ import {
   FaSearch,
   FaFilter,
   FaSortAmountDown,
-  FaChevronDown
+  FaChevronDown,
+  FaExternalLinkAlt
 } from 'react-icons/fa';
 
 export default function SavedConfigurations({ configurations }) {
@@ -273,6 +274,14 @@ export default function SavedConfigurations({ configurations }) {
                           <div>
                             <div className="text-white font-medium">{product.name}</div>
                             <div className="text-xs text-gray-400">ID: {product.id}</div>
+                            <Link 
+                              href={`/product-catalog/${product.id}`} 
+                              target="_blank"
+                              className="inline-flex items-center gap-1 text-xs text-[#50C878] hover:underline mt-1"
+                            >
+                              <span>View Product</span>
+                              <FaExternalLinkAlt size={10} />
+                            </Link>
                           </div>
                         </div>
                       </div>

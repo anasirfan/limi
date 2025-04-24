@@ -1,28 +1,73 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 
 export default function ProductImageGallery({ images, productName, currentImageIndex, setCurrentImageIndex }) {
   const [isLoading, setIsLoading] = useState(true);
+  const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 });
+  const [showMagnifier, setShowMagnifier] = useState(false);
+  const imageRef = useRef(null);
+  const zoomFactor = 10; // 2x magnification
   
+  // Handle image navigation
   const handlePrevImage = () => {
+    setShowMagnifier(false);
     setCurrentImageIndex(prev => (prev === 0 ? images.length - 1 : prev - 1));
   };
   
   const handleNextImage = () => {
+    setShowMagnifier(false);
     setCurrentImageIndex(prev => (prev === images.length - 1 ? 0 : prev + 1));
   };
   
   const handleThumbnailClick = (index) => {
+    setShowMagnifier(false);
     setCurrentImageIndex(index);
+  };
+  
+  // Handle mouse interactions for zoom
+  const handleMouseMove = (e) => {
+    if (!imageRef.current) return;
+    
+    // Get the dimensions of the image container
+    const { left, top, width, height } = imageRef.current.getBoundingClientRect();
+    
+    // Check if cursor is near navigation buttons (20% from edges)
+    const edgeThreshold = 0.1;
+    const relativeX = (e.clientX - left) / width;
+    const relativeY = (e.clientY - top) / height;
+    
+    // Disable magnifier when near the edges (where navigation buttons are)
+    if (relativeX < edgeThreshold || relativeX > (1 - edgeThreshold) || 
+        relativeY < edgeThreshold || relativeY > (1 - edgeThreshold)) {
+      setShowMagnifier(false);
+      return;
+    }
+    
+    // Set the position for the magnifier
+    setZoomPosition({
+      x: relativeX * 100,
+      y: relativeY * 100
+    });
+    
+    setShowMagnifier(true);
+  };
+  
+  const handleMouseLeave = () => {
+    setShowMagnifier(false);
   };
   
   return (
     <div className="space-y-4">
-      {/* Main image */}
-      <div className="relative aspect-square bg-[#1e1e1e] rounded-lg overflow-hidden">
+      {/* Main image with zoom functionality */}
+      <div 
+        className="relative aspect-square bg-[#1e1e1e] rounded-lg overflow-hidden cursor-none"
+        ref={imageRef}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+      >
         {images && images.length > 0 ? (
           <>
             <Image
@@ -31,7 +76,25 @@ export default function ProductImageGallery({ images, productName, currentImageI
               fill
               className="object-contain"
               onLoadingComplete={() => setIsLoading(false)}
+              priority
             />
+            
+            {/* Magnifying glass zoom effect */}
+            {showMagnifier && !isLoading && (
+              <div 
+                className="absolute pointer-events-none border-2 border-[#54BB74] shadow-lg rounded-full overflow-hidden z-10"
+                style={{
+                  width: '150px',
+                  height: '150px',
+                  left: `calc(${zoomPosition.x}% - 75px)`,
+                  top: `calc(${zoomPosition.y}% - 75px)`,
+                  backgroundImage: `url(${images[currentImageIndex] || '/images/products/placeholder.jpg'})`,
+                  backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
+                  backgroundSize: `${zoomFactor * 100}%`,
+                  backgroundRepeat: 'no-repeat',
+                }}
+              />
+            )}
             
             {/* Image navigation arrows */}
             {images.length > 1 && (

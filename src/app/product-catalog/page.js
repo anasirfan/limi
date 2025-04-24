@@ -25,8 +25,12 @@ function ProductCatalogContent() {
     selectProductsByCategory(state, selectedCategory)
   );
   
+  // Fix for infinite loop - only update filtered products when dependencies actually change
   useEffect(() => {
-    setFilteredProducts(productsFromRedux);
+    // Avoid unnecessary state updates if the arrays are the same
+    if (JSON.stringify(productsFromRedux) !== JSON.stringify(filteredProducts)) {
+      setFilteredProducts(productsFromRedux);
+    }
   }, [selectedCategory, productsFromRedux]);
   
   const handleCategoryChange = (categoryId) => {
@@ -46,8 +50,8 @@ function ProductCatalogContent() {
               Product Catalog
             </h1>
             <p className="text-lg text-gray-300 max-w-3xl">
-              Explore our innovative lighting solutions designed to transform any space with intelligent, 
-              customizable lighting experiences.
+              Discover the Limitless Lighting System — a modular, future-ready platform that merges style and intelligence. 
+              With swappable components and a unique mounting system, update your lighting effortlessly — no rewiring, no tools, no downtime.
             </p>
           </div>
           

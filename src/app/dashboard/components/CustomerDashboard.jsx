@@ -307,7 +307,7 @@ export default function CustomerDashboard({ token }) {
 
   // Fetch visitor logs when tab changes or filters change
   useEffect(() => {
-    if (activeTab === 'traffic') {
+    if (activeTab === 'tracking') {
       fetchVisitorLogs();
     } else if (activeTab === 'mobile') {
       fetchMobileUsers();

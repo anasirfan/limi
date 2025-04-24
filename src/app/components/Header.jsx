@@ -3,27 +3,50 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useState, useRef, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useRouter } from 'next/navigation';
 import { logout } from '../redux/slices/userSlice';
+import { removeFromCart } from '../redux/slices/cartSlice';
+import { removeFromFavorites } from '../redux/slices/favoritesSlice';
 import { usePathname } from 'next/navigation';
 import gsap from 'gsap';
-import { FaUser, FaSignOutAlt, FaUserCircle, FaBell, FaPortrait, FaTachometerAlt, FaChevronDown } from 'react-icons/fa';
-
+import { FaUser, FaSignOutAlt, FaUserCircle, FaBell, FaPortrait, FaTachometerAlt, FaChevronDown ,  FaHeart, FaShoppingCart, FaTrash, FaTimes } from 'react-icons/fa';
 const Header = () => {
+  const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const [cartDropdownOpen, setCartDropdownOpen] = useState(false);
+  const [favoritesDropdownOpen, setFavoritesDropdownOpen] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+  
   const menuRef = useRef(null);
   const menuContentRef = useRef(null);
   const menuItemRef = useRef(null);
   const userDropdownRef = useRef(null);
+  const cartDropdownRef = useRef(null);
+  const favoritesDropdownRef = useRef(null);
+  
+  // Always call hooks unconditionally
+  const dispatch = useDispatch();
+  const cartData = useSelector((state) => state.cart);
+  const favoritesData = useSelector((state) => state.favorites);
+  const userData = useSelector((state) => state.user);
+  
+  // Then use the data conditionally
+  const cart = isClient ? cartData : { items: [], totalQuantity: 0, totalAmount: 0 };
+  const favorites = isClient ? favoritesData : { items: [] };
+  const { isLoggedIn, user } = isClient ? userData : { isLoggedIn: false, user: null };
+
   
   // Get current path to determine which navigation to show
   const pathname = usePathname();
   const isHomePage = pathname === '/';
   
-  // Redux state for user authentication
-  const { isLoggedIn, user } = useSelector((state) => state.user);
   const isAdmin = user?.role === 'admin';
-  const dispatch = useDispatch();
+  
+  // Set isClient to true after component mounts
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -37,11 +60,35 @@ const Header = () => {
   
   const toggleUserDropdown = () => {
     setUserDropdownOpen(!userDropdownOpen);
+    setCartDropdownOpen(false);
+    setFavoritesDropdownOpen(false);
+  };
+  
+  const toggleCartDropdown = () => {
+    setCartDropdownOpen(!cartDropdownOpen);
+    setUserDropdownOpen(false);
+    setFavoritesDropdownOpen(false);
+  };
+  
+  const toggleFavoritesDropdown = () => {
+    setFavoritesDropdownOpen(!favoritesDropdownOpen);
+    setUserDropdownOpen(false);
+    setCartDropdownOpen(false);
   };
   
   const handleLogout = () => {
     dispatch(logout());
     setUserDropdownOpen(false);
+  };
+
+  const handleRemoveFromCart = (e, id) => {
+    e.stopPropagation();
+    dispatch(removeFromCart(id));
+  };
+  
+  const handleRemoveFromFavorites = (e, id) => {
+    e.stopPropagation();
+    dispatch(removeFromFavorites(id));
   };
 
   useEffect(() => {
@@ -87,6 +134,12 @@ const Header = () => {
     const handleClickOutside = (event) => {
       if (userDropdownRef.current && !userDropdownRef.current.contains(event.target)) {
         setUserDropdownOpen(false);
+      }
+      if (cartDropdownRef.current && !cartDropdownRef.current.contains(event.target)) {
+        setCartDropdownOpen(false);
+      }
+      if (favoritesDropdownRef.current && !favoritesDropdownRef.current.contains(event.target)) {
+        setFavoritesDropdownOpen(false);
       }
     };
 
@@ -200,9 +253,185 @@ const Header = () => {
               ></span>
             </button>
             
+            {/* Cart and Favorites icons */}
+            <div className="hidden md:flex items-center gap-3 mr-4">
+              {/* Favorites dropdown */}
+              <div className="relative" ref={favoritesDropdownRef}>
+                <button
+                  onClick={toggleFavoritesDropdown}
+                  className="relative p-2 text-white hover:text-[#50C878] transition-colors"
+                  aria-label="Favorites"
+                >
+                  <FaHeart size={20} />
+                  {isClient && favorites.items.length > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-[#50C878] text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+                      {favorites.items.length}
+                    </span>
+                  )}
+                </button>
+                
+                {/* Favorites dropdown content */}
+                {isClient && favoritesDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-80 bg-[#1e1e1e] border border-[#3a3d42] rounded-lg shadow-lg z-50 overflow-hidden">
+                    <div className="p-3 border-b border-[#3a3d42] flex justify-between items-center">
+                      <h3 className="font-medium text-white">My Favorites ({favorites.items.length})</h3>
+                      <button 
+                        onClick={() => setFavoritesDropdownOpen(false)}
+                        className="text-gray-400 hover:text-white"
+                      >
+                        <FaTimes />
+                      </button>
+                    </div>
+                    
+                    <div className="max-h-80 overflow-y-auto">
+                      {favorites.items.length === 0 ? (
+                        <div className="p-4 text-center text-gray-400">
+                          <p>No favorites yet</p>
+                        </div>
+                      ) : (
+                        <ul>
+                          {favorites.items.map(item => (
+                            <li key={item.id} className="border-b border-[#3a3d42] last:border-b-0">
+                              <Link 
+                                href={`/product-catalog/${item.slug}`}
+                                className="p-3 flex items-center hover:bg-[#2B2D2F] transition-colors"
+                              >
+                                <div className="w-16 h-16 bg-[#2B2D2F] rounded-md overflow-hidden relative flex-shrink-0">
+                                  {item.image && (
+                                    <Image 
+                                      src={item.image} 
+                                      alt={item.name}
+                                      fill
+                                      className="object-cover"
+                                    />
+                                  )}
+                                </div>
+                                <div className="ml-3 flex-grow">
+                                  <h4 className="text-white font-medium">{item.name}</h4>
+                                  <p className="text-[#50C878] text-sm">${item.price.toFixed(2)}</p>
+                                </div>
+                                <button 
+                                  onClick={(e) => handleRemoveFromFavorites(e, item.id)}
+                                  className="p-2 text-gray-400 hover:text-red-500 transition-colors"
+                                  aria-label="Remove from favorites"
+                                >
+                                  <FaTrash size={14} />
+                                </button>
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                    
+                    <div className="p-3 border-t border-[#3a3d42]">
+                      <Link 
+                        href="/portal"
+                        className="block w-full py-2 text-center bg-[#2B2D2F] border border-[#50C878] text-[#50C878] rounded-md hover:bg-[#50C878] hover:text-[#2B2D2F] transition-colors"
+                        onClick={() => setFavoritesDropdownOpen(false)}
+                      >
+                        View All Favorites
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              {/* Cart dropdown */}
+              <div className="relative" ref={cartDropdownRef}>
+                <button
+                  onClick={toggleCartDropdown}
+                  className="relative p-2 text-white hover:text-[#50C878] transition-colors"
+                  aria-label="Shopping Cart"
+                >
+                  <FaShoppingCart size={20} />
+                  {cart.items.length > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-[#50C878] text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+                      {cart.totalQuantity}
+                    </span>
+                  )}
+                </button>
+                
+                {/* Cart dropdown content */}
+                {cartDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-80 bg-[#1e1e1e] border border-[#3a3d42] rounded-lg shadow-lg z-50 overflow-hidden">
+                    <div className="p-3 border-b border-[#3a3d42] flex justify-between items-center">
+                      <h3 className="font-medium text-white">My Cart ({cart.totalQuantity})</h3>
+                      <button 
+                        onClick={() => setCartDropdownOpen(false)}
+                        className="text-gray-400 hover:text-white"
+                      >
+                        <FaTimes />
+                      </button>
+                    </div>
+                    
+                    <div className="max-h-80 overflow-y-auto">
+                      {cart.items.length === 0 ? (
+                        <div className="p-4 text-center text-gray-400">
+                          <p>Your cart is empty</p>
+                        </div>
+                      ) : (
+                        <ul>
+                          {cart.items.map(item => (
+                            <li key={item.id} className="border-b border-[#3a3d42] last:border-b-0">
+                              <Link 
+                                href={`/product-catalog/${item.slug}`}
+                                className="p-3 flex items-center hover:bg-[#2B2D2F] transition-colors"
+                              >
+                                <div className="w-16 h-16 bg-[#2B2D2F] rounded-md overflow-hidden relative flex-shrink-0">
+                                  {item.image && (
+                                    <Image 
+                                      src={item.image} 
+                                      alt={item.name}
+                                      fill
+                                      className="object-cover"
+                                    />
+                                  )}
+                                </div>
+                                <div className="ml-3 flex-grow">
+                                  <h4 className="text-white font-medium">{item.name}</h4>
+                                  <div className="flex justify-between">
+                                    <p className="text-gray-400 text-sm">Qty: {item.quantity}</p>
+                                    <p className="text-[#50C878] text-sm">${(item.price * item.quantity).toFixed(2)}</p>
+                                  </div>
+                                </div>
+                                <button 
+                                  onClick={(e) => handleRemoveFromCart(e, item.id)}
+                                  className="p-2 text-gray-400 hover:text-red-500 transition-colors"
+                                  aria-label="Remove from cart"
+                                >
+                                  <FaTrash size={14} />
+                                </button>
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                    
+                    <div className="p-3 border-t border-[#3a3d42]">
+                      <div className="flex justify-between mb-3">
+                        <span className="text-gray-300">Subtotal:</span>
+                        <span className="text-white font-medium">${cart.totalAmount.toFixed(2)}</span>
+                      </div>
+                      <Link 
+                        href="/checkout"
+                        className="block w-full py-2 text-center bg-[#50C878] text-[#2B2D2F] rounded-md hover:bg-[#3da861] transition-colors"
+                        onClick={() => setCartDropdownOpen(false)}
+                      >
+                        Checkout
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+            
             {/* Auth Button and User Menu - positioned at extreme right */}
             <div className="flex items-center">
-              {!isLoggedIn ? (
+              {!isClient ? (
+                <div className="w-[120px] h-[36px] bg-[#50C878] rounded-md"></div>
+              ) : !isLoggedIn ? (
                 <Link 
                   href="/portal" 
                   className="px-4 py-1.5 text-charleston-green bg-emerald hover:bg-emerald-light transition-all duration-300 rounded-md text-sm font-medium shadow-sm hover:shadow-emerald/40"
@@ -234,7 +463,7 @@ const Header = () => {
                   </button>
                   
                   {/* Dropdown menu */}
-                  {userDropdownOpen && (
+                  {isClient && userDropdownOpen && (
                     <div className="absolute right-0 mt-2 w-56 bg-charleston-green-dark border border-charleston-green-light rounded-lg shadow-xl py-2 z-50 backdrop-blur-md">
                       <div className="px-4 py-2 border-b border-charleston-green-light">
                         <p className="text-sm font-medium text-emerald">{user?.name || 'User'}</p>
@@ -250,14 +479,14 @@ const Header = () => {
                         Notifications
                       </Link>
                       
-                      <Link 
+                      {/* <Link 
                         href="/account"
                         className="flex items-center gap-3 px-4 py-2 text-sm text-white hover:bg-emerald/10 hover:text-emerald transition-colors duration-200"
                         onClick={() => setUserDropdownOpen(false)}
                       >
                         <FaUser className="text-emerald" />
                         Account
-                      </Link>
+                      </Link> */}
                       
                       <Link 
                         href="/portal"
@@ -320,6 +549,7 @@ const Header = () => {
                 </span>
               </button>
             ))}
+           
             
             {/* Standard navigation links - shown on all other pages */}
             {!isHomePage && standardLinks.map((link) => (
@@ -363,6 +593,7 @@ const Header = () => {
                 </span>
               </Link>
             )}
+
           </nav>
         </div>
       </div>

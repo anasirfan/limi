@@ -5,9 +5,10 @@ import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { useSelector } from 'react-redux';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
-import { getProductBySlug } from '../../data/products';
+import { selectProductBySlug } from '../../redux/slices/productsSlice';
 import ProductImageGallery from '../components/ProductImageGallery';
 import ProductSpecifications from '../components/ProductSpecifications';
 import ProductToggleOptions from '../components/ProductToggleOptions';
@@ -26,23 +27,28 @@ function ProductDetailContent() {
   const [selectedOptions, setSelectedOptions] = useState({});
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   
+  // Get product from Redux store using the slug
+  const productFromRedux = useSelector(state => selectProductBySlug(state, params.slug));
+  
   useEffect(() => {
-    if (params.slug) {
-      const productData = getProductBySlug(params.slug);
-      setProduct(productData);
-      
-      // Initialize selected options
-      if (productData && productData.toggleOptions) {
-        const initialOptions = {};
-        productData.toggleOptions.forEach(option => {
-          initialOptions[option.name] = option.defaultValue;
-        });
-        setSelectedOptions(initialOptions);
+    if (params.slug && productFromRedux) {
+      // Prevent unnecessary re-renders by checking if the product has changed
+      if (!product || product.id !== productFromRedux.id) {
+        setProduct(productFromRedux);
+        
+        // Initialize selected options
+        if (productFromRedux.toggleOptions) {
+          const initialOptions = {};
+          productFromRedux.toggleOptions.forEach(option => {
+            initialOptions[option.name] = option.defaultValue;
+          });
+          setSelectedOptions(initialOptions);
+        }
       }
       
       setLoading(false);
     }
-  }, [params.slug]);
+  }, [params.slug, productFromRedux, product]);
   
   const handleOptionChange = (optionName, value) => {
     setSelectedOptions(prev => ({

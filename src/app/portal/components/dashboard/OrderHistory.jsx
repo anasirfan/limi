@@ -230,6 +230,14 @@ export default function OrderHistory({ orders }) {
                           <div className="flex-1">
                             <div className="text-white font-medium">{item.name}</div>
                             <div className="text-sm text-gray-400">Qty: {item.quantity}</div>
+                            <Link 
+                              href={`/product-catalog/${item.id}`} 
+                              target="_blank"
+                              className="inline-flex items-center gap-1 text-xs text-[#54BB74] hover:underline mt-1"
+                            >
+                              <span>View Product</span>
+                              <FaExternalLinkAlt size={10} />
+                            </Link>
                           </div>
                           
                           <div className="text-right">

@@ -24,7 +24,8 @@ export const productsSlice = createSlice({
       const newProduct = {
         ...action.payload,
         id: `product-${Date.now()}`,
-        slug: action.payload.name.toLowerCase().replace(/\s+/g, '-'),
+        // Use the slug from the form instead of generating it
+        slug: action.payload.slug || action.payload.name.toLowerCase().replace(/\s+/g, '-'),
       };
       state.products.push(newProduct);
       saveProductsToLocalStorage(state.products);
@@ -60,6 +61,8 @@ export const { addProduct, updateProduct, deleteProduct, setProducts } = product
 export const selectAllProducts = (state) => state.products.products;
 export const selectProductById = (state, productId) => 
   state.products.products.find(product => product.id === productId);
+export const selectProductBySlug = (state, slug) => 
+  state.products.products.find(product => product.slug === slug);
 export const selectProductsByCategory = (state, category) => 
   category === 'all' 
     ? state.products.products 

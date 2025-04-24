@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { FaPlus, FaEdit, FaTrash, FaSearch, FaFilter } from 'react-icons/fa';
+import { FaPlus, FaEdit, FaTrash, FaSearch, FaFilter, FaExternalLinkAlt } from 'react-icons/fa';
 import { categories } from '../../data/products';
 import { addProduct, updateProduct, deleteProduct, selectAllProducts } from '../../redux/slices/productsSlice';
 import ProductForm from './ProductForm';
@@ -189,7 +189,7 @@ export default function ProductManagement() {
                     </div>
                   </td>
                   <td className="px-4 py-3 text-gray-300">{product.category}</td>
-                  <td className="px-4 py-3 text-gray-300">${product.price.toFixed(2)}</td>
+                  <td className="px-4 py-3 text-gray-300">${typeof product.price === 'number' ? product.price.toFixed(2) : Number(product.price).toFixed(2) || '0.00'}</td>
                   <td className="px-4 py-3">
                     {product.inStock ? (
                       <span className="px-2 py-1 bg-green-900/30 text-green-400 rounded-full text-xs">
@@ -203,9 +203,18 @@ export default function ProductManagement() {
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
+                      <a
+                        href={`/product-catalog/${product.slug}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-2 text-[#50C878] hover:text-[#87CEAB] transition-colors"
+                        title="View on Frontend"
+                      >
+                        <FaExternalLinkAlt />
+                      </a>
                       <button
                         onClick={() => handleEditProduct(product)}
-                        className="p-2 text-blue-400 hover:text-blue-300 transition-colors"
+                        className="p-2 text-[#87CEAB] hover:text-[#a3dbc0] transition-colors"
                         title="Edit product"
                       >
                         <FaEdit />

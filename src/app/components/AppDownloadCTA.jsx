@@ -99,7 +99,7 @@ export default function AppDownloadCTA({
         "Share AR snapshots with friends and designers",
         "Make confident buying decisions"
       ],
-      image: "https://images.unsplash.com/photo-1633422480514-1a3d26f0d852?q=80&w=1974&auto=format&fit=crop"
+      image: "https://images.unsplash.com/photo-1650610359222-79dbbdf47f69?q=80&w=1958&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
     },
     configurator: {
       icon: <FaCog className="text-3xl text-[#54BB74] mb-3" />,
@@ -111,7 +111,7 @@ export default function AppDownloadCTA({
         "Access exclusive app-only components",
         "Real-time preview of lighting effects"
       ],
-      image: "https://images.unsplash.com/photo-1558655146-9f40138edfeb?q=80&w=1964&auto=format&fit=crop"
+      image: "/images/mobile-app/config.jpg"
     },
     control: {
       icon: <FaMobileAlt className="text-3xl text-[#54BB74] mb-3" />,
@@ -123,7 +123,7 @@ export default function AppDownloadCTA({
         "Voice control integration with smart assistants",
         "Energy usage monitoring and optimization"
       ],
-      image: "https://images.unsplash.com/photo-1558002038-1055907df827?q=80&w=2070&auto=format&fit=crop"
+      image: "/images/mobile-app/control.jpg"
     },
     exclusive: {
       icon: <FaGift className="text-3xl text-[#54BB74] mb-3" />,
@@ -135,7 +135,7 @@ export default function AppDownloadCTA({
         "Premium support and priority service",
         "Access to limited edition designs"
       ],
-      image: "https://images.unsplash.com/photo-1576053139778-7e32f2ae3cfd?q=80&w=2070&auto=format&fit=crop"
+      image: "/images/mobile-app/exclusive.jpg"
     },
     design: {
       icon: <FaCog className="text-3xl text-[#54BB74] mb-3" />,
@@ -629,7 +629,7 @@ export default function AppDownloadCTA({
                 <div className="md:w-1/3">
                   <div className="relative w-full aspect-square max-w-[200px] mx-auto">
                     <Image 
-                      src="https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?q=80&w=1970&auto=format&fit=crop"
+                      src="/images/mobile-app/promotion.jpg"
                       alt="Exclusive LIMI App Offer"
                       fill
                       className="object-cover rounded-lg"
@@ -726,7 +726,7 @@ export default function AppDownloadCTA({
               <div className="bg-white p-4 rounded-lg relative z-10">
                 <div className="relative w-[120px] h-[120px]">
                   <Image 
-                    src="https://images.unsplash.com/photo-1595761540881-544471764f36?q=80&w=1974&auto=format&fit=crop" 
+                    src="/images/mobile-app/scan.png" 
                     alt="LIMI App QR Code" 
                     width={120} 
                     height={120}

@@ -28,6 +28,14 @@ export default function ProductForm({ product, onSubmit, onCancel, categories })
     inStock: true,
   });
   
+  // Generate slug from name
+  const generateSlug = (name) => {
+    return name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
+  };
+  
   const [newSpec, setNewSpec] = useState({ key: '', value: '' });
   const [newToggleOption, setNewToggleOption] = useState({ 
     name: '', 
@@ -63,7 +71,16 @@ export default function ProductForm({ product, onSubmit, onCancel, categories })
     if (type === 'checkbox') {
       setFormData(prev => ({ ...prev, [name]: checked }));
     } else {
-      setFormData(prev => ({ ...prev, [name]: value }));
+      // If changing the name field, auto-generate the slug
+      if (name === 'name') {
+        setFormData(prev => ({
+          ...prev,
+          [name]: value,
+          slug: generateSlug(value)
+        }));
+      } else {
+        setFormData(prev => ({ ...prev, [name]: value }));
+      }
     }
   };
   
@@ -223,6 +240,21 @@ export default function ProductForm({ product, onSubmit, onCancel, categories })
                 required
                 className="w-full bg-[#1e1e1e] text-white border border-gray-700 rounded-md py-2 px-3 focus:outline-none focus:border-[#54BB74]"
               />
+            </div>
+            
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">Slug *</label>
+              <input
+                type="text"
+                name="slug"
+                value={formData.slug}
+                onChange={handleChange}
+                required
+                className="w-full bg-[#1e1e1e] text-white border border-gray-700 rounded-md py-2 px-3 focus:outline-none focus:border-[#54BB74]"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Auto-generated from name. You can customize it if needed.
+              </p>
             </div>
             
             <div>

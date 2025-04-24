@@ -4,10 +4,14 @@ import Image from "next/image";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaChevronLeft, FaChevronRight, FaSave, FaShoppingCart, FaInfoCircle, FaQuestionCircle, FaSun, FaMoon, FaPlus, FaMinus, FaChevronDown, FaLightbulb, FaLayerGroup, FaRegLightbulb, FaPallet } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight, FaSave, FaShoppingCart, FaInfoCircle, FaQuestionCircle, FaSun, FaMoon, FaPlus, FaMinus, FaChevronDown, FaLightbulb, FaLayerGroup, FaRegLightbulb, FaPallet, FaCheck, FaUser } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import PlayCanvasViewer from "./PlayCanvasViewer";
+import { useDispatch, useSelector } from "react-redux";
+import { addToCart } from "../redux/slices/cartSlice";
+import { saveConfiguration } from "../redux/slices/userSlice";
+import { useRouter } from "next/navigation";
 
 // Register GSAP plugins
 if (typeof window !== "undefined") {
@@ -979,6 +983,12 @@ const AdditionalInfo = ({ isDarkMode }) => {
 
 // Main Component
 const LightConfigurator = () => {
+  // Redux setup
+  const dispatch = useDispatch();
+  const router = useRouter();
+  const user = useSelector(state => state.user.user);
+  const isLoggedIn = useSelector(state => state.user.isLoggedIn);
+  
   // State for configuration options
   // Always use dark mode
   const isDarkMode = true;
@@ -991,6 +1001,10 @@ const LightConfigurator = () => {
   const [totalPrice, setTotalPrice] = useState('0.00');
   const [productSlug, setProductSlug] = useState(null);
   const [productOptions, setProductOptions] = useState({});
+  
+  // State for save configuration modal
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [configName, setConfigName] = useState('');
   
   // State for mobile UI
   const [activeTab, setActiveTab] = useState('type');
@@ -1756,7 +1770,7 @@ const LightConfigurator = () => {
           {/* Action Buttons */}
           <div className="flex justify-end mt-4 gap-3">
             <motion.button 
-              onClick={saveConfiguration}
+              onClick={handleSaveConfig}
               className={`flex items-center gap-2 ${isDarkMode ? 'bg-gray-700 hover:bg-gray-600 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-800'} px-4 py-2 rounded-lg transition-colors`}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -1764,7 +1778,7 @@ const LightConfigurator = () => {
               <FaSave /> Save Configuration
             </motion.button>
             <motion.button 
-              onClick={addToCart}
+              onClick={handleAddToCart}
               className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-2 rounded-lg transition-colors"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -1781,8 +1795,165 @@ const LightConfigurator = () => {
         <div id="configurator-end-marker"></div>
       </div>
       <ToastContainer />
+      
+      {/* Save Configuration Modal */}
+      {showSaveModal && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="bg-[#2B2D2F] rounded-xl p-6 max-w-md w-full mx-4"
+          >
+            <h3 className="text-xl font-bold text-white mb-4">Save Your Configuration</h3>
+            
+            {!isLoggedIn ? (
+              <div className="text-center py-4">
+                <div className="mb-4 text-gray-300">
+                  <FaUser className="text-4xl mx-auto mb-3 text-[#50C878]" />
+                  <p>You need to be logged in to save configurations.</p>
+                </div>
+                <div className="flex gap-3 justify-center">
+                  <motion.button
+                    onClick={() => router.push('/login?redirect=/configurator')}
+                    className="bg-[#50C878] hover:bg-[#3da861] text-white px-4 py-2 rounded-lg transition-colors"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Log In
+                  </motion.button>
+                  <motion.button
+                    onClick={() => setShowSaveModal(false)}
+                    className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Cancel
+                  </motion.button>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="mb-4">
+                  <label className="block text-gray-300 mb-2">Configuration Name</label>
+                  <input 
+                    type="text" 
+                    value={configName}
+                    onChange={(e) => setConfigName(e.target.value)}
+                    placeholder="My Perfect Lighting Setup"
+                    className="w-full bg-gray-700 text-white px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#50C878]"
+                  />
+                </div>
+                
+                <div className="p-3 bg-gray-800 rounded-lg mb-4">
+                  <h4 className="text-sm font-medium text-gray-300 mb-2">Configuration Summary</h4>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-gray-400">
+                    <div>Type: <span className="text-white capitalize">{lightType}</span></div>
+                    <div>Amount: <span className="text-white">{lightAmount}</span></div>
+                    <div>Design: <span className="text-white capitalize">{lightDesign}</span></div>
+                    <div>Cable: <span className="text-white capitalize">{cableColor}, {cableLength}</span></div>
+                  </div>
+                </div>
+                
+                <div className="flex justify-end gap-3">
+                  <motion.button
+                    onClick={() => setShowSaveModal(false)}
+                    className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Cancel
+                  </motion.button>
+                  <motion.button
+                    onClick={saveConfigToRedux}
+                    className="bg-[#50C878] hover:bg-[#3da861] text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <FaCheck /> Save
+                  </motion.button>
+                </div>
+              </>
+            )}
+          </motion.div>
+        </div>
+      )}
     </section>
   );
+  
+  // Function to handle adding the current configuration to cart
+  function handleAddToCart() {
+    // Create a product object from the current configuration
+    const product = {
+      id: `light_${Date.now()}`,
+      name: `${lightType.charAt(0).toUpperCase() + lightType.slice(1)} Light (${lightAmount > 1 ? `${lightAmount} pendants` : lightDesign})`,
+      price: parseFloat(totalPrice),
+      thumbnail: `/images/products/${lightType}-${lightDesign}.jpg`,
+      slug: `${lightType}-light-${lightDesign}`,
+      category: 'Lighting',
+      configuration: {
+        lightType,
+        lightAmount,
+        lightDesign,
+        cableColor,
+        cableLength,
+        pendants: pendants.map(p => ({ design: p.design, color: p.color })),
+      }
+    };
+    
+    // Dispatch action to add to cart
+    dispatch(addToCart({ product, quantity: 1 }));
+    
+    // Show success notification
+    toast.success('Added to cart successfully!', {
+      position: "bottom-right",
+      autoClose: 3000,
+      theme: "dark"
+    });
+  }
+  
+  // Function to handle saving the current configuration
+  function handleSaveConfig() {
+    setShowSaveModal(true);
+    setConfigName(`${lightType.charAt(0).toUpperCase() + lightType.slice(1)} Light Configuration`);
+  }
+  
+  // Function to save configuration to Redux
+  function saveConfigToRedux() {
+    if (!configName.trim()) {
+      toast.error('Please enter a name for your configuration', {
+        position: "bottom-right",
+        autoClose: 3000,
+        theme: "dark"
+      });
+      return;
+    }
+    
+    // Create configuration object
+    const configData = {
+      name: configName,
+      lightType,
+      lightAmount,
+      lightDesign,
+      cableColor,
+      cableLength,
+      pendants: pendants.map(p => ({ design: p.design, color: p.color })),
+      price: parseFloat(totalPrice),
+      thumbnail: `/images/products/${lightType}-${lightDesign}.jpg`,
+    };
+    
+    // Dispatch action to save configuration
+    dispatch(saveConfiguration(configData));
+    
+    // Close modal and show success notification
+    setShowSaveModal(false);
+    
+    toast.success('Configuration saved successfully!', {
+      position: "bottom-right",
+      autoClose: 3000,
+      theme: "dark"
+    });
+  }
 };
 
 export default LightConfigurator;

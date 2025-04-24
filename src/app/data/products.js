@@ -573,42 +573,42 @@ export const categories = [
   {
     id: 'all',
     name: 'All Products',
-    description: 'View our complete collection of smart lighting solutions',
+    description: 'Explore our complete Limitless Lighting System — where design meets intelligent innovation',
   },
   {
     id: 'Bases',
-    name: 'Bases',
-    description: 'Foundation lighting bases for all LIMI systems',
+    name: 'The Hub',
+    description: 'Smart power, seamless mounting — the foundation of a smarter, more agile lighting solution',
   },
   {
     id: 'Ball System',
     name: 'Ball System',
-    description: 'Spherical lighting solutions for modern spaces',
+    description: 'Sculptural, swappable, smart — modern spheres with interchangeable designs',
   },
   {
     id: 'Bar System',
     name: 'Bar System',
-    description: 'Linear lighting systems for versatile installations',
+    description: 'Architectural simplicity with advanced engineering — sleek, directional lighting reimagined',
   },
   {
     id: 'Universal Attachments',
-    name: 'Universal Attachments',
-    description: 'Versatile attachments compatible with all LIMI systems',
+    name: 'Universal Pendant',
+    description: 'Your vision, connected — integrate non-illuminated elements into your lighting setup',
   },
   {
     id: 'Pendants',
-    name: 'Pendants',
-    description: 'Elegant hanging light fixtures for ambient lighting',
+    name: 'Pendant Designs',
+    description: 'Style, simplified — from minimalist forms to sculptural statements with effortless swapping',
   },
   {
     id: 'Chandeliers',
-    name: 'Chandeliers',
-    description: 'Sophisticated multi-light fixtures for statement lighting',
+    name: 'Chandelier Designs',
+    description: 'Bold form, modular logic — where impact meets innovation with adaptable installation',
   },
   {
     id: 'Panel System',
     name: 'Panel System',
-    description: 'Modular panel lighting for creative wall designs',
+    description: 'Modular panel lighting for creative wall designs — part of the Limitless ecosystem',
   }
 ];
 
