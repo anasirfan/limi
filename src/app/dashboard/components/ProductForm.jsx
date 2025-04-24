@@ -12,6 +12,7 @@ export default function ProductForm({ product, onSubmit, onCancel, categories })
     category: '',
     images: [],
     thumbnail: '',
+    hoverThumbnail: '',
     specs: {
       wattage: '',
       lumens: '',
@@ -379,6 +380,50 @@ export default function ProductForm({ product, onSubmit, onCancel, categories })
         <div className="p-4 bg-[#292929] rounded-lg">
           <h3 className="text-xl font-semibold text-white mb-4">Product Images</h3>
           
+          {/* Thumbnail Images */}
+          <div className="mb-6">
+            <h4 className="text-lg font-medium text-[#54BB74] mb-3">Thumbnail Images</h4>
+            <p className="text-sm text-gray-400 mb-4">Set default and hover thumbnail images for product cards</p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div>
+                <label className="block text-sm text-gray-400 mb-1">Default Thumbnail URL *</label>
+                <input
+                  type="text"
+                  name="thumbnail"
+                  value={formData.thumbnail}
+                  onChange={handleChange}
+                  placeholder="Default thumbnail image URL"
+                  className="w-full bg-[#1e1e1e] text-white border border-gray-700 rounded-md py-2 px-3 focus:outline-none focus:border-[#54BB74]"
+                />
+                {formData.thumbnail && (
+                  <div className="mt-2 relative w-20 h-20 bg-[#1e1e1e] rounded overflow-hidden">
+                    <img src={formData.thumbnail} alt="Default thumbnail preview" className="w-full h-full object-cover" />
+                  </div>
+                )}
+              </div>
+              
+              <div>
+                <label className="block text-sm text-gray-400 mb-1">Hover Thumbnail URL</label>
+                <input
+                  type="text"
+                  name="hoverThumbnail"
+                  value={formData.hoverThumbnail}
+                  onChange={handleChange}
+                  placeholder="Hover thumbnail image URL"
+                  className="w-full bg-[#1e1e1e] text-white border border-gray-700 rounded-md py-2 px-3 focus:outline-none focus:border-[#54BB74]"
+                />
+                {formData.hoverThumbnail && (
+                  <div className="mt-2 relative w-20 h-20 bg-[#1e1e1e] rounded overflow-hidden">
+                    <img src={formData.hoverThumbnail} alt="Hover thumbnail preview" className="w-full h-full object-cover" />
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+          
+          {/* Product Gallery Images */}
+          <h4 className="text-lg font-medium text-[#54BB74] mb-3">Product Gallery Images</h4>
           <div className="space-y-4">
             {formData.images.map((image, index) => (
               <div key={index} className="flex gap-2">

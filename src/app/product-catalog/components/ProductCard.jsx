@@ -18,7 +18,7 @@ export default function ProductCard({ product, viewMode }) {
   
   // Get the primary and hover images
   const primaryImage = product.thumbnail || (product.images && product.images.length > 0 ? product.images[0] : '/images/products/placeholder.jpg');
-  const hoverImage = product.images && product.images.length > 1 ? product.images[1] : primaryImage;
+  const hoverImage = product.hoverThumbnail || (product.images && product.images.length > 1 ? product.images[1] : primaryImage);
   
   // Handle add to cart
   const handleAddToCart = (e) => {

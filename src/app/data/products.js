@@ -13,11 +13,13 @@ export const products = [
     fullDescription: 'The Smart Base Standard is the foundation for all LIMI lighting systems. This versatile base features integrated smart controls, wireless connectivity, and supports all LIMI attachments. The sleek design complements any decor while providing stable support for your lighting configuration.',
     category: 'Bases',
     images: [
-      'https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?q=80&w=2070&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1540932239986-30128078f3c5?q=80&w=1974&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1565814329452-e1efa11c5b89?q=80&w=1974&auto=format&fit=crop',
+      '/images/products/product1/1.jpg',
+      '/images/products/product1/2.jpg',
+      '/images/products/product1/3.jpg',
+      '/images/products/product1/4.jpg'
     ],
-    thumbnail: 'https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?q=80&w=2070&auto=format&fit=crop',
+    thumbnail: '/images/products/product1/1.jpg',
+    hoverThumbnail: '/images/products/product1/2.jpg',
     specs: {
       wattage: '10W (base only)',
       dimensions: '20cm diameter x 5cm height',
@@ -52,11 +54,12 @@ export const products = [
     fullDescription: 'The Smart Base Premium offers enhanced features over our standard base, including expanded connectivity options, higher power output for larger installations, and premium materials. The base includes a built-in battery backup for uninterrupted operation during power outages and advanced sensors for automated lighting control.',
     category: 'Bases',
     images: [
-      'https://images.unsplash.com/photo-1507146153580-69a1fe6d8aa1?q=80&w=2070&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1550226891-ef816aed4a98?q=80&w=2070&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1511447333015-45b65e60f6d5?q=80&w=2023&auto=format&fit=crop',
+      '/images/products/product2/1.jpg',
+      '/images/products/product2/2.jpg',
+      '/images/products/product2/3.jpg',
     ],
-    thumbnail: 'https://images.unsplash.com/photo-1507146153580-69a1fe6d8aa1?q=80&w=2070&auto=format&fit=crop',
+    thumbnail: '/images/products/product2/1.jpg',
+    hoverThumbnail: '/images/products/product2/2.jpg',
     specs: {
       wattage: '15W (base only)',
       dimensions: '25cm diameter x 5cm height',
@@ -99,6 +102,7 @@ export const products = [
       'https://images.unsplash.com/photo-1618941716939-553df3c6c278?q=80&w=2070&auto=format&fit=crop',
     ],
     thumbnail: 'https://images.unsplash.com/photo-1555664424-778a1e5e1b48?q=80&w=2070&auto=format&fit=crop',
+    hoverThumbnail: 'https://images.unsplash.com/photo-1563453392212-326f5e854473?q=80&w=2070&auto=format&fit=crop',
     specs: {
       material: 'Reinforced polymer',
       dimensions: '5cm x 5cm x 8cm',
@@ -138,6 +142,7 @@ export const products = [
       'https://images.unsplash.com/photo-1565374790340-28c355642f64?q=80&w=1974&auto=format&fit=crop',
     ],
     thumbnail: 'https://images.unsplash.com/photo-1565374790464-0b28f87a1bc5?q=80&w=1974&auto=format&fit=crop',
+    hoverThumbnail: 'https://images.unsplash.com/photo-1565374790610-deee4a829ad0?q=80&w=1974&auto=format&fit=crop',
     specs: {
       material: 'Aircraft-grade aluminum',
       dimensions: '6cm x 6cm x 10cm',
@@ -180,6 +185,7 @@ export const products = [
       'https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?q=80&w=2070&auto=format&fit=crop',
     ],
     thumbnail: 'https://images.unsplash.com/photo-1540932239986-30128078f3c5?q=80&w=1974&auto=format&fit=crop',
+    hoverThumbnail: 'https://images.unsplash.com/photo-1519710164239-da123dc03ef4?q=80&w=1974&auto=format&fit=crop',
     specs: {
       wattage: '12W',
       lumens: '1000lm',
@@ -220,6 +226,7 @@ export const products = [
       'https://images.unsplash.com/photo-1602595188028-3c78a1e02bd3?q=80&w=1974&auto=format&fit=crop',
     ],
     thumbnail: 'https://images.unsplash.com/photo-1602595188045-9f3c4d4d7825?q=80&w=1974&auto=format&fit=crop',
+    hoverThumbnail: 'https://images.unsplash.com/photo-1602595188038-9e5f95a63293?q=80&w=1974&auto=format&fit=crop',
     specs: {
       wattage: '18W',
       lumens: '1500lm',
@@ -263,6 +270,7 @@ export const products = [
       'https://images.unsplash.com/photo-1565814329332-a5a0d0be2254?q=80&w=1974&auto=format&fit=crop',
     ],
     thumbnail: 'https://images.unsplash.com/photo-1565814329452-e1efa11c5b89?q=80&w=1974&auto=format&fit=crop',
+    hoverThumbnail: 'https://images.unsplash.com/photo-1565814636199-ae8133055c1c?q=80&w=1974&auto=format&fit=crop',
     specs: {
       wattage: '45W total (5 x 9W)',
       lumens: '3600lm total',
@@ -304,6 +312,7 @@ export const products = [
       'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?q=80&w=1974&auto=format&fit=crop',
     ],
     thumbnail: 'https://images.unsplash.com/photo-1541123437800-1bb1317badc2?q=80&w=1974&auto=format&fit=crop',
+    hoverThumbnail: 'https://images.unsplash.com/photo-1600607686527-6fb886090705?q=80&w=1974&auto=format&fit=crop',
     specs: {
       wattage: '81W total (9 x 9W)',
       lumens: '6300lm total',
@@ -346,6 +355,7 @@ export const products = [
       '/images/products/3.jpg',
     ],
     thumbnail: '/images/products/1.webp',
+    hoverThumbnail: '/images/products/2.jpg',
     specs: {
       wattage: '15W',
       lumens: '1200lm',
@@ -385,6 +395,7 @@ export const products = [
       '/images/products/6.jpg',
     ],
     thumbnail: '/images/products/4.jpg',
+    hoverThumbnail: '/images/products/5.jpg',
     specs: {
       wattage: '20W',
       lumens: '1800lm',
@@ -424,6 +435,7 @@ export const products = [
       '/images/products/9.jpg',
     ],
     thumbnail: '/images/products/7.jpg',
+    hoverThumbnail: '/images/products/8.jpg',
     specs: {
       wattage: '18W per meter',
       lumens: '1500lm per meter',
@@ -463,6 +475,7 @@ export const products = [
       '/images/products/12.jpg',
     ],
     thumbnail: '/images/products/10.png',
+    hoverThumbnail: '/images/products/11.jpg',
     specs: {
       wattage: '24W per meter',
       lumens: '2200lm per meter',
@@ -502,6 +515,7 @@ export const products = [
       '/images/products/15.jpg',
     ],
     thumbnail: '/images/products/13.jpg',
+    hoverThumbnail: '/images/products/14.jpg',
     specs: {
       wattage: '8W per panel',
       lumens: '800lm per panel',
@@ -541,6 +555,7 @@ export const products = [
       '/images/products/18.jpg',
     ],
     thumbnail: '/images/products/16.jpg',
+    hoverThumbnail: '/images/products/17.jpg',
     specs: {
       wattage: '12W per panel',
       lumens: '1200lm per panel',
