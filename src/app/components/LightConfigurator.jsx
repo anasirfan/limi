@@ -1476,7 +1476,7 @@ const LightConfigurator = () => {
             transition={{ duration: 0.5, delay: 0.2 }}
           >
             {/* Wrapper div for pinning */}
-            <div ref={previewBoxRef} className="sticky top-24 floating-element" style={{ willChange: 'transform', perspective: '1000px' }}>
+            <div ref={previewBoxRef} className="sticky top-24 " >
               <div 
                 className="bg-charleston-green-dark rounded-xl shadow-2xl overflow-hidden aspect-square relative animate-glow"
                 style={{
