@@ -48,7 +48,9 @@ export default function CustomerPortal() {
           {!isLoggedIn ? (
             <PortalLogin onLogin={handleLogin} />
           ) : (
-            <CustomerDashboard user={user} onLogout={handleLogout} />
+            <div className="max-w-7xl mx-auto">
+              <CustomerDashboard user={user} onLogout={handleLogout} />
+            </div>
           )}
         </div>
       </div>

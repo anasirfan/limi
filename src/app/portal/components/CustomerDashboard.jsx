@@ -57,7 +57,7 @@ export default function CustomerDashboard({ user, onLogout }) {
   };
   
   return (
-    <div className="max-w-7xl mx-auto">
+    <div>
       {/* Dashboard Header */}
       <motion.div 
         initial={{ opacity: 0, y: -20 }}

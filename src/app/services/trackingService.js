@@ -604,32 +604,38 @@ export const sendTrackingData = async (isClosing = false, isUpdate = false) => {
       console.log(`🔵 HTTP METHOD: POST`);
       console.log(`🔵 _method in payload: ${isUpdate ? 'PATCH' : 'Not included'}`);
       console.log('🔵 TRACKING DATA:', JSON.stringify(trackingData, null, 2));
-      const response = await fetch(endpoint, {
-        method: method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(trackingData),
-        // Use keepalive to ensure the request completes even if the page is closing
-        keepalive: true
-      });
       
-      if (response.ok) {
-        console.log('🔵 TRACKING DATA SENT SUCCESSFULLY ✅');
-        try {
-          const responseData = await response.json();
-          console.log('🔵 BACKEND RESPONSE:', responseData);
-        } catch (jsonError) {
-          console.log('🔵 RESPONSE RECEIVED BUT COULD NOT PARSE JSON');
+      try {
+        const response = await fetch(endpoint, {
+          method: method,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(trackingData),
+          // Use keepalive to ensure the request completes even if the page is closing
+          keepalive: true
+        });
+        
+        if (response.ok) {
+          console.log('🔵 TRACKING DATA SENT SUCCESSFULLY ✅');
+          try {
+            const responseData = await response.json();
+            console.log('🔵 BACKEND RESPONSE:', responseData);
+          } catch (jsonError) {
+            console.log('🔵 RESPONSE RECEIVED BUT COULD NOT PARSE JSON');
+          }
+        } else {
+          console.error('🔴 ERROR SENDING TRACKING DATA, STATUS:', response.status);
+          try {
+            const errorText = await response.text();
+            console.error('🔴 ERROR RESPONSE:', errorText);
+          } catch (e) {
+            console.error('🔴 COULD NOT READ ERROR RESPONSE');
+          }
         }
-      } else {
-        console.error('🔴 ERROR SENDING TRACKING DATA, STATUS:', response.status);
-        try {
-          const errorText = await response.text();
-          console.error('🔴 ERROR RESPONSE:', errorText);
-        } catch (e) {
-          console.error('🔴 COULD NOT READ ERROR RESPONSE');
-        }
+      } catch (fetchError) {
+        console.error('🔵 Fetch error in tracking service:', fetchError.message);
+        // Continue execution - don't let tracking errors break the application
       }
     }
     
