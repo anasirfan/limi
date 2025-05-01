@@ -352,12 +352,12 @@ export const products = [
     fullDescription: 'The Ball System Standard is our flagship spherical lighting solution, combining elegant design with advanced smart lighting technology. Each ball contains RGB LEDs that can be individually controlled for customized lighting scenes. The system includes our standard controller for easy integration with smart home systems.',
     category: 'Ball System',
     images: [
-      '/images/products/1.webp',
-      '/images/products/2.jpg',
-      '/images/products/3.jpg',
+      '/images/products/product2/1.jpg',
+      '/images/products/product2/2.jpg',
+      '/images/products/product2/3.jpg',
     ],
-    thumbnail: '/images/products/1.webp',
-    hoverThumbnail: '/images/products/2.jpg',
+    thumbnail: '/images/products/product2/1.jpg',
+    hoverThumbnail: '/images/products/product2/2.jpg',
     specs: {
       wattage: '15W',
       lumens: '1200lm',
