@@ -164,7 +164,7 @@ const Header = () => {
   // Standard navigation links for all other pages
   const standardLinks = [
     { href: '/', label: 'Home' },
-    { href: '/product-catalog', label: 'Product Catalog' },
+    { href: '/ball-system', label: 'Ball System' },
     { href: '/configurator', label: 'Configurator' },
     { href: '/portal', label: 'Portal' },
     { href: '/about-us', label: 'About Us' },
