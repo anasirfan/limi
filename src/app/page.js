@@ -3,25 +3,28 @@ import dynamic from 'next/dynamic';
 import Footer from './components/Footer';
 import Header from './components/Header';
 import HeroSection from './components/HeroSection';
-import InteractiveStory from './components/InteractiveStory';
-import LightingCarousel from './components/LightingCarousel';
-import LightingScene from './components/LightingScene';
-import ModelSection from './components/ModelSection';
+import ProductShowcase from './components/ProductShowcase';
+import HowItWorks from './components/HowItWorks';
+import InteractiveConfigurator from './components/InteractiveConfigurator';
+import TransitionLayout from './components/TransitionLayout';
+
+// Commented out sections as requested
+// import InteractiveStory from './components/InteractiveStory';
+// import LightingCarousel from './components/LightingCarousel';
+// import LightingScene from './components/LightingScene';
+// import ModelSection from './components/ModelSection';
 // import MotiveSection from './components/MotiveSection';
 // import MouseTrail from './components/MouseTrail';
+// import AnalyticsInsights from './components/AnalyticsInsights';
+// import DistributorHub from './components/DistributorHub';
+// import LightingStyleCompare from './components/LightingStyleCompare';
+// import ProductCategories from './components/ProductCategories';
+// import PortalCTA from './components/PortalCTA';
+// import ConfiguratorPreview from './components/ConfiguratorPreview';
+// import VideoHighlightsCarousel from './components/VideoHighlightsCarousel';
+
 import ScrollToTop from './components/ScrollToTop';
 import SplashScreen from './components/SplashScreen';
-import AnalyticsInsights from './components/AnalyticsInsights';
-import DistributorHub from './components/DistributorHub';
-// import LightingStyleCompare from './components/LightingStyleCompare';
-
-// New homepage sections
-import ProductCategories from './components/ProductCategories';
-import PortalCTA from './components/PortalCTA';
-import ConfiguratorPreview from './components/ConfiguratorPreview';
-
-// import UserSelectionPopup from './components/UserSelectionPopup';
-import VideoHighlightsCarousel from './components/VideoHighlightsCarousel';
 import CookieConsent from './components/CookieConsent';
 import { useEffect, useState, Suspense } from 'react';
 import { initTracking, sendTrackingData, cleanupTracking } from './services/trackingService';
@@ -102,24 +105,27 @@ export default function Home() {
     <main>
       <SplashScreen onComplete={() => window.dispatchEvent(new Event('splashComplete'))} />
       {/* <UserSelectionPopup isVisible={showUserSelection} onSelect={handleUserTypeSelect} /> */}
-      <Header  />
-      <HeroSection  />
-      {/* <MotiveSection  /> */}
-      <InteractiveStory  />
-      <LightingCarousel  />
-      <ModelSection  />
-      <VideoHighlightsCarousel />
-      {/* <LightingStyleCompare  /> */}
-      
-      <LightingScene  />
-      {/* New homepage sections */}
-      <ProductCategories />
-      <PortalCTA />
-      <ConfiguratorPreview />
-      <AnalyticsInsights  />
-      <DistributorHub  />
+      <Header />
+      <TransitionLayout>
+        <HeroSection />
+        <ProductShowcase />
+        <HowItWorks />
+        <InteractiveConfigurator />
+        {/* Commented out sections as requested
+        <InteractiveStory />
+        <LightingCarousel />
+        <ModelSection />
+        <VideoHighlightsCarousel />
+        <LightingScene />
+        <ProductCategories />
+        <PortalCTA />
+        <ConfiguratorPreview />
+        <AnalyticsInsights />
+        <DistributorHub />
+        */}
+      </TransitionLayout>
       {/* {!isMobile && <MouseTrail />} */}
-      <Footer  />
+      <Footer />
       <ScrollToTop />
       <CookieConsent onAccept={handleTrackingConsent} onDecline={() => {}} />
     </main>

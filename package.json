@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@barba/core": "^2.10.3",
     "@react-three/drei": "^9.97.0",
     "@react-three/fiber": "^9.0.0-alpha.2",
     "@react-three/postprocessing": "^2.15.12",
@@ -17,7 +18,7 @@
     "@tsparticles/react": "^3.0.0",
     "@tsparticles/slim": "^3.8.1",
     "framer-motion": "^12.7.3",
-    "gsap": "^3.12.7",
+    "gsap": "^3.13.0",
     "gsap-trial": "^3.12.7",
     "next": "15.2.0",
     "next-auth": "^4.24.11",
@@ -30,6 +31,7 @@
     "react-responsive": "^10.0.1",
     "react-toastify": "^11.0.5",
     "recharts": "^2.15.2",
+    "scrollmagic": "^2.0.8",
     "three": "^0.160.0",
     "threejs-toys": "^0.0.8"
   },
