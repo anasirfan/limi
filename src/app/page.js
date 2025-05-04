@@ -6,6 +6,7 @@ import HeroSection from './components/HeroSection';
 import ProductShowcase from './components/ProductShowcase';
 import HowItWorks from './components/HowItWorks';
 import InteractiveConfigurator from './components/InteractiveConfigurator';
+import OurStory from './components/OurStory';
 import TransitionLayout from './components/TransitionLayout';
 
 // Commented out sections as requested
@@ -111,6 +112,7 @@ export default function Home() {
         <ProductShowcase />
         <HowItWorks />
         <InteractiveConfigurator />
+        <OurStory />
         {/* Commented out sections as requested
         <InteractiveStory />
         <LightingCarousel />
