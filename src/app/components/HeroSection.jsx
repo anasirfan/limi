@@ -335,7 +335,7 @@ function HeroSection() {
         muted
         playsInline
         className="absolute top-0 left-0 w-full h-full object-cover z-0 transition-all duration-700"
-        src={isMobile ? "/videos/BgMobile.mp4" : "/videos/BgVideo.mp4"}
+        src={"/dfs"}
       ></video>
       
       {/* Dark overlay for better text readability */}

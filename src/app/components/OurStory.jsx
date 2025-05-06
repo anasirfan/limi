@@ -303,7 +303,7 @@ export default function OurStory() {
   return (
     <section 
       ref={sectionRef}
-      className="relative bg-[#1F1F1F] text-white py-24 overflow-hidden"
+      className="relative bg-[#F2F0E6] text-[#2B2D2F] py-24 overflow-hidden"
     >
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#292929] to-[#1F1F1F] opacity-70"></div>

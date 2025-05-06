@@ -9,7 +9,7 @@ import { removeFromCart } from '../redux/slices/cartSlice';
 import { removeFromFavorites } from '../redux/slices/favoritesSlice';
 import { usePathname } from 'next/navigation';
 import gsap from 'gsap';
-import { FaUser, FaSignOutAlt, FaUserCircle, FaBell, FaPortrait, FaTachometerAlt, FaChevronDown ,  FaHeart, FaShoppingCart, FaTrash, FaTimes } from 'react-icons/fa';
+import { FaUser, FaSignOutAlt, FaUserCircle, FaBell, FaPortrait, FaTachometerAlt, FaChevronDown, FaHeart, FaShoppingCart, FaTrash, FaTimes, FaSignInAlt, FaComments } from 'react-icons/fa';
 const Header = () => {
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -163,13 +163,12 @@ const Header = () => {
 
   // Standard navigation links for all other pages
   const standardLinks = [
-    { href: '/', label: 'Home' },
-    { href: '/ball-system', label: 'Ball System' },
-    { href: '/configurator', label: 'Configurator' },
-    { href: '/portal', label: 'Portal' },
-    { href: '/about-us', label: 'About Us' },
-    { href: '/contact-us', label: 'Contact Us' },
-    { href: '/collaborate', label: 'Collaborate With Us' },
+    // { href: '/', label: 'Home' },
+    { href: '/configurator', label: 'Customize Yourself' },
+    { href: '/portal', label: 'Your Space' },
+    { href: '/about-us', label: 'What is LIMI?' },
+    { href: '/contact-us', label: "Let's Talk" },
+    { href: '/collaborate', label: 'Let’s Grow Together' },
   ];
   
   // Links to show based on current page - keeping standard links for all pages
@@ -185,34 +184,69 @@ const Header = () => {
     }
   };
 
+  // State for scroll behavior
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [scrollDirection, setScrollDirection] = useState('up');
+  const headerRef = useRef(null);
+  const lastScrollY = useRef(0);
+
+  // Handle scroll event
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      
+      // Determine scroll direction
+      if (scrollPosition > lastScrollY.current) {
+        setScrollDirection('down');
+      } else {
+        setScrollDirection('up');
+      }
+      
+      // Update last scroll position
+      lastScrollY.current = scrollPosition;
+      
+      // Set scrolled state based on position
+      if (scrollPosition > 50) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   return (
-    <header className="fixed top-0 left-0 right-0 z-[9999] font-['Poppins']">
-      <div className="absolute inset-0 bg-charcoal/20 backdrop-blur-sm"></div>
-      <div className="container mx-auto px-4 py-3 relative">
+    <header ref={headerRef} className={`fixed top-0 left-0 right-0 z-[9999] font-['Poppins'] transition-all duration-300 ${isScrolled ? 'py-1.5' : 'py-3'} ${isScrolled && scrollDirection === 'down' ? '-translate-y-1' : 'translate-y-0'}`}>
+      <div className="absolute inset-0 bg-[#2B2D2F] shadow-md"></div>
+      <div className="container mx-auto px-4 relative">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-6">
-            <Link href="/" className="w-16 transition-transform hover:scale-105">
+            <Link href="/" className={`${isScrolled ? 'w-10 py-1.5' : 'w-16 py-0'} transition-all duration-300 hover:scale-105`}>
               <Image
                 src="/images/svgLogos/__Logo_Icon_Inverted.svg"
                 alt="Limi Logo"
-                width={100}
-                height={40}
+                width={isScrolled ? 80 : 100}
+                height={isScrolled ? 32 : 40}
                 priority
                 className="drop-shadow-glow"
               />
             </Link>
             
-            {/* Standard Navigation Links (visible on all pages) */}
-            <div className="hidden md:flex items-center space-x-6">
+            {/* Standard Navigation Links (visible on all pages, hidden when scrolled down) */}
+            <div className={`hidden md:flex items-center space-x-6 ${isScrolled && scrollDirection === 'down' ? 'opacity-0 invisible' : 'opacity-100 visible'} transition-all duration-300`}>
               {standardLinks.map((link) => (
                 <Link 
                   key={link.href}
                   href={link.href} 
-                  className="text-white hover:text-emerald transition-all duration-300 relative group font-medium"
+                  className="text-white hover:text-[#50C878] transition-all duration-300 relative group font-medium"
                 >
                   <span className="relative inline-block">
                     {link.label}
-                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-emerald group-hover:w-full transition-all duration-300 ease-in-out"></span>
+                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#50C878] group-hover:w-full transition-all duration-300 ease-in-out"></span>
                   </span>
                 </Link>
               ))}
@@ -253,9 +287,8 @@ const Header = () => {
               ></span>
             </button>
             
-            {/* Cart and Favorites icons */}
-            <div className="hidden md:flex items-center gap-3 mr-4">
-              {/* Favorites dropdown */}
+            {/* Cart and Favorites icons - commented out as requested */}
+            {/* <div className="hidden md:flex items-center gap-3 mr-4">
               <div className="relative" ref={favoritesDropdownRef}>
                 <button
                   onClick={toggleFavoritesDropdown}
@@ -270,7 +303,6 @@ const Header = () => {
                   )}
                 </button>
                 
-                {/* Favorites dropdown content */}
                 {isClient && favoritesDropdownOpen && (
                   <div className="absolute right-0 mt-2 w-80 bg-[#1e1e1e] border border-[#3a3d42] rounded-lg shadow-lg z-50 overflow-hidden">
                     <div className="p-3 border-b border-[#3a3d42] flex justify-between items-center">
@@ -337,7 +369,6 @@ const Header = () => {
                 )}
               </div>
               
-              {/* Cart dropdown */}
               <div className="relative" ref={cartDropdownRef}>
                 <button
                   onClick={toggleCartDropdown}
@@ -352,7 +383,6 @@ const Header = () => {
                   )}
                 </button>
                 
-                {/* Cart dropdown content */}
                 {cartDropdownOpen && (
                   <div className="absolute right-0 mt-2 w-80 bg-[#1e1e1e] border border-[#3a3d42] rounded-lg shadow-lg z-50 overflow-hidden">
                     <div className="p-3 border-b border-[#3a3d42] flex justify-between items-center">
@@ -425,7 +455,7 @@ const Header = () => {
                   </div>
                 )}
               </div>
-            </div>
+            </div> */}
             
             {/* Auth Button and User Menu - positioned at extreme right */}
             <div className="flex items-center">
@@ -434,18 +464,18 @@ const Header = () => {
               ) : !isLoggedIn ? (
                 <Link 
                   href="/portal" 
-                  className="px-4 py-1.5 text-charleston-green bg-emerald hover:bg-emerald-light transition-all duration-300 rounded-md text-sm font-medium shadow-sm hover:shadow-emerald/40"
+                  className={`${isScrolled ? 'px-2.5 py-1.5' : 'px-4 py-1.5'} text-charleston-green bg-[#50C878] hover:bg-[#87CEAB] transition-all duration-300 rounded-md ${isScrolled ? 'text-xs' : 'text-sm'} font-medium shadow-md hover:shadow-[#50C878]/40 flex items-center justify-center`}
                 >
-                  Login / Sign Up
+                  {isScrolled ? <FaSignInAlt size={16} /> : 'Login / Sign Up'}
                 </Link>
               ) : (
                 <div className="relative" ref={userDropdownRef}>
                   <button 
                     onClick={toggleUserDropdown}
-                    className="flex items-center gap-2 text-white hover:text-emerald transition-colors duration-300 bg-charleston-green-light/50 backdrop-blur-sm px-3 py-1.5 rounded-full border border-emerald/20 hover:border-emerald/40"
+                    className={`flex items-center ${isScrolled ? 'gap-1 px-2.5 py-1.5' : 'gap-2 px-3 py-1.5'} text-white hover:text-[#50C878] transition-all duration-300 bg-[#3a3d42] rounded-full border border-[#50C878]/20 hover:border-[#50C878]/40 shadow-md`}
                     aria-label="User menu"
                   >
-                    <div className="w-7 h-7 rounded-full bg-emerald flex items-center justify-center overflow-hidden">
+                    <div className={`${isScrolled ? 'w-6 h-6' : 'w-7 h-7'} rounded-full bg-emerald flex items-center justify-center overflow-hidden transition-all duration-300`}>
                       {user?.avatar ? (
                         <Image 
                           src={user.avatar} 
@@ -458,7 +488,7 @@ const Header = () => {
                         <FaUserCircle className="text-xl text-charleston-green" />
                       )}
                     </div>
-                    <span className="hidden sm:inline text-sm font-medium">{user?.name || 'User'}</span>
+                    <span className={`${isScrolled ? 'hidden' : 'hidden sm:inline'} text-sm font-medium transition-all duration-300`}>{user?.name || 'User'}</span>
                     <FaChevronDown className={`text-xs transition-transform duration-300 ${userDropdownOpen ? 'rotate-180' : ''}`} />
                   </button>
                   
@@ -527,7 +557,7 @@ const Header = () => {
       {/* Paper rolling menu */}
       <div
         ref={menuRef}
-        className={`fixed top-0 left-0 w-full bg-charcoal/95 backdrop-blur-lg overflow-hidden z-40 origin-top`}
+        className={`fixed top-0 left-0 w-full bg-[#2B2D2F] overflow-hidden z-40 origin-top`}
         style={{ height: 0, opacity: 0 }}
       >
         <div

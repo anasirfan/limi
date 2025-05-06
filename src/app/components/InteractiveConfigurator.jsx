@@ -334,7 +334,7 @@ export default function InteractiveConfigurator() {
     <section 
       id="interactive-configurator" 
       ref={sectionRef}
-      className="min-h-screen bg-[#1e1e1e] text-white py-20 px-4 md:px-8 relative overflow-hidden"
+      className="min-h-screen bg-[#F2F0E6] text-[#2B2D2F] py-20 px-4 md:px-8 relative overflow-hidden"
     >
       {/* Parallax background elements */}
       <div className="absolute inset-0 overflow-hidden opacity-5">
