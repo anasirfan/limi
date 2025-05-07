@@ -294,31 +294,17 @@ export default function HowItWorks() {
       // Get references to elements
       const section = sectionRef.current;
       const container = containerRef.current;
-      const scrollContainer = container.parentElement;
       
       if (section && container) {
         // Calculate the width of the horizontal scroll container
         const totalWidth = container.scrollWidth;
         const viewportWidth = window.innerWidth;
         
-        // Get the header element
-        const header = section.querySelector('h2').parentElement;
-        
-        // First, pin the header separately so it doesn't move
-        ScrollTrigger.create({
-          trigger: header,
-          start: "top top",
-          endTrigger: section,
-          end: "bottom top",
-          pin: true,
-          pinSpacing: false
-        });
-        
-        // Then create the horizontal scroll animation for the content only
+        // Create the horizontal scroll animation - much slower for storytelling
         const horizontalScroll = gsap.timeline({
           scrollTrigger: {
-            trigger: scrollContainer,
-            start: "top top", 
+            trigger: section,
+            start: "top 5%", // Start when section is 10% from the top of viewport
             end: "+=300%", // Make the scroll distance much longer (3x the viewport height)
             scrub: 1, // Add smoothing (value between 0.5-3)
             pin: true,
@@ -403,7 +389,7 @@ export default function HowItWorks() {
     <section 
       id="how-it-works" 
       ref={sectionRef}
-      className="min-h-screen bg-[#F2F0E6] text-[#2B2D2F] relative overflow-hidden"
+      className="h-screen bg-[#F2F0E6] text-[#2B2D2F] relative overflow-hidden flex flex-col"
     >
       {/* Detail Carousel Modal */}
       <AnimatePresence>
@@ -442,8 +428,8 @@ export default function HowItWorks() {
         />
       </div>
       
-      {/* Section header - pinned separately */}
-      <div className="text-center py-8 px-4 relative z-20 bg-[#F2F0E6]">
+      {/* Section header - will be pinned by GSAP */}
+      <div className="text-center pb-2 px-4 relative z-20 bg-[#F2F0E6] mt-10">
         <h2 className="text-4xl md:text-5xl font-bold">How It Works</h2>
       </div>
       
