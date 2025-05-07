@@ -5,6 +5,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ReduxProvider } from './redux/provider';
 import StoreInitializer from './redux/StoreInitializer';
+import { ModalProvider } from './components/context/ModalContext';
 
 
 const poppins = Poppins({
@@ -72,10 +73,12 @@ export default function RootLayout({ children }) {
       <body className={poppins.className} suppressHydrationWarning>
         <ReduxProvider>
           <StoreInitializer />
-          <SmoothScroll>
-            <ToastContainer />
-            {children}
-          </SmoothScroll>
+          <ModalProvider>
+            <SmoothScroll>
+              <ToastContainer />
+              {children}
+            </SmoothScroll>
+          </ModalProvider>
         </ReduxProvider>
       </body>
     </html>

@@ -1,6 +1,8 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 // Import components
 import {
@@ -8,7 +10,14 @@ import {
   ProductCardGrid
 } from "./productShowcase/index";
 
+// Register GSAP plugins
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger);
+}
+
 function ProductShowcase() {
+  // Refs for scroll smoother
+
   // Sample product data
   const products = [
     {
@@ -222,22 +231,26 @@ function ProductShowcase() {
   ];
 
   return (
-    <ProductShowcaseWrapper>
-      {/* Intro Text */}
-      <motion.div 
-        className="mb-12 text-center max-w-2xl mx-auto"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-      >
-        <h3 className="text-[#292929] text-xl font-light mb-2 w-full">Explore Our</h3>
-        <h2 className="text-[#54BB74] text-4xl font-bold mb-4 w-full">Innovative Lighting Solutions</h2>
-        <p className="text-[#292929] opacity-75 w-full">Discover how our modular lighting system can transform your space with endless possibilities.</p>
-      </motion.div>
-      
-      {/* Interactive Product Grid with Square Box Layout */}
-      <ProductCardGrid products={products} />
-    </ProductShowcaseWrapper>
+    <div  className="smooth-wrapper">
+      <div className="smooth-content">
+        <ProductShowcaseWrapper>
+          {/* Intro Text */}
+          <motion.div 
+            className="mb-12 text-center max-w-2xl mx-auto"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <h3 className="text-[#292929] text-xl font-light mb-2 w-full">Explore Our</h3>
+            <h2 className="text-[#54BB74] text-4xl font-bold mb-4 w-full">Innovative Lighting Solutions</h2>
+            <p className="text-[#292929] opacity-75 w-full">Discover how our modular lighting system can transform your space with endless possibilities.</p>
+          </motion.div>
+          
+          {/* Interactive Product Grid with Square Box Layout */}
+          <ProductCardGrid products={products} />
+        </ProductShowcaseWrapper>
+      </div>
+    </div>
   );
 }
 

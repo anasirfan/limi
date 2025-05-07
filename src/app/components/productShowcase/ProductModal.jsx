@@ -53,25 +53,30 @@ const ProductModal = ({ product, isOpen, onClose }) => {
   return (
     <AnimatePresence>
       {isOpen && (
-        <motion.div
+        <motion.div 
+          className="fixed inset-0  flex items-center justify-center z-[9999]"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50"
           onClick={onClose}
         >
+          {/* Backdrop */}
+          <div className="absolute inset-0 bg-black bg-opacity-75" style={{ backdropFilter: 'blur(5px)' }}></div>
+          
+          {/* Modal Container */}
           <motion.div 
-            initial={{ scale: 0.9, y: 50 }}
-            animate={{ scale: 1, y: 0 }}
-            exit={{ scale: 0.9, y: 50 }}
-            transition={{ type: 'spring', damping: 30 }}
-            className="relative w-full max-w-5xl bg-[#f3ebe2] rounded-xl overflow-hidden shadow-2xl"
+            className="relative bg-[#2B2D2F] w-[90%] max-w-4xl rounded-xl shadow-2xl overflow-auto z-[10000]"
+            style={{ maxHeight: '90vh' }}
+            initial={{ scale: 0.9, y: 50, opacity: 0 }}
+            animate={{ scale: 1, y: 0, opacity: 1 }}
+            exit={{ scale: 0.9, y: 50, opacity: 0 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="absolute top-4 right-4 z-10">
+            <div className="absolute top-2 right-3 z-10">
               <button 
                 onClick={onClose}
-                className="p-2 text-[#292929] bg-white rounded-full hover:bg-[#54BB74] hover:text-white transition-colors duration-300 shadow-md"
+                className="p-1 text-[#292929] bg-white rounded-full hover:bg-[#54BB74] hover:text-white transition-colors duration-300 shadow-md"
               >
                 <FiX size={24} />
               </button>
@@ -139,22 +144,43 @@ const ProductModal = ({ product, isOpen, onClose }) => {
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.5 }}
                     >
-                      <p className="text-[#292929] mb-8 text-lg leading-relaxed">{product.description}</p>
+                      <p className="text-white mb-8 text-lg leading-relaxed">{product.description || "Beautiful smart lighting designed to transform your space with minimal effort. Our modular system allows for endless customization to fit your unique style."}</p>
                       
-                      <h3 className="text-xl font-semibold text-[#292929] mb-4">Key Features</h3>
+                      <h3 className="text-xl font-semibold text-white mb-4">Key Features</h3>
                       <ul className="mb-8 space-y-3">
-                        {product.features?.map((feature, index) => (
-                          <motion.li 
-                            key={index} 
-                            className="flex items-start"
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.1 * index, duration: 0.5 }}
-                          >
-                            <span className="text-[#54BB74] text-xl mr-3">•</span>
-                            <span className="text-[#292929] text-lg">{feature}</span>
-                          </motion.li>
-                        ))}
+                        {product.features ? (
+                          product.features.map((feature, index) => (
+                            <motion.li 
+                              key={index} 
+                              className="flex items-start"
+                              initial={{ opacity: 0, x: -20 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: 0.1 * index, duration: 0.5 }}
+                            >
+                              <span className="text-[#54BB74] text-xl mr-3">•</span>
+                              <span className="text-white text-lg">{feature}</span>
+                            </motion.li>
+                          ))
+                        ) : (
+                          // Fallback features if none are provided
+                          [
+                            "Smart connectivity built-in",
+                            "Premium materials and finishes",
+                            "Easy installation with no special tools",
+                            "Energy efficient design"
+                          ].map((feature, index) => (
+                            <motion.li 
+                              key={index} 
+                              className="flex items-start"
+                              initial={{ opacity: 0, x: -20 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: 0.1 * index, duration: 0.5 }}
+                            >
+                              <span className="text-[#54BB74] text-xl mr-3">•</span>
+                              <span className="text-white text-lg">{feature}</span>
+                            </motion.li>
+                          ))
+                        )}
                       </ul>
                       
                       <motion.button 

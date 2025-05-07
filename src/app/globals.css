@@ -99,6 +99,23 @@ section, div {
   border-radius: 10px;
 }
 
+/* GSAP ScrollSmoother styles */
+.smooth-wrapper {
+  position: relative;
+  width: 100%;
+  overflow: hidden; /* Hide any content that overflows */
+}
+
+.smooth-content {
+  will-change: transform; /* Optimize for animations */
+}
+
+/* Parallax effect for product cards */
+.product-card-parallax {
+  will-change: transform;
+  transform-style: preserve-3d;
+}
+
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background: var(--gray-500);
   border-radius: 10px;
