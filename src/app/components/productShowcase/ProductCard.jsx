@@ -21,6 +21,12 @@ const ProductCard = ({ product, className = '' }) => {
     setIsExpanded(!isExpanded);
   };
   
+  // Handle collapse button click
+  const handleCollapse = (e) => {
+    e.stopPropagation(); // Prevent opening modal
+    setIsExpanded(false);
+  };
+  
   // Handle card click - open modal only if not clicking expand button
   const handleCardClick = () => {
     if (!isExpanded) {
@@ -73,13 +79,13 @@ const ProductCard = ({ product, className = '' }) => {
           <div className="absolute inset-0 bg-gradient-to-t from-[#292929]/80 to-transparent" />
         </div>
 
-        {/* Product Info */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 text-white z-10">
-          <h3 className="text-lg font-semibold mb-1">{product.name}</h3>
-          <p className="text-sm opacity-90 mb-3">{product.tagline}</p>
-          
-          {/* Expand Button - Only show when not expanded */}
-          {!isExpanded && (
+        {/* Product Info - Only show when not expanded */}
+        {!isExpanded && (
+          <div className="absolute bottom-0 left-0 right-0 p-4 text-white z-10">
+            <h3 className="text-lg font-semibold mb-1">{product.name}</h3>
+            <p className="text-sm opacity-90 mb-3">{product.tagline}</p>
+            
+            {/* Expand Button */}
             <motion.button 
               className="absolute bottom-4 right-4 bg-white p-2 rounded-full shadow-md text-gray-800"
               onClick={toggleExpand}
@@ -91,8 +97,8 @@ const ProductCard = ({ product, className = '' }) => {
             >
               <FaPlus size={12} />
             </motion.button>
-          )}
-        </div>
+          </div>
+        )}
         
         {/* Expandable Content */}
         <AnimatePresence>
@@ -125,7 +131,7 @@ const ProductCard = ({ product, className = '' }) => {
                 
                 <motion.button 
                   className="text-[#50C878] p-2 rounded-full bg-white/10"
-                  onClick={toggleExpand}
+                  onClick={handleCollapse}
                   whileHover={{ scale: 1.1, backgroundColor: '#50C878', color: 'white' }}
                   whileTap={{ scale: 0.95 }}
                 >
