@@ -19,6 +19,7 @@
     "@tsparticles/react": "^3.0.0",
     "@tsparticles/slim": "^3.8.1",
     "aos": "^2.3.4",
+    "canvas-confetti": "^1.9.3",
     "framer-motion": "^10.18.0",
     "gsap": "^3.12.2",
     "gsap-trial": "^3.12.7",
