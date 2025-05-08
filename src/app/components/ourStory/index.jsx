@@ -119,7 +119,7 @@ function OurStoryContent() {
             viewport={{ once: true }}
           >
             <motion.a
-              href="/about"
+              href="/about-us"
               className="inline-flex items-center px-8 py-4 rounded-lg font-medium text-lg"
               style={{ 
                 backgroundColor: colors.primary,

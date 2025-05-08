@@ -2,9 +2,10 @@
 
 import React, { useState, useEffect, Fragment } from 'react';
 import Image from 'next/image';
-import { FaSort, FaSortUp, FaSortDown, FaSearch, FaEye, FaTimes, FaFilter, FaChartLine, FaGlobe, FaClock, FaDesktop, FaTabletAlt, FaMobileAlt, FaUsers, FaBoxOpen, FaShoppingCart, FaBox } from 'react-icons/fa';
+import { FaSort, FaSortUp, FaSortDown, FaSearch, FaEye, FaTimes, FaFilter, FaChartLine, FaGlobe, FaClock, FaDesktop, FaTabletAlt, FaMobileAlt, FaUsers, FaBoxOpen, FaShoppingCart, FaBox, FaSlideshare } from 'react-icons/fa';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
 import ProductManagement from './ProductManagement';
+import SlideManagement from './SlideManagement';
 
 export default function CustomerDashboard({ token }) {
   const [customers, setCustomers] = useState([]);
@@ -772,6 +773,14 @@ export default function CustomerDashboard({ token }) {
           <FaBox className="mr-2" />
           Product Management
         </button>
+
+        <button
+          onClick={() => setActiveTab('slideshow')}
+          className={`px-4 py-2 rounded-md flex items-center ${activeTab === 'slideshow' ? 'bg-[#54BB74] text-[#1e1e1e] font-medium' : 'bg-[#333333] text-white hover:bg-[#444444]'}`}
+        >
+          <FaSlideshare className="mr-2" />
+          Slideshow
+        </button>
       </div>
 
       {activeTab === 'tracking' && (
@@ -1369,9 +1378,11 @@ export default function CustomerDashboard({ token }) {
       )}
       
       {activeTab === 'productManagement' && (
-        <div className="mt-6">
-          <ProductManagement />
-        </div>
+        <ProductManagement token={token} />
+      )}
+      
+      {activeTab === 'slideshow' && (
+        <SlideManagement />
       )}
 
       {activeTab === 'customers' && (

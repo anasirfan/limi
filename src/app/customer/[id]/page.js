@@ -1,493 +1,130 @@
-// 'use client';
-
-// import { useEffect, useState } from 'react';
-// import { useParams } from 'next/navigation';
-// import Image from 'next/image';
-// import Header from '../../components/Header';
-// import Footer from '../../components/Footer';
-// import { FaQrcode, FaBuilding, FaPlay, FaPause, FaVolumeUp, FaVolumeMute } from 'react-icons/fa';
-
-// // Test customer profiles for development and exhibition
-// const testCustomers = {
-//   'test001': {
-//     staffName: 'John from LIMI',
-//     itemCodes: ['LIMI-001', 'LIMI-005', 'LIMI-012'],  // These will map to product images 1, 5, and 12
-//     businessCardFront: '/images/businessCard/front1.jpg',
-//     businessCardBack: '/images/businessCard/back1.jpg'
-//   },
-//   'test002': {
-//     staffName: 'Sarah from LIMI',
-//     itemCodes: ['LIMI-003', 'LIMI-007', 'LIMI-015', 'LIMI-018'],  // These will map to product images 3, 7, 15, and 18
-//     businessCardFront: '/images/businessCard/front2.jpg',
-//     businessCardBack: '/images/businessCard/back2.jpg'
-//   }
-// };
-
-// // Product catalog mapping product IDs to details
-// const productCatalog = {
-//   'LIMI-001': {
-//     name: 'LIMI Connect Hub',
-//     description: 'Smart lighting control hub with wireless connectivity',
-//     image: '/images/products/1.webp'
-//   },
-//   'LIMI-002': {
-//     name: 'LIMI Modular Pendant',
-//     description: 'Customizable pendant light with modular components',
-//     image: '/images/products/2.jpg'
-//   },
-//   'LIMI-003': {
-//     name: 'LIMI Adaptive',
-//     description: 'Adaptive lighting system with automatic brightness control',
-//     image: '/images/products/3.jpg'
-//   },
-//   'LIMI-004': {
-//     name: 'LIMI Sense AI',
-//     description: 'AI-powered lighting with occupancy and activity recognition',
-//     image: '/images/products/4.jpg'
-//   },
-//   'LIMI-005': {
-//     name: 'LIMI Modular+',
-//     description: 'Extended flexibility with modular lighting components',
-//     image: '/images/products/5.jpg'
-//   },
-//   'LIMI-006': {
-//     name: 'LIMI Insight Dashboard',
-//     description: 'Advanced analytics for lighting performance monitoring',
-//     image: '/images/products/6.jpg'
-//   },
-//   'LIMI-007': {
-//     name: 'LIMI Wall Panel',
-//     description: 'Elegant wall-mounted lighting control panel',
-//     image: '/images/products/7.jpg'
-//   },
-//   'LIMI-008': {
-//     name: 'LIMI Track Light',
-//     description: 'Adjustable track lighting system for retail spaces',
-//     image: '/images/products/8.jpg'
-//   },
-//   'LIMI-009': {
-//     name: 'LIMI Pendant Trio',
-//     description: 'Set of three coordinated pendant lights',
-//     image: '/images/products/9.jpg'
-//   },
-//   'LIMI-010': {
-//     name: 'LIMI Floor Lamp',
-//     description: 'Modern smart floor lamp with adjustable brightness',
-//     image: '/images/products/10.png'
-//   },
-//   'LIMI-011': {
-//     name: 'LIMI Outdoor',
-//     description: 'Weather-resistant smart lighting for outdoor spaces',
-//     image: '/images/products/11.jpg'
-//   },
-//   'LIMI-012': {
-//     name: 'LIMI Strip Light',
-//     description: 'Flexible LED strip lighting with RGB capabilities',
-//     image: '/images/products/12.jpg'
-//   },
-//   'LIMI-013': {
-//     name: 'LIMI Desk Lamp',
-//     description: 'Ergonomic desk lamp with adjustable color temperature',
-//     image: '/images/products/13.jpg'
-//   },
-//   'LIMI-014': {
-//     name: 'LIMI Ceiling Panel',
-//     description: 'Recessed ceiling panel with uniform light distribution',
-//     image: '/images/products/14.jpg'
-//   },
-//   'LIMI-015': {
-//     name: 'LIMI Spotlight',
-//     description: 'Directional spotlight for accent lighting',
-//     image: '/images/products/15.jpg'
-//   },
-//   'LIMI-016': {
-//     name: 'LIMI Chandelier',
-//     description: 'Contemporary chandelier with smart controls',
-//     image: '/images/products/16.jpg'
-//   },
-//   'LIMI-017': {
-//     name: 'LIMI Under Cabinet',
-//     description: 'Low-profile lighting for kitchen and display cabinets',
-//     image: '/images/products/17.jpg'
-//   },
-//   'LIMI-018': {
-//     name: 'LIMI Bathroom',
-//     description: 'Moisture-resistant lighting for bathroom environments',
-//     image: '/images/products/18.jpg'
-//   },
-//   'LIMI-019': {
-//     name: 'LIMI Downlight',
-//     description: 'Recessed downlight with adjustable beam angle',
-//     image: '/images/products/19.jpg'
-//   },
-//   'LIMI-020': {
-//     name: 'LIMI Garden',
-//     description: 'Solar-powered garden lighting with smart controls',
-//     image: '/images/products/20.jpg'
-//   }
-// };
-
-// // Default company information
-// const defaultCompanyInfo = {
-//   name: 'LIMI Lighting Ltd.',
-//   description: 'Creating innovative lighting solutions for modern spaces',
-//   founded: '2020',
-//   headquarters: 'London, UK',
-//   mission: 'To transform spaces through intelligent lighting that adapts to human needs while minimizing environmental impact',
-//   vision: 'A world where lighting enhances wellbeing, productivity, and sustainability in every space',
-//   website: 'www.limi-lighting.co.uk',
-//   support: 'support@limi-lighting.co.uk'
-// };
-
-// export default function CustomerProfile() {
-//   const params = useParams();
-//   const customerId = params.id;
-  
-//   const [customer, setCustomer] = useState(null);
-//   const [loading, setLoading] = useState(true);
-//   const [error, setError] = useState(null);
-
-//   useEffect(() => {
-//     async function fetchCustomerData() {
-//       try {
-//         setLoading(true);
-        
-//         // Check if we have a test customer first
-//         if (testCustomers[customerId]) {
-//           // Simulate API delay for testing
-//           setTimeout(() => {
-//             // Map item codes to product details from catalog
-//             const customerProducts = testCustomers[customerId].itemCodes.map(code => {
-//               // Get product ID from the catalog
-//               return productCatalog[code] || {
-//                 name: `Unknown Product (${code})`,
-//                 description: 'Product information not available',
-//                 image: null
-//               };
-//             });
-            
-//             // Combine test customer data with product information
-//             setCustomer({
-//               ...testCustomers[customerId],
-//               products: customerProducts,
-//               companyInfo: defaultCompanyInfo
-//             });
-//             setLoading(false);
-//           }, 1500);
-//           return;
-//         }
-        
-//         // If not a test customer, fetch from API
-//         const response = await fetch(`https://api.limitless-lighting.co.uk/client/get_customer_details/${customerId}`);
-        
-//         if (!response.ok) {
-//           throw new Error('Failed to fetch customer data');
-//         }
-        
-//         const data = await response.json();
-//         // Check if the response has the expected structure with data property
-//         if (data && data.success && data.data) {
-//           // Extract the actual customer data from the response
-//           const customerData = data.data;
-          
-//           // Map item codes from API to product details from catalog
-//           // If itemCode is a string, convert it to an array with a single item
-//           const itemCodes = customerData.itemCodes || 
-//                           (customerData.itemCode ? [customerData.itemCode] : []);
-          
-//           const customerProducts = itemCodes.map(code => {
-//             // Get product ID from the catalog
-//             return productCatalog[code] || {
-//               name: `Unknown Product (${code})`,
-//               description: 'Product information not available',
-//               image: null
-//             };
-//           });
-          
-//           // Process images from the API response - backend will provide direct URLs
-//           const businessCardFront = customerData.images?.frontCardImage?.url || null;
-//           const businessCardBack = customerData.images?.backCardImage?.url || null;
-          
-//           // Combine API data with product information
-//           setCustomer({
-//             staffName: customerData.staffName,
-//             itemCodes: itemCodes,
-//             businessCardFront: businessCardFront,
-//             businessCardBack: businessCardBack,
-//             profileId: customerData.profileId,
-//             // Format profile URL as /customer/[profileId]
-//             profileUrl: customerData.profileUrl || `/customer/${customerData.profileId}`,
-//             clientCompanyInfo: customerData.clientCompanyInfo,
-//             notes: customerData.notes,
-//             products: customerProducts,
-//             companyInfo: defaultCompanyInfo
-//           });
-//         } else {
-//           // If response doesn't have the expected structure, use the data directly
-//           // This is a fallback for backward compatibility
-//           const itemCodes = data.itemCodes || (data.itemCode ? [data.itemCode] : []);
-//           const customerProducts = itemCodes.map(code => {
-//             return productCatalog[code] || {
-//               name: `Unknown Product (${code})`,
-//               description: 'Product information not available',
-//               image: null
-//             };
-//           });
-          
-//           setCustomer({
-//             ...data,
-//             itemCodes: itemCodes,
-//             products: customerProducts,
-//             companyInfo: defaultCompanyInfo
-//           });
-//         }
-//         setLoading(false);
-//       } catch (err) {
-//         console.error('Error fetching customer data:', err);
-//         setError(err.message);
-//         setLoading(false);
-//       }
-//     }
-
-//     if (customerId) {
-//       fetchCustomerData();
-//     }
-//   }, [customerId]);
-
-//   return (
-//     <main className="bg-[#292929] text-white min-h-screen">
-//       <Header />
-      
-//       <div className="pt-[100px] pb-16">
-//         {loading ? (
-//           <div className="flex flex-col items-center justify-center min-h-[50vh]">
-//             <div className="w-16 h-16 border-t-4 border-[#93cfa2] border-solid rounded-full animate-spin mb-6"></div>
-//             <h2 className="text-2xl font-[Amenti] text-[#93cfa2] mb-2">Your profile is loading...</h2>
-//             <p className="text-gray-300">Customizing your LIMI experience</p>
-//           </div>
-//         ) : error ? (
-//           <div className="container mx-auto px-4 text-center">
-//             <div className="bg-red-900/20 p-8 rounded-lg max-w-md mx-auto">
-//               <h2 className="text-2xl font-[Amenti] text-red-400 mb-4">Error Loading Profile</h2>
-//               <p className="text-gray-300 mb-4">{error}</p>
-//               <p className="text-gray-400">Please check your customer ID or try again later.</p>
-//             </div>
-//           </div>
-//         ) : customer ? (
-//           <div className="container mx-auto px-4">
-//             <div className="max-w-4xl mx-auto bg-[#1e1e1e] rounded-lg overflow-hidden shadow-xl">
-//               {/* Profile Header */}
-//               <div className="bg-gradient-to-r from-[#292929] to-[#54bb74]/30 p-6">
-//                 <div className="mb-2 text-sm text-emerald-400 font-medium">Registered by</div>
-//                 <h1 className="text-3xl font-bold font-[Amenti] text-[#93cfa2] mb-2">
-//                   {customer.staffName || 'LIMI Staff'}
-//                 </h1>
-//                 <div className="flex items-center">
-//                   <FaQrcode className="text-[#93cfa2] mr-2" />
-//                   <span className="text-gray-300 font-mono">
-//                     Customer ID: {customer.profileId || customerId}
-//                   </span>
-//                 </div>
-//                 {customer.clientCompanyInfo && (
-//                   <div className="mt-2 flex items-center">
-//                     <FaBuilding className="text-[#93cfa2] mr-2" />
-//                     <span className="text-gray-300">
-//                       {customer.clientCompanyInfo}
-//                     </span>
-//                   </div>
-//                 )}
-//                 {customer.itemCodes && customer.itemCodes.length > 0 && (
-//                   <div className="mt-2 flex flex-wrap gap-2">
-//                     {customer.itemCodes.map((code, index) => (
-//                       <span key={index} className="bg-[#54bb74]/20 text-[#93cfa2] text-xs px-2 py-1 rounded-full">
-//                         {code}
-//                       </span>
-//                     ))}
-//                   </div>
-//                 )}
-//                 {customer.notes && (
-//                   <div className="mt-3 bg-[#292929]/50 p-2 rounded">
-//                     <p className="text-gray-300 text-sm italic">Notes: {customer.notes}</p>
-//                   </div>
-//                 )}
-//               </div>
-              
-//               {/* Business Card Images */}
-//               <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-//                 {/* Front of Business Card */}
-//                 <div className="bg-[#292929]/50 p-4 rounded-lg">
-//                   <h3 className="text-lg font-semibold font-[Amenti] text-[#93cfa2] mb-3">Business Card (Front)</h3>
-//                   <div className="relative h-48 md:h-64 overflow-hidden rounded-lg shadow-lg">
-//                     {customer.businessCardFront ? (
-//                       <Image 
-//                         src={customer.businessCardFront} 
-//                         alt="Business Card Front" 
-//                         fill
-//                         sizes="(max-width: 768px) 100vw, 50vw"
-//                         style={{ objectFit: 'cover' }}
-//                         className="hover:scale-105 transition-transform duration-300"
-//                       />
-//                     ) : (
-//                       <div className="flex items-center justify-center h-full bg-gray-800 text-gray-400">
-//                         <span>No image available</span>
-//                       </div>
-//                     )}
-//                   </div>
-//                 </div>
-                
-//                 {/* Back of Business Card */}
-//                 <div className="bg-[#292929]/50 p-4 rounded-lg">
-//                   <h3 className="text-lg font-semibold font-[Amenti] text-[#93cfa2] mb-3">Business Card (Back)</h3>
-//                   <div className="relative h-48 md:h-64 overflow-hidden rounded-lg shadow-lg">
-//                     {customer.businessCardBack ? (
-//                       <Image 
-//                         src={customer.businessCardBack} 
-//                         alt="Business Card Back" 
-//                         fill
-//                         sizes="(max-width: 768px) 100vw, 50vw"
-//                         style={{ objectFit: 'cover' }}
-//                         className="hover:scale-105 transition-transform duration-300"
-//                       />
-//                     ) : (
-//                       <div className="flex items-center justify-center h-full bg-gray-800 text-gray-400">
-//                         <span>No image available</span>
-//                       </div>
-//                     )}
-//                   </div>
-//                 </div>
-//               </div>
-              
-//               {/* Profile Content */}
-//               <div className="p-6">
-//                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-//                   {/* Company Information */}
-//                   <div className="bg-[#292929]/50 p-6 rounded-lg">
-//                     <h2 className="text-xl font-semibold font-[Amenti] text-[#93cfa2] mb-4">About LIMI</h2>
-                    
-//                     <div className="space-y-4">
-//                       <div className="flex items-start">
-//                         <FaBuilding className="text-[#93cfa2] mt-1 mr-3" />
-//                         <div>
-//                           <p className="text-gray-400 text-sm">Company</p>
-//                           <p className="text-white">{customer.companyInfo.name}</p>
-//                         </div>
-//                       </div>
-                      
-//                       <div className="flex items-start">
-//                         <FaEnvelope className="text-[#93cfa2] mt-1 mr-3" />
-//                         <div>
-//                           <p className="text-gray-400 text-sm">Support</p>
-//                           <p className="text-white">{customer.companyInfo.support}</p>
-//                         </div>
-//                       </div>
-                      
-//                       <div className="flex items-start">
-//                         <FaPhone className="text-[#93cfa2] mt-1 mr-3" />
-//                         <div>
-//                           <p className="text-gray-400 text-sm">Contact</p>
-//                           <p className="text-white">+44 20 7123 4567</p>
-//                         </div>
-//                       </div>
-                      
-//                       <div className="mt-4 pt-4 border-t border-gray-700">
-//                         <p className="text-gray-300 italic">"{customer.companyInfo.description}"</p>
-//                       </div>
-                      
-//                       {/* <div className="mt-4 pt-4 border-t border-gray-700">
-//                         <h3 className="text-lg font-semibold text-[#93cfa2] mb-2">Exhibition Information</h3>
-//                         <p className="text-white text-sm mb-2">Thank you for visiting our booth at the International Lighting Expo 2025!</p>
-//                         <p className="text-gray-300 text-sm">Your registration has been confirmed, and we're excited to showcase our latest innovations in smart lighting solutions.</p>
-//                       </div> */}
-                      
-//                       <div className="mt-4 pt-4 border-t border-gray-700">
-//                         <h3 className="text-lg font-semibold text-[#93cfa2] mb-2">About LIMI Lighting</h3>
-//                         <p className="text-gray-300 text-sm mb-2">LIMI Lighting is at the forefront of smart lighting innovation, combining cutting-edge technology with elegant design to transform spaces.</p>
-//                         <p className="text-gray-300 text-sm">Founded in 2020, we've quickly established ourselves as industry leaders with our modular, energy-efficient lighting systems that adapt to your lifestyle.</p>
-//                       </div>
-//                     </div>
-//                   </div>
-                  
-//                   {/* Product Information */}
-//                   <div className="bg-[#292929]/50 p-6 rounded-lg">
-//                     <h2 className="text-xl font-semibold font-[Amenti] text-[#93cfa2] mb-4">Selected Products</h2>
-                    
-//                     {customer.products && customer.products.length > 0 ? (
-//                       <div className="space-y-6">
-//                         {customer.products.map((product, index) => (
-//                           <div key={index} className="border-b border-gray-700 pb-6 last:border-0">
-//                             {product.image && (
-//                               <div className="relative h-40 mb-3 overflow-hidden rounded-lg">
-//                                 <Image 
-//                                   src={product.image}
-//                                   alt={product.name}
-//                                   fill
-//                                   sizes="(max-width: 768px) 100vw, 50vw"
-//                                   style={{ objectFit: 'cover' }}
-//                                   className="hover:scale-105 transition-transform duration-300"
-//                                 />
-//                               </div>
-//                             )}
-//                             <p className="font-medium text-emerald-400 text-lg">{product.name}</p>
-//                             {product.description && (
-//                               <p className="text-gray-300 mt-1">{product.description}</p>
-//                             )}
-//                           </div>
-//                         ))}
-//                       </div>
-//                     ) : (
-//                       <p className="text-gray-400">No product information available</p>
-//                     )}
-//                   </div>
-//                 </div>
-                
-//                 {/* Exhibition Information */}
-//                 <div className="mt-6 bg-[#292929]/50 p-6 rounded-lg">
-//                   <h2 className="text-xl font-semibold font-[Amenti] text-[#93cfa2] mb-4">Exhibition Information</h2>
-//                   <p className="text-gray-300">Thank you for visiting our booth at the exhibition! We hope you enjoyed exploring our innovative lighting solutions. Your business card has been registered in our system, and we'll be in touch with you soon to discuss how LIMI can transform your space.</p>
-//                 </div>
-                
-//                 {/* Call to Action */}
-//                 <div className="mt-8 text-center">
-//                   <p className="text-gray-400 mb-4">Thank you for your interest in LIMI products</p>
-//                   <a href="https://limilighting.co.uk" target="_blank" rel="noopener noreferrer" className="inline-block bg-[#54bb74] hover:bg-[#93cfa2] text-[#292929] font-bold py-3 px-6 rounded-full transition-colors duration-300">
-//                     Visit Our Website
-//                   </a>
-//                 </div>
-//               </div>
-//             </div>
-//           </div>
-//         ) : (
-//           <div className="container mx-auto px-4 text-center">
-//             <p className="text-gray-300">No customer data found</p>
-//           </div>
-//         )}
-//       </div>
-      
-//       <Footer />
-//     </main>
-//   );
-// }
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
+import Image from 'next/image';
+import { useSelector } from 'react-redux';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
-import CookieConsent from '../../components/CookieConsent';
-import { FaQrcode, FaBuilding, FaPlay, FaPause, FaVolumeUp, FaVolumeMute } from 'react-icons/fa';
-import { initTracking } from '../../services/trackingService';
+import SlideCarousel from '../../components/SlideCarousel';
+import { FaBuilding } from 'react-icons/fa';
+import { selectSlides } from '../../redux/slices/slidesSlice';
+
+// PresentationHeader component to display dynamic titles from slides
+const PresentationHeader = ({ customerName }) => {
+  const slides = useSelector(selectSlides);
+  const [presentationTitle, setPresentationTitle] = useState('Presentation');
+  const [presentationSubtitle, setPresentationSubtitle] = useState(`Interactive presentation for ${customerName}`);
+  
+  // Load presentation settings from localStorage
+  useEffect(() => {
+    try {
+      const savedSettings = localStorage.getItem('presentationSettings');
+      if (savedSettings) {
+        const settings = JSON.parse(savedSettings);
+        if (settings.title) setPresentationTitle(settings.title);
+        if (settings.subtitle) {
+          // Replace {customerName} placeholder with actual customer name
+          const subtitle = settings.subtitle.replace('{customerName}', customerName);
+          setPresentationSubtitle(subtitle);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading presentation settings:', error);
+    }
+  }, [customerName]);
+  
+  return (
+    <div className="mb-8">
+      <h2 className="text-3xl font-bold mb-6 text-white">{presentationTitle}</h2>
+      <p className="text-gray-300 mb-8">{presentationSubtitle}</p>
+    </div>
+  );
+};
 
 // Test customer profiles for development and exhibition
 const testCustomers = {
   'test001': {
     staffName: 'John from LIMI',
     customerName: 'Alex Chen',
-    clientCompanyInfo: 'Bright Spaces Design'
+    clientCompanyInfo: 'Bright Spaces Design',
+    itemCodes: ['LIMI-001', 'LIMI-005', 'LIMI-012'],
+    businessCardFront: '/images/businessCard/front1.jpg',
+    businessCardBack: '/images/businessCard/back1.jpg',
+    companyInfo: {
+      name: 'LIMI Lighting Ltd.',
+      description: 'Creating innovative lighting solutions for modern spaces',
+      founded: '2020',
+      headquarters: 'London, UK',
+      mission: 'To transform spaces through intelligent lighting that adapts to human needs while minimizing environmental impact',
+      vision: 'A world where lighting enhances wellbeing, productivity, and sustainability in every space',
+      website: 'www.limi-lighting.co.uk',
+      support: 'support@limi-lighting.co.uk'
+    }
   },
   'test002': {
     staffName: 'Sarah from LIMI',
     customerName: 'Michael Wong',
-    clientCompanyInfo: 'Modern Living Interiors'
+    clientCompanyInfo: 'Modern Living Interiors',
+    itemCodes: ['LIMI-003', 'LIMI-007', 'LIMI-015', 'LIMI-018'],
+    businessCardFront: '/images/businessCard/front2.jpg',
+    businessCardBack: '/images/businessCard/back2.jpg',
+    companyInfo: {
+      name: 'LIMI Lighting Ltd.',
+      description: 'Creating innovative lighting solutions for modern spaces',
+      founded: '2020',
+      headquarters: 'London, UK',
+      mission: 'To transform spaces through intelligent lighting that adapts to human needs while minimizing environmental impact',
+      vision: 'A world where lighting enhances wellbeing, productivity, and sustainability in every space',
+      website: 'www.limi-lighting.co.uk',
+      support: 'support@limi-lighting.co.uk'
+    }
+  }
+};
+
+// Product catalog mapping product IDs to details
+const productCatalog = {
+  'LIMI-001': {
+    name: 'LIMI Connect Hub',
+    description: 'Smart lighting control hub with wireless connectivity',
+    image: '/images/products/product1.jpg',
+    price: '£149.99'
+  },
+  'LIMI-003': {
+    name: 'LIMI Spectrum Panel',
+    description: 'Color-changing LED panel with customizable scenes',
+    image: '/images/products/product3.jpg',
+    price: '£89.99'
+  },
+  'LIMI-005': {
+    name: 'LIMI Motion Sensor',
+    description: 'Advanced motion detection for automated lighting',
+    image: '/images/products/product5.jpg',
+    price: '£39.99'
+  },
+  'LIMI-007': {
+    name: 'LIMI Ambient Strip',
+    description: 'Flexible LED strip for indirect lighting applications',
+    image: '/images/products/product7.jpg',
+    price: '£29.99'
+  },
+  'LIMI-012': {
+    name: 'LIMI Daylight Dome',
+    description: 'Natural light simulation ceiling fixture',
+    image: '/images/products/product12.jpg',
+    price: '£199.99'
+  },
+  'LIMI-015': {
+    name: 'LIMI Voice Controller',
+    description: 'Voice-activated lighting control module',
+    image: '/images/products/product15.jpg',
+    price: '£59.99'
+  },
+  'LIMI-018': {
+    name: 'LIMI Outdoor Spotlight',
+    description: 'Weather-resistant smart spotlight for gardens',
+    image: '/images/products/product18.jpg',
+    price: '£79.99'
   }
 };
 
@@ -498,70 +135,101 @@ export default function CustomerProfile() {
   const [customer, setCustomer] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
-  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
-  const [isMuted, setIsMuted] = useState(false); // We'll start with sound when user clicks
-  const [showStartOverlay, setShowStartOverlay] = useState(true); // Show start overlay initially
-  const videoRef = useRef(null);
 
-  // We don't auto-play anymore - we wait for user interaction
-  // This is intentionally left empty to prevent autoplay
-
-
-
-  // Initialize tracking when component mounts
-  useEffect(() => {
-    // Initialize tracking service
-    initTracking();
-  }, []);
+  // Default fallback data to use when API calls fail
+  const fallbackData = {
+    staffName: 'LIMI Representative',
+    customerName: 'Guest User',
+    clientCompanyInfo: 'Your Company',
+    itemCodes: ['LIMI-001', 'LIMI-007'],
+    companyInfo: {
+      name: 'LIMI Lighting Ltd.',
+      description: 'Creating innovative lighting solutions for modern spaces',
+      founded: '2020',
+      headquarters: 'London, UK',
+      mission: 'To transform spaces through intelligent lighting that adapts to human needs while minimizing environmental impact',
+      vision: 'A world where lighting enhances wellbeing, productivity, and sustainability in every space',
+      website: 'www.limi-lighting.co.uk',
+      support: 'support@limi-lighting.co.uk'
+    }
+  };
 
   useEffect(() => {
     async function fetchCustomerData() {
       try {
         setLoading(true);
+        setError(null);
         
         // Check if we have a test customer first
         if (testCustomers[customerId]) {
           // Simulate API delay for testing
           setTimeout(() => {
+            const customerData = testCustomers[customerId];
+            
+            // Map product codes to actual product data
+            const products = customerData.itemCodes?.map(code => {
+              return productCatalog[code] ? {
+                ...productCatalog[code],
+                code
+              } : null;
+            }).filter(Boolean) || [];
+            
             setCustomer({
-              ...testCustomers[customerId]
+              ...customerData,
+              products
             });
+            
             setLoading(false);
           }, 1000);
           return;
         }
         
-        // If not a test customer, fetch from API
-        const response = await fetch(`https://api.limitless-lighting.co.uk/client/get_customer_details/${customerId}`);
-        
-        if (!response.ok) {
-          throw new Error('Failed to fetch customer data');
-        }
-        
-        const data = await response.json();
-        
-        // Extract the customer data
-        if (data && data.success && data.data) {
-          const customerData = data.data;
+        try {
+          // If not a test customer, fetch from API
+          const response = await fetch(`/api/customers/${customerId}`);
+          
+          if (!response.ok) {
+            throw new Error('Failed to fetch customer data');
+          }
+          
+          const data = await response.json();
+          
+          // Process the data and add products
+          const itemCodes = data.itemCodes || [];
+          const products = itemCodes.map(code => {
+            return productCatalog[code] ? {
+              ...productCatalog[code],
+              code
+            } : null;
+          }).filter(Boolean);
           
           setCustomer({
-            staffName: customerData.staffName,
-            customerName: customerData.customerName,
-            clientCompanyInfo: customerData.clientCompanyInfo,
-            profileId: customerData.profileId
+            ...data,
+            products
           });
-        } else {
-          // Fallback for backward compatibility
-          setCustomer({
-            staffName: data.staffName,
-            customerName: data.customerName,
-            clientCompanyInfo: data.clientCompanyInfo
-          });
+          setLoading(false);
+        } catch (apiError) {
+          console.warn('API fetch failed, using fallback data:', apiError);
+          
+          // Create fallback customer data with the requested ID
+          const fallbackCustomer = {
+            ...fallbackData,
+            id: customerId,
+            // Map product codes to actual product data for fallback
+            products: fallbackData.itemCodes.map(code => {
+              return productCatalog[code] ? {
+                ...productCatalog[code],
+                code
+              } : null;
+            }).filter(Boolean)
+          };
+          
+          setCustomer(fallbackCustomer);
+          setLoading(false);
+          // We don't set error state here since we're providing fallback UI
         }
-        setLoading(false);
       } catch (err) {
-        console.error('Error fetching customer data:', err);
+        console.error('Error in fetchCustomerData:', err);
         setError(err.message);
         setLoading(false);
       }
@@ -580,183 +248,148 @@ export default function CustomerProfile() {
         {loading ? (
           <div className="flex flex-col items-center justify-center min-h-[50vh]">
             <div className="w-16 h-16 border-t-4 border-[#93cfa2] border-solid rounded-full animate-spin mb-6"></div>
-            <h2 className="text-2xl font-[Amenti] text-[#93cfa2] mb-2">Your profile is loading...</h2>
+            <h2 className="text-2xl font-bold text-[#93cfa2] mb-2">Your profile is loading...</h2>
             <p className="text-gray-300">Customizing your LIMI experience</p>
           </div>
         ) : error ? (
-          <div className="container mx-auto px-4 text-center">
-            <div className="bg-red-900/20 p-8 rounded-lg max-w-md mx-auto">
-              <h2 className="text-2xl font-[Amenti] text-red-400 mb-4">Error Loading Profile</h2>
-              <p className="text-gray-300 mb-4">{error}</p>
-              <p className="text-gray-400">Please check your customer ID or try again later.</p>
+          <div className="container mx-auto px-4">
+            <div className="max-w-4xl mx-auto">
+              {/* Error notification */}
+              <div className="bg-red-900/20 p-6 rounded-lg mb-8">
+                <h2 className="text-2xl font-bold text-red-400 mb-4">Error Loading Profile</h2>
+                <p className="text-gray-300 mb-4">{error}</p>
+                <p className="text-gray-400 mb-2">We're showing you a limited version of the customer profile.</p>
+                <p className="text-gray-400">Please check your customer ID or try again later for the full experience.</p>
+              </div>
+              
+              {/* Slide Presentation Section - Still available in error state */}
+              <div className="bg-[#1e1e1e] rounded-lg overflow-hidden shadow-xl p-6 mb-8">
+                <h2 className="text-3xl font-bold mb-6 text-white">Presentation</h2>
+                <p className="text-gray-300 mb-8">Interactive slide presentation</p>
+                
+                {/* Slide Editor */}
+                <div className="bg-[#292929] p-4 rounded-lg mb-8">
+                  <h3 className="text-xl font-bold mb-4 text-white">Slide Editor</h3>
+                  <SlideEditor />
+                </div>
+                
+                {/* Live Preview */}
+                <div className="mb-8">
+                  <h3 className="text-xl font-bold mb-4 text-white">Live Preview</h3>
+                  <div className="bg-black rounded-lg overflow-hidden">
+                    <SlideCarousel />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         ) : customer ? (
           <div className="container mx-auto px-4">
-            <div className="max-w-2xl mx-auto bg-[#1e1e1e] rounded-lg overflow-hidden shadow-xl">
-              {/* Video Intro */}
-              <div className="relative">
-                <video 
-                  ref={videoRef}
-                  className="w-full h-auto" 
-                  playsInline
-                  muted={isMuted}
-                  onLoadedData={() => setIsVideoLoaded(true)}
-                  onEnded={() => setIsVideoPlaying(false)}
-                  poster="/images/video-poster.jpg"
-                >
-                  <source src="/videos/customerprofile_anim.mp4" type="video/mp4" />
-                </video>
-
-                {/* Start Experience Overlay - shown initially */}
-                {showStartOverlay && (
-                  <div className="absolute inset-0 bg-[#292929]/80 flex items-center justify-center z-20 transition-opacity duration-500">
-                    <div className="text-center px-4 py-5 sm:px-6 sm:py-8 rounded-lg bg-[#1e1e1e] border-2 border-[#54BB74] max-w-[85%] sm:max-w-md animate-fadeIn">
-                      <h3 className="text-xl sm:text-2xl font-[Amenti] text-[#54BB74] mb-2 sm:mb-4">Welcome to LIMI</h3>
-                      <p className="text-white text-sm sm:text-base mb-4 sm:mb-6">Experience our video introduction with sound</p>
-                      <button 
-                        onClick={() => {
-                          setShowStartOverlay(false);
-                          if (videoRef.current) {
-                            // Set video to unmuted
-                            videoRef.current.muted = false;
-                            setIsMuted(false);
-                            
-                            // Play video with sound
-                            videoRef.current.play()
-                              .then(() => {
-                                setIsVideoPlaying(true);
-                              })
-                              .catch(err => {
-                                console.error('Play with sound failed:', err);
-                                // If playing with sound fails, try muted
-                                videoRef.current.muted = true;
-                                setIsMuted(true);
-                                videoRef.current.play()
-                                  .then(() => setIsVideoPlaying(true))
-                                  .catch(e => console.error('Even muted play failed:', e));
-                              });
-                          }
-                        }}
-                        className="px-4 py-2 sm:px-6 sm:py-3 rounded-full bg-[#54BB74] text-[#292929] font-medium text-sm sm:text-base hover:bg-[#93cfa2] transition-all transform hover:scale-105 animate-pulse"
-                      >
-                        Start Experience
-                      </button>
+            <div className="max-w-4xl mx-auto">
+              {/* Customer Welcome */}
+              <div className="bg-[#1e1e1e] rounded-lg overflow-hidden shadow-xl mb-8">
+                <div className="bg-gradient-to-r from-[#292929] to-[#54bb74]/30 p-6">
+                  <h1 className="text-3xl font-bold mb-2 text-[#93cfa2]">
+                    Welcome, {customer.customerName || 'Valued Customer'}
+                  </h1>
+                  <p className="text-gray-300 mb-4">Your LIMI representative: {customer.staffName}</p>
+                  
+                  {customer.clientCompanyInfo && (
+                    <div className="flex items-center mt-2">
+                      <FaBuilding className="text-[#93cfa2] mr-2" />
+                      <span className="text-gray-300">
+                        {customer.clientCompanyInfo}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              {/* Slide Presentation Section */}
+              <div className="bg-[#1e1e1e] rounded-lg overflow-hidden shadow-xl p-6 mb-8">
+                <PresentationHeader customerName={customer.staffName} />
+                
+                {/* Slide Carousel */}
+                <div className="bg-black rounded-lg overflow-hidden">
+                  <SlideCarousel />
+                </div>
+              </div>
+              
+              {/* Product Showcase */}
+              {/* {customer.products && customer.products.length > 0 && (
+                <div className="bg-[#1e1e1e] rounded-lg overflow-hidden shadow-xl p-6 mb-8">
+                  <h2 className="text-3xl font-bold mb-6 text-white">Selected Products</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {customer.products.map((product, index) => (
+                      <div key={index} className="bg-[#292929] p-4 rounded-lg">
+                        {product.image && (
+                          <div className="relative h-48 mb-4 overflow-hidden rounded-lg">
+                            <Image 
+                              src={product.image}
+                              alt={product.name}
+                              fill
+                              sizes="(max-width: 768px) 100vw, 33vw"
+                              style={{ objectFit: 'cover' }}
+                              className="hover:scale-105 transition-transform duration-300"
+                            />
+                          </div>
+                        )}
+                        <h3 className="font-medium text-emerald-400 text-lg">{product.name}</h3>
+                        {product.description && (
+                          <p className="text-gray-300 mt-1">{product.description}</p>
+                        )}
+                        {product.price && (
+                          <p className="text-white font-bold mt-2">{product.price}</p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )} */}
+              
+              {/* Company Information */}
+              <div className="bg-[#1e1e1e] rounded-lg overflow-hidden shadow-xl">
+                <div className="bg-gradient-to-r from-[#292929] to-[#54bb74]/30 p-6">
+                  <h2 className="text-2xl font-bold text-[#93cfa2] mb-2">About LIMI</h2>
+                  <p className="text-gray-300">{customer.companyInfo.description}</p>
+                </div>
+                <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <h3 className="text-lg font-semibold text-[#93cfa2] mb-3">Our Mission</h3>
+                    <p className="text-gray-300">{customer.companyInfo.mission}</p>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-[#93cfa2] mb-3">Our Vision</h3>
+                    <p className="text-gray-300">{customer.companyInfo.vision}</p>
+                  </div>
+                  <div className="md:col-span-2 mt-4 pt-4 border-t border-gray-700">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div>
+                        <h4 className="text-sm font-medium text-[#93cfa2]">Founded</h4>
+                        <p className="text-gray-300">{customer.companyInfo.founded}</p>
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-medium text-[#93cfa2]">Headquarters</h4>
+                        <p className="text-gray-300">{customer.companyInfo.headquarters}</p>
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-medium text-[#93cfa2]">Website</h4>
+                        <p className="text-gray-300">{customer.companyInfo.website}</p>
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-medium text-[#93cfa2]">Support</h4>
+                        <p className="text-gray-300">{customer.companyInfo.support}</p>
+                      </div>
                     </div>
                   </div>
-                )}
-                
-                {/* Sound reminder - shown when video is muted and playing */}
-                {isMuted && isVideoPlaying && !showStartOverlay && (
-                  <div className="absolute top-4 left-4 bg-[#292929]/80 text-white px-3 py-1 rounded-full text-sm flex items-center space-x-2">
-                    <FaVolumeMute className="text-[#54BB74]" />
-                    <span>Sound is off</span>
-                  </div>
-                )}
-                
-                {isVideoLoaded && !showStartOverlay && (
-                  <div className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 flex space-x-2 sm:space-x-3">
-                    {/* Mute/Unmute button */}
-                    <button 
-                      onClick={() => {
-                        if (videoRef.current) {
-                          const newMutedState = !isMuted;
-                          videoRef.current.muted = newMutedState;
-                          setIsMuted(newMutedState);
-                        }
-                      }}
-                      className={`${isMuted ? 'animate-pulse' : ''} w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#292929] text-[#54BB74] border border-[#54BB74] sm:border-2 flex items-center justify-center transition-all hover:bg-[#54BB74] hover:text-white z-10`}
-                      aria-label={isMuted ? "Unmute video" : "Mute video"}
-                    >
-                      {isMuted ? <FaVolumeMute className="text-sm sm:text-lg" /> : <FaVolumeUp className="text-sm sm:text-lg" />}
-                    </button>
-                    
-                    {/* Play/Pause button */}
-                    <button 
-                      onClick={() => {
-                        if (videoRef.current) {
-                          if (isVideoPlaying) {
-                            videoRef.current.pause();
-                          } else {
-                            // Don't reset to beginning, just resume from current position
-                            videoRef.current.play().catch(err => console.error('Video playback failed:', err));
-                          }
-                          setIsVideoPlaying(!isVideoPlaying);
-                        }
-                      }}
-                      className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#292929] text-[#54BB74] border border-[#54BB74] sm:border-2 flex items-center justify-center transition-all hover:bg-[#54BB74] hover:text-white z-10"
-                      aria-label={isVideoPlaying ? "Pause video" : "Play video"}
-                    >
-                      {isVideoPlaying ? <FaPause className="text-sm sm:text-lg" /> : <FaPlay className="ml-0.5 sm:ml-1 text-sm sm:text-lg" />}
-                    </button>
-                  </div>
-                )}
-                
-
-                
-
-              </div>
-              
-              {/* Profile Header - Keep this section as requested */}
-              <div className="bg-gradient-to-r from-[#292929] to-[#54bb74]/30 p-8">
-                <div className="flex flex-col md:flex-row md:justify-between md:items-center">
-                  <div>
-                    <div className="mb-2 text-sm text-emerald-400 font-medium">Registered by</div>
-                    <h1 className="text-3xl font-bold font-[Amenti] text-[#93cfa2] mb-2">
-                      {customer.staffName || 'LIMI Staff'}
-                    </h1>
-                    {/* {customer.clientCompanyInfo && (
-                      <div className="flex items-center">
-                        <FaBuilding className="text-[#93cfa2] mr-2" />
-                        <span className="text-gray-300">
-                          {customer.clientCompanyInfo}
-                        </span>
-                      </div>
-                    )} */}
-                  </div>
-                  <div className="mt-4 md:mt-0 md:text-right">
-                    <h2 className="text-2xl font-[Amenti] text-[#93cfa2]">
-                      {customer.clientCompanyInfo ? `Hi ${customer.clientCompanyInfo},` : 'Hello,'}
-                    </h2>
-                    <p className="text-lg text-white mt-2">Thanks for visiting us in Hong Kong!</p>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Placeholder Message */}
-              <div className="px-8 py-6 text-center">
-                
-                <div className="space-y-4 mb-8">
-                  <p className="text-gray-300">We're currently reviewing your details and preparing a tailored experience for you.</p>
-                  <p className="text-gray-300">Please check back soon to see some exciting lighting solutions we'd love to share.</p>
-                </div>
-                
-                <p className="text-gray-400 mb-6">In the meantime, feel free to explore more at:</p>
-                
-                <div className="mt-4">
-                  <a 
-                    href="https://limilighting.co.uk" 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="inline-block bg-[#54bb74] hover:bg-[#93cfa2] text-[#292929] font-bold py-3 px-8 rounded-full transition-colors duration-300"
-                  >
-                    Visit Our Website
-                  </a>
                 </div>
               </div>
             </div>
           </div>
-        ) : (
-          <div className="container mx-auto px-4 text-center">
-            <p className="text-gray-300">No customer data found</p>
-          </div>
-        )}
+        ) : null}
       </div>
       
       <Footer />
-      
-      {/* Cookie Consent Banner */}
-      <CookieConsent />
     </main>
   );
 }

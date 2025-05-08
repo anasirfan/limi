@@ -7,6 +7,7 @@ import ProductShowcase from './components/ProductShowcase';
 import HowItWorks from './components/HowItWorks';
 import InteractiveConfigurator from './components/InteractiveConfigurator';
 import OurStory from './components/OurStory';
+import TimelineAchievements from './components/TimelineAchievements';
 import TransitionLayout from './components/TransitionLayout';
 import SectionNavigation from './components/SectionNavigation';
 
@@ -114,6 +115,7 @@ export default function Home() {
         <HowItWorks />
         <InteractiveConfigurator />
         <OurStory />
+        <TimelineAchievements />
         {/* Commented out sections as requested
         <InteractiveStory />
         <LightingCarousel />

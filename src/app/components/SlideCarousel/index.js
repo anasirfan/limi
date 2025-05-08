@@ -1,0 +1,220 @@
+'use client';
+import { useState, useRef, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import { selectSlides, selectActiveSlideIndex, setActiveSlideIndex, replaceAllSlides } from '../../redux/slices/slidesSlice';
+import SlideRenderer from './SlideRenderer';
+
+/**
+ * SlideCarousel component for displaying customer presentation slides
+ * Uses Redux for state management and supports multiple layout types
+ */
+export default function SlideCarousel() {
+  const dispatch = useDispatch();
+  const reduxSlides = useSelector(selectSlides);
+  const activeIndex = useSelector(selectActiveSlideIndex);
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
+  const carouselRef = useRef(null);
+  
+  // Use the Redux slides directly instead of maintaining separate state
+  // This ensures changes are immediately reflected
+  const slides = reduxSlides;
+  
+  // Load slides from localStorage if available and update Redux store
+  useEffect(() => {
+    const loadSlidesFromStorage = () => {
+      try {
+        const savedSlides = localStorage.getItem('slides');
+        if (savedSlides) {
+          const parsedSlides = JSON.parse(savedSlides);
+          if (Array.isArray(parsedSlides) && parsedSlides.length > 0) {
+            // Update Redux store with all slides from localStorage
+            // This will automatically update the UI since we're using the Redux slides directly
+            dispatch(replaceAllSlides(parsedSlides));
+            
+            // Set active slide to the first one if needed
+            dispatch(setActiveSlideIndex(0));
+          }
+        }
+      } catch (error) {
+        console.error('Error loading slides from localStorage:', error);
+      }
+    };
+    
+    // Load slides on initial render
+    loadSlidesFromStorage();
+    
+    // Add storage event listener to update slides when localStorage changes
+    const handleStorageChange = (e) => {
+      if (e.key === 'slides') {
+        loadSlidesFromStorage();
+      }
+    };
+    
+    // Add custom event listener for slidesUpdated event
+    const handleSlidesUpdated = () => {
+      loadSlidesFromStorage();
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('slidesUpdated', handleSlidesUpdated);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('slidesUpdated', handleSlidesUpdated);
+    };
+  }, [dispatch]);
+  
+  // Minimum swipe distance (in px)
+  const minSwipeDistance = 50;
+  
+  // Handle navigation
+  const goToSlide = (index) => {
+    // Ensure index is within bounds
+    const newIndex = Math.max(0, Math.min(slides.length - 1, index));
+    dispatch(setActiveSlideIndex(newIndex));
+  };
+  
+  const goToNextSlide = () => {
+    goToSlide(activeIndex + 1);
+  };
+  
+  const goToPrevSlide = () => {
+    goToSlide(activeIndex - 1);
+  };
+  
+  // Handle keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'ArrowRight') {
+        goToNextSlide();
+      } else if (e.key === 'ArrowLeft') {
+        goToPrevSlide();
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [activeIndex, slides.length]);
+  
+  // Handle touch events for mobile swipe
+  const onTouchStart = (e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+  
+  const onTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+  
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+    
+    if (isLeftSwipe) {
+      goToNextSlide();
+    } else if (isRightSwipe) {
+      goToPrevSlide();
+    }
+  };
+  
+  // Variants for slide animations
+  const slideVariants = {
+    enter: (direction) => ({
+      x: direction > 0 ? '100%' : '-100%',
+      opacity: 0,
+    }),
+    center: {
+      x: 0,
+      opacity: 1,
+    },
+    exit: (direction) => ({
+      x: direction < 0 ? '100%' : '-100%',
+      opacity: 0,
+    }),
+  };
+  
+  return (
+    <div className="relative w-full overflow-hidden bg-[#1F1F1F] rounded-lg shadow-xl">
+      {/* Main carousel container */}
+      <div 
+        ref={carouselRef}
+        className="relative w-full h-[600px] md:h-[500px] overflow-hidden"
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+      >
+        {/* Slide content */}
+        <AnimatePresence initial={false} custom={activeIndex}>
+          <motion.div
+            key={slides[activeIndex]?.id || 'empty'}
+            custom={activeIndex}
+            variants={slideVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{
+              x: { type: 'spring', stiffness: 300, damping: 30 },
+              opacity: { duration: 0.2 },
+            }}
+            className="absolute inset-0 w-full h-full"
+          >
+            <SlideRenderer slide={slides[activeIndex]} />
+          </motion.div>
+        </AnimatePresence>
+        
+        {/* Navigation arrows */}
+        {slides.length > 1 && (
+          <>
+            <button
+              onClick={goToPrevSlide}
+              disabled={activeIndex === 0}
+              className={`absolute left-4 top-1/2 transform -translate-y-1/2 z-10 p-2 rounded-full bg-black/30 backdrop-blur-sm text-white ${
+                activeIndex === 0 ? 'opacity-30 cursor-not-allowed' : 'opacity-70 hover:opacity-100'
+              } transition-opacity duration-300`}
+              aria-label="Previous slide"
+            >
+              <FiChevronLeft className="w-6 h-6" />
+            </button>
+            
+            <button
+              onClick={goToNextSlide}
+              disabled={activeIndex === slides.length - 1}
+              className={`absolute right-4 top-1/2 transform -translate-y-1/2 z-10 p-2 rounded-full bg-black/30 backdrop-blur-sm text-white ${
+                activeIndex === slides.length - 1 ? 'opacity-30 cursor-not-allowed' : 'opacity-70 hover:opacity-100'
+              } transition-opacity duration-300`}
+              aria-label="Next slide"
+            >
+              <FiChevronRight className="w-6 h-6" />
+            </button>
+          </>
+        )}
+      </div>
+      
+      {/* Pagination dots */}
+      {slides.length > 1 && (
+        <div className="flex justify-center items-center space-x-2 py-4">
+          {slides.map((slide, index) => (
+            <button
+              key={slide.id}
+              onClick={() => goToSlide(index)}
+              className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                index === activeIndex
+                  ? 'bg-[#50C878] scale-110'
+                  : 'bg-white/30 hover:bg-white/50'
+              }`}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}

@@ -35,7 +35,7 @@ export default function TeamMember({ member, index, isActive }) {
   
   return (
     <motion.div 
-      className="team-member relative h-full"
+      className="team-member relative h-auto"
       initial={{ opacity: 0, y: 20 }}
       animate={{ 
         opacity: 1, 

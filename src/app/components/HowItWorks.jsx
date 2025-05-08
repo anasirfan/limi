@@ -228,26 +228,26 @@ export default function HowItWorks() {
       story: "Smart home setup is often frustrating with complex networks and passwords. LIMI simplifies everything with a quick QR scan that instantly connects your light to your home network.",
       icon: FiSmartphone,
       color: "#54BB74",
-      video: "https://static.videezy.com/system/resources/previews/000/038/893/original/Smart_House_Phone.mp4",
+      video: "/images/howitworks/connect/connect.m4v",
       tip: "The app guides you through setup in under 60 seconds with no technical knowledge required.",
       carousel: [
         {
           title: "QR Code Pairing",
           description: "Simply scan the unique QR code on your LIMI base to instantly pair with the app.",
-          media: "https://static.videezy.com/system/resources/previews/000/038/893/original/Smart_House_Phone.mp4",
-          type: "video"
+          media: "/images/howitworks/connect/qrcode.jpg",
+          type: "image"
         },
         {
           title: "Guided Setup",
           description: "Our step-by-step setup wizard makes configuration simple for everyone.",
-          media: "https://static.videezy.com/system/resources/previews/000/038/893/original/Smart_House_Phone.mp4",
-          type: "video"
+          media: "/images/howitworks/connect/guided.jpg",
+          type: "image"
         },
         {
           title: "Smart Home Integration",
           description: "Seamlessly connects with popular smart home systems like HomeKit, Alexa, and Google Home.",
-          media: "https://static.videezy.com/system/resources/previews/000/038/893/original/Smart_House_Phone.mp4",
-          type: "video"
+          media: "/images/howitworks/connect/smart.jpg",
+          type: "image"
         }
       ]
     },
@@ -258,26 +258,26 @@ export default function HowItWorks() {
       story: "Lighting should adapt to your life, not the other way around. LIMI learns your preferences over time and automatically adjusts to create the perfect atmosphere for every moment.",
       icon: FiSliders,
       color: "#54BB74",
-      video: "https://static.videezy.com/system/resources/previews/000/051/517/original/alargando_la_luz_de_una_lampara.mp4",
+      video: "/images/howitworks/personalize/personalize.m4v",
       tip: "Create custom scenes for different activities – reading, dining, movie night – and activate them with a tap or voice command.",
       carousel: [
         {
           title: "Intuitive Controls",
           description: "Simple sliders and presets make adjusting your lighting quick and easy.",
-          media: "https://static.videezy.com/system/resources/previews/000/051/517/original/alargando_la_luz_de_una_lampara.mp4",
-          type: "video"
+          media: "/images/howitworks/personalize/intuitive.jpg",
+          type: "image"
         },
         {
           title: "Custom Scenes",
           description: "Create and save personalized lighting scenes for different activities and moods.",
-          media: "https://static.videezy.com/system/resources/previews/000/051/517/original/alargando_la_luz_de_una_lampara.mp4",
-          type: "video"
+          media: "/images/howitworks/personalize/custom.jpg",
+          type: "image"
         },
         {
           title: "Adaptive Learning",
           description: "LIMI learns your preferences over time and suggests optimal lighting for each time of day.",
-          media: "https://static.videezy.com/system/resources/previews/000/051/517/original/alargando_la_luz_de_una_lampara.mp4",
-          type: "video"
+          media: "/images/howitworks/personalize/adaptive.jpg",
+          type: "image"
         }
       ]
     }
@@ -457,6 +457,7 @@ export default function HowItWorks() {
                   loop 
                   muted 
                   playsInline
+                  id={`bg-video-${step.id}`}
                 >
                   <source src={step.video} type="video/mp4" />
                 </video>
@@ -488,13 +489,25 @@ export default function HowItWorks() {
                         className="absolute bottom-4 right-4 w-12 h-12 rounded-full bg-[#54BB74] text-white flex items-center justify-center z-20"
                         whileTap={{ scale: 0.9 }}
                         onClick={(e) => {
-                          const video = document.getElementById(`video-${step.id}`);
-                          if (video) {
-                            if (video.paused) {
-                              video.play();
+                          // Get both the foreground and background videos by their specific IDs
+                          const foregroundVideo = document.getElementById(`video-${step.id}`);
+                          const backgroundVideo = document.getElementById(`bg-video-${step.id}`);
+                          
+                          // Check if the foreground video is playing or paused
+                          if (foregroundVideo) {
+                            if (foregroundVideo.paused) {
+                              // Play both videos
+                              foregroundVideo.play();
+                              if (backgroundVideo) backgroundVideo.play();
+                              
+                              // Change button icon to pause
                               e.currentTarget.innerHTML = '<svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" height="20" width="20" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>';
                             } else {
-                              video.pause();
+                              // Pause both videos
+                              foregroundVideo.pause();
+                              if (backgroundVideo) backgroundVideo.pause();
+                              
+                              // Change button icon to play
                               e.currentTarget.innerHTML = '<svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" height="20" width="20" xmlns="http://www.w3.org/2000/svg"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>';
                             }
                           }

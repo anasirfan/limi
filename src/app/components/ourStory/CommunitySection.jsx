@@ -257,7 +257,7 @@ export default function CommunitySection() {
           {['twitter', 'instagram', 'linkedin'].map((social) => (
             <motion.a 
               key={social}
-              href={`/about`}
+              href={`/about-us`}
               className="transition-colors"
               style={{ color: theme === 'light' ? '#999999' : '#777777' }}
               whileHover={{ 
