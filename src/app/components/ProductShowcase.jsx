@@ -51,7 +51,7 @@ function ProductShowcase() {
       name: "Interchangeable Designs",
       tagline: "Design-forward Pendants",
       description: "Beautiful pendants that can be swapped without tools or an electrician.",
-      image: "/images/products/product2/1.jpg",
+      image: "/images/homepage-products/1.jpg",
       galleryImages: [
         "/images/products/product2/1.jpg",
         "/images/products/product2/2.jpg",
@@ -77,7 +77,7 @@ function ProductShowcase() {
       name: "The Brain",
       tagline: "Central Control Hub",
       description: "Central hub that connects your lighting system to your smart home ecosystem.",
-      image: "/images/products/product3/1.jpg",
+      image: "/images/homepage-products/2.jpg",
       galleryImages: [
         "/images/products/product3/1.jpg",
         "/images/products/product3/2.jpg",
@@ -103,7 +103,7 @@ function ProductShowcase() {
       name: "Wall Pendant",
       tagline: "Elegant Wall Lighting",
       description: "Sleek wall-mounted pendant lights that bring style and function to any room.",
-      image: "/images/products/product2/2.jpg",
+      image: "/images/homepage-products/4.jpg",
       galleryImages: [
         "/images/products/product2/2.jpg",
         "/images/products/product2/3.jpg",
@@ -129,7 +129,7 @@ function ProductShowcase() {
       name: "Pendant Light",
       tagline: "Suspended Elegance",
       description: "Stunning pendant lights that create a focal point in any space.",
-      image: "/images/products/product2/3.jpg",
+      image: "/images/homepage-products/3.jpg",
       galleryImages: [
         "/images/products/product2/3.jpg",
         "/images/products/product2/1.jpg",
@@ -155,7 +155,7 @@ function ProductShowcase() {
       name: "Minimalist Sconce",
       tagline: "Sleek Wall Accent",
       description: "Clean, modern wall sconce that provides elegant ambient lighting.",
-      image: "/images/products/product1/2.jpg",
+      image: "/images/homepage-products/6.jpg",
       galleryImages: [
         "/images/products/product1/2.jpg",
         "/images/products/product1/1.jpg",
@@ -181,7 +181,7 @@ function ProductShowcase() {
       name: "Statement Chandelier",
       tagline: "Dramatic Ceiling Fixture",
       description: "Bold, eye-catching chandelier that transforms any space into a design showcase.",
-      image: "/images/products/product3/2.jpg",
+      image: "/images/homepage-products/5.jpg",
       galleryImages: [
         "/images/products/product3/2.jpg",
         "/images/products/product3/1.jpg",
@@ -207,7 +207,7 @@ function ProductShowcase() {
       name: "Track Lighting System",
       tagline: "Versatile Directional Lighting",
       description: "Flexible track system that allows you to highlight specific areas or objects.",
-      image: "/images/products/product1/3.jpg",
+      image: "/images/homepage-products/7.jpg",
       galleryImages: [
         "/images/products/product1/3.jpg",
         "/images/products/product1/1.jpg",
@@ -231,7 +231,7 @@ function ProductShowcase() {
   ];
 
   return (
-    <div  className="smooth-wrapper">
+    <div id="products" className="smooth-wrapper ProductShowcase">
       <div className="smooth-content">
         <ProductShowcaseWrapper>
           {/* Intro Text */}

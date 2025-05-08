@@ -168,26 +168,26 @@ export default function HowItWorks() {
       story: "Traditional lighting installations require complex wiring and professional help. LIMI changes everything with a simple twist-and-lock mechanism that works with your existing fixtures.",
       icon: FiSettings,
       color: "#54BB74",
-      video: "https://static.videezy.com/system/resources/previews/000/044/479/original/light-bulb-illuminating-a-dark-room.mp4",
+      video: "/images/howitworks/install/install.mp4",
       tip: "The base connects to your existing light socket in seconds, no tools required.",
       carousel: [
         {
           title: "Twist & Lock Mechanism",
           description: "Our patented twist-lock system secures the base to any standard light socket in seconds.",
-          media: "https://static.videezy.com/system/resources/previews/000/044/479/original/light-bulb-illuminating-a-dark-room.mp4",
-          type: "video"
+          media: "/images/howitworks/install/twist.jpg",
+          type: "image"
         },
         {
           title: "No Tools Required",
           description: "The ergonomic design allows for easy installation without any special tools or skills.",
-          media: "https://static.videezy.com/system/resources/previews/000/044/479/original/light-bulb-illuminating-a-dark-room.mp4",
-          type: "video"
+          media: "/images/howitworks/install/notools.jpg",
+          type: "image"
         },
         {
           title: "Universal Compatibility",
           description: "Works with all standard E26/E27 light sockets found in most homes and offices.",
-          media: "https://static.videezy.com/system/resources/previews/000/044/479/original/light-bulb-illuminating-a-dark-room.mp4",
-          type: "video"
+          media: "/images/howitworks/install/universal.png",
+          type: "image"
         }
       ]
     },
@@ -389,7 +389,7 @@ export default function HowItWorks() {
     <section 
       id="how-it-works" 
       ref={sectionRef}
-      className="h-screen bg-[#F2F0E6] text-[#2B2D2F] relative overflow-hidden flex flex-col"
+      className="h-screen bg-[#F2F0E6] text-[#2B2D2F] relative overflow-hidden flex flex-col HowItWorks"
     >
       {/* Detail Carousel Modal */}
       <AnimatePresence>
@@ -450,7 +450,7 @@ export default function HowItWorks() {
               className="min-w-[100vw] h-[90vh] flex items-center justify-center rounded-2xl p-4 py-8 relative overflow-hidden"
             >
               {/* Background video */}
-              <div className="absolute inset-0 bg-black/30 z-0 rounded-2xl overflow-hidden">
+              <div className="absolute inset-0 bg-black/90 z-0 rounded-2xl overflow-hidden">
                 <video 
                   className="absolute w-full h-full object-cover opacity-60"
                   autoPlay 

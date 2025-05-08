@@ -57,9 +57,9 @@ export default function InteractiveConfigurator() {
 
   return (
     <section 
-      id="interactive-configurator" 
-      ref={sectionRef}
-      className="min-h-screen bg-[#F2F0E6] text-[#2B2D2F] py-20 px-4 md:px-8 relative overflow-hidden"
+      id="configurator" 
+      ref={sectionRef} 
+      className="relative py-16 bg-[#F2F0E6] overflow-hidden InteractiveConfigurator"
     >
       {/* Parallax background elements */}
       <div className="absolute inset-0 overflow-hidden opacity-5">
@@ -82,7 +82,7 @@ export default function InteractiveConfigurator() {
         >
           {[...Array(20)].map((_, i) => (
             <div 
-              key={i}
+              key={i} 
               className="absolute rounded-full bg-[#50C878] opacity-20"
               style={{
                 width: `${Math.random() * 30 + 10}px`,

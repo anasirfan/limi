@@ -8,6 +8,7 @@ import HowItWorks from './components/HowItWorks';
 import InteractiveConfigurator from './components/InteractiveConfigurator';
 import OurStory from './components/OurStory';
 import TransitionLayout from './components/TransitionLayout';
+import SectionNavigation from './components/SectionNavigation';
 
 // Commented out sections as requested
 // import InteractiveStory from './components/InteractiveStory';
@@ -107,7 +108,7 @@ export default function Home() {
       <SplashScreen onComplete={() => window.dispatchEvent(new Event('splashComplete'))} />
       {/* <UserSelectionPopup isVisible={showUserSelection} onSelect={handleUserTypeSelect} /> */}
       <Header />
-      <TransitionLayout>
+      
         <HeroSection />
         <ProductShowcase />
         <HowItWorks />
@@ -125,10 +126,11 @@ export default function Home() {
         <AnalyticsInsights />
         <DistributorHub />
         */}
-      </TransitionLayout>
+  
       {/* {!isMobile && <MouseTrail />} */}
       <Footer />
-      <ScrollToTop />
+      <SectionNavigation />
+      {/* <ScrollToTop /> */}
       <CookieConsent onAccept={handleTrackingConsent} onDecline={() => {}} />
     </main>
   );

@@ -1,0 +1,175 @@
+'use client';
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+
+export default function SectionNavigation() {
+  const [isVisible, setIsVisible] = useState(false);
+  const [activeSection, setActiveSection] = useState('');
+  const [sections, setSections] = useState([]);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  
+  // Define colors from LIMI brand palette
+  const emerald = '#50C878';
+  const charlestonGreen = '#2B2D2F';
+  const textColor = '#FFFFFF';
+  
+  // Detect sections and handle scroll events
+  useEffect(() => {
+    // Find all main sections in the page
+    const detectSections = () => {
+      // Look for main components in the page
+      const mainComponents = [
+        { id: 'hero', label: 'Home', selector: '#hero, .HeroSection', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
+        { id: 'products', label: 'Products', selector: '#products, .ProductShowcase', icon: 'M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z' },
+        { id: 'how-it-works', label: 'How It Works', selector: '#how-it-works, .HowItWorks', icon: 'M13 10V3L4 14h7v7l9-11h-7z' },
+        { id: 'configurator', label: 'Configurator', selector: '#configurator, .InteractiveConfigurator', icon: 'M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4' },
+        { id: 'our-story', label: 'Our Story', selector: '#our-story, .OurStory', icon: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253' }
+      ];
+      
+      // Filter to only include sections that exist on the page
+      const foundSections = mainComponents.filter(section => {
+        const element = document.querySelector(section.selector);
+        return element !== null;
+      });
+      
+      setSections(foundSections);
+    };
+    
+    // Wait for components to render
+    setTimeout(detectSections, 1000);
+    
+    // Handle scroll to determine active section and visibility
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = (scrollPosition / scrollHeight) * 100;
+      
+      setScrollProgress(progress);
+      setIsVisible(scrollPosition > 300);
+      
+      // Find the active section based on scroll position
+      sections.forEach(section => {
+        const element = document.querySelector(section.selector);
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          const sectionTop = rect.top + window.scrollY;
+          const sectionHeight = rect.height;
+          
+          if (scrollPosition >= sectionTop - 200 && 
+              scrollPosition < sectionTop + sectionHeight - 200) {
+            setActiveSection(section.id);
+          }
+        }
+      });
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    handleScroll(); // Initial check
+    
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [sections]);
+  
+  // Scroll to section function
+  const scrollToSection = (id) => {
+    const section = sections.find(s => s.id === id);
+    if (section) {
+      const element = document.querySelector(section.selector);
+      if (element) {
+        // Scroll to the element smoothly
+        window.scrollTo({
+          top: element.offsetTop - 100,
+          behavior: 'smooth'
+        });
+      }
+    }
+  };
+  
+  return (
+    <AnimatePresence>
+      {isVisible && sections.length > 0 && (
+        <motion.div
+          className="fixed right-4 top-1/2 transform -translate-y-1/2 z-50"
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: 20 }}
+          transition={{ duration: 0.3 }}
+        >
+          {/* Scroll progress indicator */}
+          <div className="absolute right-0 top-0 bottom-0 w-1 rounded-full bg-gray-700 -translate-y-[5%] translate-x-[20px] h-[110%]">
+            <motion.div 
+              className="absolute top-0 left-0 w-full rounded-full" 
+              style={{ 
+                backgroundColor: emerald,
+                height: `${scrollProgress}%`,
+                transition: 'height 0.1s ease-out'
+              }}
+            />
+          </div>
+          
+          <motion.div
+            className="flex flex-col items-center gap-4 p-3 rounded-full"
+            style={{ 
+              backgroundColor: charlestonGreen,
+              boxShadow: `0 4px 20px rgba(0,0,0,0.2), 0 0 0 1px ${emerald}20`
+            }}
+          >
+            {/* Navigation items */}
+            <div className="flex flex-col gap-6">
+              {sections.map((section) => (
+                <div key={section.id} className="relative group">
+                  <motion.button
+                    className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${activeSection === section.id ? 'bg-emerald text-white' : 'bg-charlestonGreen/80 text-white/70 hover:bg-charlestonGreen hover:text-white'}`}
+                    onClick={() => scrollToSection(section.id)}
+                    aria-label={`Navigate to ${section.label} section`}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ 
+                      type: "spring", 
+                      stiffness: 300, 
+                      damping: 20,
+                      delay: 0.1 * sections.indexOf(section) 
+                    }}
+                    style={{ 
+                      backgroundColor: activeSection === section.id ? emerald : 'transparent',
+                      color: activeSection === section.id ? '#FFFFFF' : `${textColor}80`
+                    }}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={section.icon} />
+                    </svg>
+                    
+                  
+                  </motion.button>
+                  
+                  {/* Tooltip */}
+                  <motion.div 
+                    className="absolute right-full mr-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                    initial={{ opacity: 0, x: 10 }}
+                    whileHover={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <motion.div 
+                      className="py-1 px-3 rounded whitespace-nowrap shadow-lg text-sm"
+                      initial={{ opacity: 0 }}
+                      whileInView={{ opacity: 1 }}
+                      viewport={{ once: false }}
+                      style={{ 
+                        backgroundColor: charlestonGreen,
+                        color: textColor,
+                        boxShadow: `0 2px 10px rgba(0,0,0,0.2), 0 0 0 1px ${emerald}20`
+                      }}
+                    >
+                      {section.label}
+                    </motion.div>
+                  </motion.div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
