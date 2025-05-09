@@ -48,7 +48,7 @@ export default function StatsSection() {
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#50C878]10 to-transparent"></div>
       </div>
       
-      <div className="flex flex-wrap justify-center gap-8 md:gap-16 px-6 py-8">
+      <div className="flex flex-col md:flex-row flex-wrap justify-center gap-6 md:gap-16 px-4 md:px-6 py-8">
         {stats.map((stat, index) => (
           <motion.div 
             key={index} 

@@ -47,21 +47,27 @@ export default function TeamSection() {
   const [scrollLeft, setScrollLeft] = useState(0);
   const [autoScrollEnabled, setAutoScrollEnabled] = useState(true);
   
-  // Calculate card width for proper centering with 20% of adjacent cards visible
+  // Calculate card width for proper centering with adjacent cards visible
   const getCardWidth = () => {
     if (!carouselRef.current) return 0;
-    // Main card takes 60% of the container width, leaving 20% visible on each side
-    return carouselRef.current.offsetWidth * 0.6;
+    // Main card takes 60% of the container width on desktop, 90% on mobile
+    const isMobile = window.innerWidth < 768;
+    return carouselRef.current.offsetWidth * (isMobile ? 0.9 : 0.6);
   };
 
   // Calculate scroll position for a given index
   const getScrollPosition = (index) => {
     if (!carouselRef.current) return 0;
     const cardWidth = getCardWidth();
-    // Add 20% of the container width to center the card and show 20% of adjacent cards
     const containerWidth = carouselRef.current.offsetWidth;
+    const isMobile = window.innerWidth < 768;
+    
+    // Calculate offset to center the card properly
     const offset = (containerWidth - cardWidth) / 2;
-    return (index * cardWidth) - offset;
+    
+    // For mobile, we need to adjust the calculation to ensure proper centering
+    // This ensures all slides (including middle ones) are centered correctly
+    return (index * cardWidth) - offset + (isMobile ? 0 : 0);
   };
 
   // Handle mouse events for carousel dragging
@@ -260,12 +266,13 @@ export default function TeamSection() {
         {/* Carousel */}
         <div 
           ref={carouselRef}
-          className="overflow-x-scroll scrollbar-hide snap-x snap-mandatory flex gap-6 py-4 px-4"
+          className="overflow-x-scroll scrollbar-hide snap-x snap-mandatory flex gap-4 md:gap-6 py-4 px-2 md:px-4"
           style={{ 
             scrollbarWidth: "none", 
             msOverflowStyle: "none",
-            scrollPaddingLeft: "20%",
-            scrollPaddingRight: "20%"
+            scrollPaddingLeft: "5%",
+            scrollPaddingRight: "5%",
+            scrollBehavior: "smooth"
           }}
           onMouseDown={handleMouseDown}
           onMouseUp={handleMouseUp}
@@ -279,15 +286,15 @@ export default function TeamSection() {
           aria-label="Team members"
         >
           {/* Add a spacer at the beginning for proper centering */}
-          <div className="flex-none w-[10%] md:w-[10%]"></div>
+          <div className="flex-none w-[5%] md:w-[10%]"></div>
           
           {teamMembers.map((member, index) => (
             <div 
               key={index}
-              className="flex-none w-[80%] md:w-[60%] snap-center px-2 transition-all duration-300"
+              className="flex-none w-[90%] md:w-[60%] snap-center px-2 transition-all duration-300"
               style={{
                 opacity: index === activeIndex ? 1 : 0.6,
-                transform: index === activeIndex ? 'scale(1)' : 'scale(0.9)',
+                transform: index === activeIndex ? 'scale(1)' : 'scale(0.95)',
               }}
               role="group"
               aria-roledescription="slide"
@@ -303,7 +310,7 @@ export default function TeamSection() {
           ))}
           
           {/* Add a spacer at the end for proper centering */}
-          <div className="flex-none w-[10%] md:w-[10%]"></div>
+          <div className="flex-none w-[5%] md:w-[10%]"></div>
           
         </div>
         
@@ -320,9 +327,8 @@ export default function TeamSection() {
               onClick={() => {
                 if (!carouselRef.current) return;
                 setActiveIndex(index);
-                const cardWidth = carouselRef.current.offsetWidth / 2;
                 carouselRef.current.scrollTo({
-                  left: index * cardWidth,
+                  left: getScrollPosition(index),
                   behavior: "smooth"
                 });
                 setAutoScrollEnabled(false);

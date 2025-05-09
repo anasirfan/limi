@@ -53,7 +53,7 @@ const DetailCarousel = ({ step, onClose }) => {
           <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center mr-3">
             {step.id}
           </div>
-          <h3 className="text-xl font-bold">{step.title} - {currentItem.title}</h3>
+          <h3 className="text-xl font-bold pr-12 break-words">{step.title} - {currentItem.title}</h3>
         </div>
         
         {/* Carousel content */}
@@ -144,9 +144,12 @@ export default function HowItWorks() {
   const containerRef = useRef(null);
   const stepsRef = useRef([]);
   
-  // State for carousel
+  // State for carousel and device detection
   const [activeStep, setActiveStep] = useState(null);
   const [showCarousel, setShowCarousel] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [mobileActiveSlide, setMobileActiveSlide] = useState(0);
+  const autoplayTimerRef = useRef(null);
   
   // Handle Learn More button click
   const handleLearnMore = (step) => {
@@ -283,93 +286,158 @@ export default function HowItWorks() {
     }
   ];
 
+  // Check if we're on mobile and handle autoplay
   useEffect(() => {
-    // Register ScrollTrigger plugin
-    if (typeof window !== 'undefined') {
-      gsap.registerPlugin(ScrollTrigger);
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    // Initial check
+    checkMobile();
+    
+    // Add event listener
+    window.addEventListener('resize', checkMobile);
+    
+    // Cleanup
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+  
+  // Handle mobile carousel autoplay
+  useEffect(() => {
+    if (isMobile) {
+      // Start autoplay timer
+      autoplayTimerRef.current = setInterval(() => {
+        setMobileActiveSlide(prev => (prev === steps.length - 1 ? 0 : prev + 1));
+      }, 5000); // Change slide every 5 seconds
+    } else {
+      // Clear timer when not on mobile
+      if (autoplayTimerRef.current) {
+        clearInterval(autoplayTimerRef.current);
+      }
+    }
+    
+    // Cleanup timer
+    return () => {
+      if (autoplayTimerRef.current) {
+        clearInterval(autoplayTimerRef.current);
+      }
+    };
+  }, [isMobile, steps.length]);
+  
+  // Handle manual navigation for mobile carousel
+  const goToNextSlide = () => {
+    setMobileActiveSlide(prev => (prev === steps.length - 1 ? 0 : prev + 1));
+    
+    // Reset autoplay timer when manually navigating
+    if (autoplayTimerRef.current) {
+      clearInterval(autoplayTimerRef.current);
+      autoplayTimerRef.current = setInterval(() => {
+        setMobileActiveSlide(prev => (prev === steps.length - 1 ? 0 : prev + 1));
+      }, 5000);
+    }
+  };
+  
+  const goToPrevSlide = () => {
+    setMobileActiveSlide(prev => (prev === 0 ? steps.length - 1 : prev - 1));
+    
+    // Reset autoplay timer when manually navigating
+    if (autoplayTimerRef.current) {
+      clearInterval(autoplayTimerRef.current);
+      autoplayTimerRef.current = setInterval(() => {
+        setMobileActiveSlide(prev => (prev === steps.length - 1 ? 0 : prev + 1));
+      }, 5000);
+    }
+  };
+
+  useEffect(() => {
+    // Skip GSAP setup on mobile
+    if (isMobile || typeof window === 'undefined') return;
+    
+    // Register ScrollTrigger plugin for desktop only
+    gsap.registerPlugin(ScrollTrigger);
+    
+    // Initialize refs array for steps
+    stepsRef.current = stepsRef.current.slice(0, steps.length);
+    
+    // Get references to elements
+    const section = sectionRef.current;
+    const container = containerRef.current;
+    
+    if (section && container) {
+      // Calculate the width of the horizontal scroll container
+      const totalWidth = container.scrollWidth;
+      const viewportWidth = window.innerWidth;
       
-      // Initialize refs array for steps
-      stepsRef.current = stepsRef.current.slice(0, steps.length);
+      // Create the horizontal scroll animation - much slower for storytelling
+      const horizontalScroll = gsap.timeline({
+        scrollTrigger: {
+          trigger: section,
+          start: "top 5%", // Start when section is 10% from the top of viewport
+          end: "+=300%", // Make the scroll distance much longer (3x the viewport height)
+          scrub: 1, // Add smoothing (value between 0.5-3)
+          pin: true,
+          pinSpacing: true,
+          anticipatePin: 1,
+          markers: false, // Set to true for debugging
+          invalidateOnRefresh: true,
+          onUpdate: (self) => {
+            // Scale effect: 0.8 to 1 as we scroll
+            const scale = 0.8 + (self.progress * 0.2);
+            gsap.to(container, {
+              scale: scale,
+              duration: 0.3, // Slower duration
+              ease: "power1.out", // Smoother easing
+            });
+          }
+        }
+      });
       
-      // Get references to elements
-      const section = sectionRef.current;
-      const container = containerRef.current;
+      // Animate the horizontal scroll - much slower
+      horizontalScroll.to(container, {
+        x: -(totalWidth - viewportWidth),
+        ease: "power1.inOut", // Smoother easing
+        duration: 2 // Double the duration
+      });
       
-      if (section && container) {
-        // Calculate the width of the horizontal scroll container
-        const totalWidth = container.scrollWidth;
-        const viewportWidth = window.innerWidth;
+      // Create more elaborate animations for each step
+      stepsRef.current.forEach((step, index) => {
+        if (!step) return;
         
-        // Create the horizontal scroll animation - much slower for storytelling
-        const horizontalScroll = gsap.timeline({
+        // Find elements within each step for more detailed animations
+        const content = step.querySelector('.step-content');
+        const visual = step.querySelector('.step-visual');
+        const title = step.querySelector('.step-title');
+        const description = step.querySelector('.step-description');
+        const icon = step.querySelector('.step-icon');
+        const button = step.querySelector('.step-button');
+        
+        // Create a timeline for each step
+        const stepTimeline = gsap.timeline({
           scrollTrigger: {
-            trigger: section,
-            start: "top 5%", // Start when section is 10% from the top of viewport
-            end: "+=300%", // Make the scroll distance much longer (3x the viewport height)
-            scrub: 1, // Add smoothing (value between 0.5-3)
-            pin: true,
-            pinSpacing: true,
-            anticipatePin: 1,
-            markers: false, // Set to true for debugging
-            invalidateOnRefresh: true,
-            onUpdate: (self) => {
-              // Scale effect: 0.8 to 1 as we scroll
-              const scale = 0.8 + (self.progress * 0.2);
-              gsap.to(container, {
-                scale: scale,
-                duration: 0.3, // Slower duration
-                ease: "power1.out", // Smoother easing
-              });
-            }
+            containerAnimation: horizontalScroll,
+            trigger: step,
+            start: "left right-=10%", // Start when the step is 10% from the right edge
+            end: "right left+=10%", // End when the step is 10% past the left edge
+            scrub: true, // Smooth scrubbing
+            toggleActions: "play none none reverse", // Play when entering, reverse when leaving
+            markers: false // Set to true for debugging
           }
         });
         
-        // Animate the horizontal scroll - much slower
-        horizontalScroll.to(container, {
-          x: -(totalWidth - viewportWidth),
-          ease: "power1.inOut", // Smoother easing
-          duration: 2 // Double the duration
-        });
+        // Set initial state for all elements
+        gsap.set([visual, title, description, icon, button], { opacity: 0 });
         
-        // Create more elaborate animations for each step
-        stepsRef.current.forEach((step, index) => {
-          if (!step) return;
-          
-          // Find elements within each step for more detailed animations
-          const content = step.querySelector('.step-content');
-          const visual = step.querySelector('.step-visual');
-          const title = step.querySelector('.step-title');
-          const description = step.querySelector('.step-description');
-          const icon = step.querySelector('.step-icon');
-          const button = step.querySelector('.step-button');
-          
-          // Create a timeline for each step
-          const stepTimeline = gsap.timeline({
-            scrollTrigger: {
-              containerAnimation: horizontalScroll,
-              trigger: step,
-              start: "left right-=10%", // Start when the step is 10% from the right edge
-              end: "right left+=10%", // End when the step is 10% past the left edge
-              scrub: true, // Smooth scrubbing
-              toggleActions: "play none none reverse", // Play when entering, reverse when leaving
-              markers: false // Set to true for debugging
-            }
-          });
-          
-          // Set initial state for all elements
-          gsap.set([visual, title, description, icon, button], { opacity: 0 });
-          
-          // Immediate animation sequence with no delay
-          stepTimeline
-            .to(step, { opacity: 1, duration: 0.05 }, 0)
-            .to(visual, { opacity: 1, duration: 0.1 }, 0)
-            .to(title, { opacity: 1, duration: 0.1 }, 0)
-            .to(description, { opacity: 1, duration: 0.1 }, 0)
-            .to(icon, { opacity: 1, duration: 0.1 }, 0)
-            .to(button, { opacity: 1, duration: 0.1 }, 0);
-        });
-      }
+        // Immediate animation sequence with no delay
+        stepTimeline
+          .to(step, { opacity: 1, duration: 0.05 }, 0)
+          .to(visual, { opacity: 1, duration: 0.1 }, 0)
+          .to(title, { opacity: 1, duration: 0.1 }, 0)
+          .to(description, { opacity: 1, duration: 0.1 }, 0)
+          .to(icon, { opacity: 1, duration: 0.1 }, 0)
+          .to(button, { opacity: 1, duration: 0.1 }, 0);
+      });
     }
+    
     
     // Cleanup function
     return () => {
@@ -428,166 +496,292 @@ export default function HowItWorks() {
         />
       </div>
       
-      {/* Section header - will be pinned by GSAP */}
-      <div className="text-center pb-2 px-4 relative z-20 bg-[#F2F0E6] mt-10">
+      {/* Section header */}
+      <div className="text-center pb-2 px-4 relative z-20 bg-[#F2F0E6] mt-10 mb-6">
         <h2 className="text-4xl md:text-5xl font-bold">How It Works</h2>
       </div>
       
-      {/* Scrollable content container */}
-      <div className="flex-1 overflow-hidden relative z-10">
-        {/* Horizontal scrolling container */}
-        <div 
-          ref={containerRef}
-          className="flex space-x-12 px-4 transform scale-[0.8] origin-center relative"
-          style={{ width: `${steps.length * 100}vw`, maxWidth: `${steps.length * 100}vw` }}
-        >
-        {steps.map((step, index) => {
-          const Icon = step.icon;
-          return (
-            <div 
-              key={step.id}
-              ref={el => stepsRef.current[index] = el}
-              className="min-w-[100vw] h-[90vh] flex items-center justify-center rounded-2xl p-4 py-8 relative overflow-hidden"
-            >
-              {/* Background video */}
-              <div className="absolute inset-0 bg-black/90 z-0 rounded-2xl overflow-hidden">
-                <video 
-                  className="absolute w-full h-full object-cover opacity-60"
-                  autoPlay 
-                  loop 
-                  muted 
-                  playsInline
-                  id={`bg-video-${step.id}`}
-                >
-                  <source src={step.video} type="video/mp4" />
-                </video>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 to-black/30"></div>
-              </div>
-              
-              <div className="flex flex-col lg:flex-row items-center justify-between w-full max-w-7xl z-10 gap-6 step-content">
-                {/* Visual side - Video showcase with animated frame */}
-                <div className="lg:w-2/3 flex justify-center items-center step-visual order-2 lg:order-1">
-                  <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-[#54BB74]/30">
-                    {/* Simple border */}
-                    <div className="absolute inset-0 border border-white/10 rounded-xl pointer-events-none z-10"></div>
-                    
-                    {/* Simple video player with corner play/pause button */}
-                    <div className="relative w-full h-full overflow-hidden">
-                      <video 
-                        className="w-full h-full object-cover"
-                        autoPlay 
-                        loop 
-                        muted 
-                        playsInline
-                        id={`video-${step.id}`}
-                      >
-                        <source src={step.video} type="video/mp4" />
-                      </video>
-                      
-                      {/* Corner play/pause button */}
-                      <motion.button 
-                        className="absolute bottom-4 right-4 w-12 h-12 rounded-full bg-[#54BB74] text-white flex items-center justify-center z-20"
-                        whileTap={{ scale: 0.9 }}
-                        onClick={(e) => {
-                          // Get both the foreground and background videos by their specific IDs
-                          const foregroundVideo = document.getElementById(`video-${step.id}`);
-                          const backgroundVideo = document.getElementById(`bg-video-${step.id}`);
+      {/* Mobile-specific view with autoplay carousel */}
+      {isMobile ? (
+        <div className="flex-1 relative z-10 flex flex-col h-auto" style={{ minHeight: 'calc(100vh - 150px)' }}>
+          {/* Mobile carousel */}
+          <div className="relative overflow-hidden h-full pt-8">
+            <AnimatePresence initial={false} mode="wait">
+              {steps.map((step, index) => {
+                const Icon = step.icon;
+                return (
+                  <motion.div 
+                    key={step.id}
+                    className={`absolute inset-0 ${index === mobileActiveSlide ? 'z-10' : 'z-0'}`}
+                    initial={{ opacity: 0, x: index > mobileActiveSlide ? 100 : -100 }}
+                    animate={index === mobileActiveSlide ? { opacity: 1, x: 0 } : { opacity: 0, x: index > mobileActiveSlide ? 100 : -100 }}
+                    transition={{ type: "tween", duration: 0.6, ease: "easeInOut" }}
+                  >
+                    {/* Mobile step content */}
+                    <div className="min-h-[700px] flex flex-col px-4 py-6 overflow-y-auto">
+                      <div className="bg-[#2B2D2F] rounded-xl overflow-hidden flex flex-col shadow-xl max-w-md mx-auto w-full min-h-[650px] mb-10">
+                        {/* Step indicator - moved to top of card for better visibility */}
+                        <div className="flex items-center justify-center py-3 border-b border-[#50C878]/20">
+                          <div className="w-8 h-8 rounded-full bg-[#50C878] flex items-center justify-center text-white text-sm font-bold shadow-lg">
+                            {step.id}
+                          </div>
+                          <div className="ml-2 text-xs uppercase tracking-widest text-[#50C878] font-medium">
+                            Step {step.id} of {steps.length}
+                          </div>
+                        </div>
+                        
+                        {/* Background video - centered with proper aspect ratio */}
+                        <div className="relative w-full aspect-video">
+                          <video 
+                            className="absolute w-full h-full object-cover opacity-70"
+                            autoPlay 
+                            loop 
+                            muted 
+                            playsInline
+                          >
+                            <source src={step.video} type="video/mp4" />
+                          </video>
+                          <div className="absolute inset-0 bg-gradient-to-t from-[#2B2D2F] to-[#2B2D2F]/50"></div>
+                        </div>
+                        
+                        {/* Content - better spacing and centered text */}
+                        <div className="p-6 flex-1 flex flex-col text-white">
+                          {/* Title with icon - centered */}
+                          <div className="flex items-center justify-center mb-5">
+                            <div className="mr-3 text-[#50C878]">
+                              <Icon size={28} />
+                            </div>
+                            <h3 className="text-2xl font-bold">{step.title}</h3>
+                          </div>
                           
-                          // Check if the foreground video is playing or paused
-                          if (foregroundVideo) {
-                            if (foregroundVideo.paused) {
-                              // Play both videos
-                              foregroundVideo.play();
-                              if (backgroundVideo) backgroundVideo.play();
-                              
-                              // Change button icon to pause
-                              e.currentTarget.innerHTML = '<svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" height="20" width="20" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>';
-                            } else {
-                              // Pause both videos
-                              foregroundVideo.pause();
-                              if (backgroundVideo) backgroundVideo.pause();
-                              
-                              // Change button icon to play
-                              e.currentTarget.innerHTML = '<svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" height="20" width="20" xmlns="http://www.w3.org/2000/svg"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>';
-                            }
-                          }
-                        }}
-                      >
-                        <FiPause size={20} />
-                      </motion.button>
+                          {/* Description - centered */}
+                          <p className="text-lg text-white/90 mb-6 text-center">{step.description}</p>
+                          
+                          {/* Story narrative - better styling */}
+                          <div className="bg-white/5 backdrop-blur-sm p-5 rounded-xl mb-6 border border-[#50C878]/20 text-sm overflow-y-auto max-h-[200px]">
+                            <p className="text-white/80 italic text-center">"{step.story}"</p>
+                          </div>
+                          
+                          {/* CTA Button - centered with more prominence */}
+                          <motion.button 
+                            whileTap={{ scale: 0.95 }}
+                            className="mt-auto px-8 py-3 bg-[#50C878] text-white rounded-full transition-colors text-base font-medium mx-auto shadow-lg flex items-center gap-2"
+                            onClick={() => handleLearnMore(step)}
+                          >
+                            Learn More
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                            </svg>
+                          </motion.button>
+                        </div>
+                      </div>
                     </div>
-                    
-                    {/* Floating badge */}
-                    <motion.div 
-                      className="absolute top-4 right-4 bg-[#54BB74] text-white text-xs font-bold px-3 py-1 rounded-full z-20"
-                      animate={{ y: [0, -5, 0] }}
-                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                    >
-                      Demo Video
-                    </motion.div>
-                  </div>
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
+            
+            {/* Navigation arrows */}
+            <button 
+              className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white shadow-lg border border-white/10"
+              onClick={goToPrevSlide}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            
+            <button 
+              className="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white shadow-lg border border-white/10"
+              onClick={goToNextSlide}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+          
+          {/* Mobile pagination indicator */}
+          <div className="h-12 flex justify-center items-center gap-2 mt-2">
+            {steps.map((_, index) => (
+              <button 
+                key={index}
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${index === mobileActiveSlide ? 'bg-[#50C878] w-6' : 'bg-[#50C878]/30'}`}
+                onClick={() => {
+                  setMobileActiveSlide(index);
+                  // Reset autoplay timer
+                  if (autoplayTimerRef.current) {
+                    clearInterval(autoplayTimerRef.current);
+                    autoplayTimerRef.current = setInterval(() => {
+                      setMobileActiveSlide(prev => (prev === steps.length - 1 ? 0 : prev + 1));
+                    }, 5000);
+                  }
+                }}
+                aria-label={`Go to step ${index + 1}`}
+              />
+            ))}
+          </div>
+        </div>
+      ) : (
+        /* Desktop view with GSAP */
+        <div className="flex-1 overflow-hidden relative z-10">
+          {/* Horizontal scrolling container */}
+          <div 
+            ref={containerRef}
+            className="flex space-x-12 px-4 transform scale-[0.8] origin-center relative"
+            style={{ 
+              width: `${steps.length * 100}vw`, 
+              maxWidth: `${steps.length * 100}vw`
+            }}
+          >
+          {steps.map((step, index) => {
+            const Icon = step.icon;
+            return (
+              <div 
+                key={step.id}
+                ref={el => stepsRef.current[index] = el}
+                className="min-w-[100vw] h-[90vh] flex items-center justify-center rounded-2xl p-4 py-8 relative overflow-hidden"
+              >
+                {/* Background video */}
+                <div className="absolute inset-0 bg-black/90 z-0 rounded-2xl overflow-hidden">
+                  <video 
+                    className="absolute w-full h-full object-cover opacity-60"
+                    autoPlay 
+                    loop 
+                    muted 
+                    playsInline
+                    id={`bg-video-${step.id}`}
+                  >
+                    <source src={step.video} type="video/mp4" />
+                  </video>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 to-black/30"></div>
                 </div>
                 
-                {/* Content side - Storytelling approach */}
-                <div className="lg:w-1/3 text-white order-1 lg:order-2">
-                  {/* Step number with chapter indication */}
-                  <div className="flex items-center mb-2">
-                    <div className="w-10 h-10 rounded-full bg-[#54BB74]/80 backdrop-blur-sm flex items-center justify-center text-white text-base font-bold">
-                      {step.id}
-                    </div>
-                    <div className="ml-3 text-xs uppercase tracking-widest text-[#54BB74]/80 font-medium">
-                      Chapter {step.id} of {steps.length}
-                    </div>
-                  </div>
-                  
-                  {/* Title with animated icon */}
-                  <div className="flex items-center mb-3 step-title">
-                    <motion.div
-                      className="mr-3 text-[#54BB74] step-icon"
-                      initial="initial"
-                      whileHover="hover"
-                    >
-                      <motion.div variants={iconVariants}>
-                        <Icon size={36} />
+                <div className="flex flex-col lg:flex-row items-center justify-between w-full max-w-7xl z-10 gap-6 step-content">
+                  {/* Visual side - Video showcase with animated frame */}
+                  <div className="lg:w-2/3 flex justify-center items-center step-visual order-2 lg:order-1">
+                    <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-[#54BB74]/30">
+                      {/* Simple border */}
+                      <div className="absolute inset-0 border border-white/10 rounded-xl pointer-events-none z-10"></div>
+                      
+                      {/* Simple video player with corner play/pause button */}
+                      <div className="relative w-full h-full overflow-hidden">
+                        <video 
+                          className="w-full h-full object-cover"
+                          autoPlay 
+                          loop 
+                          muted 
+                          playsInline
+                          id={`video-${step.id}`}
+                        >
+                          <source src={step.video} type="video/mp4" />
+                        </video>
+                        
+                        {/* Corner play/pause button */}
+                        <motion.button 
+                          className="absolute bottom-4 right-4 w-12 h-12 rounded-full bg-[#54BB74] text-white flex items-center justify-center z-20"
+                          whileTap={{ scale: 0.9 }}
+                          onClick={(e) => {
+                            // Get both the foreground and background videos by their specific IDs
+                            const foregroundVideo = document.getElementById(`video-${step.id}`);
+                            const backgroundVideo = document.getElementById(`bg-video-${step.id}`);
+                            
+                            // Check if the foreground video is playing or paused
+                            if (foregroundVideo) {
+                              if (foregroundVideo.paused) {
+                                // Play both videos
+                                foregroundVideo.play();
+                                if (backgroundVideo) backgroundVideo.play();
+                                
+                                // Change button icon to pause
+                                e.currentTarget.innerHTML = '<svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" height="20" width="20" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>';
+                              } else {
+                                // Pause both videos
+                                foregroundVideo.pause();
+                                if (backgroundVideo) backgroundVideo.pause();
+                                
+                                // Change button icon to play
+                                e.currentTarget.innerHTML = '<svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" height="20" width="20" xmlns="http://www.w3.org/2000/svg"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>';
+                              }
+                            }
+                          }}
+                        >
+                          <FiPause size={20} />
+                        </motion.button>
+                      </div>
+                      
+                      {/* Floating badge */}
+                      <motion.div 
+                        className="absolute top-4 right-4 bg-[#54BB74] text-white text-xs font-bold px-3 py-1 rounded-full z-20"
+                        animate={{ y: [0, -5, 0] }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                      >
+                        Demo Video
                       </motion.div>
-                    </motion.div>
-                    <h3 className="text-4xl font-bold">{step.title}</h3>
-                  </div>
-                  
-                  {/* Description - Main story point */}
-                  <p className="text-xl text-white/90 mb-3 step-description">{step.description}</p>
-                  
-                  {/* Story narrative - More detailed explanation */}
-                  <div className="bg-white/5 backdrop-blur-sm p-4 rounded-xl mb-4 border border-white/10">
-                    <p className="text-base text-white/80 italic">"{step.story}"</p>
-                  </div>
-                  
-                  {/* Tip box */}
-                  <div className="flex items-start mb-4">
-                    <div className="text-[#54BB74] mr-2 mt-1">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
                     </div>
-                    <p className="text-white/70 text-xs">{step.tip}</p>
                   </div>
                   
-                  {/* CTA Button */}
-                  <motion.button 
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="px-6 py-2 bg-[#54BB74] text-white rounded-full hover:bg-[#54BB74]/90 transition-colors text-base font-medium step-button"
-                    onClick={() => handleLearnMore(step)}
-                  >
-                    Learn More
-                  </motion.button>
+                  {/* Content side - Storytelling approach */}
+                  <div className="lg:w-1/3 text-white order-1 lg:order-2">
+                    {/* Step number with chapter indication */}
+                    <div className="flex items-center mb-2">
+                      <div className="w-10 h-10 rounded-full bg-[#54BB74]/80 backdrop-blur-sm flex items-center justify-center text-white text-base font-bold">
+                        {step.id}
+                      </div>
+                      <div className="ml-3 text-xs uppercase tracking-widest text-[#54BB74]/80 font-medium">
+                        Chapter {step.id} of {steps.length}
+                      </div>
+                    </div>
+                    
+                    {/* Title with animated icon */}
+                    <div className="flex items-center mb-3 step-title">
+                      <motion.div
+                        className="mr-3 text-[#54BB74] step-icon"
+                        initial="initial"
+                        whileHover="hover"
+                      >
+                        <motion.div variants={iconVariants}>
+                          <Icon size={36} />
+                        </motion.div>
+                      </motion.div>
+                      <h3 className="text-4xl font-bold">{step.title}</h3>
+                    </div>
+                    
+                    {/* Description - Main story point */}
+                    <p className="text-xl text-white/90 mb-3 step-description">{step.description}</p>
+                    
+                    {/* Story narrative - More detailed explanation */}
+                    <div className="bg-white/5 backdrop-blur-sm p-4 rounded-xl mb-4 border border-white/10">
+                      <p className="text-base text-white/80 italic">"{step.story}"</p>
+                    </div>
+                    
+                    {/* Tip box */}
+                    <div className="flex items-start mb-4">
+                      <div className="text-[#54BB74] mr-2 mt-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      </div>
+                      <p className="text-white/70 text-xs">{step.tip}</p>
+                    </div>
+                    
+                    {/* CTA Button */}
+                    <motion.button 
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="px-6 py-2 bg-[#54BB74] text-white rounded-full hover:bg-[#54BB74]/90 transition-colors text-base font-medium step-button"
+                      onClick={() => handleLearnMore(step)}
+                    >
+                      Learn More
+                    </motion.button>
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+          </div>
         </div>
-      </div>
+      )}
     </section>
   );
 }

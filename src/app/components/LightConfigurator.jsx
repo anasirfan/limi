@@ -1,12 +1,12 @@
 "use client";
-import { useState, useRef, useEffect } from "react";
-import Image from "next/image";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { motion, AnimatePresence } from "framer-motion";
-import { FaChevronLeft, FaChevronRight, FaSave, FaShoppingCart, FaInfoCircle, FaQuestionCircle, FaSun, FaMoon, FaPlus, FaMinus, FaChevronDown, FaLightbulb, FaLayerGroup, FaRegLightbulb, FaPallet, FaCheck, FaUser } from "react-icons/fa";
-import { ToastContainer, toast } from "react-toastify";
+import { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import Image from 'next/image';
+import { toast, ToastContainer } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
+import { FaChevronLeft, FaChevronRight, FaSave, FaShoppingCart, FaInfoCircle, FaQuestionCircle, FaSun, FaMoon, FaPlus, FaMinus, FaChevronDown, FaLightbulb, FaLayerGroup, FaRegLightbulb, FaPallet, FaCheck, FaUser } from "react-icons/fa";
 import PlayCanvasViewer from "./PlayCanvasViewer";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../redux/slices/cartSlice";
@@ -86,8 +86,20 @@ const LightTypeSelector = ({ selectedType, onTypeChange, isDarkMode }) => {
 };
 
 // Light Amount Selector Component
-const LightAmountSelector = ({ amount, onAmountChange, isDarkMode }) => {
-  const amounts = [1, 2, 3, 5, 10];
+const LightAmountSelector = ({ amount, onAmountChange, isDarkMode, lightType }) => {
+  // Different amounts based on light type
+  const getAmountsForLightType = () => {
+    switch(lightType) {
+      case 'wall':
+        return [1]; // Wall lights only have 1 option
+      case 'floor':
+        return [1, 2, 3]; // Floor lights have 1-3 options
+      default: // ceiling and others
+        return [1, 2, 3, 4, 5]; // Ceiling lights have 1-5 options
+    }
+  };
+
+  const amounts = getAmountsForLightType();
 
   return (
     <motion.div 
@@ -101,18 +113,29 @@ const LightAmountSelector = ({ amount, onAmountChange, isDarkMode }) => {
         {amounts.map((num) => (
           <motion.div
             key={num}
-            className={`w-12 h-12 rounded-full flex items-center justify-center cursor-pointer ${amount === num
-              ? "bg-emerald-500 text-white shadow-lg"
+            className={`w-20 h-20 rounded-full flex items-center justify-center cursor-pointer overflow-hidden ${amount === num
+              ? "ring-4 ring-emerald-500 ring-offset-2 ring-offset-charleston-green shadow-xl"
               : isDarkMode 
-                ? "bg-gray-700 hover:bg-gray-600 text-white" 
-                : "bg-gray-200 hover:bg-gray-300 text-gray-800"
+                ? "bg-gray-700 hover:bg-gray-600" 
+                : "bg-gray-200 hover:bg-gray-300"
             }`}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => onAmountChange(num)}
             layout
           >
-            {num}
+            {/* Use images instead of text with larger size */}
+            <Image 
+              src={`/images/configIcons/${num}.png`}
+              alt={`${num} light${num > 1 ? 's' : ''}`}
+              width={80}
+              height={80}
+              className="object-cover w-full h-full"
+            />
+            {/* Add a text overlay for better visibility */}
+            <div className="absolute bottom-0 w-full bg-black bg-opacity-50 text-white text-center py-1 text-sm font-bold">
+              {num}
+            </div>
           </motion.div>
         ))}
       </div>
@@ -1017,6 +1040,41 @@ const LightConfigurator = () => {
   const previewBoxRef = useRef(null);
   const configuratorRef = useRef(null);
 
+  // Listen for app:ready1 message from PlayCanvas iframe
+  useEffect(() => {
+    const handleMessage = (event) => {
+      // Check if the message is from our iframe
+      if (event.data === 'app:ready1') {
+        console.log('PlayCanvas app is ready');
+        // Remove the loader when app is ready
+        const loader = document.getElementById('playcanvas-loader');
+        if (loader) {
+          // Fade out animation
+          loader.style.transition = 'opacity 0.5s ease-out';
+          loader.style.opacity = '0';
+          
+          // Remove from DOM after animation completes
+          setTimeout(() => {
+            loader.style.display = 'none';
+          }, 500);
+        }
+        
+        // Show notification that app is ready
+        toast.success("3D Preview Ready", {
+          position: "bottom-right",
+          autoClose: 2000,
+          theme: "dark"
+        });
+      }
+    };
+    
+    window.addEventListener('message', handleMessage);
+    
+    return () => {
+      window.removeEventListener('message', handleMessage);
+    };
+  }, []);
+  
   // Parse URL parameters on component mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -1499,6 +1557,125 @@ const LightConfigurator = () => {
                 className="w-full h-full"
               />
               
+              {/* Enhanced Interactive Skeleton Loader - Only shown until app:ready1 message is received */}
+              <div id="playcanvas-loader" className="absolute inset-0 flex flex-col items-center justify-center bg-charleston-green z-10 overflow-hidden">
+                {/* Background animated pattern */}
+                <div className="absolute inset-0 opacity-10">
+                  <div className="absolute top-0 left-0 w-full h-full">
+                    {[...Array(20)].map((_, i) => (
+                      <div 
+                        key={i}
+                        className="absolute bg-emerald-500 rounded-full"
+                        style={{
+                          width: `${Math.random() * 10 + 5}px`,
+                          height: `${Math.random() * 10 + 5}px`,
+                          top: `${Math.random() * 100}%`,
+                          left: `${Math.random() * 100}%`,
+                          opacity: Math.random() * 0.5 + 0.25,
+                          animation: `float ${Math.random() * 10 + 10}s infinite linear`,
+                          animationDelay: `${Math.random() * 5}s`
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="relative w-4/5 max-w-md aspect-square mb-8">
+                  {/* Ceiling */}
+                  <div className="absolute top-0 w-full h-8 bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800 rounded-t-lg shadow-md">
+                    {/* Ceiling mount */}
+                    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-3 bg-gray-600 rounded-md"></div>
+                  </div>
+                  
+                  {/* Multiple pendants hanging from ceiling */}
+                  <div className="absolute top-0 left-1/4 w-1/5 aspect-square">
+                    {/* Pendant cable */}
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-0.5 h-20 bg-gray-600 origin-top animate-sway-slow"></div>
+                    {/* Pendant light */}
+                    <div className="absolute top-20 left-1/2 -translate-x-1/2 w-full aspect-square rounded-full bg-gradient-to-br from-gray-700 to-gray-800 shadow-lg overflow-hidden animate-sway-slow">
+                      <div className="absolute inset-2 rounded-full bg-emerald-500 opacity-20 animate-pulse-slow"></div>
+                    </div>
+                  </div>
+                  
+                  {/* Main pendant being loaded */}
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/3 aspect-square">
+                    {/* Pendant cable with loading animation */}
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1 h-24 bg-gradient-to-b from-gray-600 to-gray-700 origin-top animate-sway-reverse-slow">
+                      {/* Cable loading indicator */}
+                      <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
+                        <div className="w-full h-2 bg-emerald-500 opacity-40 animate-cable-loading"></div>
+                      </div>
+                    </div>
+                    
+                    {/* Main pendant light */}
+                    <div className="absolute top-24 left-1/2 -translate-x-1/2 w-full aspect-square rounded-full bg-gradient-to-br from-gray-700 to-gray-800 shadow-lg overflow-hidden origin-top animate-sway-reverse-slow">
+                      {/* Pendant light effect */}
+                      <div className="absolute inset-2 rounded-full bg-emerald-500 opacity-30 animate-pulse-slow"></div>
+                      
+                      {/* Pendant detail */}
+                      <div className="absolute inset-4 rounded-full border border-gray-600"></div>
+                      
+                      {/* Loading indicator inside pendant */}
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-1/2 h-1/2 rounded-full border-2 border-transparent border-t-emerald-500 animate-spin"></div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Another pendant on the right */}
+                  <div className="absolute top-0 right-1/4 w-1/5 aspect-square">
+                    {/* Pendant cable */}
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-0.5 h-16 bg-gray-600 origin-top animate-sway-medium"></div>
+                    {/* Pendant light */}
+                    <div className="absolute top-16 left-1/2 -translate-x-1/2 w-full aspect-square rounded-full bg-gradient-to-br from-gray-700 to-gray-800 shadow-lg overflow-hidden animate-sway-medium">
+                      <div className="absolute inset-2 rounded-full bg-emerald-500 opacity-20 animate-pulse-slow"></div>
+                    </div>
+                  </div>
+                  
+                  {/* Glowing circle under main pendant */}
+                  <div className="absolute top-3/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1/2 h-1/4 rounded-full bg-emerald-500 opacity-10 animate-ping-slow blur-md"></div>
+                  
+                  {/* Skeleton floor with reflection */}
+                  <div className="absolute bottom-0 w-full h-1/6 bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800 rounded-lg shadow-md">
+                    {/* Floor reflection */}
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/3 h-1 bg-emerald-500 opacity-20 blur-sm"></div>
+                  </div>
+                  
+                  {/* Skeleton controls with hover effect */}
+                  <div className="absolute bottom-[-80px] w-full flex justify-center space-x-6">
+                    {[1, 2, 3].map((num) => (
+                      <div 
+                        key={num}
+                        className="w-16 h-16 rounded-full bg-gradient-to-br from-gray-700 to-gray-800 shadow-md flex items-center justify-center group cursor-pointer"
+                        style={{ animationDelay: `${num * 0.2}s` }}
+                      >
+                        <div className="w-12 h-12 rounded-full bg-gray-800 group-hover:bg-emerald-900 transition-colors duration-300 flex items-center justify-center">
+                          <div className="w-8 h-8 rounded-full bg-gray-700 group-hover:bg-emerald-800 transition-colors duration-300 animate-pulse"></div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="text-center px-4 relative z-10">
+                  {/* Loading text with animated dots */}
+                  <div className="h-8 flex items-center justify-center mb-3">
+                    <div className="text-emerald-500 text-xl font-bold">Loading 3D Preview</div>
+                    <div className="loading-dots ml-2">
+                      <span className="dot"></span>
+                      <span className="dot"></span>
+                      <span className="dot"></span>
+                    </div>
+                  </div>
+                  <div className="text-gray-400 text-sm animate-pulse">Preparing your LIMI experience</div>
+                  
+                  {/* Progress bar */}
+                  <div className="mt-6 w-64 h-2 bg-gray-800 rounded-full overflow-hidden mx-auto">
+                    <div className="h-full bg-emerald-500 animate-progress-indeterminate"></div>
+                  </div>
+                </div>
+              </div>
+              
               {/* Overlay to prevent interaction issues during loading */}
               <div className="absolute inset-0 pointer-events-none z-10"></div>
               </div>
@@ -1608,7 +1785,8 @@ const LightConfigurator = () => {
                 <LightAmountSelector 
                   amount={lightAmount} 
                   onAmountChange={handleLightAmountChange} 
-                  isDarkMode={isDarkMode} 
+                  isDarkMode={isDarkMode}
+                  lightType={lightType}
                 />
                 
                 {lightAmount === 1 ? (
@@ -1648,7 +1826,8 @@ const LightConfigurator = () => {
                       // Auto-advance to appropriate next tab
                       setActiveTab(amount === 1 ? 'design' : 'pendants');
                     }} 
-                    isDarkMode={isDarkMode} 
+                    isDarkMode={isDarkMode}
+                    lightType={lightType}
                   />
                 )}
                 
@@ -1674,7 +1853,7 @@ const LightConfigurator = () => {
             </div>
             
             {/* Customer Support - Outside scrollable area */}
-            <div className="mt-8 pt-4 border-t border-gray-700/50 relative z-10">
+            <div className="mt-8 mb-4 pt-4 border-t border-gray-700/50 relative z-10">
               <motion.button 
                 onClick={openSupportChat}
                 className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-dark to-eton-blue-dark p-3 rounded-lg transition-all duration-300 shadow-lg hover:shadow-emerald/20"

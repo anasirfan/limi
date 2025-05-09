@@ -16,9 +16,9 @@ export default function PartnersSection() {
   const partnersRef = useRef(null);
   
   return (
-    <section data-section="partners" ref={partnersRef} className="mb-24 text-center">
+    <section data-section="partners" ref={partnersRef} className="mb-16 md:mb-24 text-center">
       <motion.p 
-        className="mb-6"
+        className="mb-3 md:mb-6"
         style={{ color: `${colors.text}80` }}
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -28,7 +28,7 @@ export default function PartnersSection() {
         Supported by
       </motion.p>
       
-      <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16">
+      <div className="flex flex-col md:flex-row justify-center items-center gap-4 md:gap-16">
         {partners.map((partner, index) => (
           <motion.div 
             key={index} 

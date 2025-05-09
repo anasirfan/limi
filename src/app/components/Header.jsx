@@ -152,13 +152,11 @@ const Header = () => {
 
   // Homepage section links (for scrolling)
   const sections = [
-    { id: 'hero', label: 'Home' },
-    { id: 'interactive', label: 'Our Journey' },
-    { id: 'lighting-carousel', label: 'Explore Smart Lighting' },
-    { id: 'model', label: 'Transformation' },
-    { id: 'lighting', label: 'Configurations' },
-    { id: 'analytics-insights', label: 'Analytics Insights' },
-    { id: 'distributor-hub', label: 'Become a Distributor' },
+    { href: '/configurator', label: 'Customize Yourself' },
+    { href: '/portal', label: 'Your Space' },
+    { href: '/about-us', label: 'What is LIMI?' },
+    { href: '/contact-us', label: "Let's Talk" },
+    { href: '/collaborate', label: 'Let’s Grow Together' },
   ];
 
   // Standard navigation links for all other pages
@@ -500,14 +498,14 @@ const Header = () => {
                         <p className="text-xs text-gray-400 truncate">{user?.email || 'user@example.com'}</p>
                       </div>
                       
-                      <Link 
+                      {/* <Link 
                         href="/notifications"
                         className="flex items-center gap-3 px-4 py-2 text-sm text-white hover:bg-emerald/10 hover:text-emerald transition-colors duration-200"
                         onClick={() => setUserDropdownOpen(false)}
                       >
                         <FaBell className="text-emerald" />
                         Notifications
-                      </Link>
+                      </Link> */}
                       
                       {/* <Link 
                         href="/account"
@@ -524,17 +522,17 @@ const Header = () => {
                         onClick={() => setUserDropdownOpen(false)}
                       >
                         <FaPortrait className="text-emerald" />
-                        Portal
+                        Your Space
                       </Link>
                       
-                      <Link 
+                      {/* <Link 
                         href="/dashboard"
                         className="flex items-center gap-3 px-4 py-2 text-sm text-white hover:bg-emerald/10 hover:text-emerald transition-colors duration-200"
                         onClick={() => setUserDropdownOpen(false)}
                       >
                         <FaTachometerAlt className="text-emerald" />
                         Dashboard
-                      </Link>
+                      </Link> */}
                       
                       <div className="border-t border-charleston-green-light mt-1 pt-1">
                         <button 
@@ -568,7 +566,7 @@ const Header = () => {
             {/* Homepage section links - only shown on homepage */}
             {isHomePage && sections.map((section) => (
               <button
-                key={section.id}
+                key={section.label}
                 ref={menuItemRef}
                 onClick={() => handleNavClick(section.id)}
                 className="navigation text-2xl md:text-3xl font-['Amenti'] hover:text-emerald transition-colors duration-300 relative group"

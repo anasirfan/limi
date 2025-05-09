@@ -109,6 +109,50 @@ const ProductCardGrid = ({ products }) => {
   
   const { row1, row2, row3, row4 } = getProductsByPosition();
 
+  // State for mobile view
+  const [isMobile, setIsMobile] = useState(false);
+  const [showAllProducts, setShowAllProducts] = useState(false);
+  
+  // Update isMobile state on window resize
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    // Initial check
+    checkMobile();
+    
+    // Add event listener
+    window.addEventListener('resize', checkMobile);
+    
+    // Cleanup
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+  
+  // Toggle between showing 3 or all products on mobile
+  const toggleShowAllProducts = () => {
+    setShowAllProducts(!showAllProducts);
+    
+    // Scroll to the button if collapsing
+    if (showAllProducts) {
+      setTimeout(() => {
+        const viewMoreButton = document.getElementById('view-more-button');
+        if (viewMoreButton) {
+          viewMoreButton.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
+    }
+  };
+  
+  // Get products to display on mobile
+  const getMobileProducts = () => {
+    if (showAllProducts) {
+      return products;
+    } else {
+      return products.slice(0, 3);
+    }
+  };
+  
   return (
     <div className="w-full py-6 relative" ref={containerRef}>
       {/* Blob Background SVGs */}
@@ -130,98 +174,143 @@ const ProductCardGrid = ({ products }) => {
         </div>
       ) : (
         <div className="w-full flex flex-col gap-6 relative z-10">
-          {/* Row 1: One full-width product */}
-          {row1.length > 0 && (
-            <div 
-              ref={row1Ref}
-              className="w-full h-[300px] md:h-[400px] relative"
-            >
-              <div className="absolute inset-0 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
-                <ProductCard 
-                  product={row1[0]} 
-                  className="w-full h-full"
-                />
-              </div>
+          {/* Mobile Grid View */}
+          <div className="block md:hidden w-full px-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {getMobileProducts().map((product, index) => (
+                <div key={product.id} className="relative aspect-square mb-4">
+                  <div className="absolute inset-0 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
+                    <ProductCard 
+                      product={product} 
+                      className="w-full h-full"
+                      isMobile={true}
+                    />
+                  </div>
+                </div>
+              ))}
             </div>
-          )}
+            
+            {/* View More/Less Button */}
+            <div className="flex justify-center mt-2 mb-8">
+              <button 
+                id="view-more-button"
+                onClick={toggleShowAllProducts}
+                className="px-6 py-3 bg-[#2B2D2F] text-white rounded-full flex items-center gap-2 hover:bg-[#3a3d42] transition-colors duration-300 border border-[#50C878]/30"
+              >
+                {showAllProducts ? (
+                  <>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                    </svg>
+                    View Less
+                  </>
+                ) : (
+                  <>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                    View More ({products.length - 3} more)
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
           
-          {/* Row 2: Two products with 3:2 ratio */}
-          {row2.length > 0 && (
-            <div ref={row2Ref} className="w-full flex flex-col md:flex-row gap-6 h-[500px] md:h-[300px]">
-              <div className="w-full md:w-[60%] h-[250px] md:h-full relative">
+          {/* Desktop View */}
+          <div className="hidden md:block space-y-8">
+            {/* Row 1: One full-width product */}
+            {row1.length > 0 && (
+              <div 
+                ref={row1Ref}
+                className="w-full h-[300px] md:h-[400px] relative"
+              >
                 <div className="absolute inset-0 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
                   <ProductCard 
-                    product={row2.find(p => p.gridPosition === 'row2-1') || row2[0]} 
+                    product={row1[0]} 
                     className="w-full h-full"
                   />
                 </div>
               </div>
-              
-              <div className="w-full md:w-[40%] h-[250px] md:h-full relative">
-                <div className="absolute inset-0 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
-                  <ProductCard 
-                    product={row2.find(p => p.gridPosition === 'row2-2') || row2[1] || row2[0]} 
-                    className="w-full h-full"
-                  />
-                </div>
-              </div>
-            </div>
-          )}
+            )}
           
-          {/* Row 3: Two products with 2:3 ratio */}
-          {row3.length > 0 && (
-            <div ref={row3Ref} className="w-full flex flex-col md:flex-row gap-6 h-[500px] md:h-[300px]">
-              <div className="w-full md:w-[40%] h-[250px] md:h-full relative">
-                <div className="absolute inset-0 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
-                  <ProductCard 
-                    product={row3.find(p => p.gridPosition === 'row3-1') || row3[0]} 
-                    className="w-full h-full"
-                  />
+            {/* Row 2: Two products with 3:2 ratio */}
+            {row2.length > 0 && (
+              <div ref={row2Ref} className="w-full flex flex-col md:flex-row gap-6 h-[500px] md:h-[300px]">
+                <div className="w-full md:w-[60%] h-[250px] md:h-full relative">
+                  <div className="absolute inset-0 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
+                    <ProductCard 
+                      product={row2.find(p => p.gridPosition === 'row2-1') || row2[0]} 
+                      className="w-full h-full"
+                    />
+                  </div>
+                </div>
+                
+                <div className="w-full md:w-[40%] h-[250px] md:h-full relative">
+                  <div className="absolute inset-0 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
+                    <ProductCard 
+                      product={row2.find(p => p.gridPosition === 'row2-2') || row2[1] || row2[0]} 
+                      className="w-full h-full"
+                    />
+                  </div>
                 </div>
               </div>
-              
-              <div className="w-full md:w-[60%] h-[250px] md:h-full relative">
-                <div className="absolute inset-0 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
-                  <ProductCard 
-                    product={row3.find(p => p.gridPosition === 'row3-2') || row3[1] || row3[0]} 
-                    className="w-full h-full"
-                  />
-                </div>
-              </div>
-            </div>
-          )}
+            )}
           
-          {/* Row 4: Three products with 1:2:1 ratio */}
-          {row4.length > 0 && (
-            <div ref={row4Ref} className="w-full flex flex-col md:flex-row gap-6 h-[750px] md:h-[250px]">
-              <div className="w-full md:w-[25%] h-[250px] relative">
-                <div className="absolute inset-0 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
-                  <ProductCard 
-                    product={row4.find(p => p.gridPosition === 'row4-1') || row4[0]} 
-                    className="w-full h-full"
-                  />
+            {/* Row 3: Two products with 2:3 ratio */}
+            {row3.length > 0 && (
+              <div ref={row3Ref} className="w-full flex flex-col md:flex-row gap-6 h-[500px] md:h-[300px]">
+                <div className="w-full md:w-[40%] h-[250px] md:h-full relative">
+                  <div className="absolute inset-0 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
+                    <ProductCard 
+                      product={row3.find(p => p.gridPosition === 'row3-1') || row3[0]} 
+                      className="w-full h-full"
+                    />
+                  </div>
+                </div>
+                
+                <div className="w-full md:w-[60%] h-[250px] md:h-full relative">
+                  <div className="absolute inset-0 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
+                    <ProductCard 
+                      product={row3.find(p => p.gridPosition === 'row3-2') || row3[1] || row3[0]} 
+                      className="w-full h-full"
+                    />
+                  </div>
                 </div>
               </div>
-              
-              <div className="w-full md:w-[50%] h-[250px] relative">
-                <div className="absolute inset-0 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
-                  <ProductCard 
-                    product={row4.find(p => p.gridPosition === 'row4-2') || row4[1] || row4[0]} 
-                    className="w-full h-full"
-                  />
+            )}
+            
+            {/* Row 4: Three products with 1:2:1 ratio */}
+            {row4.length > 0 && (
+              <div ref={row4Ref} className="w-full flex flex-col md:flex-row gap-6 h-[750px] md:h-[250px]">
+                <div className="w-full md:w-[25%] h-[250px] relative">
+                  <div className="absolute inset-0 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
+                    <ProductCard 
+                      product={row4.find(p => p.gridPosition === 'row4-1') || row4[0]} 
+                      className="w-full h-full"
+                    />
+                  </div>
+                </div>
+                
+                <div className="w-full md:w-[50%] h-[250px] relative">
+                  <div className="absolute inset-0 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
+                    <ProductCard 
+                      product={row4.find(p => p.gridPosition === 'row4-2') || row4[1] || row4[0]} 
+                      className="w-full h-full"
+                    />
+                  </div>
+                </div>
+                
+                <div className="w-full md:w-[25%] h-[250px] relative">
+                  <div className="absolute inset-0 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
+                    <ProductCard 
+                      product={row4.find(p => p.gridPosition === 'row4-3') || row4[2] || row4[0]} 
+                      className="w-full h-full"
+                    />
+                  </div>
                 </div>
               </div>
-              
-              <div className="w-full md:w-[25%] h-[250px] relative">
-                <div className="absolute inset-0 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
-                  <ProductCard 
-                    product={row4.find(p => p.gridPosition === 'row4-3') || row4[2] || row4[0]} 
-                    className="w-full h-full"
-                  />
-                </div>
-              </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       )}
     </div>

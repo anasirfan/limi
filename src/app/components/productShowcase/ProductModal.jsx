@@ -198,58 +198,73 @@ const ProductModal = ({ product, isOpen, onClose }) => {
               {/* Gallery Tab */}
               {activeTab === 'gallery' && (
                 <div>
-                  <motion.div 
-                    className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.5 }}
-                  >
-                    {/* Generate 6 gallery images using either product images or fallbacks */}
-                    {Array.from({ length: 6 }).map((_, index) => {
-                      const hasGallery = product.galleryImages && product.galleryImages.length > 0;
-                      const imageSrc = hasGallery && index < product.galleryImages.length
-                        ? product.galleryImages[index]
-                        : getUnsplashImage(index);
-                        
-                      return (
-                        <motion.div 
-                          key={index} 
-                          className="relative h-64 rounded-xl overflow-hidden"
-                          whileHover={{ scale: 1.05, zIndex: 10 }}
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ 
-                            duration: 0.5, 
-                            delay: 0.05 * index,
-                            hover: { duration: 0.3 }
-                          }}
-                        >
-                          <Image 
-                            src={imageSrc}
-                            alt={`${product.name} - Image ${index + 1}`}
-                            fill
-                            style={{ objectFit: 'cover' }}
-                            className="rounded-xl"
-                          />
-                          
-                          {/* Hover overlay */}
+                  {/* Determine grid columns based on screen size and image count */}
+                  {(() => {
+                    // Get gallery images or use fallbacks
+                    const hasGallery = product.galleryImages && product.galleryImages.length > 0;
+                    const galleryImages = hasGallery ? product.galleryImages : [
+                      getUnsplashImage(0),
+                      getUnsplashImage(1),
+                      getUnsplashImage(2),
+                      getUnsplashImage(3),
+                      getUnsplashImage(4),
+                      getUnsplashImage(5)
+                    ];
+                    
+                    // Determine grid columns for desktop based on image count
+                    let desktopGridClass = "md:grid-cols-3";
+                    if (galleryImages.length <= 4) {
+                      desktopGridClass = "md:grid-cols-2";
+                    }
+                    
+                    return (
+                      <motion.div 
+                        className={`grid grid-cols-1 ${desktopGridClass} gap-6`}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.5 }}
+                      >
+                        {/* Map through gallery images */}
+                        {galleryImages.slice(0, 6).map((imageSrc, index) => (
                           <motion.div 
-                            className="absolute inset-0 bg-[#292929] bg-opacity-0 hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center"
-                            whileHover={{ backgroundColor: 'rgba(41, 41, 41, 0.3)' }}
+                            key={index} 
+                            className="relative h-64 rounded-xl overflow-hidden"
+                            whileHover={{ scale: 1.05, zIndex: 10 }}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ 
+                              duration: 0.5, 
+                              delay: 0.05 * index,
+                              hover: { duration: 0.3 }
+                            }}
                           >
+                            <Image 
+                              src={imageSrc}
+                              alt={`${product.name} - Image ${index + 1}`}
+                              fill
+                              style={{ objectFit: 'cover' }}
+                              className="rounded-xl"
+                            />
+                            
+                            {/* Hover overlay */}
                             <motion.div 
-                              className="bg-[#54BB74] p-3 rounded-full opacity-0 scale-50 transform"
-                              whileHover={{ opacity: 1, scale: 1 }}
+                              className="absolute inset-0 bg-[#292929] bg-opacity-0 hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center"
+                              whileHover={{ backgroundColor: 'rgba(41, 41, 41, 0.3)' }}
                             >
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                              </svg>
+                              <motion.div 
+                                className="bg-[#54BB74] p-3 rounded-full opacity-0 scale-50 transform"
+                                whileHover={{ opacity: 1, scale: 1 }}
+                              >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                              </motion.div>
                             </motion.div>
                           </motion.div>
-                        </motion.div>
-                      );
-                    })}
-                  </motion.div>
+                        ))}
+                      </motion.div>
+                    );
+                  })()}
                 </div>
               )}
               

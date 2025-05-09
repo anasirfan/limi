@@ -1,4 +1,5 @@
 "use client";
+import React, { useRef } from 'react';
 import { motion } from 'framer-motion';
 
 const aesthetics = [
@@ -6,54 +7,25 @@ const aesthetics = [
     id: 'aesthetic',
     name: 'Aesthetic',
     description: 'Curated, Instagram-worthy lighting with a focus on visual appeal.',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-8 h-8">
-        <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M12 16V12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M12 8H12.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-      </svg>
-    )
-  },
-  {
-    id: 'modern',
-    name: 'Modern',
-    description: 'Clean lines and contemporary design for today\'s living spaces.',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-8 h-8">
-        <path d="M21 10H3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M21 6H3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M21 14H3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M21 18H3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-      </svg>
-    )
+    color: '#50C878'
   },
   {
     id: 'industrial',
     name: 'Industrial',
-    description: 'Raw, utilitarian design with exposed elements and sturdy materials.',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-8 h-8">
-        <path d="M20 7L12 3L4 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M20 7L12 11L4 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M20 11L12 15L4 11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M20 15L12 19L4 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-      </svg>
-    )
+    description: 'Raw materials, exposed elements, and utilitarian design.',
+    color: '#87CEAB'
   },
   {
-    id: 'minimal',
-    name: 'Minimal',
-    description: 'Simplified, essential design that eliminates excess and focuses on function.',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-8 h-8">
-        <path d="M8 6H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M8 12H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M8 18H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M3 6H3.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M3 12H3.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M3 18H3.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-      </svg>
-    )
+    id: 'scandinavian',
+    name: 'Scandinavian',
+    description: 'Light colors, natural materials, and cozy functionality.',
+    color: '#3da861'
+  },
+  {
+    id: 'modern_style',
+    name: 'Modern',
+    description: 'Bold forms, innovative materials, and cutting-edge design.',
+    color: '#6ab890'
   }
 ];
 
@@ -88,6 +60,38 @@ const itemVariants = {
 
 export default function StepThree({ selection, onSelect, onNext, onPrevious }) {
   const hasSelection = !!selection;
+  const carouselRef = useRef(null);
+  
+  // These functions are directly called when the buttons are clicked
+  const handleNextButtonClick = (e) => {
+    // Stop event propagation to prevent any parent elements from capturing the click
+    e.stopPropagation();
+    // Call the onNext function passed as prop
+    onNext();
+  };
+  
+  const handlePreviousButtonClick = (e) => {
+    // Stop event propagation to prevent any parent elements from capturing the click
+    e.stopPropagation();
+    // Call the onPrevious function passed as prop
+    onPrevious();
+  };
+  
+  // Scroll the carousel left
+  const scrollLeft = () => {
+    if (carouselRef.current) {
+      const scrollAmount = carouselRef.current.clientWidth * 0.85; // Approximately one card width
+      carouselRef.current.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    }
+  };
+  
+  // Scroll the carousel right
+  const scrollRight = () => {
+    if (carouselRef.current) {
+      const scrollAmount = carouselRef.current.clientWidth * 0.85; // Approximately one card width
+      carouselRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
   
   return (
     <motion.div
@@ -98,39 +102,119 @@ export default function StepThree({ selection, onSelect, onNext, onPrevious }) {
       className="space-y-6"
     >
       <motion.div variants={itemVariants}>
-        <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">Which aesthetic suits you?</h2>
-        <p className="text-[#87CEAB] mb-6">Select a design style that resonates with your taste.</p>
+        <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">What's your aesthetic?</h2>
+        <p className="text-[#87CEAB] mb-6">Choose a design style that resonates with your space.</p>
       </motion.div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* Mobile Carousel View */}
+      <div className="md:hidden relative">
+        {/* Left indicator */}
+        <button 
+          onClick={scrollLeft}
+          className="absolute left-0 top-1/2 -translate-y-1/2 bg-black bg-opacity-30 rounded-r-lg p-1 z-10 cursor-pointer hover:bg-opacity-50 transition-all"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        
+        {/* Right indicator */}
+        <button 
+          onClick={scrollRight}
+          className="absolute right-0 top-1/2 -translate-y-1/2 bg-black bg-opacity-30 rounded-l-lg p-1 z-10 cursor-pointer hover:bg-opacity-50 transition-all"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+        
+        <div ref={carouselRef} className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide space-x-3 pb-4">
+          {aesthetics.map((aesthetic) => (
+            <motion.div
+              key={aesthetic.id}
+              variants={itemVariants}
+              className={`flex-none w-[85%] snap-center rounded-xl overflow-hidden cursor-pointer transition-all duration-300 ${
+                selection === aesthetic.id 
+                  ? 'ring-3 ring-[#50C878] shadow-[0_0_15px_rgba(80,200,120,0.5)]' 
+                  : 'ring-1 ring-transparent'
+              }`}
+              onClick={() => onSelect(aesthetic.id)}
+              style={{
+                background: `linear-gradient(135deg, #2B2D2F 0%, #3a3d42 100%)`,
+              }}
+            >
+              <div className="p-6 relative z-10">
+                <div 
+                  className="absolute -top-10 -right-10 w-40 h-40 rounded-full opacity-20 blur-xl"
+                  style={{ backgroundColor: aesthetic.color }}
+                ></div>
+                
+                <div 
+                  className="w-16 h-16 rounded-full mb-4 flex items-center justify-center"
+                  style={{ 
+                    backgroundColor: `${aesthetic.color}20`,
+                    boxShadow: selection === aesthetic.id ? `0 0 20px ${aesthetic.color}80` : 'none'
+                  }}
+                >
+                  <div 
+                    className="w-10 h-10 rounded-full"
+                    style={{ backgroundColor: aesthetic.color }}
+                  ></div>
+                </div>
+                
+                <h3 className="text-xl font-semibold text-white mb-2">{aesthetic.name}</h3>
+                <p className="text-gray-300 text-sm">{aesthetic.description}</p>
+                
+                {selection === aesthetic.id && (
+                  <div className="absolute top-4 right-4 bg-[#50C878] rounded-full p-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+      
+      {/* Desktop Grid Layout */}
+      <div className="hidden md:grid md:grid-cols-2 md:gap-4">
         {aesthetics.map((aesthetic) => (
           <motion.div
             key={aesthetic.id}
             variants={itemVariants}
-            className={`relative overflow-hidden rounded-xl cursor-pointer transition-all duration-300 ${
+            className={`relative overflow-hidden rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-[1.02] ${
               selection === aesthetic.id 
-                ? 'border-2 border-[#50C878] bg-[#50C878]/10' 
-                : 'border-2 border-gray-700 bg-[#2B2D2F] hover:border-[#87CEAB]'
+                ? 'ring-4 ring-[#50C878] shadow-[0_0_15px_rgba(80,200,120,0.5)]' 
+                : 'ring-2 ring-transparent hover:ring-[#87CEAB]'
             }`}
             onClick={() => onSelect(aesthetic.id)}
-            initial={{ scale: 1 }}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            transition={{ duration: 0.2 }}
+            style={{
+              background: `linear-gradient(135deg, #2B2D2F 0%, #3a3d42 100%)`,
+            }}
           >
-            <div className="p-5 flex items-start">
-              <div className={`w-12 h-12 rounded-full mr-4 flex items-center justify-center ${
-                selection === aesthetic.id 
-                  ? 'bg-[#50C878]/20 text-[#50C878]' 
-                  : 'bg-gray-700/50 text-gray-300'
-              }`}>
-                {aesthetic.icon}
+            <div className="p-6 relative z-10">
+              <div 
+                className="absolute -top-10 -right-10 w-40 h-40 rounded-full opacity-20 blur-xl"
+                style={{ backgroundColor: aesthetic.color }}
+              ></div>
+              
+              <div 
+                className="w-16 h-16 rounded-full mb-4 flex items-center justify-center"
+                style={{ 
+                  backgroundColor: `${aesthetic.color}20`,
+                  boxShadow: selection === aesthetic.id ? `0 0 20px ${aesthetic.color}80` : 'none'
+                }}
+              >
+                <div 
+                  className="w-10 h-10 rounded-full"
+                  style={{ backgroundColor: aesthetic.color }}
+                ></div>
               </div>
               
-              <div className="flex-1">
-                <h3 className="text-xl font-semibold text-white mb-1">{aesthetic.name}</h3>
-                <p className="text-gray-300 text-sm">{aesthetic.description}</p>
-              </div>
+              <h3 className="text-xl font-semibold text-white mb-2">{aesthetic.name}</h3>
+              <p className="text-gray-300">{aesthetic.description}</p>
               
               {selection === aesthetic.id && (
                 <div className="absolute top-4 right-4 bg-[#50C878] rounded-full p-1">
@@ -140,20 +224,25 @@ export default function StepThree({ selection, onSelect, onNext, onPrevious }) {
                 </div>
               )}
             </div>
+            
+            <div 
+              className="absolute bottom-0 left-0 right-0 h-1"
+              style={{ backgroundColor: aesthetic.color }}
+            ></div>
           </motion.div>
         ))}
       </div>
       
-      <motion.div variants={itemVariants} className="pt-4 flex space-x-4">
+      <div className="pt-4 flex space-x-4 relative z-50">
         <button
-          onClick={onPrevious}
+          onClick={handlePreviousButtonClick}
           className="w-1/3 py-4 rounded-lg font-medium text-lg transition-all duration-300 bg-gray-700 text-white hover:bg-gray-600"
         >
           Back
         </button>
         
         <button
-          onClick={onNext}
+          onClick={handleNextButtonClick}
           disabled={!hasSelection}
           className={`w-2/3 py-4 rounded-lg font-medium text-lg transition-all duration-300 ${
             hasSelection 
@@ -163,7 +252,7 @@ export default function StepThree({ selection, onSelect, onNext, onPrevious }) {
         >
           Next
         </button>
-      </motion.div>
+      </div>
     </motion.div>
   );
 }

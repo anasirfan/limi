@@ -6,7 +6,7 @@ import { FaArrowRight, FaPlus, FaMinus } from 'react-icons/fa';
 import { gsap } from 'gsap';
 import { useModal } from '../context/ModalContext';
 
-const ProductCard = ({ product, className = '' }) => {
+const ProductCard = ({ product, className = '', isMobile = false }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const { openModal } = useModal();
@@ -18,7 +18,13 @@ const ProductCard = ({ product, className = '' }) => {
   // Handle card expansion toggle
   const toggleExpand = (e) => {
     e.stopPropagation(); // Prevent opening modal
-    setIsExpanded(!isExpanded);
+    
+    // On mobile, open the modal instead of expanding
+    if (isMobile) {
+      openModal(product);
+    } else {
+      setIsExpanded(!isExpanded);
+    }
   };
   
   // Handle collapse button click

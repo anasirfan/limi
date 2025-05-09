@@ -112,7 +112,7 @@ export default function MissionSection() {
         </motion.div>
       
       <motion.h2 
-        className="text-4xl md:text-5xl font-bold mb-6"
+        className="text-3xl md:text-5xl font-bold mb-6"
         variants={itemVariants}
         style={{ color: colors.text }}
       >
@@ -128,13 +128,13 @@ export default function MissionSection() {
       </motion.p>
       
       <motion.div 
-        className="flex flex-wrap justify-center gap-4 mb-8"
+        className="flex flex-wrap justify-center gap-3 md:gap-4 mb-8"
         variants={itemVariants}
       >
         {['Smart', 'Beautiful', 'Adaptive', 'Intuitive'].map((keyword, index) => (
           <motion.div 
             key={keyword}
-            className="px-4 py-2 rounded-full text-sm font-medium"
+            className="px-4 py-2 rounded-full text-sm font-medium w-[45%] md:w-auto text-center"
             style={{ 
               backgroundColor: `${colors.primary}${theme === 'light' ? '15' : '25'}`,
               color: colors.primary,
@@ -163,10 +163,11 @@ export default function MissionSection() {
         whileTap={{ scale: 0.98 }}
       >
         <p 
-          className="text-2xl font-medium group-hover:text-white transition-colors duration-300"
+          className="text-xl md:text-2xl font-medium group-hover:text-white transition-colors duration-300"
           style={{ color: colors.primary }}
         >
-          We're building the future of light control
+          <span className="md:hidden">We're building the future<br />of light control</span>
+          <span className="hidden md:inline">We're building the future of light control</span>
           <span className="ml-2 inline-block transition-transform duration-300 group-hover:translate-x-1">
             {videoPlaying ? '◼' : '▶'}
           </span>
@@ -193,7 +194,7 @@ export default function MissionSection() {
           }}
         >
           <motion.div 
-            className="relative w-full max-w-3xl bg-black rounded-xl overflow-hidden shadow-2xl"
+            className="relative w-full max-w-[95%] md:max-w-3xl bg-black rounded-xl overflow-hidden shadow-2xl"
             initial={{ scale: 0.9, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 20 }}

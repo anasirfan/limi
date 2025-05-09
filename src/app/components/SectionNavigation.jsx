@@ -7,6 +7,18 @@ export default function SectionNavigation() {
   const [activeSection, setActiveSection] = useState('');
   const [sections, setSections] = useState([]);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+  
+  // Check if we're on mobile on mount
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
   
   // Define colors from LIMI brand palette
   const emerald = '#50C878';
@@ -24,7 +36,7 @@ export default function SectionNavigation() {
         { id: 'how-it-works', label: 'How It Works', selector: '#how-it-works, .HowItWorks', icon: 'M13 10V3L4 14h7v7l9-11h-7z' },
         { id: 'configurator', label: 'Configurator', selector: '#configurator, .InteractiveConfigurator', icon: 'M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4' },
         { id: 'our-story', label: 'Our Story', selector: '#our-story, .OurStory', icon: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253' },
-        { id: 'timeline', label: 'Timeline', selector: '#timeline, .Timeline', icon: 'M13 10V3L4 14h7v7l9-11h-7zM3 5v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2z' }
+        { id: 'timeline', label: 'Timeline', selector: '#timeline, .TimelineAchievements', icon: 'M13 16.75a.75.75 0 01-.75-.75V4.56l-3.32 3.29a.75.75 0 11-1.06-1.06l4.59-4.5a.75.75 0 011.06 0l4.59 4.5a.75.75 0 01-1.06 1.06l-3.32-3.29V16a.75.75 0 01-.75.75h.02zm-5.5-3.5a.75.75 0 01.75.75v2.25h9.5v-2.25a.75.75 0 011.5 0v3a.75.75 0 01-.75.75h-11a.75.75 0 01-.75-.75v-3a.75.75 0 01.75-.75z' }
       ];
       
       // Filter to only include sections that exist on the page
@@ -102,14 +114,18 @@ export default function SectionNavigation() {
     <AnimatePresence>
       {isVisible && sections.length > 0 && (
         <motion.div
-          className="fixed right-4 top-1/2 transform -translate-y-1/2 z-50"
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: 20 }}
+          className={`fixed z-50 ${isMobile ? 'bottom-4 left-1/2 -translate-x-1/2' : 'right-4 top-1/2 -translate-y-1/2'}`}
+          style={{
+            width: isMobile ? 'auto' : 'auto',
+            margin: isMobile ? '0 auto' : '0'
+          }}
+          initial={{ opacity: 0, y: isMobile ? 20 : 0, x: isMobile ? 0 : 20 }}
+          animate={{ opacity: 1, y: 0, x: 0 }}
+          exit={{ opacity: 0, y: isMobile ? 20 : 0, x: isMobile ? 0 : 20 }}
           transition={{ duration: 0.3 }}
         >
-          {/* Scroll progress indicator */}
-          <div className="absolute right-0 top-0 bottom-0 w-1 rounded-full bg-gray-700 -translate-y-[5%] translate-x-[20px] h-[110%]">
+          {/* Scroll progress indicator - only visible on desktop */}
+          <div className="absolute right-0 top-0 bottom-0 w-1 rounded-full bg-gray-700 -translate-y-[5%] translate-x-[20px] h-[110%] hidden md:block">
             <motion.div 
               className="absolute top-0 left-0 w-full rounded-full" 
               style={{ 
@@ -120,48 +136,66 @@ export default function SectionNavigation() {
             />
           </div>
           
+          {/* Mobile progress bar - horizontal at bottom */}
+          <div className="absolute left-0 right-0 bottom-0 h-1 rounded-full bg-gray-700 translate-y-[20px] md:hidden w-full">
+            <motion.div 
+              className="absolute top-0 left-0 h-full rounded-full" 
+              style={{ 
+                backgroundColor: emerald,
+                width: `${scrollProgress}%`,
+                transition: 'width 0.1s ease-out'
+              }}
+            />
+          </div>
+          
           <motion.div
-            className="flex flex-col items-center gap-4 p-3 rounded-full"
+            className={`p-3 rounded-full flex items-center ${isMobile ? 'flex-row gap-3' : 'flex-col gap-4'}`}
             style={{ 
               backgroundColor: charlestonGreen,
               boxShadow: `0 4px 20px rgba(0,0,0,0.2), 0 0 0 1px ${emerald}20`
             }}
           >
             {/* Navigation items */}
-            <div className="flex flex-col gap-6">
+            <div className={`flex ${isMobile ? 'flex-row gap-3' : 'flex-col gap-6'}`}>
               {sections.map((section) => (
                 <div key={section.id} className="relative group">
                   <motion.button
-                    className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${activeSection === section.id ? 'bg-emerald text-white' : 'bg-charlestonGreen/80 text-white/70 hover:bg-charlestonGreen hover:text-white'}`}
+                    className={`rounded-full flex items-center justify-center transition-all duration-300 ${isMobile ? 'w-8 h-8' : 'w-10 h-10'}`}
+                    style={{
+                      backgroundColor: activeSection === section.id ? emerald : 'transparent',
+                      color: activeSection === section.id ? '#FFFFFF' : `${textColor}80`
+                    }}
                     onClick={() => scrollToSection(section.id)}
                     aria-label={`Navigate to ${section.label} section`}
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
+                    initial={{ opacity: 0, y: window.innerWidth >= 768 ? 20 : 0, x: window.innerWidth >= 768 ? 0 : 20 }}
+                    animate={{ opacity: 1, y: 0, x: 0 }}
                     transition={{ 
                       type: "spring", 
                       stiffness: 300, 
                       damping: 20,
                       delay: 0.1 * sections.indexOf(section) 
                     }}
-                    style={{ 
-                      backgroundColor: activeSection === section.id ? emerald : 'transparent',
-                      color: activeSection === section.id ? '#FFFFFF' : `${textColor}80`
-                    }}
+                   
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg 
+                      xmlns="http://www.w3.org/2000/svg" 
+                      className={`${isMobile ? 'h-4 w-4' : 'h-5 w-5'}`}
+                      fill="none" 
+                      viewBox="0 0 24 24" 
+                      stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={section.icon} />
                     </svg>
                     
                   
                   </motion.button>
                   
-                  {/* Tooltip */}
+                  {/* Tooltip - different positioning for mobile/desktop */}
                   <motion.div 
-                    className="absolute right-full mr-3 top-1/2 -translate-y-1/2 pointer-events-none"
-                    initial={{ opacity: 0, x: 10 }}
-                    whileHover={{ opacity: 1, x: 0 }}
+                    className={`absolute pointer-events-none ${isMobile ? 'bottom-full mb-2' : 'right-full mr-3 top-1/2 -translate-y-1/2'}`}
+                    initial={{ opacity: 0, y: isMobile ? 10 : 0, x: isMobile ? 0 : 10 }}
+                    whileHover={{ opacity: 1, y: 0, x: 0 }}
                     transition={{ duration: 0.2 }}
                   >
                     <motion.div 

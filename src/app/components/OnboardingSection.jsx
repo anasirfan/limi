@@ -97,11 +97,11 @@ export default function OnboardingSection() {
   };
 
   return (
-    <section className="bg-[#2B2D2F] text-white py-16 md:py-24">
+    <section className="bg-[#2B2D2F] text-white py-8 md:py-12">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
+        <div className="text-center mb-6">
           <motion.h2 
-            className="text-3xl md:text-4xl font-bold mb-4"
+            className="text-3xl md:text-4xl font-bold mb-2"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -111,43 +111,31 @@ export default function OnboardingSection() {
           </motion.h2>
           
           <motion.p 
-            className="text-[#87CEAB] text-lg max-w-2xl mx-auto"
+            className="text-[#87CEAB] text-base max-w-2xl mx-auto"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            Follow our simple steps to create a lighting solution that perfectly matches your space and style.
+            <span className="hidden md:inline">Follow our simple steps to create a lighting solution that perfectly matches your space and style.</span>
+            <span className="inline md:hidden">Create your perfect lighting in minutes.</span>
           </motion.p>
         </div>
         
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-          {/* Left Column: Onboarding Wizard */}
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="lg:sticky lg:top-24"
-          >
-            <OnboardingWizard 
-              onComplete={handleComplete}
-              onStepChange={handleStepChange}
-            />
-          </motion.div>
-          
-          {/* Right Column: 3D Configurator Iframe */}
+        <div className="flex flex-col lg:grid lg:grid-cols-2 gap-6 items-center">
+          {/* First Column (first on mobile): 3D Configurator Iframe */}
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="relative rounded-2xl overflow-hidden shadow-2xl bg-[#1e2022]"
-            style={{ height: '600px' }}
+            className="relative rounded-2xl overflow-hidden shadow-2xl bg-[#1e2022] w-full order-1"
           >
+            <div className="aspect-square md:aspect-auto md:h-[500px]">
             {/* Loading overlay */}
             {!iframeLoaded && (
               <div className="absolute inset-0 flex items-center justify-center bg-[#1e2022] z-10">
                 <div className="text-center">
-                  <div className="w-16 h-16 border-4 border-[#50C878] border-t-transparent rounded-full animate-spin mb-4 mx-auto"></div>
-                  <p className="text-lg text-[#F2F0E6]">Loading 3D preview...</p>
+                  <div className="w-12 h-12 border-3 border-[#50C878] border-t-transparent rounded-full animate-spin mb-3 mx-auto"></div>
+                  <p className="text-base text-[#F2F0E6]">Loading 3D preview...</p>
                 </div>
               </div>
             )}
@@ -171,32 +159,42 @@ export default function OnboardingSection() {
             ></iframe>
             
             {/* Interaction hint */}
-            <div className="absolute top-4 right-4 bg-black/60 text-white px-4 py-2 rounded-full text-sm flex items-center z-10 animate-pulse">
-              <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <div className="absolute top-4 right-4 bg-black/60 text-white px-3 py-1 rounded-full text-xs flex items-center z-10 animate-pulse">
+              <svg className="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M15 15L19 19M19 19V15M19 19H15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 <path d="M9 9L5 5M5 5V9M5 5H9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
               <span>Drag to rotate</span>
             </div>
+            </div>
+          </motion.div>
+          
+          {/* Second Column (second on mobile): Onboarding Wizard */}
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="order-2"
+          >
+            <OnboardingWizard 
+              onComplete={handleComplete}
+              onStepChange={handleStepChange}
+            />
           </motion.div>
         </div>
         
-        {/* Description Text */}
+        {/* Description Text - More compact */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.6 }}
-          className="mt-16 text-center"
+          className="mt-8 text-center"
         >
-          <div className="max-w-3xl mx-auto bg-[#3a3d42]/50 rounded-xl p-8">
-            <h3 className="text-xl font-semibold mb-4 text-[#87CEAB]">Why Use Our Configurator?</h3>
-            <p className="text-[#F2F0E6] mb-4">
-              The LIMI 3D configurator allows you to visualize and customize your lighting solution in real-time. 
-              See exactly how different options will look and function before making your decision.
-            </p>
-            <p className="text-[#F2F0E6]">
-              Our interactive tool makes it easy to experiment with different styles, colors, and arrangements 
-              until you find the perfect lighting solution for your space.
+          <div className="max-w-3xl mx-auto bg-[#3a3d42]/50 rounded-xl p-4">
+            <h3 className="text-lg font-semibold mb-2 text-[#87CEAB]">Why Use Our Configurator?</h3>
+            <p className="text-[#F2F0E6] text-sm">
+              The LIMI 3D configurator allows you to visualize and customize your lighting solution in real-time, 
+              making it easy to experiment with different styles until you find the perfect lighting for your space.
             </p>
           </div>
         </motion.div>

@@ -1,4 +1,5 @@
 "use client";
+import React, { useRef } from 'react';
 import { motion } from 'framer-motion';
 
 const styles = [
@@ -6,25 +7,29 @@ const styles = [
     id: 'coolLux',
     name: 'Cool Lux',
     description: 'Sleek, modern lighting with cool tones and minimalist design.',
-    color: '#50C878'
+    color: '#50C878',
+    image: '/images/onboarding/cool-lux.jpg'
   },
   {
     id: 'dreamGlow',
     name: 'DreamGlow',
     description: 'Soft, ambient lighting with warm hues for a cozy atmosphere.',
-    color: '#87CEAB'
+    color: '#87CEAB',
+    image: '/images/onboarding/dream-glow.jpg'
   },
   {
     id: 'shadowHue',
     name: 'ShadowHue',
     description: 'Dramatic lighting with bold contrasts and striking silhouettes.',
-    color: '#3da861'
+    color: '#3da861',
+    image: '/images/onboarding/shadow-hue.jpg'
   },
   {
     id: 'zenFlow',
     name: 'ZenFlow',
     description: 'Balanced, harmonious lighting inspired by natural elements.',
-    color: '#6ab890'
+    color: '#6ab890',
+    image: '/images/onboarding/zen-flow.jpg'
   }
 ];
 
@@ -59,6 +64,38 @@ const itemVariants = {
 
 export default function StepTwo({ selection, onSelect, onNext, onPrevious }) {
   const hasSelection = !!selection;
+  const carouselRef = useRef(null);
+  
+  // These functions are directly called when the buttons are clicked
+  const handleNextButtonClick = (e) => {
+    // Stop event propagation to prevent any parent elements from capturing the click
+    e.stopPropagation();
+    // Call the onNext function passed as prop
+    onNext();
+  };
+  
+  const handlePreviousButtonClick = (e) => {
+    // Stop event propagation to prevent any parent elements from capturing the click
+    e.stopPropagation();
+    // Call the onPrevious function passed as prop
+    onPrevious();
+  };
+  
+  // Scroll the carousel left
+  const scrollLeft = () => {
+    if (carouselRef.current) {
+      const scrollAmount = carouselRef.current.clientWidth * 0.85; // Approximately one card width
+      carouselRef.current.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    }
+  };
+  
+  // Scroll the carousel right
+  const scrollRight = () => {
+    if (carouselRef.current) {
+      const scrollAmount = carouselRef.current.clientWidth * 0.85; // Approximately one card width
+      carouselRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
   
   return (
     <motion.div
@@ -73,7 +110,80 @@ export default function StepTwo({ selection, onSelect, onNext, onPrevious }) {
         <p className="text-[#87CEAB] mb-6">Select a style that matches your aesthetic preferences.</p>
       </motion.div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* Mobile Carousel View */}
+      <div className="md:hidden relative">
+        {/* Left indicator */}
+        <button 
+          onClick={scrollLeft}
+          className="absolute left-0 top-1/2 -translate-y-1/2 bg-black bg-opacity-30 rounded-r-lg p-1 z-10 cursor-pointer hover:bg-opacity-50 transition-all"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        
+        {/* Right indicator */}
+        <button 
+          onClick={scrollRight}
+          className="absolute right-0 top-1/2 -translate-y-1/2 bg-black bg-opacity-30 rounded-l-lg p-1 z-10 cursor-pointer hover:bg-opacity-50 transition-all"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+        
+        <div ref={carouselRef} className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide space-x-3 pb-4">
+          {styles.map((style) => (
+            <motion.div
+              key={style.id}
+              variants={itemVariants}
+              className={`flex-none w-[85%] snap-center rounded-xl overflow-hidden cursor-pointer transition-all duration-300 ${
+                selection === style.id 
+                  ? 'ring-3 ring-[#50C878] shadow-[0_0_15px_rgba(80,200,120,0.5)]' 
+                  : 'ring-1 ring-transparent'
+              }`}
+              onClick={() => onSelect(style.id)}
+              style={{
+                background: `linear-gradient(135deg, #2B2D2F 0%, #3a3d42 100%)`,
+              }}
+            >
+              <div className="p-6 relative z-10">
+                <div 
+                  className="absolute -top-10 -right-10 w-40 h-40 rounded-full opacity-20 blur-xl"
+                  style={{ backgroundColor: style.color }}
+                ></div>
+                
+                <div 
+                  className="w-16 h-16 rounded-full mb-4 flex items-center justify-center"
+                  style={{ 
+                    backgroundColor: `${style.color}20`,
+                    boxShadow: selection === style.id ? `0 0 20px ${style.color}80` : 'none'
+                  }}
+                >
+                  <div 
+                    className="w-10 h-10 rounded-full"
+                    style={{ backgroundColor: style.color }}
+                  ></div>
+                </div>
+                
+                <h3 className="text-xl font-semibold text-white mb-2">{style.name}</h3>
+                <p className="text-gray-300 text-sm">{style.description}</p>
+                
+                {selection === style.id && (
+                  <div className="absolute top-4 right-4 bg-[#50C878] rounded-full p-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+      
+      {/* Desktop Grid Layout */}
+      <div className="hidden md:grid md:grid-cols-2 md:gap-4">
         {styles.map((style) => (
           <motion.div
             key={style.id}
@@ -127,16 +237,16 @@ export default function StepTwo({ selection, onSelect, onNext, onPrevious }) {
         ))}
       </div>
       
-      <motion.div variants={itemVariants} className="pt-4 flex space-x-4">
+      <div className="pt-4 flex space-x-4 relative z-50">
         <button
-          onClick={onPrevious}
+          onClick={handlePreviousButtonClick}
           className="w-1/3 py-4 rounded-lg font-medium text-lg transition-all duration-300 bg-gray-700 text-white hover:bg-gray-600"
         >
           Back
         </button>
         
         <button
-          onClick={onNext}
+          onClick={handleNextButtonClick}
           disabled={!hasSelection}
           className={`w-2/3 py-4 rounded-lg font-medium text-lg transition-all duration-300 ${
             hasSelection 
@@ -146,7 +256,7 @@ export default function StepTwo({ selection, onSelect, onNext, onPrevious }) {
         >
           Next
         </button>
-      </motion.div>
+      </div>
     </motion.div>
   );
 }
