@@ -533,7 +533,7 @@ export default function HowItWorks() {
                         {/* Background video - centered with proper aspect ratio */}
                         <div className="relative w-full aspect-video">
                           <video 
-                            className="absolute w-full h-full object-cover opacity-70"
+                            className="absolute w-full h-[80%] object-cover opacity-70"
                             autoPlay 
                             loop 
                             muted 
@@ -545,9 +545,9 @@ export default function HowItWorks() {
                         </div>
                         
                         {/* Content - better spacing and centered text */}
-                        <div className="p-6 flex-1 flex flex-col text-white">
+                        <div className="p-6 py-0 flex-1 flex flex-col text-white">
                           {/* Title with icon - centered */}
-                          <div className="flex items-center justify-center mb-5">
+                          <div className="flex items-center justify-center mb-2">
                             <div className="mr-3 text-[#50C878]">
                               <Icon size={28} />
                             </div>
@@ -555,17 +555,17 @@ export default function HowItWorks() {
                           </div>
                           
                           {/* Description - centered */}
-                          <p className="text-lg text-white/90 mb-6 text-center">{step.description}</p>
+                          <p className="text-sm text-white/90 mb-2  text-center">{step.description}</p>
                           
                           {/* Story narrative - better styling */}
-                          <div className="bg-white/5 backdrop-blur-sm p-5 rounded-xl mb-6 border border-[#50C878]/20 text-sm overflow-y-auto max-h-[200px]">
+                          <div className="bg-white/5 backdrop-blur-sm px-3 py-2 rounded-xl my-2 border border-[#50C878]/20 text-sm overflow-y-auto max-h-[200px]">
                             <p className="text-white/80 italic text-center">"{step.story}"</p>
                           </div>
                           
                           {/* CTA Button - centered with more prominence */}
                           <motion.button 
                             whileTap={{ scale: 0.95 }}
-                            className="mt-auto px-8 py-3 bg-[#50C878] text-white rounded-full transition-colors text-base font-medium mx-auto shadow-lg flex items-center gap-2"
+                            className="mt-6 px-6 py-2 bg-[#50C878] text-white rounded-full transition-colors text-base font-medium mx-auto shadow-lg flex items-center gap-2"
                             onClick={() => handleLearnMore(step)}
                           >
                             Learn More

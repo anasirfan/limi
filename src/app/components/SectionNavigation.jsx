@@ -114,7 +114,7 @@ export default function SectionNavigation() {
     <AnimatePresence>
       {isVisible && sections.length > 0 && (
         <motion.div
-          className={`fixed z-50 ${isMobile ? 'bottom-4 left-1/2 -translate-x-1/2' : 'right-4 top-1/2 -translate-y-1/2'}`}
+          className={`fixed z-50 ${isMobile ? 'bottom-4 left-[20%]' : 'right-4 top-1/2 -translate-y-1/2'}`}
           style={{
             width: isMobile ? 'auto' : 'auto',
             margin: isMobile ? '0 auto' : '0'
@@ -193,7 +193,7 @@ export default function SectionNavigation() {
                   
                   {/* Tooltip - different positioning for mobile/desktop */}
                   <motion.div 
-                    className={`absolute pointer-events-none ${isMobile ? 'bottom-full mb-2' : 'right-full mr-3 top-1/2 -translate-y-1/2'}`}
+                    className={`absolute pointer-events-none ${isMobile ? 'bottom-full mb-2 ' : 'right-full mr-3 top-1/2 -translate-y-1/2'}`}
                     initial={{ opacity: 0, y: isMobile ? 10 : 0, x: isMobile ? 0 : 10 }}
                     whileHover={{ opacity: 1, y: 0, x: 0 }}
                     transition={{ duration: 0.2 }}

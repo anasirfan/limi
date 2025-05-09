@@ -10,9 +10,10 @@ export default function OnboardingSection() {
   const iframeRef = useRef(null);
   const [iframeLoaded, setIframeLoaded] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
-  const [selections, setSelections] = useState({});
+  const [wizardSelections, setWizardSelections] = useState({});
+  const [homepageMessageSent, setHomepageMessageSent] = useState(false);
   
-  // Handle iframe messages and send configuration updates
+  // Handle iframe messages
   useEffect(() => {
     if (typeof window === 'undefined') return;
     
@@ -23,8 +24,15 @@ export default function OnboardingSection() {
           console.log('PlayCanvas app is ready');
           setIframeLoaded(true);
           
-          // Send initial configurations once app is ready
-          sendConfigToPlayCanvas();
+          // Send 'homepage' message when app is ready (only once)
+          if (iframeRef.current && iframeRef.current.contentWindow && !homepageMessageSent) {
+            iframeRef.current.contentWindow.postMessage('homepage', '*');
+            console.log('Sent homepage message to PlayCanvas');
+            setHomepageMessageSent(true);
+            
+            // Don't send any configurations on initial load
+            // We'll wait for user interaction instead
+          }
         }
       } catch (error) {
         console.error('Error handling iframe message:', error);
@@ -36,59 +44,113 @@ export default function OnboardingSection() {
     return () => {
       window.removeEventListener('message', handleMessage);
     };
-  }, []);
+  }, [homepageMessageSent]);
   
-  // Function to send configuration to PlayCanvas
-  const sendConfigToPlayCanvas = () => {
+  // Function to send configuration to PlayCanvas based on step
+  const sendConfigToPlayCanvas = (step, selections) => {
     try {
-      if (!iframeRef.current || !iframeRef.current.contentWindow) return;
-      
-      // Map category selections to light types
-      if (selections.category) {
-        const lightTypeMap = {
-          'pendant': 'ceiling',
-          'wall': 'wall',
-          'floor': 'floor'
-        };
-        const lightType = lightTypeMap[selections.category] || 'ceiling';
-        iframeRef.current.contentWindow.postMessage(`light_type:${lightType}`, "*");
+      if (!iframeRef.current || !iframeRef.current.contentWindow || !iframeLoaded) {
+        console.log('Cannot send config: iframe not ready');
+        return;
       }
       
-      // Set light amount to 1 for the onboarding preview
-      iframeRef.current.contentWindow.postMessage("light_amount:1", "*");
+      console.log(`Sending config for step ${step}:`, selections);
       
-      // Map style selections to pendant designs
-      if (selections.style) {
-        const styleMap = {
-          'modern': 'product_1',
-          'classic': 'product_2',
-          'minimal': 'product_3',
-          'organic': 'product_4',
-          'industrial': 'product_5'
-        };
-        const pendantDesign = styleMap[selections.style] || 'product_2';
-        iframeRef.current.contentWindow.postMessage(`pendant_design:${pendantDesign}`, "*");
+      // We're only sending the specific data for each step, no light amount
+      
+      // Send different data based on the step
+      switch(step) {
+        case 1: // Category selection (pendant/wall/floor) - ONLY send light type
+          if (selections.lightCategory) {
+            const lightTypeMap = {
+              'pendant': 'ceiling',
+              'wall': 'wall',
+              'floor': 'floor'
+            };
+            const lightType = lightTypeMap[selections.lightCategory] || 'ceiling';
+            iframeRef.current.contentWindow.postMessage(`light_type:${lightType}`, "*");
+            console.log(`Sent light type: ${lightType}`);
+          }
+          break;
+          
+        case 2: // Vibe selection - ONLY send vibe
+          if (selections.lightStyle) {
+            // Direct mapping from vibe ID to message
+            const vibeMessage = selections.lightStyle; // coolLux, dreamGlow, shadowHue, zenFlow
+            iframeRef.current.contentWindow.postMessage(`vibe:${vibeMessage}`, "*");
+            console.log(`Sent vibe: ${vibeMessage}`);
+          }
+          break;
+          
+        case 3: // Aesthetic selection - ONLY send aesthetic
+          if (selections.designAesthetic) {
+            // Direct mapping from aesthetic ID to message
+            const aestheticMessage = selections.designAesthetic; // aesthetic, industrial, scandinavian, modern_style
+            // Handle the special case for modern_style
+            const formattedAesthetic = aestheticMessage === 'modern_style' ? 'modern' : aestheticMessage;
+            iframeRef.current.contentWindow.postMessage(`aesthetic:${formattedAesthetic}`, "*");
+            console.log(`Sent aesthetic: ${formattedAesthetic}`);
+          }
+          break;
+          
+        case 4: // Final step - send all configurations for the "Let's Go" button
+          // Send light type
+          if (selections.lightCategory) {
+            const lightTypeMap = {
+              'pendant': 'ceiling',
+              'wall': 'wall',
+              'floor': 'floor'
+            };
+            const lightType = lightTypeMap[selections.lightCategory] || 'ceiling';
+            iframeRef.current.contentWindow.postMessage(`light_type:${lightType}`, "*");
+            console.log(`Final: Sent light type: ${lightType}`);
+          }
+          
+          // Send vibe
+          if (selections.lightStyle) {
+            iframeRef.current.contentWindow.postMessage(`vibe:${selections.lightStyle}`, "*");
+            console.log(`Final: Sent vibe: ${selections.lightStyle}`);
+          }
+          
+          // Send aesthetic
+          if (selections.designAesthetic) {
+            const formattedAesthetic = selections.designAesthetic === 'modern_style' ? 'modern' : selections.designAesthetic;
+            iframeRef.current.contentWindow.postMessage(`aesthetic:${formattedAesthetic}`, "*");
+            console.log(`Final: Sent aesthetic: ${formattedAesthetic}`);
+          }
+          break;
+          
+        default:
+          break;
       }
     } catch (error) {
       console.error("Error sending configuration to PlayCanvas:", error);
     }
   };
   
-  // Send configuration updates when selections change
-  useEffect(() => {
-    if (iframeLoaded && Object.keys(selections).length > 0) {
-      sendConfigToPlayCanvas();
-    }
-  }, [selections, iframeLoaded]);
+  // We're removing this useEffect to avoid the infinite update loop
+  // Instead, we'll only send configurations on explicit user actions
   
-  // Handle step changes
+  // Handle step changes - only store selections, don't send to PlayCanvas yet
   const handleStepChange = (step, stepSelections) => {
+    console.log(`Step changed to ${step}`, stepSelections);
     setCurrentStep(step);
-    setSelections(stepSelections);
+    setWizardSelections(stepSelections);
+    
+    // Only send configuration when moving to the next step (not on initial load or selection)
+    // This ensures we only send when the user clicks "Next"
+    if (iframeLoaded && step > 0) {
+      sendConfigToPlayCanvas(step, stepSelections);
+    }
   };
   
   // Handle completion
   const handleComplete = (finalSelections) => {
+    // Send final configuration before navigating
+    if (iframeLoaded) {
+      sendConfigToPlayCanvas(4, finalSelections);
+    }
+    
     // Save final selections to localStorage
     localStorage.setItem('configuratorSelections', JSON.stringify(finalSelections));
     
@@ -152,9 +214,9 @@ export default function OnboardingSection() {
                 // Set initial quality
                 if (iframeRef.current && iframeRef.current.contentWindow) {
                   iframeRef.current.contentWindow.postMessage("highdis", "*");
+                  console.log('Set quality to high');
                 }
-                // Fallback for loading state
-                setTimeout(() => setIframeLoaded(true), 2000);
+                // We'll wait for the app:ready1 message to set iframeLoaded
               }}
             ></iframe>
             

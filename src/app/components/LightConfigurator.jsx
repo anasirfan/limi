@@ -132,10 +132,7 @@ const LightAmountSelector = ({ amount, onAmountChange, isDarkMode, lightType }) 
               height={80}
               className="object-cover w-full h-full"
             />
-            {/* Add a text overlay for better visibility */}
-            <div className="absolute bottom-0 w-full bg-black bg-opacity-50 text-white text-center py-1 text-sm font-bold">
-              {num}
-            </div>
+          
           </motion.div>
         ))}
       </div>
