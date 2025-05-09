@@ -50,7 +50,7 @@ const timelineMilestones = [
     icon: FiHome,
     position: 'right',
     color: '#87CEAB', // Eton Blue
-    image: 'https://images.unsplash.com/photo-1565814329452-e1efa11c5b89?q=80&w=800&h=600&auto=format&fit=crop',
+    image: '/images/timeline/2022.jpg',
     highlight: 'First-gen units sold out in weeks'
   },
   {
@@ -61,7 +61,7 @@ const timelineMilestones = [
     icon: FiLayers,
     position: 'left',
     color: '#50C878', // Emerald
-    image: 'https://images.unsplash.com/photo-1581092921461-39b9d08a9b22?q=80&w=800&h=600&auto=format&fit=crop',
+    image: '/images/timeline/2023.jpg',
     highlight: '500m² showroom'
   },
   {
@@ -105,7 +105,7 @@ const timelineMilestones = [
     icon: TbTruckDelivery,
     position: 'left',
     color: '#50C878', // Emerald
-    image: 'https://images.unsplash.com/photo-1603899122634-f086ca5f5ddd?q=80&w=800&h=600&auto=format&fit=crop',
+    image: '/images/timeline/mid-2025.jpg',
     highlight: 'shipping to early adopters'
   },
   {
@@ -116,7 +116,7 @@ const timelineMilestones = [
     icon: FiMap,
     position: 'right',
     color: '#87CEAB', // Eton Blue
-    image: 'https://images.unsplash.com/photo-1526778548025-fa2f459cd5ce?q=80&w=800&h=600&auto=format&fit=crop',
+    image: '/images/timeline/late-2025.jpg',
     highlight: 'AI lighting features'
   },
   {
@@ -127,7 +127,7 @@ const timelineMilestones = [
     icon: FiStar,
     position: 'left',
     color: '#50C878', // Emerald with reduced opacity
-    image: 'https://images.unsplash.com/photo-1535868463750-c78d9543614f?q=80&w=800&h=600&auto=format&fit=crop',
+    image: '/images/timeline/2026.jpg',
     isFuture: true
   }
 ];
