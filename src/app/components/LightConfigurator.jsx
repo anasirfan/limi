@@ -1014,7 +1014,7 @@ const LightConfigurator = () => {
   const isDarkMode = true;
   const [lightType, setLightType] = useState('ceiling');
   const [lightAmount, setLightAmount] = useState(1);
-  const [lightDesign, setLightDesign] = useState('product_2');
+  const [lightDesign, setLightDesign] = useState('radial');
   const [cableColor, setCableColor] = useState('black');
   const [cableLength, setCableLength] = useState('1.5m');
   const [pendants, setPendants] = useState([]);

@@ -133,6 +133,9 @@ const PlayCanvasViewer = ({
       
       // Send global design if single pendant
       if (config.lightAmount === 1 && config.lightDesign) {
+        if(config.lightDesign === 'radial'){
+          config.lightDesign = 'product_2';
+        }
         iframeRef.current.contentWindow.postMessage(`pendant_design:${config.lightDesign}`, "*");
       }
     } catch (error) {
