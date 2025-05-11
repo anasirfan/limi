@@ -205,7 +205,16 @@ export default function SlideManagement() {
           />
 
           {/* Slide Editor */}
-          
+          <div className="lg:col-span-2 bg-[#292929] p-4 rounded-lg">
+            <h3 className="text-xl font-bold mb-4 text-white">Edit Slide</h3>
+            {slides.length > 0 ? (
+              <SlideEditor />
+            ) : (
+              <div className="text-center py-12 text-gray-400">
+                <p>Select a slide to edit or create a new one</p>
+              </div>
+            )}
+          </div>
         </div>
       )}
 

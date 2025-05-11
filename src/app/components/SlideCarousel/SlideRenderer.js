@@ -24,6 +24,7 @@ export default function SlideRenderer({ slide }) {
       case 'media-text-split':
         return <MediaTextSplit slide={slide} />;
       case 'video-bg-text':
+      case 'video-background': // Add support for both layout names
         return <VideoBackground slide={slide} />;
       case 'image-collage':
         return <ImageCollage slide={slide} />;

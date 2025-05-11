@@ -39,6 +39,13 @@ module.exports = {
         'sway-medium': 'sway 6s ease-in-out infinite',
         'sway-reverse-slow': 'swayReverse 7s ease-in-out infinite',
         'cable-loading': 'cableLoading 2s linear infinite',
+        // Theme animations
+        'fadeIn': 'fadeIn 0.5s ease-in-out forwards',
+        'fadeInUp': 'fadeInUp 0.6s ease-in-out forwards',
+        'fadeInLeft': 'fadeInLeft 0.6s ease-in-out forwards',
+        'slideInRight': 'slideInRight 0.6s ease-in-out forwards',
+        'slideInUp': 'slideInUp 0.6s ease-in-out forwards',
+        'scaleIn': 'scaleIn 0.5s ease-in-out forwards',
       },
       keyframes: {
         progressIndeterminate: {
@@ -49,6 +56,31 @@ module.exports = {
           '0%': { transform: 'translateY(0px)' },
           '50%': { transform: 'translateY(-20px)' },
           '100%': { transform: 'translateY(0px)' }
+        },
+        // Theme animation keyframes
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' }
+        },
+        fadeInUp: {
+          '0%': { opacity: '0', transform: 'translateY(20px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' }
+        },
+        fadeInLeft: {
+          '0%': { opacity: '0', transform: 'translateX(-20px)' },
+          '100%': { opacity: '1', transform: 'translateX(0)' }
+        },
+        slideInRight: {
+          '0%': { transform: 'translateX(-30px)', opacity: '0' },
+          '100%': { transform: 'translateX(0)', opacity: '1' }
+        },
+        slideInUp: {
+          '0%': { transform: 'translateY(30px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' }
+        },
+        scaleIn: {
+          '0%': { transform: 'scale(0.9)', opacity: '0' },
+          '100%': { transform: 'scale(1)', opacity: '1' }
         },
         sway: {
           '0%': { transform: 'rotate(-3deg)' },
