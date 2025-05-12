@@ -1377,12 +1377,45 @@ export default function CustomerDashboard({ token }) {
         </div>
       )}
       
-      {activeTab === 'productManagement' && (
+      {activeTab === 'products' && (
         <ProductManagement token={token} />
       )}
       
+      {/* Slideshow Tab */}
       {activeTab === 'slideshow' && (
-        <SlideManagement />
+        <div className="mt-6">
+          <div className="bg-[#1e1e1e] p-6 rounded-lg shadow-lg mb-6">
+            <h2 className="text-xl font-[Amenti] text-[#93cfa2] mb-4">Customer Slideshow Management</h2>
+            <p className="text-gray-300 mb-4">Select a customer to manage their slideshow presentation.</p>
+            
+            <div className="max-w-md">
+              <label className="block text-gray-400 mb-2">Select Customer</label>
+              <select
+                className="bg-[#292929] text-white w-full px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#54bb74]"
+                onChange={(e) => {
+                  const selectedCustomer = customers.find(c => c.profileId === e.target.value);
+                  setSelectedCustomer(selectedCustomer);
+                }}
+                value={selectedCustomer?.profileId || ''}
+              >
+                <option value="">-- Select a customer --</option>
+                {customers.map(customer => (
+                  <option key={customer.profileId} value={customer.profileId}>
+                    {customer.clientCompanyInfo} ({customer.profileId})
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+          
+          {selectedCustomer ? (
+            <SlideManagement customer={selectedCustomer} />
+          ) : (
+            <div className="bg-[#1e1e1e] p-6 rounded-lg text-center">
+              <p className="text-gray-300">Please select a customer to manage their slideshow</p>
+            </div>
+          )}
+        </div>
       )}
 
       {activeTab === 'customers' && (
@@ -2188,6 +2221,8 @@ export default function CustomerDashboard({ token }) {
           <ProductManagement />
         </div>
       )}
+
+
     </div>
   );
 }

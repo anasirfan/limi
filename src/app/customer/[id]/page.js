@@ -11,28 +11,56 @@ import { FaBuilding } from 'react-icons/fa';
 import { selectSlides } from '../../redux/slices/slidesSlice';
 
 // PresentationHeader component to display dynamic titles from slides
-const PresentationHeader = ({ customerName }) => {
+const PresentationHeader = ({ customerName, customerId }) => {
   const slides = useSelector(selectSlides);
-  const [presentationTitle, setPresentationTitle] = useState('Presentation');
-  const [presentationSubtitle, setPresentationSubtitle] = useState(`Interactive presentation for ${customerName}`);
+  const [presentationTitle, setPresentationTitle] = useState('LIMI Lighting Solutions');
+  const [presentationSubtitle, setPresentationSubtitle] = useState(`Custom presentation for ${customerName}`);
   
-  // Load presentation settings from localStorage
+  // Load presentation settings from localStorage or API
   useEffect(() => {
-    try {
-      const savedSettings = localStorage.getItem('presentationSettings');
-      if (savedSettings) {
-        const settings = JSON.parse(savedSettings);
-        if (settings.title) setPresentationTitle(settings.title);
-        if (settings.subtitle) {
-          // Replace {customerName} placeholder with actual customer name
-          const subtitle = settings.subtitle.replace('{customerName}', customerName);
-          setPresentationSubtitle(subtitle);
+    async function loadPresentationData() {
+      try {
+        // First try to load from API
+        const token = localStorage.getItem('token');
+        const response = await fetch(`https://api1.limitless-lighting.co.uk/admin/slide/customers/${customerId}/slideshows`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data && data.title) {
+            setPresentationTitle(data.title);
+          }
+          if (data && data.subtitle) {
+            // Replace {customerName} placeholder with actual customer name
+            const subtitle = data.subtitle.replace('{customerName}', customerName);
+            setPresentationSubtitle(subtitle);
+          }
+          return;
         }
+        
+        // Fallback to localStorage
+        const savedSettings = localStorage.getItem('presentationSettings');
+        if (savedSettings) {
+          const settings = JSON.parse(savedSettings);
+          if (settings.title) setPresentationTitle(settings.title);
+          if (settings.subtitle) {
+            // Replace {customerName} placeholder with actual customer name
+            const subtitle = settings.subtitle.replace('{customerName}', customerName);
+            setPresentationSubtitle(subtitle);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading presentation settings:', error);
       }
-    } catch (error) {
-      console.error('Error loading presentation settings:', error);
     }
-  }, [customerName]);
+    
+    if (customerId) {
+      loadPresentationData();
+    }
+  }, [customerName, customerId]);
   
   return (
     <div className="mb-8">
@@ -133,6 +161,7 @@ export default function CustomerProfile() {
   const customerId = params.id;
   
   const [customer, setCustomer] = useState(null);
+  const [presentationData, setPresentationData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -154,30 +183,79 @@ export default function CustomerProfile() {
     }
   };
 
+  // Function to fetch presentation data
+  const fetchPresentationData = async (profileId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`https://api1.limitless-lighting.co.uk/admin/slide/customers/${profileId}/slideshows`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (!response.ok) {
+        console.warn(`Failed to fetch presentation data: ${response.status}`);
+        return null;
+      }
+      
+      const result = await response.json();
+      console.log('Presentation API response:', result);
+      
+      // Check for different response structures
+      if (result && result.data && result.data.length > 0) {
+        // API returns data in an array
+        return result.data[0];
+      } else if (result && result.slides && result.slides.length > 0) {
+        // API returns data directly
+        return result;
+      } else if (result && Array.isArray(result) && result.length > 0) {
+        // API returns an array directly
+        return result[0];
+      }
+      
+      // Try to load from localStorage as fallback
+      const storageKey = `slides_${profileId}`;
+      const savedSlides = localStorage.getItem(storageKey);
+      if (savedSlides) {
+        try {
+          const parsedSlides = JSON.parse(savedSlides);
+          if (parsedSlides && parsedSlides.length > 0) {
+            return {
+              slides: parsedSlides,
+              customerId: profileId
+            };
+          }
+        } catch (e) {
+          console.error('Error parsing saved slides:', e);
+        }
+      }
+      
+      return null;
+    } catch (error) {
+      console.error('Error fetching presentation data:', error);
+      return null;
+    }
+  };
+
   useEffect(() => {
     async function fetchCustomerData() {
       try {
         setLoading(true);
         setError(null);
+        setPresentationData(null);
         
         // Check if we have a test customer first
         if (testCustomers[customerId]) {
           // Simulate API delay for testing
-          setTimeout(() => {
+          setTimeout(async () => {
             const customerData = testCustomers[customerId];
             
-            // Map product codes to actual product data
-            const products = customerData.itemCodes?.map(code => {
-              return productCatalog[code] ? {
-                ...productCatalog[code],
-                code
-              } : null;
-            }).filter(Boolean) || [];
+            setCustomer(customerData);
             
-            setCustomer({
-              ...customerData,
-              products
-            });
+            // Fetch presentation data for test customers too
+            const profileId = customerId; // For test customers, use the ID as profileId
+            const presentationData = await fetchPresentationData(profileId);
+            setPresentationData(presentationData);
             
             setLoading(false);
           }, 1000);
@@ -185,28 +263,50 @@ export default function CustomerProfile() {
         }
         
         try {
-          // If not a test customer, fetch from API
-          const response = await fetch(`/api/customers/${customerId}`);
+          // If not a test customer, fetch from API directly
+          const token = localStorage.getItem('token');
+          const response = await fetch(`https://api.limitless-lighting.co.uk/client/get_customer_details/${customerId}`, {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
           
           if (!response.ok) {
-            throw new Error('Failed to fetch customer data');
+            throw new Error(`Failed to fetch customer data: ${response.status}`);
           }
           
-          const data = await response.json();
+          const result = await response.json();
           
-          // Process the data and add products
-          const itemCodes = data.itemCodes || [];
-          const products = itemCodes.map(code => {
-            return productCatalog[code] ? {
-              ...productCatalog[code],
-              code
-            } : null;
-          }).filter(Boolean);
+          if (!result.success) {
+            throw new Error('API returned unsuccessful response');
+          }
           
-          setCustomer({
-            ...data,
-            products
-          });
+          const data = result.data;
+          
+          // Process the data
+          const customerData = {
+            staffName: data.staffName || 'LIMI Representative',
+            customerName: data.clientCompanyInfo || 'Valued Customer',
+            clientCompanyInfo: data.clientCompanyInfo || '',
+            profileId: data.profileId || customerId,
+            itemCodes: data.itemCodes || []
+          };
+          
+          if (data.images) {
+            if (data.images.frontCardImage) {
+              customerData.businessCardFront = data.images.frontCardImage.url;
+            }
+            if (data.images.backCardImage) {
+              customerData.businessCardBack = data.images.backCardImage.url;
+            }
+          }
+          
+          setCustomer(customerData);
+          
+          // Now fetch presentation data
+          const presentationData = await fetchPresentationData(data.profileId);
+          setPresentationData(presentationData);
+          
           setLoading(false);
         } catch (apiError) {
           console.warn('API fetch failed, using fallback data:', apiError);
@@ -262,25 +362,7 @@ export default function CustomerProfile() {
                 <p className="text-gray-400">Please check your customer ID or try again later for the full experience.</p>
               </div>
               
-              {/* Slide Presentation Section - Still available in error state */}
-              <div className="bg-[#1e1e1e] rounded-lg overflow-hidden shadow-xl p-6 mb-8">
-                <h2 className="text-3xl font-bold mb-6 text-white">Presentation</h2>
-                <p className="text-gray-300 mb-8">Interactive slide presentation</p>
-                
-                {/* Slide Editor */}
-                <div className="bg-[#292929] p-4 rounded-lg mb-8">
-                  <h3 className="text-xl font-bold mb-4 text-white">Slide Editor</h3>
-                  <SlideEditor />
-                </div>
-                
-                {/* Live Preview */}
-                <div className="mb-8">
-                  <h3 className="text-xl font-bold mb-4 text-white">Live Preview</h3>
-                  <div className="bg-black rounded-lg overflow-hidden">
-                    <SlideCarousel />
-                  </div>
-                </div>
-              </div>
+              {/* No presentation in error state */}
             </div>
           </div>
         ) : customer ? (
@@ -305,80 +387,50 @@ export default function CustomerProfile() {
                 </div>
               </div>
               
-              {/* Slide Presentation Section */}
-              <div className="bg-[#1e1e1e] rounded-lg overflow-hidden shadow-xl p-6 mb-8">
-                <PresentationHeader customerName={customer.staffName} />
-                
-                {/* Slide Carousel */}
-                <div className="bg-black rounded-lg overflow-hidden">
-                  <SlideCarousel />
-                </div>
-              </div>
-              
-              {/* Product Showcase */}
-              {/* {customer.products && customer.products.length > 0 && (
+              {/* Slide Presentation Section - Only shown if presentation data exists */}
+              {presentationData && (
                 <div className="bg-[#1e1e1e] rounded-lg overflow-hidden shadow-xl p-6 mb-8">
-                  <h2 className="text-3xl font-bold mb-6 text-white">Selected Products</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {customer.products.map((product, index) => (
-                      <div key={index} className="bg-[#292929] p-4 rounded-lg">
-                        {product.image && (
-                          <div className="relative h-48 mb-4 overflow-hidden rounded-lg">
-                            <Image 
-                              src={product.image}
-                              alt={product.name}
-                              fill
-                              sizes="(max-width: 768px) 100vw, 33vw"
-                              style={{ objectFit: 'cover' }}
-                              className="hover:scale-105 transition-transform duration-300"
-                            />
-                          </div>
-                        )}
-                        <h3 className="font-medium text-emerald-400 text-lg">{product.name}</h3>
-                        {product.description && (
-                          <p className="text-gray-300 mt-1">{product.description}</p>
-                        )}
-                        {product.price && (
-                          <p className="text-white font-bold mt-2">{product.price}</p>
-                        )}
-                      </div>
-                    ))}
+                  <PresentationHeader customerName={customer.staffName} customerId={customerId} />
+                  
+                  {/* Slide Carousel */}
+                  <div className="bg-black rounded-lg overflow-hidden">
+                    <SlideCarousel slides={presentationData.slides} />
                   </div>
                 </div>
-              )} */}
+              )}
               
               {/* Company Information */}
               <div className="bg-[#1e1e1e] rounded-lg overflow-hidden shadow-xl">
                 <div className="bg-gradient-to-r from-[#292929] to-[#54bb74]/30 p-6">
                   <h2 className="text-2xl font-bold text-[#93cfa2] mb-2">About LIMI</h2>
-                  <p className="text-gray-300">{customer.companyInfo.description}</p>
+                  <p className="text-gray-300">Creating innovative lighting solutions for modern spaces</p>
                 </div>
                 <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <h3 className="text-lg font-semibold text-[#93cfa2] mb-3">Our Mission</h3>
-                    <p className="text-gray-300">{customer.companyInfo.mission}</p>
+                    <p className="text-gray-300">To transform spaces through intelligent lighting that adapts to human needs while minimizing environmental impact</p>
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-[#93cfa2] mb-3">Our Vision</h3>
-                    <p className="text-gray-300">{customer.companyInfo.vision}</p>
+                    <p className="text-gray-300">A world where lighting enhances wellbeing, productivity, and sustainability in every space</p>
                   </div>
                   <div className="md:col-span-2 mt-4 pt-4 border-t border-gray-700">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       <div>
                         <h4 className="text-sm font-medium text-[#93cfa2]">Founded</h4>
-                        <p className="text-gray-300">{customer.companyInfo.founded}</p>
+                        <p className="text-gray-300">2020</p>
                       </div>
                       <div>
                         <h4 className="text-sm font-medium text-[#93cfa2]">Headquarters</h4>
-                        <p className="text-gray-300">{customer.companyInfo.headquarters}</p>
+                        <p className="text-gray-300">London, UK</p>
                       </div>
                       <div>
                         <h4 className="text-sm font-medium text-[#93cfa2]">Website</h4>
-                        <p className="text-gray-300">{customer.companyInfo.website}</p>
+                        <p className="text-gray-300">www.limi-lighting.co.uk</p>
                       </div>
                       <div>
                         <h4 className="text-sm font-medium text-[#93cfa2]">Support</h4>
-                        <p className="text-gray-300">{customer.companyInfo.support}</p>
+                        <p className="text-gray-300">support@limi-lighting.co.uk</p>
                       </div>
                     </div>
                   </div>
