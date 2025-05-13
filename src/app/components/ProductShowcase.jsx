@@ -53,9 +53,10 @@ function ProductShowcase() {
       description: "Beautiful pendants that can be swapped without tools or an electrician.",
       image: "/images/homepage-products/1.jpg",
       galleryImages: [
-        "/images/products/product2/1.jpg",
-        "/images/products/product2/2.jpg",
-        "/images/products/product2/3.jpg"
+        "/images/homepage-products/1/1.jpg",
+        "/images/homepage-products/1/2.jpg",
+        "/images/homepage-products/1/3.jpg",
+        "/images/homepage-products/1/4.jpg"
       ],
       category: "pendants",
       features: [
@@ -79,9 +80,12 @@ function ProductShowcase() {
       description: "Central hub that connects your lighting system to your smart home ecosystem.",
       image: "/images/homepage-products/2.jpg",
       galleryImages: [
-        "/images/products/product3/1.jpg",
-        "/images/products/product3/2.jpg",
-        "/images/products/product3/3.jpg"
+        "/images/homepage-products/2/1.jpg",
+        "/images/homepage-products/2/2.png",
+        "/images/homepage-products/2/3.jpg",
+        "/images/homepage-products/2/4.png",
+        "/images/homepage-products/2/5.jpg",
+        "/images/homepage-products/2/7.jpg"
       ],
       category: "hub",
       features: [
@@ -105,9 +109,11 @@ function ProductShowcase() {
       description: "Sleek wall-mounted pendant lights that bring style and function to any room.",
       image: "/images/homepage-products/4.jpg",
       galleryImages: [
-        "/images/products/product2/2.jpg",
-        "/images/products/product2/3.jpg",
-        "/images/products/product2/1.jpg"
+        "/images/homepage-products/4/1.jpg",
+        "/images/homepage-products/4/2.jpg",
+        "/images/homepage-products/4/3.jpg",
+        "/images/homepage-products/4/4.jpg",
+ 
       ],
       category: "pendants",
       features: [
@@ -131,9 +137,12 @@ function ProductShowcase() {
       description: "Stunning pendant lights that create a focal point in any space.",
       image: "/images/homepage-products/3.jpg",
       galleryImages: [
-        "/images/products/product2/3.jpg",
-        "/images/products/product2/1.jpg",
-        "/images/products/product2/2.jpg"
+        "/images/homepage-products/3/1.jpg",
+        "/images/homepage-products/3/2.jpg",
+        "/images/homepage-products/3/3.jpg",
+        "/images/homepage-products/3/4.jpg",
+        "/images/homepage-products/3/5.png",
+        "/images/homepage-products/3/6.png"
       ],
       category: "pendants",
       features: [
@@ -157,9 +166,12 @@ function ProductShowcase() {
       description: "Clean, modern wall sconce that provides elegant ambient lighting.",
       image: "/images/homepage-products/6.jpg",
       galleryImages: [
-        "/images/products/product1/2.jpg",
-        "/images/products/product1/1.jpg",
-        "/images/products/product1/3.jpg"
+        "/images/homepage-products/6/1.jpg",
+        "/images/homepage-products/6/8.jpg",
+        "/images/homepage-products/6/3.png",
+        "/images/homepage-products/6/4.jpg",
+        "/images/homepage-products/6/5.jpg",
+        "/images/homepage-products/6/6.png"
       ],
       category: "sconces",
       features: [
@@ -183,9 +195,11 @@ function ProductShowcase() {
       description: "Bold, eye-catching chandelier that transforms any space into a design showcase.",
       image: "/images/homepage-products/5.jpg",
       galleryImages: [
-        "/images/products/product3/2.jpg",
-        "/images/products/product3/1.jpg",
-        "/images/products/product3/3.jpg"
+        "/images/homepage-products/5/1.jpg",
+        "/images/homepage-products/5/2.jpg",
+        "/images/homepage-products/5/3.jpg",
+        "/images/homepage-products/5/4.jpg",
+
       ],
       category: "chandeliers",
       features: [
@@ -209,9 +223,9 @@ function ProductShowcase() {
       description: "Flexible track system that allows you to highlight specific areas or objects.",
       image: "/images/homepage-products/7.jpg",
       galleryImages: [
-        "/images/products/product1/3.jpg",
-        "/images/products/product1/1.jpg",
-        "/images/products/product1/2.jpg"
+        "/images/homepage-products/7/1.png",
+        "/images/homepage-products/7/2.png",
+        "/images/homepage-products/7/3.png",
       ],
       category: "track",
       features: [
