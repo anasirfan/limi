@@ -528,7 +528,7 @@ const TextSettings = ({ formState, setFormState, editingSlide, dispatch }) => {
               ))}
               
               {/* Add new bullet point button */}
-              {(!formState.text.bullets || formState.text.bullets.length < 4) && (
+              {(!formState.text.bullets || formState.text.bullets.length < 6) && (
                 <button 
                   onClick={() => {
                     // Initialize bullets array if it doesn't exist
@@ -563,7 +563,7 @@ const TextSettings = ({ formState, setFormState, editingSlide, dispatch }) => {
                 </button>
               )}
             </div>
-            <p className="text-xs text-gray-400">Each bullet point limited to 50 characters. For visual impact, keep to 3-4 bullet points maximum.</p>
+            <p className="text-xs text-gray-400">Each bullet point limited to 50 characters. For visual impact, keep to 4-6 bullet points maximum.</p>
           </div>
         )}
       </div>

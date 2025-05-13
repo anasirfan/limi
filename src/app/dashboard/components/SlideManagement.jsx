@@ -1112,7 +1112,7 @@ export default function SlideManagement({ customer }) {
       
       // Check if slideshow already exists
       console.log('Checking if slideshow exists for customer:', customer.profileId);
-      const { exists, id } = await checkExistingSlideshow(customer.profileId);
+      // const { exists, id } = await checkExistingSlideshow(customer.profileId);
       
       // Save to API - use PUT if exists, POST if new
       const token = localStorage.getItem('token');
@@ -1120,14 +1120,14 @@ export default function SlideManagement({ customer }) {
       let method = 'POST';
       let operationType = 'created';
       
-      if (exists && id) {
-        url = `https://api1.limitless-lighting.co.uk/admin/slide/slideshows/${id}`;
-        method = 'PUT';
-        operationType = 'updated';
-        console.log(`Slideshow exists with ID ${id}, using PUT method to update`);
-      } else {
-        console.log('No existing slideshow found, using POST method to create new one');
-      }
+      // if (exists && id) {
+      //   url = `https://api1.limitless-lighting.co.uk/admin/slide/slideshows/${id}`;
+      //   method = 'POST';
+      //   operationType = 'updated';
+      //   console.log(`Slideshow exists with ID ${id}, using PUT method to update`);
+      // } else {
+      //   console.log('No existing slideshow found, using POST method to create new one');
+      // }
       
       console.log(`Making ${method} request to ${url}`);
       const response = await fetch(url, {

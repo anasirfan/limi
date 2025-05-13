@@ -1,11 +1,47 @@
-import React from 'react';
+import React, { useState } from 'react';
+import MediaLibraryModal from './MediaLibraryModal';
 
 /**
  * MediaSettings component for managing media-related settings
  */
 const MediaSettings = ({ formState, setFormState, editingSlide, dispatch }) => {
+  const [showMediaLibrary, setShowMediaLibrary] = useState(false);
+  const handleMediaSelect = (url) => {
+    // Update local form state immediately for UI feedback
+    const newUrls = [...formState.media.urls];
+    newUrls[0] = url;
+    setFormState({
+      ...formState,
+      media: {
+        ...formState.media,
+        urls: newUrls
+      }
+    });
+    
+    // Update Redux state
+    dispatch({
+      type: 'slides/updateSlide',
+      payload: {
+        id: editingSlide.id,
+        field: 'media.urls',
+        value: newUrls
+      }
+    });
+    
+    // Close the media library
+    setShowMediaLibrary(false);
+  };
+  
   return (
     <div className="mb-6">
+      {/* Media Library Modal */}
+      <MediaLibraryModal 
+        isOpen={showMediaLibrary}
+        onClose={() => setShowMediaLibrary(false)}
+        onSelect={handleMediaSelect}
+        mediaType={formState.media.type}
+      />
+      
       <h3 className="text-lg font-medium text-white mb-3">Media</h3>
       
       {/* Media Type - Only show relevant options based on layout */}
@@ -207,7 +243,7 @@ const MediaSettings = ({ formState, setFormState, editingSlide, dispatch }) => {
               onClick={() => {
                 // Limit to maximum 4 images
                 if (formState.media.urls.length >= 4) {
-                  alert('Maximum 4 images allowed for best display');
+                  setShowMediaLibrary(true);
                   return;
                 }
                 const newUrls = [...formState.media.urls, ''];
@@ -277,10 +313,7 @@ const MediaSettings = ({ formState, setFormState, editingSlide, dispatch }) => {
             />
             <button 
               className="bg-[#333] hover:bg-[#444] text-white px-3 rounded-r-md transition-colors"
-              onClick={() => {
-                // Open file selector or media library
-                alert('Media library feature coming soon!');
-              }}
+              onClick={() => setShowMediaLibrary(true)}
             >
               Browse
             </button>

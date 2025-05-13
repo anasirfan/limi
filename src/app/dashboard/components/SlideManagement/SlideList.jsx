@@ -1,6 +1,7 @@
 import React from 'react';
 import { FaPlus, FaTrash, FaEdit, FaArrowUp, FaArrowDown, FaColumns, FaVideo, FaLayerGroup } from 'react-icons/fa';
 import SlideEditor from '../../../components/SlideCarousel/SlideEditor';
+import ImageCollageThumbnail from './ImageCollageThumbnail';
 
 /**
  * SlideList component for managing the list of slides
@@ -86,7 +87,34 @@ const SlideList = ({
                     <FaArrowDown className={index === slides.length - 1 ? 'opacity-30' : ''} />
                   </button>
                 </div>
-                <div className="ml-2">
+                
+                {/* Slide thumbnail */}
+                {slide.layout === 'image-collage' ? (
+                  <div className="mr-3">
+                    <ImageCollageThumbnail urls={slide.media?.urls || []} size="small" />
+                  </div>
+                ) : slide.layout === 'video-background' || slide.layout === 'video-bg-text' ? (
+                  <div className="w-16 h-16 bg-[#1e1e1e] rounded-md flex items-center justify-center mr-3 overflow-hidden">
+                    <div className="bg-[#50C878] rounded-full w-8 h-8 flex items-center justify-center">
+                      <FaVideo className="text-white" />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="w-16 h-16 bg-[#1e1e1e] rounded-md flex items-center justify-center mr-3 overflow-hidden">
+                    {slide.media?.urls && slide.media.urls[0] ? (
+                      <div 
+                        className="w-full h-full bg-cover bg-center"
+                        style={{ backgroundImage: `url(${slide.media.urls[0]})` }}
+                      />
+                    ) : (
+                      <div className="bg-[#50C878] rounded-full w-8 h-8 flex items-center justify-center">
+                        <FaColumns className="text-white" />
+                      </div>
+                    )}
+                  </div>
+                )}
+                
+                <div>
                   <div className="font-medium text-white">{slide.text?.heading || `Slide ${index + 1}`}</div>
                   <div className="text-xs text-gray-400">{slide.layout}</div>
                 </div>

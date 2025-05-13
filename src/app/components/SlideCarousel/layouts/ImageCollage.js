@@ -95,29 +95,32 @@ export default function ImageCollage({ slide }) {
   useEffect(() => {
     if (!media.urls || media.urls.length === 0) return;
     
-    // Filter out empty URLs and limit to max 4 images
-    const validUrls = media.urls.filter(url => url && url.trim() !== '').slice(0, 4);
+    // Filter out empty URLs and limit to max 6 images for better display
+    const validUrls = media.urls.filter(url => url && url.trim() !== '').slice(0, 6);
     if (validUrls.length === 0) return;
     
     const imagePositions = [];
     
-    // Different layout patterns based on number of images
+    // Set fixed size of 350x350 pixels for each image box
+    const boxSize = '350px';
+    
+    // Different layout patterns based on number of images - using zig-zag pattern as specified
     if (validUrls.length === 1) {
-      // Single image - centered
+      // Single image - left side
       imagePositions.push({
         url: validUrls[0],
-        top: '15%',
-        left: '10%',
-        width: '80%',
-        height: '70%',
+        top: '10%',
+        left: '5%',
+        width: boxSize,
+        height: boxSize,
         zIndex: 3,
         rotate: '0deg'
       });
     } else if (validUrls.length === 2) {
-      // Two images - overlapping
+      // Two images - zig-zag arrangement
       const positions = [
-        { top: '15%', left: '10%', width: '70%', height: '65%', zIndex: 3, rotate: '-3deg' },
-        { top: '25%', left: '25%', width: '65%', height: '60%', zIndex: 2, rotate: '2deg' },
+        { top: '5%', left: '5%', width: boxSize, height: boxSize, zIndex: 3, rotate: '-1deg' },  // First image on left
+        { top: '25%', left: '40%', width: boxSize, height: boxSize, zIndex: 2, rotate: '1deg' },   // Second image on right
       ];
       
       validUrls.forEach((url, index) => {
@@ -127,11 +130,11 @@ export default function ImageCollage({ slide }) {
         });
       });
     } else if (validUrls.length === 3) {
-      // Three images - overlapping triangle
+      // Three images - zig-zag arrangement
       const positions = [
-        { top: '10%', left: '10%', width: '60%', height: '55%', zIndex: 3, rotate: '-3deg' },
-        { top: '20%', left: '35%', width: '55%', height: '50%', zIndex: 2, rotate: '2deg' },
-        { top: '35%', left: '20%', width: '50%', height: '45%', zIndex: 1, rotate: '-1deg' },
+        { top: '5%', left: '5%', width: boxSize, height: boxSize, zIndex: 3, rotate: '-1deg' },   // First image on left
+        { top: '25%', left: '40%', width: boxSize, height: boxSize, zIndex: 2, rotate: '1deg' },    // Second image on right
+        { top: '45%', left: '5%', width: boxSize, height: boxSize, zIndex: 4, rotate: '-1deg' },    // Third image on left
       ];
       
       validUrls.forEach((url, index) => {
@@ -141,21 +144,47 @@ export default function ImageCollage({ slide }) {
         });
       });
     } else {
-      // Four images - grid pattern with overlaps
+      // Four or more images - zig-zag pattern as specified
       const positions = [
-        // Top row
-        { top: '5%', left: '5%', width: '45%', height: '40%', zIndex: 4, rotate: '-2deg' },
-        { top: '10%', left: '40%', width: '50%', height: '45%', zIndex: 3, rotate: '1deg' },
-        // Bottom row
-        { top: '40%', left: '15%', width: '45%', height: '40%', zIndex: 2, rotate: '-1deg' },
-        { top: '45%', left: '45%', width: '40%', height: '45%', zIndex: 1, rotate: '2deg' },
+        // First image - left
+        { top: '5%', left: '5%', width: boxSize, height: boxSize, zIndex: 4, rotate: '-1deg' },
+        // Second image - right
+        { top: '25%', left: '40%', width: boxSize, height: boxSize, zIndex: 3, rotate: '1deg' },
+        // Third image - left
+        { top: '45%', left: '5%', width: boxSize, height: boxSize, zIndex: 2, rotate: '-1deg' },
+        // Fourth image - right
+        { top: '65%', left: '40%', width: boxSize, height: boxSize, zIndex: 1, rotate: '1deg' },
       ];
       
+      // Handle more than 4 images by adding them in a zig-zag pattern
+      const allPositions = [...positions];
+      
+      // If we have more than 4 images, add positions for them
+      if (validUrls.length > 4) {
+        for (let i = 4; i < validUrls.length; i++) {
+          const isLeft = i % 2 === 0;
+          const row = Math.floor(i / 2);
+          allPositions.push({
+            top: `${(row * 20) + 5}%`,
+            left: isLeft ? '5%' : '40%',
+            width: boxSize,
+            height: boxSize,
+            zIndex: 4 - (i % 4),
+            rotate: isLeft ? '-1deg' : '1deg'
+          });
+        }
+      }
+      
+      // Use only as many positions as we have URLs, up to the first 6
+      const positionsToUse = allPositions.slice(0, Math.min(validUrls.length, 6));
+      
       validUrls.forEach((url, index) => {
-        imagePositions.push({
-          url,
-          ...positions[index]
-        });
+        if (index < positionsToUse.length) {
+          imagePositions.push({
+            url,
+            ...positionsToUse[index]
+          });
+        }
       });
     }
     
@@ -262,10 +291,11 @@ export default function ImageCollage({ slide }) {
                 }}
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ 
-                  scale: hoveredImage === index ? 1.05 : 1,
-                  opacity: hoveredImage === index ? 1 : 0.95,
+                  scale: hoveredImage === index ? 1.08 : 1,
+                  opacity: 1,
                   rotate: hoveredImage === index ? '0deg' : image.rotate,
-                  transition: { duration: 0.3 }
+                  boxShadow: hoveredImage === index ? '0 10px 25px rgba(0,0,0,0.3)' : theme.shadow,
+                  transition: { duration: 0.4 }
                 }}
                 exit={{ scale: 0.9, opacity: 0 }}
                 transition={{ 
@@ -276,13 +306,14 @@ export default function ImageCollage({ slide }) {
                 }}
                 onMouseEnter={() => setHoveredImage(index)}
                 onMouseLeave={() => setHoveredImage(null)}
-                whileHover={{ scale: 1.05, zIndex: 10 }}
+                whileHover={{ scale: 1.08, zIndex: 10, boxShadow: '0 10px 25px rgba(0,0,0,0.3)' }}
+                whileTap={{ scale: 0.98, rotate: '0deg' }}
               >
                 <Image
                   src={image.url}
                   alt={`${text.heading || 'Collage'} - image ${index + 1}`}
                   fill
-                  className="object-cover transition-transform duration-700 hover:scale-105"
+                  className="object-cover transition-all duration-700 hover:scale-110 filter hover:brightness-110 hover:contrast-105"
                   sizes="(max-width: 768px) 100vw, 50vw"
                   priority={index < 2} // Prioritize loading first two images
                 />
@@ -301,20 +332,26 @@ export default function ImageCollage({ slide }) {
       </div>
       
       {/* Text Section - Positioned based on textPosition */}
-      <div 
-        className={`absolute md:w-1/2 flex flex-col p-6 md:p-8 z-20 ${getTextPositionClasses()}`}
+      <motion.div 
+        className={`absolute md:w-2/5 flex flex-col p-6 md:p-8 z-20 ${getTextPositionClasses()}`}
         style={{
           top: textPosition.includes('top') ? '0' : textPosition.includes('bottom') ? 'auto' : '0',
           bottom: textPosition.includes('bottom') ? '0' : 'auto',
           left: isTextLeft ? '0' : 'auto',
           right: !isTextLeft ? '0' : 'auto',
-          background: isTextOverlap ? 'rgba(0,0,0,0.6)' : 'transparent',
-          backdropFilter: isTextOverlap ? 'blur(5px)' : 'none',
+          background: isTextOverlap ? 'rgba(43, 45, 47, 0.85)' : 'rgba(43, 45, 47, 0.75)',
+          backdropFilter: 'blur(8px)',
           borderRadius: theme.borderRadius,
-          color: theme.text,
-          textShadow: isTextOverlap ? '0 2px 4px rgba(0,0,0,0.5)' : theme.textShadow,
+          color: '#FFFFFF',
+          textShadow: '0 2px 4px rgba(0,0,0,0.5)',
           height: textPosition.includes('top') || textPosition.includes('bottom') ? 'auto' : '100%',
+          border: `1px solid ${theme.accent}30`,
+          boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
         }}
+        initial={{ opacity: 0, x: isTextLeft ? -50 : 50 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+        whileHover={{ boxShadow: '0 8px 32px rgba(0,0,0,0.3)', borderColor: `${theme.accent}50` }}
       >
         <div className={theme.cardStyle ? `p-4 ${theme.cardStyle}` : 'p-4'}>
           {/* Subheading with theme-specific styling */}
@@ -345,63 +382,22 @@ export default function ImageCollage({ slide }) {
             </motion.h2>
           )}
           
-          {/* Description with theme-specific styling */}
-          {text.showDescription && text.description && (
-            <motion.p 
-              className="text-sm md:text-base lg:text-lg mb-6 max-w-md transition-opacity duration-300 hover:opacity-90"
-              style={{ lineHeight: '1.6' }}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-            >
-              {text.description}
-            </motion.p>
-          )}
-          
-          {/* Bullets with theme-specific styling */}
-          {text.showBullets && text.bullets && text.bullets.length > 0 && (
-            <motion.ul 
-              className="space-y-3 mb-6 max-w-md"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-            >
-              {text.bullets.map((bullet, index) => (
-                <motion.li 
-                  key={index}
-                  className="flex items-center transition-transform duration-300 hover:translate-x-1"
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.5 + (index * 0.1) }}
-                >
-                  <span 
-                    className={`w-2 h-2 mr-2 transition-all duration-300 ${theme.bulletStyle.includes('bg-') ? theme.bulletStyle : ''}`}
-                    style={!theme.bulletStyle.includes('bg-') ? { backgroundColor: theme.accent } : {}}
-                  ></span>
-                  <span>{bullet}</span>
-                </motion.li>
-              ))}
-            </motion.ul>
-          )}
-          
-          {/* Optional CTA button with theme styling */}
-          {text.ctaText && (
-            <motion.button
-              className="px-6 py-2 mt-2 text-white font-medium transition-all duration-300 hover:scale-105"
+          {/* Body text with theme-specific styling */}
+          {text.showBody && (
+            <motion.div 
+              className="text-base md:text-lg leading-relaxed"
               style={{ 
-                background: theme.buttonGradient,
-                borderRadius: theme.borderRadius,
-                boxShadow: theme.shadow,
+                color: getTextColor(),
+                textShadow: isTextOverlap ? '0 1px 2px rgba(0,0,0,0.7)' : 'none',
               }}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-            >
-              {text.ctaText}
-            </motion.button>
+              transition={{ delay: 0.4 }}
+              dangerouslySetInnerHTML={{ __html: text.body }}
+            />
           )}
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

@@ -9,7 +9,7 @@ export const initialSlides = [
     layout: 'media-text-split',
     media: {
       type: 'video',
-      urls: ['/videos/limi_intro.mp4'],
+      urls: ['https://videos.pexels.com/video-files/3555398/3555398-hd_1920_1080_30fps.mp4'],
       position: 'left',
     },
     text: {
@@ -66,11 +66,12 @@ export const initialSlides = [
     media: {
       type: 'multipleImages',
       urls: [
-        '/images/products/limi_pendant1.jpg',
-        '/images/products/limi_pendant2.jpg',
-        '/images/products/limi_pendant3.jpg'
+        'https://images.unsplash.com/photo-1618220179428-22790b485390?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+        'https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/2082090/pexels-photo-2082090.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://cdn.pixabay.com/photo/2017/03/28/12/11/chairs-2181960_1280.jpg'
       ],
-      position: 'overlap',
+      position: 'left',
     },
     text: {
       heading: 'Modular Design',

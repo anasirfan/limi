@@ -173,34 +173,212 @@ const SlidePreviewPane = ({ formState, getThemeStyles }) => {
         
         {/* Image Collage Layout */}
         {formState.layout === 'image-collage' && (
-          <div className="w-full h-full grid grid-cols-2 grid-rows-2 gap-1 relative">
-            {/* Render up to 4 images */}
-            {[0, 1, 2, 3].map((index) => (
+          <div className="w-full h-full relative">
+            {/* Render up to 4 images in a more dynamic layout */}
+            {formState.media.urls.length === 1 ? (
               <div 
-                key={index}
-                className="bg-gray-700 flex items-center justify-center overflow-hidden"
+                className="absolute bg-gray-700 flex items-center justify-center overflow-hidden rounded-md shadow-lg hover:shadow-xl transition-all duration-300 hover:brightness-110"
                 style={{ 
-                  backgroundImage: formState.media.urls[index] ? `url(${formState.media.urls[index]})` : 'none',
+                  backgroundImage: formState.media.urls[0] ? `url(${formState.media.urls[0]})` : 'none',
                   backgroundSize: 'cover',
-                  backgroundPosition: 'center'
+                  backgroundPosition: 'center',
+                  top: '10%',
+                  left: '5%',
+                  width: '350px',
+                  height: '350px',
+                  transform: 'scale(1)',
+                  transition: 'all 0.4s ease-in-out',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'scale(1.05) rotate(0deg)';
+                  e.currentTarget.style.zIndex = '10';
+                  e.currentTarget.style.boxShadow = '0 10px 25px rgba(0,0,0,0.3)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'scale(1)';
+                  e.currentTarget.style.zIndex = '1';
+                  e.currentTarget.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
                 }}
               >
-                {!formState.media.urls[index] && (
-                  <span className="text-white opacity-50">Image {index + 1}</span>
+                {!formState.media.urls[0] && (
+                  <span className="text-white opacity-50">Image 1</span>
                 )}
               </div>
-            ))}
+            ) : formState.media.urls.length === 2 ? (
+              <>
+                {[0, 1].map((index, i) => {
+                  // Fixed size of 350x350 pixels for each image box
+                  const boxSize = '350px';
+                  const positions = [
+                    { top: '5%', left: '5%', width: boxSize, height: boxSize, zIndex: 3, rotate: '-1deg' },  // First image on left
+                    { top: '25%', left: '40%', width: boxSize, height: boxSize, zIndex: 2, rotate: '1deg' },   // Second image on right
+                  ];
+                  return (
+                    <div 
+                      key={index}
+                      className="absolute bg-gray-700 flex items-center justify-center overflow-hidden rounded-md shadow-lg hover:shadow-xl transition-all duration-300 hover:brightness-110"
+                      style={{ 
+                        backgroundImage: formState.media.urls[index] ? `url(${formState.media.urls[index]})` : 'none',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        ...positions[i],
+                        transform: `rotate(${positions[i].rotate})`,
+                        transition: 'all 0.4s ease-in-out',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'scale(1.08) rotate(0deg)';
+                        e.currentTarget.style.zIndex = '10';
+                        e.currentTarget.style.boxShadow = '0 10px 25px rgba(0,0,0,0.3)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = `rotate(${positions[i].rotate})`;
+                        e.currentTarget.style.zIndex = positions[i].zIndex;
+                        e.currentTarget.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
+                      }}
+                    >
+                      {!formState.media.urls[index] && (
+                        <span className="text-white opacity-50">Image {index + 1}</span>
+                      )}
+                    </div>
+                  );
+                })}
+              </>
+            ) : formState.media.urls.length === 3 ? (
+              <>
+                {[0, 1, 2].map((index, i) => {
+                  // Fixed size of 350x350 pixels for each image box
+                  const boxSize = '350px';
+                  const positions = [
+                    { top: '5%', left: '5%', width: boxSize, height: boxSize, zIndex: 3, rotate: '-1deg' },   // First image on left
+                    { top: '25%', left: '40%', width: boxSize, height: boxSize, zIndex: 2, rotate: '1deg' },    // Second image on right
+                    { top: '45%', left: '5%', width: boxSize, height: boxSize, zIndex: 4, rotate: '-1deg' },    // Third image on left
+                  ];
+                  return (
+                    <div 
+                      key={index}
+                      className="absolute bg-gray-700 flex items-center justify-center overflow-hidden rounded-md shadow-lg hover:shadow-xl transition-all duration-300 hover:brightness-110"
+                      style={{ 
+                        backgroundImage: formState.media.urls[index] ? `url(${formState.media.urls[index]})` : 'none',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        ...positions[i],
+                        transition: 'all 0.4s ease-in-out',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'scale(1.08) rotate(0deg)';
+                        e.currentTarget.style.zIndex = '10';
+                        e.currentTarget.style.boxShadow = '0 10px 25px rgba(0,0,0,0.3)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = `rotate(${positions[i].rotate})`;
+                        e.currentTarget.style.zIndex = positions[i].zIndex;
+                        e.currentTarget.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
+                      }}
+                    >
+                      {!formState.media.urls[index] && (
+                        <span className="text-white opacity-50">Image {index + 1}</span>
+                      )}
+                    </div>
+                  );
+                })}
+              </>
+            ) : (
+              <>
+                {formState.media.urls.slice(0, 6).map((url, index) => {
+                  // Fixed size of 350x350 pixels for each image box
+                  const boxSize = '350px';
+                  
+                  // Positions for zig-zag pattern as specified
+                  const positions = [
+                    // First image - left
+                    { top: '5%', left: '5%', width: boxSize, height: boxSize, zIndex: 4, rotate: '-1deg' },
+                    // Second image - right
+                    { top: '25%', left: '40%', width: boxSize, height: boxSize, zIndex: 3, rotate: '1deg' },
+                    // Third image - left
+                    { top: '45%', left: '5%', width: boxSize, height: boxSize, zIndex: 2, rotate: '-1deg' },
+                    // Fourth image - right
+                    { top: '65%', left: '40%', width: boxSize, height: boxSize, zIndex: 1, rotate: '1deg' },
+                  ];
+                  
+                  // For images beyond the first 4
+                  if (index >= 4) {
+                    const isLeft = index % 2 === 0;
+                    const row = Math.floor(index / 2);
+                    positions.push({
+                      top: `${(row * 20) + 5}%`,
+                      left: isLeft ? '5%' : '40%',
+                      width: boxSize,
+                      height: boxSize,
+                      zIndex: 4 - (index % 4),
+                      rotate: isLeft ? '-1deg' : '1deg'
+                    });
+                  }
+                  
+                  const position = index < 4 ? positions[index] : positions[4 + (index % 4)];
+                  
+                  return (
+                    <div 
+                      key={index}
+                      className="absolute bg-gray-700 flex items-center justify-center overflow-hidden rounded-md shadow-lg hover:shadow-xl transition-all duration-300 hover:brightness-110"
+                      style={{ 
+                        backgroundImage: url ? `url(${url})` : 'none',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        ...position,
+                        transform: `rotate(${position.rotate})`,
+                        transition: 'all 0.4s ease-in-out',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'scale(1.08) rotate(0deg)';
+                        e.currentTarget.style.zIndex = '10';
+                        e.currentTarget.style.boxShadow = '0 10px 25px rgba(0,0,0,0.3)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = `rotate(${position.rotate})`;
+                        e.currentTarget.style.zIndex = position.zIndex;
+                        e.currentTarget.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
+                      }}
+                    >
+                      {!url && (
+                        <span className="text-white opacity-50">Image {index + 1}</span>
+                      )}
+                    </div>
+                  );
+                })}
+              </>
+            )}
             
-            {/* Overlay for text if needed */}
+            {/* Optional overlay for darkening */}
+            {formState.appearance.overlayDarken && (
+              <div 
+                className="absolute inset-0 bg-gradient-to-t from-black/50 to-black/10 transition-opacity duration-300"
+                style={{ backdropFilter: 'blur(1px)' }}
+              ></div>
+            )}
+            
+            {/* Text overlay */}
             {(formState.text.showHeading || formState.text.showSubheading) && (
               <div className="absolute inset-0 flex items-center justify-center">
                 <div 
-                  className={`text-center p-4 ${formState.appearance.overlayDarken ? 'bg-black bg-opacity-40' : ''} rounded`}
+                  className="absolute p-4 rounded-md bg-[#2B2D2F] bg-opacity-75 backdrop-blur-md border border-[#50C878] border-opacity-20 shadow-lg hover:shadow-xl transition-all duration-300"
                   style={{ 
                     textAlign: formState.text.alignment,
-                    ...(formState.text.verticalPosition === 'top' ? { alignSelf: 'flex-start' } : 
-                       formState.text.verticalPosition === 'bottom' ? { alignSelf: 'flex-end' } : 
-                       { alignSelf: 'center' })
+                    top: formState.text.verticalPosition === 'top' ? '10%' : 'auto',
+                    bottom: formState.text.verticalPosition === 'bottom' ? '10%' : 'auto',
+                    left: formState.text.alignment === 'left' ? '10%' : 'auto',
+                    right: formState.text.alignment === 'right' ? '10%' : 'auto',
+                    transform: formState.text.alignment === 'center' ? 'translateX(-50%)' : 'none',
+                    width: '40%',
+                    ...(formState.text.verticalPosition === 'center' && { top: '50%', transform: 'translateY(-50%)' }),
+                    ...(formState.text.alignment === 'center' && formState.text.verticalPosition === 'center' && { left: '50%', transform: 'translate(-50%, -50%)' })
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.boxShadow = '0 8px 32px rgba(0,0,0,0.3)';
+                    e.currentTarget.style.borderColor = 'rgba(80, 200, 120, 0.5)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.2)';
+                    e.currentTarget.style.borderColor = 'rgba(80, 200, 120, 0.2)';
                   }}
                 >
                   {formState.text.showHeading && (
