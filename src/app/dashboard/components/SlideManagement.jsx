@@ -211,7 +211,7 @@ export default function SlideManagement({ customer }) {
             ],
             alignment: 'center',
             verticalPosition: 'center',
-            showHeading: true,
+            showHeading: true, 
             showSubheading: true,
             showDescription: true,
             showBullets: true,
