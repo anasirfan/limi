@@ -1,17 +1,28 @@
 import React from 'react';
+import { FaUserPlus } from 'react-icons/fa';
 
 /**
  * PresentationSettings component for managing presentation title and subtitle
  * @param {Object} presentationSettings - The current presentation settings
  * @param {Function} setPresentationSettings - Function to update presentation settings
  * @param {Object} customer - The selected customer object
+ * @param {Function} setShowAddCustomerModal - Function to show the add customer modal
  */
-const PresentationSettings = ({ presentationSettings, setPresentationSettings, customer }) => {
+const PresentationSettings = ({ presentationSettings, setPresentationSettings, customer, setShowAddCustomerModal }) => {
   return (
     <div className="bg-[#292929] p-4 rounded-lg mb-6">
-      <h3 className="text-xl font-bold text-white mb-4">Presentation Settings</h3>
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-xl font-bold text-white">Presentation Settings</h3>
+        <button
+          onClick={() => setShowAddCustomerModal(true)}
+          className="bg-[#54BB74] text-[#1e1e1e] px-3 py-1 rounded-md hover:bg-[#93cfa2] transition-colors flex items-center text-sm"
+        >
+          <FaUserPlus className="mr-1" />
+          Add Customer
+        </button>
+      </div>
       
-      {customer && (
+      {customer ? (
         <div className="bg-[#1e1e1e] p-3 rounded-md mb-4">
           <h4 className="text-[#93cfa2] font-medium mb-2">Customer Information</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
@@ -24,6 +35,10 @@ const PresentationSettings = ({ presentationSettings, setPresentationSettings, c
               <span className="text-white ml-1 font-mono">{customer.profileId}</span>
             </div>
           </div>
+        </div>
+      ) : (
+        <div className="bg-[#1e1e1e] p-3 rounded-md mb-4 text-center">
+          <p className="text-gray-400 italic">No customer selected</p>
         </div>
       )}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

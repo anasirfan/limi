@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { FaPlus, FaTrash, FaEdit, FaArrowUp, FaArrowDown, FaImage, FaVideo, FaColumns, FaLayerGroup, FaBoxOpen } from 'react-icons/fa';
+import { FaPlus, FaTrash, FaEdit, FaArrowUp, FaArrowDown, FaImage, FaVideo, FaColumns, FaLayerGroup, FaBoxOpen, FaUserPlus } from 'react-icons/fa';
 import SlideEditor from '../../components/SlideCarousel/SlideEditor';
 import SlideCarousel from '../../components/SlideCarousel';
 import { 
@@ -19,6 +19,7 @@ import PresentationSettings from './SlideManagement/PresentationSettings';
 import SlidePreview from './SlideManagement/SlidePreview';
 import SlideList from './SlideManagement/SlideList';
 import EditModal from './SlideManagement/EditModal';
+import AddCustomerModal from './SlideManagement/AddCustomerModal';
 
 // Import utility functions
 import { getThemeBackgroundColor, getThemeStyles } from './SlideManagement/utils/themeUtils';
@@ -30,6 +31,7 @@ export default function SlideManagement({ customer }) {
   const [loading, setLoading] = useState(false);
   const [showTemplates, setShowTemplates] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState('modern');
+  const [showAddCustomerModal, setShowAddCustomerModal] = useState(false);
   const [notification, setNotification] = useState({
     show: false,
     message: '',
@@ -1204,9 +1206,51 @@ export default function SlideManagement({ customer }) {
     );
   };
   
+  // Handle customer added event
+  const handleCustomerAdded = (newCustomer) => {
+    // Show success notification
+    setNotification({
+      show: true,
+      message: `Customer ${newCustomer.clientCompanyInfo} added successfully!`,
+      type: 'success'
+    });
+    
+    // Hide notification after 3 seconds
+    setTimeout(() => {
+      setNotification({
+        ...notification,
+        show: false
+      });
+    }, 3000);
+  };
+
   return (
     <div className="bg-[#1e1e1e] rounded-lg shadow-lg p-6 relative">
       <NotificationMessage />
+      <div className="mb-6 bg-[#292929] p-4 rounded-lg">
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+          <div>
+            {customer ? (
+              <div>
+                <h2 className="text-xl font-[Amenti] text-[#93cfa2] mb-1">Customer: {customer.clientCompanyInfo}</h2>
+                <p className="text-gray-300">Managing slideshow for customer ID: {customer.profileId}</p>
+              </div>
+            ) : (
+              <div>
+                <h2 className="text-xl font-[Amenti] text-[#93cfa2] mb-1">No Customer Selected</h2>
+                <p className="text-gray-300">Please select a customer or add a new one to manage their slideshow.</p>
+              </div>
+            )}
+          </div>
+          <button
+            onClick={() => setShowAddCustomerModal(true)}
+            className="bg-[#54BB74] text-[#1e1e1e] px-4 py-2 rounded-md hover:bg-[#93cfa2] transition-colors flex items-center whitespace-nowrap"
+          >
+            <FaUserPlus className="mr-2" />
+            {customer ? 'Add Another Customer' : 'Add Customer'}
+          </button>
+        </div>
+      </div>
       {loading ? (
         <div className="flex flex-col items-center justify-center py-12">
           <div className="w-16 h-16 border-t-4 border-[#54BB74] border-solid rounded-full animate-spin mb-6"></div>
@@ -1277,6 +1321,7 @@ export default function SlideManagement({ customer }) {
             presentationSettings={presentationSettings}
             setPresentationSettings={setPresentationSettings}
             customer={customer}
+            setShowAddCustomerModal={setShowAddCustomerModal}
           />
 
           {/* Main Content */}
@@ -1314,6 +1359,14 @@ export default function SlideManagement({ customer }) {
           slides={slides}
         />
       )}
+      
+      {/* Add Customer Modal */}
+      <AddCustomerModal 
+        isOpen={showAddCustomerModal}
+        onClose={() => setShowAddCustomerModal(false)}
+        onCustomerAdded={handleCustomerAdded}
+        token={localStorage.getItem('dashboardToken')}
+      />
     </div>
   );
 }

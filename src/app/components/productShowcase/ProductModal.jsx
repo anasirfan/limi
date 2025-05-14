@@ -65,8 +65,8 @@ const ProductModal = ({ product, isOpen, onClose }) => {
           
           {/* Modal Container */}
           <motion.div 
-            className="relative bg-[#2B2D2F] w-[90%] max-w-4xl rounded-xl shadow-2xl overflow-auto z-[10000]"
-            style={{ maxHeight: '90vh' }}
+            className="relative bg-[#2B2D2F] w-[90%] max-w-4xl rounded-xl shadow-2xl overflow-auto z-[9999]"
+            style={{ maxHeight: 'min(85vh, 800px)', height: 'auto', marginTop: '4rem' }}
             initial={{ scale: 0.9, y: 50, opacity: 0 }}
             animate={{ scale: 1, y: 0, opacity: 1 }}
             exit={{ scale: 0.9, y: 50, opacity: 0 }}
@@ -111,7 +111,7 @@ const ProductModal = ({ product, isOpen, onClose }) => {
               {/* Overview Tab */}
               {activeTab === 'overview' && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div className="relative h-96 rounded-lg overflow-hidden">
+                  <div className="relative rounded-lg overflow-hidden" style={{ height: 'min(50vh, 350px)' }}>
                     <motion.div
                       whileHover={{ scale: 1.05 }}
                       transition={{ duration: 0.5 }}

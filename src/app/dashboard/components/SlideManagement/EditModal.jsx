@@ -86,8 +86,8 @@ const EditModal = ({
   if (!editingSlide) return null;
   
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-start justify-center z-50 pt-24 pb-10">
-      <div className="bg-[#292929] rounded-lg p-8 w-full max-w-5xl max-h-[80vh] overflow-y-auto mt-8 mb-12">
+    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-start justify-center z-[9999] pt-16 md:pt-24 pb-10">
+      <div className="bg-[#292929] rounded-lg p-4 sm:p-6 md:p-8 w-full max-w-5xl overflow-y-auto mt-4 mb-8" style={{ maxHeight: 'min(85vh, 900px)', height: 'auto' }}>
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-bold text-white">Edit Slide</h2>
           <div className="flex items-center space-x-3">

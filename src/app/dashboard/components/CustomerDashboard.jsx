@@ -2,10 +2,11 @@
 
 import React, { useState, useEffect, Fragment } from 'react';
 import Image from 'next/image';
-import { FaSort, FaSortUp, FaSortDown, FaSearch, FaEye, FaTimes, FaFilter, FaChartLine, FaGlobe, FaClock, FaDesktop, FaTabletAlt, FaMobileAlt, FaUsers, FaBoxOpen, FaShoppingCart, FaBox, FaSlideshare } from 'react-icons/fa';
+import { FaSort, FaSortUp, FaSortDown, FaSearch, FaEye, FaTimes, FaFilter, FaChartLine, FaGlobe, FaClock, FaDesktop, FaTabletAlt, FaMobileAlt, FaUsers, FaBoxOpen, FaShoppingCart, FaBox, FaSlideshare, FaUserPlus } from 'react-icons/fa';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
 import ProductManagement from './ProductManagement';
 import SlideManagement from './SlideManagement';
+import AddCustomerModal from './SlideManagement/AddCustomerModal';
 
 export default function CustomerDashboard({ token }) {
   const [customers, setCustomers] = useState([]);
@@ -32,6 +33,7 @@ export default function CustomerDashboard({ token }) {
   const [logsPerPage, setLogsPerPage] = useState(10);
   const [logSortField, setLogSortField] = useState('timestamp');
   const [logSortDirection, setLogSortDirection] = useState('desc'); // Default to descending (newest first)
+  const [showAddCustomerModal, setShowAddCustomerModal] = useState(false);
   
   // Mobile traffic tab state
   const [mobileUsers, setMobileUsers] = useState([]);
@@ -1411,10 +1413,37 @@ export default function CustomerDashboard({ token }) {
           {selectedCustomer ? (
             <SlideManagement customer={selectedCustomer} />
           ) : (
-            <div className="bg-[#1e1e1e] p-6 rounded-lg text-center">
-              <p className="text-gray-300">Please select a customer to manage their slideshow</p>
+            <div className="bg-[#1e1e1e] p-6 rounded-lg">
+              <div className="flex flex-col items-center justify-center py-8">
+                <p className="text-gray-300 mb-6">Please select a customer to manage their slideshow or add a new customer</p>
+                <button
+                  onClick={() => setShowAddCustomerModal(true)}
+                  className="bg-[#54BB74] text-[#1e1e1e] px-6 py-3 rounded-md hover:bg-[#93cfa2] transition-colors flex items-center font-medium"
+                >
+                  <FaUserPlus className="mr-2" />
+                  Add New Customer
+                </button>
+              </div>
             </div>
           )}
+          
+          {/* Add Customer Modal */}
+          <AddCustomerModal 
+            isOpen={showAddCustomerModal}
+            onClose={() => setShowAddCustomerModal(false)}
+            onCustomerAdded={(newCustomer) => {
+              // Refresh customers list
+              setLoading(true);
+              setTimeout(() => {
+                // Add the new customer to the list
+                setCustomers([newCustomer, ...customers]);
+                // Select the new customer
+                setSelectedCustomer(newCustomer);
+                setLoading(false);
+              }, 1000);
+            }}
+            token={token}
+          />
         </div>
       )}
 

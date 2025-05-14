@@ -28,13 +28,14 @@ const DetailCarousel = ({ step, onClose }) => {
   
   return (
     <motion.div 
-      className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[9999] flex items-start justify-center p-4 pt-16 md:pt-24"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
       <motion.div 
-        className="relative w-full max-w-4xl bg-[#1a1a1a] rounded-xl overflow-hidden"
+        className="relative w-full max-w-4xl bg-[#1a1a1a] rounded-xl overflow-hidden overflow-y-auto"
+        style={{ maxHeight: 'min(85vh, 750px)', height: 'auto' }}
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
@@ -68,7 +69,7 @@ const DetailCarousel = ({ step, onClose }) => {
               transition={{ duration: 0.3 }}
             >
               {/* Media container */}
-              <div className="w-full aspect-video relative">
+              <div className="w-full relative" style={{ height: 'min(40vh, 300px)' }}>
                 {currentItem.type === "video" ? (
                   <video 
                     className="w-full h-full object-cover"
@@ -76,6 +77,7 @@ const DetailCarousel = ({ step, onClose }) => {
                     loop 
                     muted 
                     playsInline
+                    style={{ maxHeight: 'min(40vh, 300px)' }}
                   >
                     <source src={currentItem.media} type="video/mp4" />
                   </video>
@@ -84,6 +86,7 @@ const DetailCarousel = ({ step, onClose }) => {
                     src={currentItem.media} 
                     alt={currentItem.title} 
                     className="w-full h-full object-cover"
+                    style={{ maxHeight: 'min(40vh, 300px)' }}
                   />
                 )}
               </div>
