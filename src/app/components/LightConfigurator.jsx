@@ -95,7 +95,7 @@ const LightAmountSelector = ({ amount, onAmountChange, isDarkMode, lightType }) 
       case 'floor':
         return [1, 2, 3]; // Floor lights have 1-3 options
       default: // ceiling and others
-        return [1, 2, 3, 4, 5]; // Ceiling lights have 1-5 options
+        return [1, 3, 6, 24]; // Ceiling lights have 1-5 options
     }
   };
 
