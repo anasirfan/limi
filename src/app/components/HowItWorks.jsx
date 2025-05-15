@@ -200,16 +200,16 @@ export default function HowItWorks() {
     {
       id: 2,
       title: "Attach a Pendant",
-      description: "Simply snap in your chosen light module with our magnetic connector system.",
-      story: "Changing your lighting style used to mean calling an electrician. With LIMI's magnetic connection system, you can swap designs in seconds without any technical knowledge.",
+      description: "Add in your chosen light module – the LIMI connector does the rest.",
+      story: "Changing your lighting style used to mean calling an electrician. With LIMI's innovative connector system, you can swap designs in seconds without any technical knowledge.",
       icon: FiZap,
       color: "#54BB74",
       video: "https://static.videezy.com/system/resources/previews/000/021/642/original/LIGHT-BULB-TURN-ON-WARM-LIGHT.mp4",
-      tip: "Our pendants connect magnetically and can be swapped anytime – even when powered on!",
+      tip: "Want a new look? Swap pendants anytime – no new wiring needed!",
       carousel: [
         {
-          title: "Magnetic Connection",
-          description: "Strong neodymium magnets create a secure connection that's easy to attach and detach.",
+          title: "LIMI Connector System",
+          description: "Our innovative connector creates a secure attachment that's easy to install and remove.",
           media: "https://static.videezy.com/system/resources/previews/000/021/642/original/LIGHT-BULB-TURN-ON-WARM-LIGHT.mp4",
           type: "video"
         },
@@ -220,8 +220,8 @@ export default function HowItWorks() {
           type: "video"
         },
         {
-          title: "Designer Collection",
-          description: "Choose from dozens of designer pendants that can be swapped in seconds.",
+          title: "Interchangeable Designs",
+          description: "Choose from dozens of beautiful light modules that click into the base in seconds.",
           media: "https://static.videezy.com/system/resources/previews/000/021/642/original/LIGHT-BULB-TURN-ON-WARM-LIGHT.mp4",
           type: "video"
         }

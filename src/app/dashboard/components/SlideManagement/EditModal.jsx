@@ -35,9 +35,9 @@ const EditModal = ({
     
     try {
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('media', file);
       
-      const response = await fetch('https://reality-season-ease-iraqi.trycloudflare.com/upload', {
+      const response = await fetch('https://reality-season-ease-iraqi.trycloudflare.com/admin/slide/upload-media', {
         method: 'POST',
         body: formData,
       });
@@ -48,6 +48,12 @@ const EditModal = ({
       
       const data = await response.json();
       
+      // Extract URL from the response data array
+      let mediaUrl = '';
+      if (data.success && data.data && data.data.length > 0 && data.data[0].url) {
+        mediaUrl = data.data[0].url;
+      }
+      
       // Update form state with the new media URL
       const mediaType = file.type.startsWith('video/') ? 'video' : 'image';
       
@@ -56,7 +62,7 @@ const EditModal = ({
         media: {
           ...prevState.media,
           type: mediaType,
-          urls: [data.url || data.fileUrl || data.file_url || ''],
+          urls: [mediaUrl],
         }
       }));
       
@@ -69,7 +75,7 @@ const EditModal = ({
           value: {
             ...formState.media,
             type: mediaType,
-            urls: [data.url || data.fileUrl || data.file_url || ''],
+            urls: [mediaUrl],
           }
         }
       });
