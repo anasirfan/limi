@@ -1,5 +1,5 @@
-import React from 'react';
-import { FaColumns, FaVideo, FaLayerGroup } from 'react-icons/fa';
+import React, { useState } from 'react';
+import { FaColumns, FaVideo, FaLayerGroup, FaUpload, FaSpinner } from 'react-icons/fa';
 import { getThemeStyles, getThemeBackgroundColor } from './utils/themeUtils';
 
 // Import sub-components
@@ -20,6 +20,68 @@ const EditModal = ({
   dispatch, 
   slides
 }) => {
+  const [uploadingMedia, setUploadingMedia] = useState(false);
+  const [uploadError, setUploadError] = useState(null);
+  const [uploadSuccess, setUploadSuccess] = useState(false);
+  
+  // Handle file upload
+  const handleFileUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    setUploadingMedia(true);
+    setUploadError(null);
+    setUploadSuccess(false);
+    
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const response = await fetch('https://reality-season-ease-iraqi.trycloudflare.com/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Upload failed with status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      // Update form state with the new media URL
+      const mediaType = file.type.startsWith('video/') ? 'video' : 'image';
+      
+      setFormState(prevState => ({
+        ...prevState,
+        media: {
+          ...prevState.media,
+          type: mediaType,
+          urls: [data.url || data.fileUrl || data.file_url || ''],
+        }
+      }));
+      
+      // Also update Redux directly
+      dispatch({
+        type: 'slides/updateSlide',
+        payload: {
+          id: editingSlide.id,
+          field: 'media',
+          value: {
+            ...formState.media,
+            type: mediaType,
+            urls: [data.url || data.fileUrl || data.file_url || ''],
+          }
+        }
+      });
+      
+      setUploadSuccess(true);
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      setUploadError(error.message || 'Failed to upload file. Please try again or contact support.');
+    } finally {
+      setUploadingMedia(false);
+    }
+  };
   const handleSaveChanges = () => {
     // Apply all form state changes to Redux at once
     // This ensures all changes are saved even if some weren't triggered by onChange events
@@ -80,8 +142,7 @@ const EditModal = ({
     window.dispatchEvent(storageEvent);
     
     setEditModalOpen(false);
-  };
-  
+  };  
   // If no slide is being edited, don't render the modal
   if (!editingSlide) return null;
   
@@ -125,6 +186,43 @@ const EditModal = ({
               editingSlide={editingSlide}
               dispatch={dispatch}
             />
+            
+            {/* File Upload Section */}
+            <div className="bg-[#1e1e1e] p-4 rounded-lg mb-4">
+              <h3 className="text-lg font-semibold text-white mb-3">Upload Media File</h3>
+              <div className="mb-3">
+                <p className="text-gray-300 text-sm mb-2">Upload an image or video file directly:</p>
+                <div className="flex items-center">
+                  <label className="flex items-center justify-center bg-[#333] hover:bg-[#444] text-white px-4 py-2 rounded-md cursor-pointer transition-colors">
+                    <FaUpload className="mr-2" />
+                    {uploadingMedia ? 'Uploading...' : 'Choose File'}
+                    <input 
+                      type="file" 
+                      className="hidden" 
+                      accept="image/*,video/*" 
+                      onChange={handleFileUpload}
+                      disabled={uploadingMedia}
+                    />
+                  </label>
+                  {uploadingMedia && <FaSpinner className="ml-3 text-[#54bb74] animate-spin" />}
+                </div>
+                {uploadSuccess && (
+                  <div className="mt-2 text-[#54bb74] text-sm">
+                    File uploaded successfully! The media has been updated.
+                  </div>
+                )}
+                {uploadError && (
+                  <div className="mt-2 text-red-400 text-sm">
+                    Error: {uploadError}
+                  </div>
+                )}
+              </div>
+              <div className="text-gray-400 text-xs">
+                <p>Supported formats: JPG, PNG, GIF, MP4, WebM</p>
+                <p>Max file size: 10MB</p>
+                <p>Files will be uploaded to our secure server</p>
+              </div>
+            </div>
             
             <AppearanceSettings 
               formState={formState}

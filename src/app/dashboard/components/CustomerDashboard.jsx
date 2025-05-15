@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, Fragment } from 'react';
 import Image from 'next/image';
-import { FaSort, FaSortUp, FaSortDown, FaSearch, FaEye, FaTimes, FaFilter, FaChartLine, FaGlobe, FaClock, FaDesktop, FaTabletAlt, FaMobileAlt, FaUsers, FaBoxOpen, FaShoppingCart, FaBox, FaSlideshare, FaUserPlus } from 'react-icons/fa';
+import { FaSort, FaSortUp, FaSortDown, FaSearch, FaEye, FaTimes, FaFilter, FaChartLine, FaGlobe, FaClock, FaDesktop, FaTabletAlt, FaMobileAlt, FaUsers, FaBoxOpen, FaShoppingCart, FaBox, FaSlideshare, FaUserPlus, FaTrash } from 'react-icons/fa';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
 import ProductManagement from './ProductManagement';
 import SlideManagement from './SlideManagement';
@@ -34,6 +34,10 @@ export default function CustomerDashboard({ token }) {
   const [logSortField, setLogSortField] = useState('timestamp');
   const [logSortDirection, setLogSortDirection] = useState('desc'); // Default to descending (newest first)
   const [showAddCustomerModal, setShowAddCustomerModal] = useState(false);
+  const [deleteConfirmation, setDeleteConfirmation] = useState(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [deleteError, setDeleteError] = useState(null);
+  const [deleteSuccess, setDeleteSuccess] = useState(false);
   
   // Mobile traffic tab state
   const [mobileUsers, setMobileUsers] = useState([]);
@@ -592,6 +596,54 @@ export default function CustomerDashboard({ token }) {
     if (customer && customer.profileId) {
       fetchCustomerSessions(customer.profileId);
     }
+  };
+
+  // Delete customer
+  const confirmDeleteCustomer = (customer) => {
+    setDeleteConfirmation(customer);
+    setDeleteError(null);
+    setDeleteSuccess(false);
+  };
+
+  const deleteCustomer = async () => {
+    if (!deleteConfirmation || !deleteConfirmation._id) return;
+    
+    setDeleteLoading(true);
+    setDeleteError(null);
+    
+    try {
+      const response = await fetch(`https://api.limitless-lighting.co.uk/client/customer_capture/${deleteConfirmation._id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to delete customer');
+      }
+      
+      // Remove the deleted customer from the state
+      setCustomers(customers.filter(c => c._id !== deleteConfirmation._id));
+      setDeleteSuccess(true);
+      
+      // Close the confirmation dialog after 2 seconds
+      setTimeout(() => {
+        setDeleteConfirmation(null);
+        setDeleteSuccess(false);
+      }, 2000);
+    } catch (err) {
+      console.error('Error deleting customer:', err);
+      setDeleteError(err.message || 'An error occurred while deleting the customer');
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
+  const cancelDeleteCustomer = () => {
+    setDeleteConfirmation(null);
+    setDeleteError(null);
   };
 
   // Filter and sort customers
@@ -1607,13 +1659,22 @@ export default function CustomerDashboard({ token }) {
                     {new Date(customer.createdAt).toLocaleDateString()}
                   </td>
                   <td className="px-4 py-3 text-center">
-                    <button
-                      onClick={() => viewCustomerDetails(customer)}
-                      className="bg-[#54bb74] hover:bg-[#93cfa2] text-[#292929] px-3 py-1 rounded-md inline-flex items-center space-x-1"
-                    >
-                      <FaEye />
-                      <span>View</span>
-                    </button>
+                    <div className="flex justify-center space-x-2">
+                      <button
+                        onClick={() => viewCustomerDetails(customer)}
+                        className="bg-[#54bb74] hover:bg-[#93cfa2] text-[#292929] px-3 py-1 rounded-md inline-flex items-center space-x-1"
+                      >
+                        <FaEye />
+                        <span>View</span>
+                      </button>
+                      <button
+                        onClick={() => confirmDeleteCustomer(customer)}
+                        className="bg-red-500/80 hover:bg-red-500 text-white px-3 py-1 rounded-md inline-flex items-center space-x-1"
+                      >
+                        <FaTrash />
+                        <span>Delete</span>
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -2250,7 +2311,88 @@ export default function CustomerDashboard({ token }) {
           <ProductManagement />
         </div>
       )}
+      
+      {/* Add Customer Modal */}
+      {showAddCustomerModal && (
+        <AddCustomerModal 
+          isOpen={showAddCustomerModal}
+          onClose={() => setShowAddCustomerModal(false)}
+          onCustomerAdded={(newCustomer) => {
+            setCustomers(prev => [newCustomer, ...prev]);
+          }}
+          token={token}
+        />
+      )}
 
+      {/* Delete Confirmation Modal */}
+      {deleteConfirmation && (
+        <div className="fixed inset-0 flex items-center justify-center z-[9999] bg-black/70">
+          <div className="bg-[#1e1e1e] rounded-lg shadow-xl w-full max-w-md mx-4 overflow-hidden">
+            <div className="bg-[#292929] px-6 py-4 flex justify-between items-center">
+              <h2 className="text-xl font-[Amenti] text-red-400 flex items-center">
+                <FaTrash className="mr-2" /> Delete Customer
+              </h2>
+              <button 
+                onClick={cancelDeleteCustomer}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                <FaTimes size={20} />
+              </button>
+            </div>
+            
+            <div className="p-6">
+              {deleteSuccess ? (
+                <div className="bg-green-500/20 border border-green-500/30 text-green-400 px-4 py-3 rounded mb-4">
+                  Customer deleted successfully!
+                </div>
+              ) : deleteError ? (
+                <div className="bg-red-500/20 border border-red-500/30 text-red-400 px-4 py-3 rounded mb-4">
+                  {deleteError}
+                </div>
+              ) : (
+                <div className="mb-6">
+                  <p className="text-gray-300 mb-4">Are you sure you want to delete the following customer?</p>
+                  <div className="bg-[#292929] p-4 rounded-lg">
+                    <p className="text-[#93cfa2] font-medium">{deleteConfirmation.clientCompanyInfo}</p>
+                    <p className="text-gray-400 text-sm">ID: {deleteConfirmation.profileId}</p>
+                    <p className="text-gray-400 text-sm">Registered by: {deleteConfirmation.staffName}</p>
+                  </div>
+                  <p className="text-red-400 mt-4 text-sm">This action cannot be undone.</p>
+                </div>
+              )}
+              
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={cancelDeleteCustomer}
+                  className="bg-[#333] text-white px-4 py-2 rounded mr-3 hover:bg-[#444] transition-colors"
+                  disabled={deleteLoading || deleteSuccess}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={deleteCustomer}
+                  className="bg-red-500 text-white px-6 py-2 rounded font-medium hover:bg-red-600 transition-colors flex items-center"
+                  disabled={deleteLoading || deleteSuccess}
+                >
+                  {deleteLoading ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                      Processing...
+                    </>
+                  ) : (
+                    <>
+                      <FaTrash className="mr-2" />
+                      Delete Customer
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );

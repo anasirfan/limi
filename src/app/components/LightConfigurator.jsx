@@ -1290,7 +1290,21 @@ const LightConfigurator = () => {
     // Send message to PlayCanvas - only once
     const iframe = document.getElementById('playcanvas-app');
     if (iframe && iframe.contentWindow) {
+      // First send the light type message
       iframe.contentWindow.postMessage(`light_type:${type}`, "*");
+      
+      // If type is ceiling, also send light_amount:1 message
+      if (type === 'ceiling') {
+        // Set a small delay to ensure messages are processed in order
+        setTimeout(() => {
+          iframe.contentWindow.postMessage(`light_amount:1`, "*");
+          
+          // Also update the state if needed
+          if (lightAmount !== 1) {
+            setLightAmount(1);
+          }
+        }, 100);
+      }
     }
     
     toast.info(`Light type changed to ${type}`, {
