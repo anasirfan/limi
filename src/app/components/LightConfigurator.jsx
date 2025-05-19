@@ -93,7 +93,7 @@ const LightAmountSelector = ({ amount, onAmountChange, isDarkMode, lightType }) 
       case 'wall':
         return [1]; // Wall lights only have 1 option
       case 'floor':
-        return [1, 2, 3]; // Floor lights have 1-3 options
+        return [3]; // Floor lights have 1-3 options
       default: // ceiling and others
         return [1, 3, 6, 24]; // Ceiling lights have 1-5 options
     }
@@ -1287,24 +1287,50 @@ const LightConfigurator = () => {
   const handleLightTypeChange = (type) => {
     setLightType(type);
     
-    // Send message to PlayCanvas - only once
+    // Determine if we need to update light amount for ceiling type
+    const newAmount = type === 'ceiling' && lightAmount !== 1 ? 1 : lightAmount;
+    
+    // If type is ceiling, update the state if needed
+    if (type === 'ceiling' && lightAmount !== 1) {
+      setLightAmount(newAmount);
+    }
+    
+    // Send comprehensive message to PlayCanvas with all current configuration
     const iframe = document.getElementById('playcanvas-app');
     if (iframe && iframe.contentWindow) {
-      // First send the light type message
+      // Send light type message
       iframe.contentWindow.postMessage(`light_type:${type}`, "*");
       
-      // If type is ceiling, also send light_amount:1 message
-      if (type === 'ceiling') {
-        // Set a small delay to ensure messages are processed in order
-        setTimeout(() => {
-          iframe.contentWindow.postMessage(`light_amount:1`, "*");
-          
-          // Also update the state if needed
-          if (lightAmount !== 1) {
-            setLightAmount(1);
+      // Send current light amount
+      iframe.contentWindow.postMessage(`light_amount:${newAmount}`, "*");
+      
+      // Send current pendant design(s)
+      if (newAmount === 1) {
+        // For single pendant, send the global design
+        const productId = lightDesign === 'bumble' ? 'product_1' : 
+                         lightDesign === 'radial' ? 'product_2' : 
+                         lightDesign === 'fina' ? 'product_3' : 
+                         lightDesign === 'ico' ? 'product_4' : 'product_5';
+        
+        iframe.contentWindow.postMessage(`pendant_design:${productId}`, "*");
+      } else {
+        // For multiple pendants, send each pendant's design
+        pendants.forEach((pendant, index) => {
+          if (index < newAmount) { // Only send for the actual number of pendants
+            const design = pendant?.design || lightDesign;
+            const productId = design === 'bumble' ? 'product_1' : 
+                            design === 'radial' ? 'product_2' : 
+                            design === 'fina' ? 'product_3' : 
+                            design === 'ico' ? 'product_4' : 'product_5';
+            
+            iframe.contentWindow.postMessage(`pendant_${index}:${productId}`, "*");
           }
-        }, 100);
+        });
       }
+      
+      // Send cable information
+      // iframe.contentWindow.postMessage(`cable_color:${cableColor}`, "*");
+      // iframe.contentWindow.postMessage(`cable_length:${cableLength}`, "*");
     }
     
     toast.info(`Light type changed to ${type}`, {
@@ -1318,33 +1344,67 @@ const LightConfigurator = () => {
   const handleLightAmountChange = (amount) => {
     setLightAmount(amount);
     
-    // Update pendants array based on new amount
+    // Create updated pendants array based on new amount
+    let updatedPendants = [...pendants];
+    
     if (amount > pendants.length) {
       // Add new pendants with default design
-      const newPendants = [...pendants];
       for (let i = pendants.length; i < amount; i++) {
-        newPendants.push({ design: lightDesign || 'bumble', color: 'white' });
+        updatedPendants.push({ design: lightDesign || 'bumble', color: 'white' });
       }
-      setPendants(newPendants);
     } else if (amount < pendants.length) {
       // Remove excess pendants
-      setPendants(pendants.slice(0, amount));
+      updatedPendants = updatedPendants.slice(0, amount);
     }
     
     // If only one pendant, update its design to match the global design
-    if (amount === 1 && pendants.length > 0 && lightDesign) {
-      const updatedPendants = [...pendants];
+    if (amount === 1 && updatedPendants.length > 0 && lightDesign) {
       updatedPendants[0] = {
         ...updatedPendants[0],
         design: lightDesign
       };
-      setPendants(updatedPendants);
     }
     
-    // Send message to PlayCanvas
+    // Update the pendants state
+    setPendants(updatedPendants);
+    
+    // Send comprehensive messages to PlayCanvas
     const iframe = document.getElementById('playcanvas-app');
     if (iframe && iframe.contentWindow) {
+      // Send light amount message
       iframe.contentWindow.postMessage(`light_amount:${amount}`, "*");
+      
+      // Send current light type
+      iframe.contentWindow.postMessage(`light_type:${lightType}`, "*");
+      
+      // Send pendant design information based on amount
+      if (amount === 1) {
+        // For single pendant, send the global design
+        const design = updatedPendants[0]?.design || lightDesign;
+        const productId = design === 'bumble' ? 'product_1' : 
+                         design === 'radial' ? 'product_2' : 
+                         design === 'fina' ? 'product_3' : 
+                         design === 'ico' ? 'product_4' : 'product_5';
+        
+        iframe.contentWindow.postMessage(`pendant_design:${productId}`, "*");
+      } else {
+        // For multiple pendants, send each pendant's design
+        updatedPendants.forEach((pendant, index) => {
+          if (index < amount) { // Only send for the actual number of pendants
+            const design = pendant?.design || lightDesign;
+            const productId = design === 'bumble' ? 'product_1' : 
+                            design === 'radial' ? 'product_2' : 
+                            design === 'fina' ? 'product_3' : 
+                            design === 'ico' ? 'product_4' : 'product_5';
+            
+            iframe.contentWindow.postMessage(`pendant_${index}:${productId}`, "*");
+          }
+        });
+      }
+      
+      // Send cable information
+      // iframe.contentWindow.postMessage(`cable_color:${cableColor}`, "*");
+      // iframe.contentWindow.postMessage(`cable_length:${cableLength}`, "*");
     }
     
     toast.info(`Light amount changed to ${amount}`, {
@@ -1454,9 +1514,9 @@ const LightConfigurator = () => {
       
       // Send message to PlayCanvas
       const iframe = document.getElementById('playcanvas-app');
-      if (iframe && iframe.contentWindow) {
-        iframe.contentWindow.postMessage(`cable_color:${value}`, "*");
-      }
+      // if (iframe && iframe.contentWindow) {
+      //   iframe.contentWindow.postMessage(`cable_color:${value}`, "*");
+      // }
       
       toast.info(`Cable color changed to ${value}`, {
         position: "bottom-right",
@@ -1469,7 +1529,7 @@ const LightConfigurator = () => {
       // Send message to PlayCanvas
       const iframe = document.getElementById('playcanvas-app');
       if (iframe && iframe.contentWindow) {
-        iframe.contentWindow.postMessage(`cable_length:${value}`, "*");
+        // iframe.contentWindow.postMessage(`cable_length:${value}`, "*");
       }
       
       toast.info(`Cable length changed to ${value}`, {
