@@ -110,7 +110,9 @@ const LightAmountSelector = ({ amount, onAmountChange, isDarkMode, lightType }) 
     >
       <h3 className="text-lg font-bold mb-3 font-['Amenti']">Light Amount</h3>
       <div className="flex flex-wrap gap-3">
+        {console.log("lighttype: ", lightType)}
         {amounts.map((num) => (
+          
           <motion.div
             key={num}
             className={`w-20 h-20 rounded-full flex items-center justify-center cursor-pointer overflow-hidden ${amount === num
@@ -126,7 +128,7 @@ const LightAmountSelector = ({ amount, onAmountChange, isDarkMode, lightType }) 
           >
             {/* Use images instead of text with larger size */}
             <Image 
-              src={`/images/configIcons/${num}.png`}
+              src={`/images/configIcons/${lightType}/${num}.png`}
               alt={`${num} light${num > 1 ? 's' : ''}`}
               width={80}
               height={80}
@@ -1121,48 +1123,85 @@ const LightConfigurator = () => {
   }, [isDarkMode]);
 
   // Initialize pendants when amount changes
+  // Store pendant configurations for each light amount
+  const [pendantConfigurations, setPendantConfigurations] = useState({});
+
+  // Initialize pendants only once and store configurations for each amount
   useEffect(() => {
-    const newPendants = Array.from({ length: lightAmount }, (_, i) => ({
-      id: i,
-      design: i === 0 ? lightDesign : ['bumble', 'radial', 'fina', 'ico', 'ripple'][Math.floor(Math.random() * 5)],
-      color: '#50C878'
-    }));
-    setPendants(newPendants);
-    
-    // Send pendant configurations to iframe when pendants are initialized or updated
-    const iframe = document.getElementById('playcanvas-app');
-    if (iframe && iframe.contentWindow) {
-      // First send light type and amount
-      iframe.contentWindow.postMessage(`light_type:${lightType}`, "*");
-      iframe.contentWindow.postMessage(`light_amount:${lightAmount}`, "*");
+    // Check if we already have configurations for all possible light amounts
+    const hasAllConfigurations = [1, 3, 6, 24].every(amount => 
+      pendantConfigurations[amount] !== undefined
+    );
+
+    if (!hasAllConfigurations) {
+      // Create initial configurations for all possible light amounts
+      const initialConfigurations = {};
       
-      // Send pendant designs
-      if (lightAmount === 1) {
-        // For single pendant, send the global design
-        const design = newPendants[0]?.design || lightDesign;
-        const productId = design === 'bumble' ? 'product_1' : 
-                         design === 'radial' ? 'product_2' : 
-                         design === 'fina' ? 'product_3' : 
-                         design === 'ico' ? 'product_4' : 'product_5';
-        
-        iframe.contentWindow.postMessage(`pendant_design:${productId}`, "*");
-      } else {
-        // For multiple pendants, send each pendant's design with proper ID
-        setTimeout(() => {
-          newPendants.forEach((pendant) => {
-            const design = pendant.design;
-            const productId = design === 'bumble' ? 'product_1' : 
-                            design === 'radial' ? 'product_2' : 
-                            design === 'fina' ? 'product_3' : 
-                            design === 'ico' ? 'product_4' : 'product_5';
-            
-            console.log(`Initial send: pendant_${pendant.id}:${productId} for design ${design}`);
-            iframe.contentWindow.postMessage(`pendant_${pendant.id}:${productId}`, "*");
-          });
-        }, 100); // Small delay to ensure light_amount is processed first
+      [1, 3, 6, 24].forEach(amount => {
+        // Only generate if we don't already have a configuration for this amount
+        if (pendantConfigurations[amount] === undefined) {
+          initialConfigurations[amount] = Array.from({ length: amount }, (_, i) => ({
+            id: i,
+            design: i === 0 ? lightDesign : ['bumble', 'radial', 'fina', 'ico', 'ripple'][Math.floor(Math.random() * 5)],
+            color: '#50C878'
+          }));
+        } else {
+          // Keep existing configuration
+          initialConfigurations[amount] = pendantConfigurations[amount];
+        }
+      });
+      
+      // Update the configurations state
+      setPendantConfigurations(initialConfigurations);
+      
+      // Set the initial pendants based on current light amount
+      if (initialConfigurations[lightAmount]) {
+        setPendants(initialConfigurations[lightAmount]);
       }
     }
-  }, [lightAmount, lightDesign, lightType]);
+  }, []); // Empty dependency array - only run on initial mount
+
+  // Update pendants when light amount changes
+  useEffect(() => {
+    // If we have a saved configuration for this amount, use it
+    if (pendantConfigurations[lightAmount]) {
+      setPendants(pendantConfigurations[lightAmount]);
+      
+      // Send pendant configurations to iframe
+      const iframe = document.getElementById('playcanvas-app');
+      if (iframe && iframe.contentWindow) {
+        // First send light type and amount
+        iframe.contentWindow.postMessage(`light_type:${lightType}`, "*");
+        iframe.contentWindow.postMessage(`light_amount:${lightAmount}`, "*");
+        
+        // Send pendant designs
+        if (lightAmount === 1) {
+          // For single pendant, send the global design
+          const design = pendantConfigurations[lightAmount][0]?.design || lightDesign;
+          const productId = design === 'bumble' ? 'product_1' : 
+                           design === 'radial' ? 'product_2' : 
+                           design === 'fina' ? 'product_3' : 
+                           design === 'ico' ? 'product_4' : 'product_5';
+          
+          iframe.contentWindow.postMessage(`pendant_design:${productId}`, "*");
+        } else {
+          // For multiple pendants, send each pendant's design with proper ID
+          setTimeout(() => {
+            pendantConfigurations[lightAmount].forEach((pendant) => {
+              const design = pendant.design;
+              const productId = design === 'bumble' ? 'product_1' : 
+                              design === 'radial' ? 'product_2' : 
+                              design === 'fina' ? 'product_3' : 
+                              design === 'ico' ? 'product_4' : 'product_5';
+              
+              console.log(`Initial send: pendant_${pendant.id}:${productId} for design ${design}`);
+              iframe.contentWindow.postMessage(`pendant_${pendant.id}:${productId}`, "*");
+            });
+          }, 100); // Small delay to ensure light_amount is processed first
+        }
+      }
+    }
+  }, [lightAmount, lightType]);
 
   // Calculate price whenever configuration changes
   useEffect(() => {
@@ -1388,48 +1427,57 @@ const LightConfigurator = () => {
   const handleLightAmountChange = (amount) => {
     setLightAmount(amount);
     
-    // Create updated pendants array based on new amount with proper IDs and unique designs
-    let updatedPendants = [...pendants];
-    
-    if (amount > pendants.length) {
-      // Add new pendants with randomized designs and proper IDs
-      const designOptions = ['bumble', 'radial', 'fina', 'ico', 'ripple'];
+    // Check if we already have a configuration for this amount
+    if (pendantConfigurations[amount]) {
+      // Use the saved configuration
+      setPendants(pendantConfigurations[amount]);
+    } else {
+      // Create updated pendants array based on new amount with proper IDs and unique designs
+      let updatedPendants = [...pendants];
       
-      for (let i = pendants.length; i < amount; i++) {
-        // Use a different random design for each new pendant
-        const randomDesign = designOptions[Math.floor(Math.random() * designOptions.length)];
+      if (amount > pendants.length) {
+        // Add new pendants with randomized designs and proper IDs
+        const designOptions = ['bumble', 'radial', 'fina', 'ico', 'ripple'];
         
-        updatedPendants.push({
-          id: i,
-          design: randomDesign, 
-          color: '#50C878'
-        });
+        for (let i = pendants.length; i < amount; i++) {
+          // Use a different random design for each new pendant
+          const randomDesign = designOptions[Math.floor(Math.random() * designOptions.length)];
+          
+          updatedPendants.push({
+            id: i,
+            design: randomDesign, 
+            color: '#50C878'
+          });
+        }
+      } else if (amount < pendants.length) {
+        // Remove excess pendants
+        updatedPendants = updatedPendants.slice(0, amount);
       }
-    } else if (amount < pendants.length) {
-      // Remove excess pendants
-      updatedPendants = updatedPendants.slice(0, amount);
+      
+      // If only one pendant, update its design to match the global design
+      if (amount === 1 && updatedPendants.length > 0 && lightDesign) {
+        updatedPendants[0] = {
+          ...updatedPendants[0],
+          id: 0,
+          design: lightDesign
+        };
+      }
+      
+      // Make sure all pendants have proper IDs and unique designs
+      updatedPendants = updatedPendants.map((pendant, index) => ({
+        ...pendant,
+        id: pendant.id !== undefined ? pendant.id : index
+      }));
+      
+      // Update the pendants state - important to do this before sending messages
+      setPendants(updatedPendants);
+      
+      // Save this configuration for future use
+      setPendantConfigurations(prev => ({
+        ...prev,
+        [amount]: updatedPendants
+      }));
     }
-    
-    // If only one pendant, update its design to match the global design
-    if (amount === 1 && updatedPendants.length > 0 && lightDesign) {
-      updatedPendants[0] = {
-        ...updatedPendants[0],
-        id: 0,
-        design: lightDesign
-      };
-    }
-    
-    // Make sure all pendants have proper IDs and unique designs
-    updatedPendants = updatedPendants.map((pendant, index) => ({
-      ...pendant,
-      id: pendant.id !== undefined ? pendant.id : index
-    }));
-    
-    // Log the pendants for debugging
-
-    
-    // Update the pendants state - important to do this before sending messages
-    setPendants(updatedPendants);
     
     // Send comprehensive messages to PlayCanvas
     const iframe = document.getElementById('playcanvas-app');
@@ -1440,10 +1488,13 @@ const LightConfigurator = () => {
       // Then send current light type
       iframe.contentWindow.postMessage(`light_type:${lightType}`, "*");
       
+      // Get the current pendants (either from saved config or newly created)
+      const currentPendants = pendantConfigurations[amount] || pendants;
+      
       // Send pendant design information based on amount
       if (amount === 1) {
         // For single pendant, send the global design
-        const design = updatedPendants[0]?.design || lightDesign;
+        const design = currentPendants[0]?.design || lightDesign;
         const productId = design === 'bumble' ? 'product_1' : 
                          design === 'radial' ? 'product_2' : 
                          design === 'fina' ? 'product_3' : 
@@ -1454,7 +1505,7 @@ const LightConfigurator = () => {
         // For multiple pendants, send each pendant's design with proper ID
         // Add a small delay to ensure the messages are processed correctly
         setTimeout(() => {
-          updatedPendants.forEach((pendant) => {
+          currentPendants.forEach((pendant) => {
             if (pendant.id < amount) { // Only send for the actual number of pendants
               const design = pendant.design || lightDesign;
               const productId = design === 'bumble' ? 'product_1' : 
@@ -1501,6 +1552,12 @@ const LightConfigurator = () => {
           design: design
         };
         setPendants(updatedPendants);
+        
+        // Update the stored configuration for single pendant
+        setPendantConfigurations(prev => ({
+          ...prev,
+          1: updatedPendants
+        }));
       }
       
       // Send message to PlayCanvas
@@ -1520,7 +1577,7 @@ const LightConfigurator = () => {
         autoClose: 1500,
         theme: isDarkMode ? "dark" : "light"
       });
-    } 
+    }
     // For specific pendant update (used by PendantConfigurator)
     else if (typeof pendantIndex === 'number' && pendantIndex >= 0 && pendantIndex < pendants.length) {
       // Update specific pendant design
@@ -1531,6 +1588,12 @@ const LightConfigurator = () => {
           design: design
         };
         setPendants(updatedPendants);
+        
+        // Update the stored configuration for current light amount
+        setPendantConfigurations(prev => ({
+          ...prev,
+          [lightAmount]: updatedPendants
+        }));
         
         // Send message to PlayCanvas
         const iframe = document.getElementById('playcanvas-app');
@@ -1561,6 +1624,12 @@ const LightConfigurator = () => {
       });
       
       setPendants(updatedPendants);
+      
+      // Update the stored configuration for current light amount
+      setPendantConfigurations(prev => ({
+        ...prev,
+        [lightAmount]: updatedPendants
+      }));
       
       // Send individual messages to PlayCanvas for each pendant
       const iframe = document.getElementById('playcanvas-app');

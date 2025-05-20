@@ -1,62 +1,139 @@
 'use client';
-import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
+import Footer from './components/Footer';
+import Header from './components/Header';
+import HeroSection from './components/HeroSection';
+import ProductShowcase from './components/ProductShowcase';
+import HowItWorks from './components/HowItWorks';
+import InteractiveConfigurator from './components/InteractiveConfigurator';
+import OurStory from './components/OurStory';
+import TimelineAchievements from './components/TimelineAchievements';
+import TransitionLayout from './components/TransitionLayout';
+import SectionNavigation from './components/SectionNavigation';
+
+// Commented out sections as requested
+// import InteractiveStory from './components/InteractiveStory';
+// import LightingCarousel from './components/LightingCarousel';
+// import LightingScene from './components/LightingScene';
+// import ModelSection from './components/ModelSection';
+// import MotiveSection from './components/MotiveSection';
+// import MouseTrail from './components/MouseTrail';
+// import AnalyticsInsights from './components/AnalyticsInsights';
+// import DistributorHub from './components/DistributorHub';
+// import LightingStyleCompare from './components/LightingStyleCompare';
+// import ProductCategories from './components/ProductCategories';
+// import PortalCTA from './components/PortalCTA';
+// import ConfiguratorPreview from './components/ConfiguratorPreview';
+// import VideoHighlightsCarousel from './components/VideoHighlightsCarousel';
+
+import ScrollToTop from './components/ScrollToTop';
+import SplashScreen from './components/SplashScreen';
+import CookieConsent from './components/CookieConsent';
+import { useEffect, useState, Suspense } from 'react';
+import { initTracking, sendTrackingData, cleanupTracking } from './services/trackingService';
+// Dynamically import CubeAnimation with SSR disabled
+const CubeAnimation = dynamic(() => import('./components/CubeAnimation'), { 
+  ssr: false,
+  loading: () => <div className="h-screen bg-[#292929]"></div>
+});
 
 /**
- * Simple Coming Soon page for LIMI website
- * @returns {JSX.Element} The coming soon page
+ * The main entry point of the application, which renders the main sections:
+ * Hero, Lighting Controls, Motive, Interactive Story, and more.
+ *
+ * @returns {JSX.Element} The main app component.
  */
 export default function Home() {
-  const [glowIntensity, setGlowIntensity] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+  const [userType, setUserType] = useState(null);
+  const [showSplash, setShowSplash] = useState(true);
+  const [showUserSelection, setShowUserSelection] = useState(false);
   
-  // Animation effect for the glow
   useEffect(() => {
-    const interval = setInterval(() => {
-      setGlowIntensity((prev) => {
-        // Oscillate between 0 and 1
-        return prev >= 1 ? 0 : prev + 0.01;
-      });
-    }, 50);
+    // Check if device is mobile
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    // Initial check
+    checkMobile();
+    // Add event listener for window resize
+    window.addEventListener('resize', checkMobile);
+    // Cleanup
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+    };
+  }, []);
+
+  // Custom hook to handle splash screen completion
+  useEffect(() => {
+    // Listen for splash screen completion
+    const handleSplashComplete = () => {
+      setShowSplash(false);
+      setShowUserSelection(true);
+    };
+
+    // Create a custom event for splash screen completion
+    window.addEventListener('splashComplete', handleSplashComplete);
+
+    return () => {
+      window.removeEventListener('splashComplete', handleSplashComplete);
+    };
+  }, []);
+
+  // Handle user selection
+  // const handleUserTypeSelect = (type) => {
+  //   setUserType(type);
+  //   setShowUserSelection(false);
+  // };
+
+  // Handle tracking consent
+  const handleTrackingConsent = () => {
+    initTracking();
+  };
+
+  // Check if consent was previously given and initialize tracking if needed
+  useEffect(() => {
+    const consentStatus = localStorage.getItem('cookieConsent');
+    if (consentStatus === 'true') {
+      initTracking();
+    }
     
-    return () => clearInterval(interval);
+    // Cleanup tracking on component unmount
+    return () => {
+      cleanupTracking();
+    };
   }, []);
 
   return (
-    <div className="fixed inset-0 flex flex-col items-center justify-center bg-[#2B2D2F] overflow-hidden">
-      <div 
-        className="relative flex flex-col items-center justify-center text-center p-6 max-w-2xl"
-        style={{
-          filter: `drop-shadow(0 0 ${10 + glowIntensity * 15}px rgba(80, 200, 120, ${0.3 + glowIntensity * 0.2}))`
-        }}
-      >
-        {/* Logo */}
-        <div className="mb-8 relative">
-          <Image 
-            src="/images/svgLogos/__Logo_Icon_Colored.svg" 
-            alt="LIMI Logo" 
-            width={120} 
-            height={120}
-            priority
-            className="animate-pulse"
-          />
-        </div>
-        
-        {/* Title */}
-        <h1 className="text-4xl md:text-6xl font-bold mb-6 text-white">
-          <span className="text-[#50C878]">LIMI</span> is coming soon
-        </h1>
-        
-        {/* Description */}
-        <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-lg">
-          We're crafting a revolutionary lighting experience. 
-          Our website is under construction, but we'll be illuminating your world shortly.
-        </p>
-        
-        {/* Animated countdown or teaser */}
-        <div className="text-[#87CEAB] text-lg md:text-xl font-medium">
-          Lighting Made Limitless
-        </div>
-      </div>
-    </div>
+    <main>
+      <SplashScreen onComplete={() => window.dispatchEvent(new Event('splashComplete'))} />
+      {/* <UserSelectionPopup isVisible={showUserSelection} onSelect={handleUserTypeSelect} /> */}
+      <Header />
+      
+        <HeroSection />
+        <ProductShowcase />
+        <HowItWorks />
+        <InteractiveConfigurator />
+        <OurStory />
+        <TimelineAchievements />
+        {/* Commented out sections as requested
+        <InteractiveStory />
+        <LightingCarousel />
+        <ModelSection />
+        <VideoHighlightsCarousel />
+        <LightingScene />
+        <ProductCategories />
+        <PortalCTA />
+        <ConfiguratorPreview />
+        <AnalyticsInsights />
+        <DistributorHub />
+        */}
+  
+      {/* {!isMobile && <MouseTrail />} */}
+      <Footer />
+      <SectionNavigation />
+      {/* <ScrollToTop /> */}
+      <CookieConsent onAccept={handleTrackingConsent} onDecline={() => {}} />
+    </main>
   );
 }
