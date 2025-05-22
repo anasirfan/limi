@@ -219,7 +219,7 @@ const ProductModal = ({ product, isOpen, onClose }) => {
                     
                     return (
                       <motion.div 
-                        className={`grid grid-cols-1 ${desktopGridClass} gap-6`}
+                        className={` grid grid-cols-1 ${desktopGridClass} gap-6`}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ duration: 0.5 }}
@@ -228,7 +228,7 @@ const ProductModal = ({ product, isOpen, onClose }) => {
                         {galleryImages.slice(0, 6).map((imageSrc, index) => (
                           <motion.div 
                             key={index} 
-                            className="relative h-64 rounded-xl overflow-hidden"
+                            className="relative h-72  rounded-xl overflow-hidden"
                             whileHover={{ scale: 1.05, zIndex: 10 }}
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}

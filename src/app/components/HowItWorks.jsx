@@ -69,7 +69,7 @@ const DetailCarousel = ({ step, onClose }) => {
               transition={{ duration: 0.3 }}
             >
               {/* Media container */}
-              <div className="w-full relative" style={{ height: 'min(40vh, 300px)' }}>
+              <div className="w-full relative" style={{ height: 'min(50vh, 500px)' }}>
                 {currentItem.type === "video" ? (
                   <video 
                     className="w-full h-full object-cover"
@@ -86,7 +86,7 @@ const DetailCarousel = ({ step, onClose }) => {
                     src={currentItem.media} 
                     alt={currentItem.title} 
                     className="w-full h-full object-cover"
-                    style={{ maxHeight: 'min(40vh, 300px)' }}
+                    style={{ maxHeight: 'min(50vh, 600px)' }}
                   />
                 )}
               </div>
@@ -204,26 +204,26 @@ export default function HowItWorks() {
       story: "Changing your lighting style used to mean calling an electrician. With LIMI's innovative connector system, you can swap designs in seconds without any technical knowledge.",
       icon: FiZap,
       color: "#54BB74",
-      video: "https://static.videezy.com/system/resources/previews/000/021/642/original/LIGHT-BULB-TURN-ON-WARM-LIGHT.mp4",
+      video: "/images/howitworks/pendant/pendant.m4v",
       tip: "Want a new look? Swap pendants anytime – no new wiring needed!",
       carousel: [
         {
           title: "LIMI Connector System",
           description: "Our innovative connector creates a secure attachment that's easy to install and remove.",
-          media: "https://static.videezy.com/system/resources/previews/000/021/642/original/LIGHT-BULB-TURN-ON-WARM-LIGHT.mp4",
-          type: "video"
+          media: "/images/howitworks/pendant/connector.png",
+          type: "image"
         },
         {
           title: "Hot-Swappable Design",
           description: "Change pendants even when the system is powered on with our safe connection technology.",
-          media: "https://static.videezy.com/system/resources/previews/000/021/642/original/LIGHT-BULB-TURN-ON-WARM-LIGHT.mp4",
-          type: "video"
+          media: "/images/howitworks/pendant/hot-swappable.png",
+          type: "image"
         },
         {
           title: "Interchangeable Designs",
           description: "Choose from dozens of beautiful light modules that click into the base in seconds.",
-          media: "https://static.videezy.com/system/resources/previews/000/021/642/original/LIGHT-BULB-TURN-ON-WARM-LIGHT.mp4",
-          type: "video"
+          media: "/images/howitworks/pendant/interchangable.png",
+          type: "image"
         }
       ]
     },
