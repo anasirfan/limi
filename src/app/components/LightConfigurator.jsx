@@ -1142,7 +1142,7 @@ const LightConfigurator = () => {
         if (pendantConfigurations[amount] === undefined) {
           initialConfigurations[amount] = Array.from({ length: amount }, (_, i) => ({
             id: i,
-            design: i === 0 ? lightDesign : ['bumble', 'radial', 'fina', 'ico', 'ripple'][Math.floor(Math.random() * 5)],
+            design: i === 0 ? lightDesign : ['bumble', 'radial', 'fina', 'ripple'][Math.floor(Math.random() * 4)],
             color: '#50C878'
           }));
         } else {
