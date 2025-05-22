@@ -73,8 +73,8 @@ const ProductCard = ({ product, className = '', isMobile = false }) => {
         }}
       >
         {/* Product Image */}
-        <div className="absolute inset-0 overflow-hidden brightness-110 contrast-110">
-          <Image 
+        <div className="absolute inset-0 overflow-hidden">
+          <img 
             src={imageSrc} 
             alt={product.name} 
             fill

@@ -25,7 +25,7 @@ function ProductShowcase() {
       name: "Smart Ceiling Mount",
       tagline: "Intelligent Power Base",
       description: "The foundation of your smart lighting system, connecting seamlessly to your existing fixtures.",
-      image: "/images/homepage-products/main-1.jpg",
+      image: "/images/homepage-products/main.jpg",
       galleryImages: [
         "/images/homepage-products/main/main-1.jpg",
         "/images/homepage-products/main/main-2.jpg",
