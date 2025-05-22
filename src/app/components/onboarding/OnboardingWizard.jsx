@@ -16,20 +16,20 @@ export default function OnboardingWizard({ onComplete, onStepChange }) {
   });
   
   // Load saved state from localStorage if available
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const savedSelections = localStorage.getItem('onboardingSelections');
-      const savedStep = localStorage.getItem('onboardingStep');
+  // useEffect(() => {
+  //   if (typeof window !== 'undefined') {
+  //     const savedSelections = localStorage.getItem('onboardingSelections');
+  //     const savedStep = localStorage.getItem('onboardingStep');
       
-      if (savedSelections) {
-        setSelections(JSON.parse(savedSelections));
-      }
+  //     if (savedSelections) {
+  //       setSelections(JSON.parse(savedSelections));
+  //     }
       
-      if (savedStep) {
-        setCurrentStep(parseInt(savedStep, 10));
-      }
-    }
-  }, []);
+  //     if (savedStep) {
+  //       setCurrentStep(parseInt(savedStep, 10));
+  //     }
+  //   }
+  // }, []);
   
   // Save state to localStorage when it changes
   useEffect(() => {
@@ -72,23 +72,23 @@ export default function OnboardingWizard({ onComplete, onStepChange }) {
   };
   
   // Play subtle sound on step change
-  useEffect(() => {
-    const playSound = () => {
-      if (typeof window !== 'undefined') {
-        try {
-          const audio = new Audio('/sounds/step-change.mp3');
-          audio.volume = 0.2;
-          audio.play();
-        } catch (error) {
-          console.log('Audio play failed:', error);
-        }
-      }
-    };
+  // useEffect(() => {
+  //   const playSound = () => {
+  //     if (typeof window !== 'undefined') {
+  //       try {
+  //         const audio = new Audio('/sounds/step-change.mp3');
+  //         audio.volume = 0.2;
+  //         audio.play();
+  //       } catch (error) {
+  //         console.log('Audio play failed:', error);
+  //       }
+  //     }
+  //   };
     
-    if (currentStep > 1) {
-      playSound();
-    }
-  }, [currentStep]);
+  //   if (currentStep > 1) {
+  //     playSound();
+  //   }
+  // }, [currentStep]);
 
   return (
     <div className="bg-[#2B2D2F] rounded-2xl shadow-xl overflow-hidden">

@@ -90,11 +90,13 @@ export default function SectionNavigation() {
       if (element) {
         // Special handling for How It Works section
         if (id === 'how-it-works') {
+          console.log('How It Works section found');
           // Find the specific HowItWorks component
-          const howItWorksElement = document.querySelector('.HowItWorks');
+          const howItWorksElement = document.querySelector('#products');
           if (howItWorksElement) {
+            console.log('How It Works component found');
             window.scrollTo({
-              top: howItWorksElement.offsetTop,
+              top: howItWorksElement.offsetTop + 1800,
               behavior: 'smooth'
             });
             return;
@@ -114,7 +116,7 @@ export default function SectionNavigation() {
     <AnimatePresence>
       {isVisible && sections.length > 0 && (
         <motion.div
-          className={`fixed z-50 ${isMobile ? 'bottom-4 left-[20%]' : 'right-4 top-1/2 -translate-y-1/2'}`}
+          className={`fixed z-50 ${isMobile ? 'bottom-6 left-[2%]' : 'right-4 top-1/3 -translate-y-1/2'}`}
           style={{
             width: isMobile ? 'auto' : 'auto',
             margin: isMobile ? '0 auto' : '0'
@@ -156,7 +158,7 @@ export default function SectionNavigation() {
             }}
           >
             {/* Navigation items */}
-            <div className={`flex ${isMobile ? 'flex-row gap-3' : 'flex-col gap-6'}`}>
+            <div className={`flex ${isMobile ? 'flex-row gap-2' : 'flex-col gap-6'}`}>
               {sections.map((section) => (
                 <div key={section.id} className="relative group">
                   <motion.button

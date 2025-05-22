@@ -97,12 +97,12 @@ const ProductModal = ({ product, isOpen, onClose }) => {
                 >
                   Gallery
                 </button>
-                <button
+                {/* <button
                   className={`px-6 py-3 font-medium text-sm ${activeTab === 'video' ? 'text-[#54BB74] border-b-2 border-[#54BB74]' : 'text-[#292929]'}`}
                   onClick={() => setActiveTab('video')}
                 >
                   Video
-                </button>
+                </button> */}
               </div>
             </div>
 

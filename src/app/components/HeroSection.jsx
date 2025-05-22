@@ -334,8 +334,8 @@ function HeroSection() {
         loop
         muted
         playsInline
-        className="absolute top-0 left-0 w-full h-full object-cover z-0 transition-all duration-700"
-        src={"/dfs"}
+        className="absolute top-16 left-0 w-full h-full object-cover z-0 transition-all duration-700"
+        src={"/videos/limi-web.m4v"}
       ></video>
       
       {/* Dark overlay for better text readability */}
@@ -345,7 +345,7 @@ function HeroSection() {
       ></div>
       
       {/* Interactive light layer */}
-      <div 
+      {/* <div 
         ref={interactiveLayerRef}
         className="absolute inset-0 bg-radial-light opacity-30 z-10 pointer-events-none transition-all duration-500"
         style={{
@@ -353,7 +353,7 @@ function HeroSection() {
           opacity: isHovering ? 0.6 : 0.3
         }}
       ></div>
-      
+       */}
       {/* Light particles container */}
       <div 
         ref={lightParticlesRef}

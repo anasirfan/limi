@@ -112,7 +112,7 @@ export default function Home() {
       
         <HeroSection />
         <ProductShowcase />
-        <HowItWorks />
+        <HowItWorks  />
         <InteractiveConfigurator />
         <OurStory />
         <TimelineAchievements />

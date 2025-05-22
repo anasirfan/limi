@@ -73,16 +73,17 @@ const ProductCard = ({ product, className = '', isMobile = false }) => {
         }}
       >
         {/* Product Image */}
-        <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute inset-0 overflow-hidden brightness-110 contrast-110">
           <Image 
             src={imageSrc} 
             alt={product.name} 
             fill
+            
             style={{ objectFit: 'cover' }}
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#292929]/80 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#292929]/60 to-transparent" />
         </div>
 
         {/* Product Info - Only show when not expanded */}

@@ -98,24 +98,24 @@ export default function StepOne({ selection, onSelect, onNext }) {
       {/* Mobile Carousel View */}
       <div className="md:hidden relative">
         {/* Left indicator */}
-        <button 
+        {/* <button 
           onClick={scrollLeft}
           className="absolute left-0 top-1/2 -translate-y-1/2 bg-black bg-opacity-30 rounded-r-lg p-1 z-10 cursor-pointer hover:bg-opacity-50 transition-all"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
-        </button>
+        </button> */}
         
         {/* Right indicator */}
-        <button 
+        {/* <button 
           onClick={scrollRight}
           className="absolute right-0 top-1/2 -translate-y-1/2 bg-black bg-opacity-30 rounded-l-lg p-1 z-10 cursor-pointer hover:bg-opacity-50 transition-all"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
-        </button>
+        </button> */}
         
         <div ref={carouselRef} className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide space-x-3 pb-4">
           {categories.map((category) => (
@@ -204,7 +204,7 @@ export default function StepOne({ selection, onSelect, onNext }) {
       </div>
       
       {/* Action Button - Completely separate from the carousel */}
-      <div className="pt-4 relative z-50">
+      <div className="pt-4 max-sm:pt-0  relative z-50">
         <button
           onClick={handleNextButtonClick}
           disabled={!hasSelection}

@@ -6,7 +6,7 @@ const Footer = () => {
   return (
     <footer className="bg-black text-white py-12 overflow-hidden ">
       <div className="container mx-auto px-4 md:px-6 max-sm:mt-24">
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {/* Logo and About */}
           <div className="col-span-2 md:col-span-2 lg:col-span-1">
             <div className="mb-6 max-sm:flex max-sm:space-x-4 max-sm:items-center mx-auto">
@@ -40,59 +40,64 @@ const Footer = () => {
           </div>
 
           {/* Navigation Links */}
-          <div className="xl:mx-16 ">
+          {/* <div className="xl:mx-16 ">
             <h3 className="text-lg font-semibold font-[Amenti] mb-4">Navigation</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="#hero" className="text-gray-300 hover:text-emerald-500 transition-colors">
-                  Home
+                <Link href="#products" className="text-gray-300 hover:text-emerald-500 transition-colors">
+                products
                 </Link>
               </li>
               <li>
-                <Link href="#motive" className="text-gray-300 hover:text-emerald-500 transition-colors">
-                  Our Vision
+                <Link href="#how-it-works" className="text-gray-300 hover:text-emerald-500 transition-colors">
+                How It Works
                 </Link>
               </li>
               <li>
-                <Link href="#interactive" className="text-gray-300 hover:text-emerald-500 transition-colors">
-                  Our Journey
+                <Link href="#configurator" className="text-gray-300 hover:text-emerald-500 transition-colors">
+                  Configurator
                 </Link>
               </li>
               <li>
-                <Link href="#cube" className="text-gray-300 hover:text-emerald-500 transition-colors">
-                  Experience LIMI
+                <Link href="#our-story" className="text-gray-300 hover:text-emerald-500 transition-colors">
+                  Our Story
+                </Link>
+              </li>
+              <li>
+                <Link href="#timeline" className="text-gray-300 hover:text-emerald-500 transition-colors">
+                  Timeline
                 </Link>
               </li>
             </ul>
-          </div>
+          </div> */}
 
           {/* Products & Features */}
           <div className="xl:mx-16">
             <h3 className="text-lg font-semibold font-[Amenti] mb-4">Explore</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="#analytics-insights" className="text-gray-300 hover:text-emerald-500 transition-colors">
-                  Analytics Insights
+                <Link href="/configurator" className="text-gray-300 hover:text-emerald-500 transition-colors">
+                Customize Yourself
                 </Link>
               </li>
               <li>
-                <Link href="#lighting-carousel" className="text-gray-300 hover:text-emerald-500 transition-colors">
-                  Smart Lighting
+                <Link href="/portal" className="text-gray-300 hover:text-emerald-500 transition-colors">
+                Your Space
+                </Link> 
+              </li>
+              <li>
+                <Link href="/about-us" className="text-gray-300 hover:text-emerald-500 transition-colors">
+                What is LIMI?
                 </Link>
               </li>
               <li>
-                <Link href="#model" className="text-gray-300 hover:text-emerald-500 transition-colors">
-                  Transformation
+                <Link href="/contact-us" className="text-gray-300 hover:text-emerald-500 transition-colors">
+                Let's Talk
                 </Link>
               </li>
               <li>
-                <Link href="#lighting" className="text-gray-300 hover:text-emerald-500 transition-colors">
-                  Configurations
-                </Link>
-              </li>
-              <li>
-                <Link href="#distributor-hub" className="text-gray-300 hover:text-emerald-500 transition-colors">
-                  Become a Distributor
+                <Link href="/collaborate" className="text-gray-300 hover:text-emerald-500 transition-colors">
+                Let’s Grow Together
                 </Link>
               </li>
             </ul>
