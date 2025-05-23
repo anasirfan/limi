@@ -19,7 +19,7 @@ export default function PortalLogin({ onLogin }) {
   const [otpSent, setOtpSent] = useState(false);
   
   const dispatch = useDispatch();
-  const { loginStatus, error, isLoggedIn, user } = useSelector((state) => state.user);
+  const { loginStatus, error, isLoggedIn, user } = useSelector((state) => state?.user || {});
   
   // Clear auth status when component unmounts
   useEffect(() => {

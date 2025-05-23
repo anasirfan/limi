@@ -11,7 +11,7 @@ import { login, logout } from '../redux/slices/userSlice';
 
 export default function CustomerPortal() {
   const dispatch = useDispatch();
-  const { isLoggedIn, user, loginStatus } = useSelector((state) => state.user);
+  const { isLoggedIn = false, user = null, loginStatus = 'idle' } = useSelector((state) => state?.user || {});
   const router = useRouter();
   const loading = loginStatus === 'loading';
   
