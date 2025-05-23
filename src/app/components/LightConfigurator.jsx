@@ -38,9 +38,9 @@ const ThemeToggle = ({ isDarkMode, toggleTheme }) => {
 // Light Type Component
 const LightTypeSelector = ({ selectedType, onTypeChange, isDarkMode }) => {
   const types = [
-    { id: "wall", name: "Wall Light", icon: "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=300" },
-    { id: "ceiling", name: "Ceiling Light", icon: "https://images.unsplash.com/photo-1565538810643-b5bdb714032a?w=300" },
-    { id: "floor", name: "Floor Light", icon: "https://images.unsplash.com/photo-1540932239986-30128078f3c5?w=300" },
+    { id: "wall", name: "Wall Light", icon: "/images/configrenders/wall.jpg" },
+    { id: "ceiling", name: "Ceiling Light", icon: "/images/configrenders/ceiling.jpg" },
+    { id: "floor", name: "Floor Light", icon: "/images/configrenders/floor.jpg" },
   ];
 
   return (
@@ -1009,14 +1009,14 @@ const LightConfigurator = () => {
   // Redux setup
   const dispatch = useDispatch();
   const router = useRouter();
-  const user = useSelector(state => state.user.user);
-  const isLoggedIn = useSelector(state => state.user.isLoggedIn);
+  // const user = useSelector(state => state.user.user);
+  const isLoggedIn = useSelector(state => state?.user?.isLoggedIn);
   
   // State for configuration options
   // Always use dark mode
   const isDarkMode = true;
   const [lightType, setLightType] = useState('ceiling');
-  const [lightAmount, setLightAmount] = useState(1);
+  const [lightAmount, setLightAmount] = useState(lightType === 'ceiling' ? 1 : lightType === 'floor' ? 3 : 1);
   const [lightDesign, setLightDesign] = useState('radial');
   const [cableColor, setCableColor] = useState('black');
   const [cableLength, setCableLength] = useState('1.5m');
@@ -1366,6 +1366,22 @@ const LightConfigurator = () => {
     
     // If type is ceiling, update the state if needed
     if (type === 'ceiling' && lightAmount !== 1) {
+      setLightAmount(newAmount);
+    }
+
+    if (type === 'wall') {
+      // For wall lights, set amount to 1 and design to 'radial'
+      setLightAmount(1);
+      setLightDesign('radial');
+      // Emit the design change event
+      handleLightDesignChange('radial');
+    } else if (type === 'floor') {
+      // For floor lights, set amount to 3 and design to 'radial'
+      setLightAmount(3);
+      setLightDesign('radial');
+      // Emit the design change event
+      handleLightDesignChange('radial');
+    } else  if (type === 'ceiling' && lightAmount !== 1) {
       setLightAmount(newAmount);
     }
     

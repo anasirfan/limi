@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 
@@ -7,20 +7,19 @@ const categories = [
   {
     id: 'ceiling',
     name: 'Ceiling',
-    image: 'https://images.unsplash.com/photo-1540932239986-30128078f3c5?w=300',
+    image: '/images/configrenders/ceiling.jpg',
     description: 'Elegant ceiling-mounted lights that hang down into the space.'
   },
   {
     id: 'wall',
     name: 'Wall',
-    image: 'https://images.unsplash.com/photo-1565538810643-b5bdb714032a?w=300',
+    image: '/images/configrenders/wall.jpg',
     description: 'Space-saving lights that mount directly to your walls.'
   },
   {
     id: 'floor',
     name: 'Floor',
-   
-    image: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=300',
+    image: '/images/configrenders/floor.jpg',
     description: 'Freestanding lights that add style and illumination to any room.'
   }
 ];
@@ -66,6 +65,11 @@ export default function StepOne({ selection, onSelect, onNext }) {
     onNext();
   };
   
+  useEffect(() => {
+    if (!hasSelection) {
+      onSelect('ceiling');
+    }
+  }, []);
   // Scroll the carousel left
   const scrollLeft = () => {
     if (carouselRef.current) {

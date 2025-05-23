@@ -34,7 +34,11 @@ const Header = () => {
   // Then use the data conditionally
   const cart = isClient ? cartData : { items: [], totalQuantity: 0, totalAmount: 0 };
   const favorites = isClient ? favoritesData : { items: [] };
-  const { isLoggedIn, user } = isClient ? userData : { isLoggedIn: false, user: null };
+
+ 
+
+    const { isLoggedIn, user } = isClient && isClient?.isLoggedIn && isClient?.user ? userData : { isLoggedIn: false, user: null };
+  
 
   
   // Get current path to determine which navigation to show

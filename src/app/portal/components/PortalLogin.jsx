@@ -52,43 +52,150 @@ export default function PortalLogin({ onLogin }) {
   };
   
   // Handle OTP login
-  const handleSendOTP = (e) => {
+  const [otpStatus, setOtpStatus] = useState('idle'); // 'idle' | 'sending' | 'sent' | 'verifying' | 'failed'
+  const [otpError, setOtpError] = useState('');
+  
+  const handleSendOTP = async (e) => {
     e.preventDefault();
     
     if (phone && phone.length >= 10) {
-      setOtpSent(true);
-      // Mock OTP sent
-      console.log('OTP sent to', phone);
+      setOtpStatus('sending');
+      setOtpError('');
+      
+      try {
+        // Call the OTP send API
+        const response = await fetch('/client/user/send-otp', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ phone }),
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Failed to send OTP');
+        }
+        
+        setOtpSent(true);
+        setOtpStatus('sent');
+      } catch (error) {
+        setOtpStatus('failed');
+        setOtpError(error.message || 'Failed to send OTP');
+      }
+    } else {
+      setOtpError('Please enter a valid phone number');
     }
   };
   
-  const handleVerifyOTP = (e) => {
+  const handleVerifyOTP = async (e) => {
     e.preventDefault();
     
-    // This is just a mock implementation since we're not actually implementing OTP login with Redux
     if (otp && otp.length === 6) {
-      const userData = {
-        id: `user_${Date.now()}`,
-        name: 'Mobile User',
-        phone: phone,
-        avatar: `https://ui-avatars.com/api/?name=Mobile+User&background=50C878&color=fff`
-      };
+      setOtpStatus('verifying');
+      setOtpError('');
       
-      onLogin(userData);
+      try {
+        // Call the OTP verification API
+        const response = await fetch('/client/user/verify-otp', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ phone, otp }),
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Invalid OTP');
+        }
+        
+        const data = await response.json();
+        
+        // Save token if provided
+        if (data.token) {
+          localStorage.setItem('limiToken', data.token);
+        }
+        
+        // Get user profile
+        const profileResponse = await fetch('/client/user/profile', {
+          headers: {
+            'Authorization': `Bearer ${data.token}`
+          }
+        });
+        
+        if (!profileResponse.ok) {
+          throw new Error('Failed to fetch user profile');
+        }
+        
+        const userData = await profileResponse.json();
+        
+        // Save to localStorage
+        localStorage.setItem('limiUser', JSON.stringify(userData));
+        
+        // Login successful
+        onLogin(userData);
+      } catch (error) {
+        setOtpStatus('failed');
+        setOtpError(error.message || 'Failed to verify OTP');
+      }
+    } else {
+      setOtpError('Please enter a valid 6-digit OTP');
     }
   };
   
   // Demo user login for quick testing
-  const loginAsDemoUser = () => {
-    const demoUser = {
-      id: 'demo123',
-      name: 'Sarah Johnson',
-      email: 'sarah@example.com',
-      phone: '+1234567890',
-      avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1974&auto=format&fit=crop'
-    };
-    
-    onLogin(demoUser);
+  const loginAsDemoUser = async () => {
+    try {
+      // Call the demo login API
+      const response = await fetch('/client/user/demo-login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error('Demo login failed');
+      }
+      
+      const data = await response.json();
+      
+      // Save token if provided
+      if (data.token) {
+        localStorage.setItem('limiToken', data.token);
+      }
+      
+      // Get user profile
+      const profileResponse = await fetch('/client/user/profile', {
+        headers: {
+          'Authorization': `Bearer ${data.token}`
+        }
+      });
+      
+      if (!profileResponse.ok) {
+        throw new Error('Failed to fetch demo user profile');
+      }
+      
+      const userData = await profileResponse.json();
+      
+      // Save to localStorage
+      localStorage.setItem('limiUser', JSON.stringify(userData));
+      
+      // Login successful
+      onLogin(userData);
+    } catch (error) {
+      // Fallback to local demo user if API fails
+      const demoUser = {
+        id: 'demo123',
+        name: 'Sarah Johnson',
+        email: 'sarah@example.com',
+        phone: '+1234567890',
+        avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1974&auto=format&fit=crop'
+      };
+      
+      onLogin(demoUser);
+    }
   };
   
   return (
@@ -202,16 +309,30 @@ export default function PortalLogin({ onLogin }) {
                           className="bg-charleston-green text-white w-full pl-10 pr-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald"
                           placeholder="+1 (234) 567-8900"
                           required
+                          disabled={otpStatus === 'sending'}
                         />
                       </div>
                     </div>
                     
+                    {otpError && !otpSent && (
+                      <div className="mb-4 text-red-400 text-sm">
+                        {otpError}
+                      </div>
+                    )}
+                    
                     <button
                       type="submit"
+                      disabled={otpStatus === 'sending'}
                       className="w-full bg-emerald text-charleston-green-dark py-3 rounded-md hover:bg-emerald-light transition-colors flex items-center justify-center gap-2 font-medium"
                     >
-                      <span>Send OTP</span>
-                      <FaArrowRight />
+                      {otpStatus === 'sending' ? (
+                        <div className="animate-spin h-5 w-5 border-2 border-charleston-green-dark border-t-transparent rounded-full"></div>
+                      ) : (
+                        <>
+                          <span>Send OTP</span>
+                          <FaArrowRight />
+                        </>
+                      )}
                     </button>
                   </form>
                 ) : (
@@ -221,8 +342,13 @@ export default function PortalLogin({ onLogin }) {
                         OTP sent to {phone}. 
                         <button 
                           type="button"
-                          onClick={() => setOtpSent(false)}
+                          onClick={() => {
+                            setOtpSent(false);
+                            setOtpStatus('idle');
+                            setOtpError('');
+                          }}
                           className="text-emerald ml-2 hover:underline"
+                          disabled={otpStatus === 'verifying'}
                         >
                           Change
                         </button>
@@ -239,15 +365,29 @@ export default function PortalLogin({ onLogin }) {
                         placeholder="123456"
                         maxLength={6}
                         required
+                        disabled={otpStatus === 'verifying'}
                       />
                     </div>
                     
+                    {otpError && otpSent && (
+                      <div className="mb-4 text-red-400 text-sm">
+                        {otpError}
+                      </div>
+                    )}
+                    
                     <button
                       type="submit"
+                      disabled={otpStatus === 'verifying'}
                       className="w-full bg-emerald text-charleston-green-dark py-3 rounded-md hover:bg-emerald-light transition-colors flex items-center justify-center gap-2 font-medium"
                     >
-                      <span>Verify OTP</span>
-                      <FaArrowRight />
+                      {otpStatus === 'verifying' ? (
+                        <div className="animate-spin h-5 w-5 border-2 border-charleston-green-dark border-t-transparent rounded-full"></div>
+                      ) : (
+                        <>
+                          <span>Verify OTP</span>
+                          <FaArrowRight />
+                        </>
+                      )}
                     </button>
                   </form>
                 )}
