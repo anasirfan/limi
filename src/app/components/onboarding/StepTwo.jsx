@@ -62,9 +62,28 @@ const itemVariants = {
   }
 };
 
-export default function StepTwo({ selection, onSelect, onNext, onPrevious }) {
+export default function StepTwo({ selection, onSelect, onNext, onPrevious, lightType }) {
+  // Auto-select based on lightType if needed
+  React.useEffect(() => {
+    if (lightType === 'wall' && selection !== 'coolLux') {
+      onSelect('coolLux');
+    } else if (lightType === 'floor' && selection !== 'shadowHue') {
+      onSelect('shadowHue');
+    }
+  }, [lightType, onSelect, selection]);
+
   const hasSelection = !!selection;
   const carouselRef = useRef(null);
+  
+  // Determine if a style should be disabled
+  const isStyleDisabled = (styleId) => {
+    if (lightType === 'wall') {
+      return styleId !== 'coolLux';
+    } else if (lightType === 'floor') {
+      return styleId !== 'shadowHue';
+    }
+    return false; // All enabled for other types
+  };
   
   // These functions are directly called when the buttons are clicked
   const handleNextButtonClick = (e) => {
@@ -137,12 +156,14 @@ export default function StepTwo({ selection, onSelect, onNext, onPrevious }) {
             <motion.div
               key={style.id}
               variants={itemVariants}
-              className={`flex-none w-[85%] max-sm:w-[75%] snap-center rounded-xl overflow-hidden cursor-pointer transition-all duration-300 ${
+              className={`flex-none w-[85%] max-sm:w-[75%] snap-center rounded-xl overflow-hidden transition-all duration-300 ${
                 selection === style.id 
                   ? 'ring-3 ring-[#50C878] shadow-[0_0_15px_rgba(80,200,120,0.5)]' 
-                  : 'ring-1 ring-transparent'
+                  : isStyleDisabled(style.id)
+                    ? 'opacity-50 cursor-not-allowed ring-1 ring-transparent'
+                    : 'ring-1 ring-transparent cursor-pointer'
               }`}
-              onClick={() => onSelect(style.id)}
+              onClick={() => !isStyleDisabled(style.id) && onSelect(style.id)}
               style={{
                 background: `linear-gradient(135deg, #2B2D2F 0%, #3a3d42 100%)`,
               }}
@@ -188,12 +209,14 @@ export default function StepTwo({ selection, onSelect, onNext, onPrevious }) {
           <motion.div
             key={style.id}
             variants={itemVariants}
-            className={`relative overflow-hidden rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-[1.02] ${
+            className={`relative overflow-hidden rounded-xl transition-all duration-300 transform ${
               selection === style.id 
                 ? 'ring-4 ring-[#50C878] shadow-[0_0_15px_rgba(80,200,120,0.5)]' 
-                : 'ring-2 ring-transparent hover:ring-[#87CEAB]'
+                : isStyleDisabled(style.id)
+                  ? 'opacity-50 cursor-not-allowed'
+                  : 'ring-2 ring-transparent hover:ring-[#87CEAB] cursor-pointer hover:scale-[1.02]'
             }`}
-            onClick={() => onSelect(style.id)}
+            onClick={() => !isStyleDisabled(style.id) && onSelect(style.id)}
             style={{
               background: `linear-gradient(135deg, #2B2D2F 0%, #3a3d42 100%)`,
             }}

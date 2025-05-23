@@ -12,7 +12,8 @@ export default function OnboardingSection() {
   const [currentStep, setCurrentStep] = useState(1);
   const [wizardSelections, setWizardSelections] = useState({});
   const [homepageMessageSent, setHomepageMessageSent] = useState(false);
-  
+  const [currentType, setCurrentType] = useState('');
+  const [lightAmount, setLightAmount] = useState('');
   // Handle iframe messages
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -69,8 +70,20 @@ export default function OnboardingSection() {
               'floor': 'floor'
             };
             const lightType = lightTypeMap[selections.lightCategory] || 'ceiling';
+            setCurrentType(lightType);
+
             iframeRef.current.contentWindow.postMessage(`light_type:${lightType}`, "*");
-            iframeRef.current.contentWindow.postMessage('pendant_design:product_2', "*");
+            if(lightType === 'floor'){
+              iframeRef.current.contentWindow.postMessage('light_amount:3', "*");
+            }
+            
+            if(lightType === 'floor'){
+              iframeRef.current.contentWindow.postMessage('pendant_0:product_2', "*");
+              iframeRef.current.contentWindow.postMessage('pendant_1:product_2', "*");
+              iframeRef.current.contentWindow.postMessage('pendant_2:product_2', "*");
+            } else {
+              iframeRef.current.contentWindow.postMessage('pendant_design:product_2', "*");
+            }
             console.log(`Sent light type: ${lightType}`);
           }
           break;
@@ -79,7 +92,40 @@ export default function OnboardingSection() {
           if (selections.lightStyle) {
             // Direct mapping from vibe ID to message
             const vibeMessage = selections.lightStyle; // coolLux, dreamGlow, shadowHue, zenFlow
-            iframeRef.current.contentWindow.postMessage(`vibe:${vibeMessage}`, "*");
+            let lightAmount = 1;
+            if (currentType === 'ceiling') {
+              if (vibeMessage === 'coolLux') {
+                lightAmount = '1';
+              } else if (vibeMessage === 'dreamGlow') {
+                lightAmount = '3';
+              } else if (vibeMessage === 'shadowHue') {
+                lightAmount = '6';
+              } else {
+                lightAmount = '24';
+              }
+
+              setLightAmount(lightAmount);
+              iframeRef.current.contentWindow.postMessage('light_type:ceiling', "*");
+
+              iframeRef.current.contentWindow.postMessage(`light_amount:${lightAmount}`, "*");
+              for(let i = 0; i < lightAmount; i++){
+                if(lightAmount === '1'){
+                  iframeRef.current.contentWindow.postMessage(`pendant_design:product_2`, "*");
+                  break;
+                }
+                iframeRef.current.contentWindow.postMessage(`pendant_${i}:product_2`, "*");
+              }
+            } else if(currentType === 'floor') {
+           
+              iframeRef.current.contentWindow.postMessage(`light_amount:3`, "*");
+              for(let i = 0; i < 3; i++){
+                iframeRef.current.contentWindow.postMessage(`pendant_${i}:product_2`, "*");
+              }
+            } else if(currentType === 'wall') {
+      
+              iframeRef.current.contentWindow.postMessage(`light_amount:1`, "*");
+            }
+            
             
             console.log(`Sent vibe: ${vibeMessage}`);
           }
@@ -89,10 +135,30 @@ export default function OnboardingSection() {
           if (selections.designAesthetic) {
             // Direct mapping from aesthetic ID to message
             const aestheticMessage = selections.designAesthetic; // aesthetic, industrial, scandinavian, modern_style
+            let pendantDesign = '';
+            if(aestheticMessage === 'modern_style'){
+              pendantDesign='product_1';
+            } else if(aestheticMessage === 'aesthetic'){
+              pendantDesign='product_2';
+            } else if(aestheticMessage === 'industrial'){
+              pendantDesign='product_3';
+            } else if(aestheticMessage === 'scandinavian'){
+              pendantDesign='product_5';
+            }
+
+            for(let i = 0; i < lightAmount; i++){
+              if(currentType === 'wall'){
+                iframeRef.current.contentWindow.postMessage(`light_amount:1`, "*");
+                iframeRef.current.contentWindow.postMessage(`pendant_design:${pendantDesign}`, "*");
+                break;
+              } else {
+                iframeRef.current.contentWindow.postMessage(`pendant_${i}:${pendantDesign}`, "*");
+              }
+            }
             // Handle the special case for modern_style
-            const formattedAesthetic = aestheticMessage === 'modern_style' ? 'modern' : aestheticMessage;
-            iframeRef.current.contentWindow.postMessage(`aesthetic:${formattedAesthetic}`, "*");
-            console.log(`Sent aesthetic: ${formattedAesthetic}`);
+            // const formattedAesthetic = aestheticMessage === 'modern_style' ? 'modern' : aestheticMessage;
+            // iframeRef.current.contentWindow.postMessage(`aesthetic:${formattedAesthetic}`, "*");
+       
           }
           break;
           
@@ -105,20 +171,20 @@ export default function OnboardingSection() {
               'floor': 'floor'
             };
             const lightType = lightTypeMap[selections.lightCategory] || 'ceiling';
-            iframeRef.current.contentWindow.postMessage(`light_type:${lightType}`, "*");
+            // iframeRef.current.contentWindow.postMessage(`light_type:${lightType}`, "*");
             console.log(`Final: Sent light type: ${lightType}`);
           }
           
           // Send vibe
           if (selections.lightStyle) {
-            iframeRef.current.contentWindow.postMessage(`vibe:${selections.lightStyle}`, "*");
+            // iframeRef.current.contentWindow.postMessage(`vibe:${selections.lightStyle}`, "*");
             console.log(`Final: Sent vibe: ${selections.lightStyle}`);
           }
           
           // Send aesthetic
           if (selections.designAesthetic) {
             const formattedAesthetic = selections.designAesthetic === 'modern_style' ? 'modern' : selections.designAesthetic;
-            iframeRef.current.contentWindow.postMessage(`aesthetic:${formattedAesthetic}`, "*");
+            // iframeRef.current.contentWindow.postMessage(`aesthetic:${formattedAesthetic}`, "*");
             console.log(`Final: Sent aesthetic: ${formattedAesthetic}`);
           }
           break;
@@ -355,6 +421,7 @@ export default function OnboardingSection() {
             <OnboardingWizard 
               onComplete={handleComplete}
               onStepChange={handleStepChange}
+              lightType={currentType}
             />
           </motion.div>
         </div>

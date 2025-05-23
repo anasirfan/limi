@@ -7,7 +7,7 @@ import StepThree from './StepThree';
 import StepFour from './StepFour';
 import ProgressBar from './ProgressBar';
 
-export default function OnboardingWizard({ onComplete, onStepChange }) {
+export default function OnboardingWizard({ onComplete, onStepChange, lightType }) {
   const [currentStep, setCurrentStep] = useState(1);
   const [selections, setSelections] = useState({
     lightCategory: '',
@@ -110,6 +110,7 @@ export default function OnboardingWizard({ onComplete, onStepChange }) {
               onSelect={(value) => handleSelection('lightStyle', value)}
               onNext={handleNext}
               onPrevious={handlePrevious}
+              lightType={lightType}
             />
           )}
           
