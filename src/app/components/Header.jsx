@@ -37,7 +37,7 @@ const Header = () => {
 
  
 
-    const { isLoggedIn, user } = isClient && isClient?.isLoggedIn && isClient?.user ? userData : { isLoggedIn: false, user: null };
+  const { isLoggedIn, user } = userData || { isLoggedIn: false, user: null };
   
 
   
