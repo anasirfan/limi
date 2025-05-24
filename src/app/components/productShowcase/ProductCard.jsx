@@ -53,7 +53,8 @@ const ProductCard = ({ product, className = '', isMobile = false }) => {
     return unsplashFallbacks[index];
   };
   
-  const imageSrc = product.image || getUnsplashImage();
+  const imageSrc = isMobile ? product.mobileImage : product.image || getUnsplashImage();
+  console.log(imageSrc);
 
   return (
     <div 

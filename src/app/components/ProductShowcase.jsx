@@ -26,6 +26,7 @@ function ProductShowcase() {
       tagline: "Intelligent Power Base",
       description: "The foundation of your smart lighting system, connecting seamlessly to your existing fixtures.",
       image: "/images/homepage-products/main.jpg",
+      mobileImage: "/images/homepage-products/main-1-mobile.jpg",
       galleryImages: [
         "/images/homepage-products/main/main-1.jpg",
         "/images/homepage-products/main/main-2.jpg",
@@ -55,6 +56,7 @@ function ProductShowcase() {
       tagline: "Design-forward Pendants",
       description: "Beautiful pendants that can be swapped without tools or an electrician.",
       image: "/images/homepage-products/1.jpg",
+      mobileImage: "/images/homepage-products/1-mobile.jpg",
       galleryImages: [
         "/images/homepage-products/1/1.jpg",
         "/images/homepage-products/1/2.jpg",
@@ -82,6 +84,7 @@ function ProductShowcase() {
       tagline: "Central Control Hub",
       description: "Central hub that connects your lighting system to your smart home ecosystem.",
       image: "/images/homepage-products/2.jpg",
+      mobileImage: "/images/homepage-products/2-mobile.jpg",
       galleryImages: [
         "/images/homepage-products/2/1.jpg",
         "/images/homepage-products/2/2.png",
@@ -111,6 +114,7 @@ function ProductShowcase() {
       tagline: "Elegant Wall Lighting",
       description: "Sleek wall-mounted pendant lights that bring style and function to any room.",
       image: "/images/homepage-products/4.jpg",
+      mobileImage: "/images/homepage-products/4-mobile.jpg",
       galleryImages: [
         "/images/homepage-products/4/1.jpg",
         "/images/homepage-products/4/2.jpg",
@@ -139,6 +143,7 @@ function ProductShowcase() {
       tagline: "Suspended Elegance",
       description: "Stunning pendant lights that create a focal point in any space.",
       image: "/images/homepage-products/3.jpg",
+      mobileImage: "/images/homepage-products/3-mobile.jpg",
       galleryImages: [
         "/images/homepage-products/3/1.jpg",
         "/images/homepage-products/3/2.jpg",
@@ -168,6 +173,7 @@ function ProductShowcase() {
       tagline: "Sleek Wall Accent",
       description: "Clean, modern wall sconce that provides elegant ambient lighting.",
       image: "/images/homepage-products/6.jpg",
+      mobileImage: "/images/homepage-products/6-mobile.jpg",
       galleryImages: [
         "/images/homepage-products/6/1.jpg",
         "/images/homepage-products/6/8.jpg",
@@ -197,6 +203,7 @@ function ProductShowcase() {
       tagline: "Dramatic Ceiling Fixture",
       description: "Bold, eye-catching chandelier that transforms any space into a design showcase.",
       image: "/images/homepage-products/5.jpg",
+      mobileImage: "/images/homepage-products/5-mobile.jpg",
       galleryImages: [
         "/images/homepage-products/5/1.jpg",
         "/images/homepage-products/5/2.jpg",
@@ -225,6 +232,7 @@ function ProductShowcase() {
       tagline: "Versatile Directional Lighting",
       description: "Flexible track system that allows you to highlight specific areas or objects.",
       image: "/images/homepage-products/7.jpg",
+      mobileImage: "/images/homepage-products/7-mobile.jpg",
       galleryImages: [
         "/images/homepage-products/7/7.jpg",
         "/images/homepage-products/7/8.jpg",
