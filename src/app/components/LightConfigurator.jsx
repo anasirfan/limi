@@ -2331,7 +2331,7 @@ const LightConfigurator = () => {
                 </div>
                 <div className="flex gap-3 justify-center">
                   <motion.button
-                    onClick={() => router.push('/login?redirect=/configurator')}
+                    onClick={() => router.push('/portal')}
                     className="bg-[#50C878] hover:bg-[#3da861] text-white px-4 py-2 rounded-lg transition-colors"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
