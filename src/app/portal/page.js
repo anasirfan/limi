@@ -11,7 +11,9 @@ import { login, logout } from '../redux/slices/userSlice';
 
 export default function CustomerPortal() {
   const dispatch = useDispatch();
-  const { isLoggedIn = false, user = null, loginStatus = 'idle' } = useSelector((state) => state?.user || {});
+  const { isLoggedIn = false, user = null, loginStatus = 'idle' } = useSelector((state) => state.user || {});
+
+  console.log(user)
   const router = useRouter();
   const loading = loginStatus === 'loading';
   
@@ -49,7 +51,7 @@ export default function CustomerPortal() {
             <PortalLogin onLogin={handleLogin} />
           ) : (
             <div className="max-w-7xl mx-auto">
-              <CustomerDashboard user={user} onLogout={handleLogout} />
+              <CustomerDashboard user={user.data} onLogout={handleLogout} />
             </div>
           )}
         </div>

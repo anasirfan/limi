@@ -498,8 +498,8 @@ const Header = () => {
                   {isClient && userDropdownOpen && (
                     <div className="absolute right-0 mt-2 w-56 bg-charleston-green-dark border border-charleston-green-light rounded-lg shadow-xl py-2 z-50 backdrop-blur-md">
                       <div className="px-4 py-2 border-b border-charleston-green-light">
-                        <p className="text-sm font-medium text-emerald">{user?.name || 'User'}</p>
-                        <p className="text-xs text-gray-400 truncate">{user?.email || 'user@example.com'}</p>
+                        <p className="text-sm font-medium text-emerald">{user?.data?.name || 'User'}</p>
+                        <p className="text-xs text-gray-400 truncate">{user?.data?.email || 'user@example.com'}</p>
                       </div>
                       
                       {/* <Link 
