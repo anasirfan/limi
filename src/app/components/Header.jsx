@@ -490,7 +490,7 @@ const Header = () => {
                         <FaUserCircle className="text-xl text-charleston-green" />
                       )}
                     </div>
-                    <span className={`${isScrolled ? 'hidden' : 'hidden sm:inline'} text-sm font-medium transition-all duration-300`}>{user?.name || 'User'}</span>
+                    <span className={`${isScrolled ? 'hidden' : 'hidden sm:inline'} text-sm font-medium transition-all duration-300`}>{user?.data?.name || 'User'}</span>
                     <FaChevronDown className={`text-xs transition-transform duration-300 ${userDropdownOpen ? 'rotate-180' : ''}`} />
                   </button>
                   
