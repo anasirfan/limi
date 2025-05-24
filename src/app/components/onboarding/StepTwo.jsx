@@ -66,8 +66,10 @@ export default function StepTwo({ selection, onSelect, onNext, onPrevious, light
   // Auto-select based on lightType if needed
   React.useEffect(() => {
     if (lightType === 'wall' && selection !== 'coolLux') {
+      console.log("lightType: ",lightType)
       onSelect('coolLux');
     } else if (lightType === 'floor' && selection !== 'shadowHue') {
+      console.log("lightType: ",lightType)
       onSelect('shadowHue');
     }
   }, [lightType, onSelect, selection]);

@@ -714,13 +714,13 @@ export default function HowItWorks() {
                       </div>
                       
                       {/* Floating badge */}
-                      <motion.div 
+                      {/* <motion.div 
                         className="absolute top-4 right-4 bg-[#54BB74] text-white text-xs font-bold px-3 py-1 rounded-full z-20"
                         animate={{ y: [0, -5, 0] }}
                         transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                       >
                         Demo Video
-                      </motion.div>
+                      </motion.div> */}
                     </div>
                   </div>
                   

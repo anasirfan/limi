@@ -3,12 +3,13 @@ import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiX, FiPlay, FiPause } from "react-icons/fi";
+import Link from 'next/link';
 
 const ProductModal = ({ product, isOpen, onClose }) => {
   const [activeTab, setActiveTab] = useState('overview');
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const videoRef = useRef(null);
-  
+
   // Unsplash fallback images for lighting products
   const unsplashFallbacks = [
     "https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?q=80&w=1000",
@@ -183,13 +184,20 @@ const ProductModal = ({ product, isOpen, onClose }) => {
                         )}
                       </ul>
                       
-                      <motion.button 
-                        className="bg-[#54BB74] text-white px-8 py-4 rounded-lg text-lg font-medium hover:bg-[#48a064] transition-colors duration-300 shadow-lg"
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        Configure Your Light
-                      </motion.button>
+                      <Link href="/configurator" passHref>
+                        <motion.button 
+                          className="bg-[#54BB74] text-white px-8 py-4 rounded-lg text-lg font-medium hover:bg-[#48a064] transition-colors duration-300 shadow-lg"
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            onClose();
+                            window.location.href = '/configurator';
+                          }}
+                        >
+                          Configure Your Light
+                        </motion.button>
+                      </Link>
                     </motion.div>
                   </div>
                 </div>

@@ -145,12 +145,16 @@ export default function OnboardingSection() {
             } else if(aestheticMessage === 'scandinavian'){
               pendantDesign='product_5';
             }
-
+            console.log("lightAmount: ",lightAmount)
+            console.log(`Sent aesthetic: ${aestheticMessage}`, currentType, lightAmount, pendantDesign);
             for(let i = 0; i < lightAmount; i++){
+              console.log("i: ",i)
               if(currentType === 'wall'){
                 iframeRef.current.contentWindow.postMessage(`light_amount:1`, "*");
                 iframeRef.current.contentWindow.postMessage(`pendant_design:${pendantDesign}`, "*");
                 break;
+              } else if(currentType === 'floor') {
+                iframeRef.current.contentWindow.postMessage(`pendant_${i}:${pendantDesign}`, "*");
               } else {
                 iframeRef.current.contentWindow.postMessage(`pendant_${i}:${pendantDesign}`, "*");
               }

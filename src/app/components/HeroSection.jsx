@@ -380,15 +380,15 @@ function HeroSection() {
         <div className="flex flex-wrap justify-center gap-4 mt-8 mb-12 opacity-0 animate-fadeIn" style={{animationDelay: '1.5s', animationFillMode: 'forwards'}}>
           <button 
             className="px-6 py-3 bg-transparent border-2 border-[#54BB74] text-white rounded-full hover:bg-[#54BB74] hover:text-white transition-all duration-300 transform hover:scale-105 focus:outline-none"
-            onClick={() => document.getElementById('product-showcase').scrollIntoView({ behavior: 'smooth' })}
+            onClick={() => document.getElementById('products').scrollIntoView({ behavior: 'smooth' })}
           >
             Discover Products
           </button>
           <button 
             className="px-6 py-3 bg-[#54BB74] text-white rounded-full hover:bg-[#3a8351] transition-all duration-300 transform hover:scale-105 focus:outline-none"
-            onClick={() => window.open('#', '_blank')}
+            onClick={() => document.getElementById('configurator').scrollIntoView({ behavior: 'smooth' })}
           >
-            Watch Demo
+            Customize It
           </button>
         </div>
       </div>
@@ -398,7 +398,7 @@ function HeroSection() {
         ref={scrollCueRef}
         className="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-20 cursor-pointer hover:scale-110 transition-transform duration-300"
         onClick={() => {
-          document.getElementById('product-showcase').scrollIntoView({ behavior: 'smooth' });
+          document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
         }}
       >
         <svg 

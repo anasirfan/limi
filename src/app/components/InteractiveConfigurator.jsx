@@ -120,12 +120,23 @@ export default function InteractiveConfigurator() {
         <div className="text-center mt-16">
           <h3 className="text-2xl font-bold mb-4">Ready to design your perfect light?</h3>
           <p className="text-[#2B2D2F] opacity-75 mb-6 max-w-2xl mx-auto">Our full configurator gives you complete control over every aspect of your lighting solution.</p>
-          <Link 
-            href="/configurator" 
-            className="inline-block px-8 py-4 bg-[#50C878] text-white rounded-lg hover:bg-[#3da861] transition-colors text-lg font-medium"
-          >
-            Launch Full Configurator
-          </Link>
+          <div className="relative z-50">
+            <Link 
+              href="/configurator" 
+              className="inline-block px-8 py-4 bg-[#50C878] text-white rounded-lg hover:bg-[#3da861] transition-colors text-lg font-medium relative z-50"
+              style={{
+                position: 'relative',
+                zIndex: 50,
+                pointerEvents: 'auto'
+              }}
+              onClick={(e) => {
+                console.log('Link clicked');
+                e.stopPropagation();
+              }}
+            >
+              Launch Full Configurator
+            </Link>
+          </div>
         </div>
       </div>
     </section>
