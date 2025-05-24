@@ -116,13 +116,13 @@ export default function OnboardingSection() {
                 iframeRef.current.contentWindow.postMessage(`pendant_${i}:product_2`, "*");
               }
             } else if(currentType === 'floor') {
-           
+                setLightAmount(3);
               iframeRef.current.contentWindow.postMessage(`light_amount:3`, "*");
               for(let i = 0; i < 3; i++){
                 iframeRef.current.contentWindow.postMessage(`pendant_${i}:product_2`, "*");
               }
             } else if(currentType === 'wall') {
-      
+              console.log("lightAmount: ",lightAmount)
               iframeRef.current.contentWindow.postMessage(`light_amount:1`, "*");
             }
             

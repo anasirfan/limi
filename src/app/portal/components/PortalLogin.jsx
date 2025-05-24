@@ -232,13 +232,13 @@ export default function PortalLogin({ onLogin }) {
                     <FaEnvelope />
                     Email Login
                   </button>
-                  <button
+                  {/* <button
                     onClick={() => setLoginMethod('otp')}
                     className={`px-4 py-2 font-medium flex items-center gap-2 ${loginMethod === 'otp' ? 'text-emerald border-b-2 border-emerald' : 'text-gray-400 hover:text-gray-300'}`}
                   >
                     <FaMobileAlt />
                     OTP Login
-                  </button>
+                  </button> */}
                 </div>
             
             {loginMethod === 'email' ? (

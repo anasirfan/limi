@@ -104,7 +104,7 @@ export const loginUser = createAsyncThunk(
       // Get user profile with token
       const profileResponse = await fetch('https://api1.limitless-lighting.co.uk/client/user/profile', {
         headers: {
-          'Authorization': `Bearer ${data.token}`
+          'Authorization': `${data.token}`
         }
       });
       
@@ -113,6 +113,7 @@ export const loginUser = createAsyncThunk(
       }
       
       const userData = await profileResponse.json();
+      console.log("userData : ",userData);
       
       // Save to localStorage
       saveUserToStorage(userData);
@@ -128,6 +129,8 @@ export const loginUser = createAsyncThunk(
 export const signupUser = createAsyncThunk(
   'user/signup',
   async (userData, { rejectWithValue }) => {
+
+    console.log("in userSlice : ",userData);
     try {
       // Validation
       if (!userData.email || !userData.password || !userData.name) {
@@ -153,6 +156,7 @@ export const signupUser = createAsyncThunk(
       }
       
       const data = await response.json();
+      console.log("data : ",data);
       
       // Auto login after successful signup
       const loginResponse = await fetch('https://api1.limitless-lighting.co.uk/client/user/login', {
@@ -176,20 +180,20 @@ export const signupUser = createAsyncThunk(
       if (loginData.token) {
         localStorage.setItem('limiToken', loginData.token);
       }
-      
+      console.log("loginData : ",loginData);
       // Get user profile
       const profileResponse = await fetch('https://api1.limitless-lighting.co.uk/client/user/profile', {
         headers: {
-          'Authorization': `Bearer ${loginData.token}`
+          'Authorization': `${loginData.token}`
         }
       });
-      
+
       if (!profileResponse.ok) {
         return rejectWithValue('Account created but failed to fetch profile');
       }
-      
+
       const newUser = await profileResponse.json();
-      
+      console.log("newUser : ",newUser);
       // Save to localStorage
       saveUserToStorage(newUser);
       

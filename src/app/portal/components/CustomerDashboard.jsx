@@ -32,9 +32,9 @@ export default function CustomerDashboard({ user, onLogout }) {
   // Dashboard navigation items
   const navItems = [
     { id: 'configurations', label: 'Saved Configurations', icon: <FaCog /> },
-    { id: 'orders', label: 'Order History', icon: <FaShoppingCart /> },
-    { id: 'favorites', label: 'Favorites', icon: <FaHeart /> },
-    { id: 'promotions', label: 'Promotions', icon: <FaTag /> },
+    // { id: 'orders', label: 'Order History', icon: <FaShoppingCart /> },
+    // { id: 'favorites', label: 'Favorites', icon: <FaHeart /> },
+    // { id: 'promotions', label: 'Promotions', icon: <FaTag /> },
     { id: 'account', label: 'Account Settings', icon: <FaUser /> },
   ];
   
@@ -83,10 +83,10 @@ export default function CustomerDashboard({ user, onLogout }) {
           </div>
           
           <div className="flex items-center gap-4">
-            <button className="relative p-2 text-gray-400 hover:text-white">
+            {/* <button className="relative p-2 text-gray-400 hover:text-white">
               <FaBell />
               <span className="absolute top-0 right-0 w-2 h-2 bg-[#54BB74] rounded-full"></span>
-            </button>
+            </button> */}
             
             <button 
               onClick={onLogout}
