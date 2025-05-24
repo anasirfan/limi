@@ -1697,14 +1697,123 @@ const LightConfigurator = () => {
     }
   };
 
-  // Save configuration
-  const saveConfiguration = () => {
-    toast.success("Configuration saved successfully!", {
-      position: "bottom-right",
-      autoClose: 2000,
-      theme: isDarkMode ? "dark" : "light"
-    });
+  // State for save configuration modal
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Save configuration with name
+  const handleSaveWithName = () => {
+    if (!configName.trim()) {
+      toast.error("Please enter a configuration name", {
+        position: "bottom-right",
+        autoClose: 2000,
+        theme: isDarkMode ? "dark" : "light"
+      });
+      return;
+    }
+
+    setIsSaving(true);
+    const iframe = document.getElementById('playcanvas-app');
+    
+    if (iframe && iframe.contentWindow) {
+      // Set up message listener for the response
+      const handleMessage = (event) => {
+        // Check the message type to ensure it's the response we want
+        if (event.data && event.data.type === 'configuration_saved') {
+          console.log('Configuration saved:', event.data);
+          
+          // Show success toast
+          toast.success(`Configuration "${configName}" saved successfully!`, {
+            position: "bottom-right",
+            autoClose: 2000,
+            theme: isDarkMode ? "dark" : "light"
+          });
+          
+          // Reset form and close modal
+          setConfigName('');
+          setShowSaveModal(false);
+          setIsSaving(false);
+          
+          // Clean up the event listener
+          window.removeEventListener('message', handleMessage);
+        }
+      };
+      
+      // Add the event listener
+      window.addEventListener('message', handleMessage);
+      
+      // Send save configuration message to PlayCanvas
+      iframe.contentWindow.postMessage({ 
+        type: 'save_configuration',
+        data: {
+          name: configName.trim(),
+          timestamp: new Date().toISOString()
+        }
+      }, '*');
+      
+      // Set a timeout to clean up the listener if no response is received
+      setTimeout(() => {
+        window.removeEventListener('message', handleMessage);
+        setIsSaving(false);
+      }, 5000);
+    } else {
+      console.error('Could not find PlayCanvas iframe');
+      setIsSaving(false);
+      toast.error("Failed to save configuration", {
+        position: "bottom-right",
+        autoClose: 2000,
+        theme: isDarkMode ? "dark" : "light"
+      });
+    }
   };
+
+  // Open save configuration modal
+  const saveConfiguration = () => {
+    setShowSaveModal(true);
+  };
+
+  // Save Configuration Modal
+  const SaveConfigModal = () => (
+    <div className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 ${!showSaveModal ? 'hidden' : ''}`}>
+      <div className="bg-[#2B2D2F] rounded-xl p-6 w-full max-w-md">
+        <h3 className="text-xl font-bold mb-4 text-white">Save Configuration</h3>
+        <input
+          type="text"
+          value={configName}
+          onChange={(e) => setConfigName(e.target.value)}
+          placeholder="Enter configuration name"
+          className="w-full p-3 rounded-lg bg-[#3A3D42] text-white placeholder-gray-400 mb-4 focus:outline-none focus:ring-2 focus:ring-[#50C878]"
+          onKeyDown={(e) => e.key === 'Enter' && handleSaveWithName()}
+        />
+        <div className="flex justify-end space-x-3">
+          <button
+            onClick={() => {
+              setSaveModalOpen(false);
+              setConfigName('');
+            }}
+            className="px-4 py-2 rounded-lg bg-gray-600 text-white hover:bg-gray-700 transition-colors"
+            disabled={isSaving}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSaveWithName}
+            className="px-4 py-2 rounded-lg bg-[#50C878] text-white hover:bg-[#3da861] transition-colors flex items-center"
+            disabled={isSaving || !configName.trim()}
+          >
+            {isSaving ? (
+              <>
+                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Saving...
+              </>
+            ) : 'Save'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 
   // Add to cart
   const addToCart = () => {
@@ -2325,7 +2434,7 @@ const LightConfigurator = () => {
     setConfigName(`${lightType.charAt(0).toUpperCase() + lightType.slice(1)} Light Configuration`);
   }
   
-  // Function to save configuration to Redux
+  // Function to save configuration to Redux and PlayCanvas
   function saveConfigToRedux() {
     if (!configName.trim()) {
       toast.error('Please enter a name for your configuration', {
@@ -2336,30 +2445,73 @@ const LightConfigurator = () => {
       return;
     }
     
-    // Create configuration object
-    const configData = {
-      name: configName,
-      lightType,
-      lightAmount,
-      lightDesign,
-      cableColor,
-      cableLength,
-      pendants: pendants.map(p => ({ design: p.design, color: p.color })),
-      price: parseFloat(totalPrice),
-      thumbnail: `/images/products/${lightType}-${lightDesign}.jpg`,
-    };
+    // Show loading state
+    setIsSaving(true);
     
-    // Dispatch action to save configuration
-    dispatch(saveConfiguration(configData));
+    // Get PlayCanvas iframe
+    const iframe = document.getElementById('playcanvas-app');
     
-    // Close modal and show success notification
-    setShowSaveModal(false);
-    
-    toast.success('Configuration saved successfully!', {
-      position: "bottom-right",
-      autoClose: 3000,
-      theme: "dark"
-    });
+    if (iframe && iframe.contentWindow) {
+      // Set up message listener for the response
+      const handleMessage = (event) => {
+        // Check the message type to ensure it's the response we want
+        if (event.data && event.data.type === 'configuration_saved') {
+          console.log('Configuration saved to PlayCanvas:', event.data);
+          
+          // Close modal and show success notification
+          setShowSaveModal(false);
+          setIsSaving(false);
+          
+          toast.success('Configuration saved successfully!', {
+            position: "bottom-right",
+            autoClose: 3000,
+            theme: "dark"
+          });
+          
+          // Clean up the event listener
+          window.removeEventListener('message', handleMessage);
+        }
+      };
+      
+      // Add the event listener
+      window.addEventListener('message', handleMessage);
+      
+      try {
+        // Send save configuration command
+        iframe.contentWindow.postMessage('save_config', '*');
+        
+        // Send configuration name as a separate message
+        iframe.contentWindow.postMessage(`name:${configName.trim()}`, '*');
+        
+        console.log('Sent save command and configuration name to iframe');
+        
+        // Set a timeout to clean up the listener if no response is received
+        setTimeout(() => {
+          window.removeEventListener('message', handleMessage);
+          if (isSaving) {
+            setIsSaving(false);
+            console.warn('Timed out waiting for save confirmation from iframe');
+          }
+        }, 5000);
+        
+      } catch (error) {
+        console.error('Error sending messages to iframe:', error);
+        setIsSaving(false);
+        toast.error("Failed to save configuration", {
+          position: "bottom-right",
+          autoClose: 3000,
+          theme: "dark"
+        });
+      }
+    } else {
+      console.error('Could not find PlayCanvas iframe');
+      setIsSaving(false);
+      toast.error("3D preview not available", {
+        position: "bottom-right",
+        autoClose: 3000,
+        theme: "dark"
+      });
+    }
   }
 };
 
