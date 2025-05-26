@@ -1154,7 +1154,10 @@ const handleConfigurationTypeChange = (type) => {
   const iframe = document.getElementById('playcanvas-app');
   if (iframe && iframe.contentWindow) {
     if (type === 'systems') {
-      // If switching to systems, send system message
+      // When switching to systems, first send light_amount:1
+      iframe.contentWindow.postMessage(`light_amount:1`, "*");
+      
+      // Then send system message
       iframe.contentWindow.postMessage(`system:${selectedSystem}`, "*");
       
       // Also send base type if ceiling light
