@@ -126,13 +126,19 @@ const BaseTypeSelector = ({ baseType, onBaseTypeChange, isDarkMode, isVisible })
   );
 };
 // System Selector Component
-const SystemSelector = ({ selectedSystem, onSystemChange, isDarkMode }) => {
-  const systems = [
+const SystemSelector = ({ selectedSystem, onSystemChange, isDarkMode, baseType }) => {
+  // Define all available systems
+  const allSystems = [
     { id: "bar", name: "Bar System" },
     { id: "ball", name: "Ball System" },
     { id: "universal", name: "Universal System" },
     { id: "chandeliers", name: "Chandeliers" },
   ];
+  
+  // Filter systems based on baseType - hide chandeliers when base is round
+  const systems = baseType === 'round' 
+    ? allSystems.filter(system => system.id !== 'chandeliers')
+    : allSystems;
 
   return (
     <motion.div 
@@ -1221,10 +1227,19 @@ const handleBaseTypeChange = (type) => {
       });
     } else {
       // For systems mode, send the selected system
-      iframe.contentWindow.postMessage(`light_amount:1`, "*");
-      iframe.contentWindow.postMessage(`pendant_design:product_2`, "*");
-
+      if(type === 'round'){
+        iframe.contentWindow.postMessage(`light_amount:1`, "*");
+        iframe.contentWindow.postMessage(`pendant_design:product_2`, "*");
+      }
+      
+      // Always send system message regardless of base type
       iframe.contentWindow.postMessage(`system:${selectedSystem}`, "*");
+      
+      // If chandelier option is selected and base type changes, make sure it's still visible
+      if (selectedSystem === 'chandeliers') {
+        // Ensure chandelier option remains visible for rectangular base
+        iframe.contentWindow.postMessage(`show_chandelier:true`, "*");
+      }
     }
   }
 };
@@ -2353,6 +2368,7 @@ const handleBaseTypeChange = (type) => {
                       selectedSystem={selectedSystem}
                       onSystemChange={handleSystemChange}
                       isDarkMode={isDarkMode}
+                      baseType={baseType}
                     />
                   )}
                 </div>
