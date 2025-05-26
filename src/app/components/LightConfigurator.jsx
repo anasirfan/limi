@@ -125,6 +125,48 @@ const BaseTypeSelector = ({ baseType, onBaseTypeChange, isDarkMode, isVisible })
     </motion.div>
   );
 };
+// System Selector Component
+const SystemSelector = ({ selectedSystem, onSystemChange, isDarkMode }) => {
+  const systems = [
+    { id: "bar", name: "Bar System" },
+    { id: "ball", name: "Ball System" },
+    { id: "universal", name: "Universal System" },
+    { id: "chandeliers", name: "Chandeliers" },
+  ];
+
+  return (
+    <motion.div 
+      className={`mb-6 ${isDarkMode ? 'text-white' : ''}`}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <h3 className="text-lg font-bold mb-3 font-['Amenti']">Select System</h3>
+      <div className="grid grid-cols-2 gap-4">
+        {systems.map((system) => (
+          <motion.div
+            key={system.id}
+            className={`cursor-pointer p-4 rounded-lg ${selectedSystem === system.id 
+              ? isDarkMode ? 'bg-emerald-700' : 'bg-emerald-100'
+              : isDarkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-100 hover:bg-gray-200'}`}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => onSystemChange(system.id)}
+          >
+            <p className="text-center font-medium">{system.name}</p>
+            {selectedSystem === system.id && (
+              <motion.div 
+                className="h-1 bg-emerald-500 rounded-full mt-2"
+                layoutId="systemTypeIndicator"
+              ></motion.div>
+            )}
+          </motion.div>
+        ))}
+      </div>
+    </motion.div>
+  );
+};
+
 // Light Amount Selector Component
 const LightAmountSelector = ({ amount, onAmountChange, isDarkMode, lightType, baseType }) => {
   // Different amounts based on light type and base type
@@ -1079,36 +1121,103 @@ const LightConfigurator = () => {
   const [scrollY, setScrollY] = useState(0);
   const [animatedElements, setAnimatedElements] = useState([]);
   const [baseType, setBaseType] = useState('round');
+  const [configurationType, setConfigurationType] = useState('individualize'); // 'individualize' or 'systems'
+  const [selectedSystem, setSelectedSystem] = useState('bar');
 
-// Add this handler
+// System change handler
+const handleSystemChange = (system) => {
+  setSelectedSystem(system);
+  
+  // Send message to iframe
+  const iframe = document.getElementById('playcanvas-app');
+  if (iframe && iframe.contentWindow) {
+    iframe.contentWindow.postMessage(`system:${system}`, "*");
+    
+    // Also send base type if ceiling light
+    if (lightType === 'ceiling') {
+      iframe.contentWindow.postMessage(`base_type:${baseType}`, "*");
+    }
+  }
+  
+  toast.info(`System changed to ${system}`, {
+    position: "bottom-right",
+    autoClose: 1500,
+    theme: isDarkMode ? "dark" : "light"
+  });
+};
+
+// Configuration type change handler
+const handleConfigurationTypeChange = (type) => {
+  setConfigurationType(type);
+  
+  // Send appropriate messages based on configuration type
+  const iframe = document.getElementById('playcanvas-app');
+  if (iframe && iframe.contentWindow) {
+    if (type === 'systems') {
+      // If switching to systems, send system message
+      iframe.contentWindow.postMessage(`system:${selectedSystem}`, "*");
+      
+      // Also send base type if ceiling light
+      if (lightType === 'ceiling') {
+        iframe.contentWindow.postMessage(`base_type:${baseType}`, "*");
+      }
+    } else {
+      // If switching to individualize, send all pendant configurations
+      iframe.contentWindow.postMessage(`light_amount:${lightAmount}`, "*");
+      
+      // Send pendant designs
+      pendants.forEach((pendant) => {
+        if (pendant.id < lightAmount) {
+          const design = pendant.design || lightDesign;
+          const productId = design === 'bumble' ? 'product_1' : 
+                         design === 'radial' ? 'product_2' : 
+                         design === 'fina' ? 'product_3' : 
+                         design === 'ico' ? 'product_4' : 'product_5';
+          
+          iframe.contentWindow.postMessage(`pendant_${pendant.id}:${productId}`, "*");
+        }
+      });
+    }
+  }
+};
+
+// Base type change handler
 const handleBaseTypeChange = (type) => {
   setBaseType(type);
   
-  // If changing to rectangular, force light amount to 3
-  if (type === 'rectangular' && lightAmount !== 3) {
+  // If changing to rectangular and in individualize mode, force light amount to 3
+  if (configurationType === 'individualize' && type === 'rectangular' && lightAmount !== 3) {
     setLightAmount(3);
   }
   
   // Send message to iframe
   const iframe = document.getElementById('playcanvas-app');
   if (iframe && iframe.contentWindow) {
+    // Always send base type
     iframe.contentWindow.postMessage(`base_type:${type}`, "*");
     
-    // Also send current light amount and pendants
-    iframe.contentWindow.postMessage(`light_amount:${type === 'rectangular' ? 3 : lightAmount}`, "*");
-    
-    // Send pendant designs
-    pendants.forEach((pendant) => {
-      if (pendant.id < (type === 'rectangular' ? 3 : lightAmount)) {
-        const design = pendant.design || lightDesign;
-        const productId = design === 'bumble' ? 'product_1' : 
-                       design === 'radial' ? 'product_2' : 
-                       design === 'fina' ? 'product_3' : 
-                       design === 'ico' ? 'product_4' : 'product_5';
-        
-        iframe.contentWindow.postMessage(`pendant_${pendant.id}:${productId}`, "*");
-      }
-    });
+    // Check which configuration type is selected
+    if (configurationType === 'individualize') {
+      // For individualize mode, send pendant configurations
+      const newLightAmount = type === 'rectangular' ? 3 : lightAmount;
+      iframe.contentWindow.postMessage(`light_amount:${newLightAmount}`, "*");
+      
+      // Send pendant designs
+      pendants.forEach((pendant) => {
+        if (pendant.id < newLightAmount) {
+          const design = pendant.design || lightDesign;
+          const productId = design === 'bumble' ? 'product_1' : 
+                         design === 'radial' ? 'product_2' : 
+                         design === 'fina' ? 'product_3' : 
+                         design === 'ico' ? 'product_4' : 'product_5';
+          
+          iframe.contentWindow.postMessage(`pendant_${pendant.id}:${productId}`, "*");
+        }
+      });
+    } else {
+      // For systems mode, send the selected system
+      iframe.contentWindow.postMessage(`system:${selectedSystem}`, "*");
+    }
   }
 };
   
@@ -2196,31 +2305,64 @@ const handleBaseTypeChange = (type) => {
                   isDarkMode={isDarkMode} 
                 />
                 <BaseTypeSelector 
-  baseType={baseType}
-  onBaseTypeChange={handleBaseTypeChange}
-  isDarkMode={isDarkMode}
-  isVisible={lightType === 'ceiling'}
-/>
-                <LightAmountSelector 
-                  amount={lightAmount} 
-                  onAmountChange={handleLightAmountChange} 
-                  isDarkMode={isDarkMode}
-                  lightType={lightType}
                   baseType={baseType}
+                  onBaseTypeChange={handleBaseTypeChange}
+                  isDarkMode={isDarkMode}
+                  isVisible={lightType === 'ceiling'}
                 />
                 
-                {lightAmount === 1 ? (
-                  <LightDesignSelector 
-                    selectedDesign={lightDesign} 
-                    onDesignChange={handleLightDesignChange} 
-                    isDarkMode={isDarkMode} 
-                  />
-                ) : (
-                  <PendantConfigurator 
-                    pendants={pendants} 
-                    updatePendantDesign={handleLightDesignChange} 
-                    isDarkMode={isDarkMode} 
-                  />
+                {/* Configuration Type Tabs */}
+                <div className="mb-6">
+                  <div className="flex border-b border-gray-700 mb-4">
+                    <button
+                      className={`py-2 px-4 font-medium ${configurationType === 'individualize' 
+                        ? 'text-emerald-500 border-b-2 border-emerald-500' 
+                        : 'text-gray-400 hover:text-white'}`}
+                      onClick={() => handleConfigurationTypeChange('individualize')}
+                    >
+                      Individualize
+                    </button>
+                    <button
+                      className={`py-2 px-4 font-medium ${configurationType === 'systems' 
+                        ? 'text-emerald-500 border-b-2 border-emerald-500' 
+                        : 'text-gray-400 hover:text-white'}`}
+                      onClick={() => handleConfigurationTypeChange('systems')}
+                    >
+                      Systems
+                    </button>
+                  </div>
+                  
+                  {configurationType === 'individualize' ? (
+                    <LightAmountSelector 
+                      amount={lightAmount} 
+                      onAmountChange={handleLightAmountChange} 
+                      isDarkMode={isDarkMode}
+                      lightType={lightType}
+                      baseType={baseType}
+                    />
+                  ) : (
+                    <SystemSelector
+                      selectedSystem={selectedSystem}
+                      onSystemChange={handleSystemChange}
+                      isDarkMode={isDarkMode}
+                    />
+                  )}
+                </div>
+                
+                {configurationType === 'individualize' && (
+                  lightAmount === 1 ? (
+                    <LightDesignSelector 
+                      selectedDesign={lightDesign} 
+                      onDesignChange={handleLightDesignChange} 
+                      isDarkMode={isDarkMode} 
+                    />
+                  ) : (
+                    <PendantConfigurator 
+                      pendants={pendants} 
+                      updatePendantDesign={handleLightDesignChange} 
+                      isDarkMode={isDarkMode} 
+                    />
+                  )
                 )}
               </div>
               
@@ -2246,13 +2388,52 @@ const handleBaseTypeChange = (type) => {
                       baseType={baseType}
                       onBaseTypeChange={(type) => {
                         handleBaseTypeChange(type);
-                        // Auto-advance to amount tab
-                        setActiveTab('amount');
+                        // Auto-advance to config type tab
+                        setActiveTab('configType');
                       }}
                       isDarkMode={isDarkMode}
                       isVisible={lightType === 'ceiling'}
                     />
                   </>
+                )}
+                
+                {activeTab === 'configType' && (
+                  <>
+                    <div className="mb-6">
+                      <div className="flex border-b border-gray-700 mb-4">
+                        <button
+                          className={`py-2 px-4 font-medium ${configurationType === 'individualize' 
+                            ? 'text-emerald-500 border-b-2 border-emerald-500' 
+                            : 'text-gray-400 hover:text-white'}`}
+                          onClick={() => {
+                            handleConfigurationTypeChange('individualize');
+                            setActiveTab('amount');
+                          }}
+                        >
+                          Individualize
+                        </button>
+                        <button
+                          className={`py-2 px-4 font-medium ${configurationType === 'systems' 
+                            ? 'text-emerald-500 border-b-2 border-emerald-500' 
+                            : 'text-gray-400 hover:text-white'}`}
+                          onClick={() => {
+                            handleConfigurationTypeChange('systems');
+                            setActiveTab('systems');
+                          }}
+                        >
+                          Systems
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
+                
+                {activeTab === 'systems' && (
+                  <SystemSelector
+                    selectedSystem={selectedSystem}
+                    onSystemChange={handleSystemChange}
+                    isDarkMode={isDarkMode}
+                  />
                 )}
                 
                 {activeTab === 'amount' && (
