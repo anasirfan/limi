@@ -1156,6 +1156,8 @@ const handleConfigurationTypeChange = (type) => {
     if (type === 'systems') {
       // When switching to systems, first send light_amount:1
       iframe.contentWindow.postMessage(`light_amount:1`, "*");
+      iframe.contentWindow.postMessage(`pendant_design:product_2`, "*");
+      
       
       // Then send system message
       iframe.contentWindow.postMessage(`system:${selectedSystem}`, "*");
@@ -1219,6 +1221,9 @@ const handleBaseTypeChange = (type) => {
       });
     } else {
       // For systems mode, send the selected system
+      iframe.contentWindow.postMessage(`light_amount:1`, "*");
+      iframe.contentWindow.postMessage(`pendant_design:product_2`, "*");
+
       iframe.contentWindow.postMessage(`system:${selectedSystem}`, "*");
     }
   }
