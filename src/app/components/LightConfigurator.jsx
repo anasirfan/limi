@@ -85,17 +85,60 @@ const LightTypeSelector = ({ selectedType, onTypeChange, isDarkMode }) => {
   );
 };
 
+const BaseTypeSelector = ({ baseType, onBaseTypeChange, isDarkMode, isVisible }) => {
+  const baseTypes = [
+    { id: "round", name: "Round Base" },
+    { id: "rectangular", name: "Rectangular Base" }
+  ];
+
+  if (!isVisible) return null;
+
+  return (
+    <motion.div 
+      className={`mb-6 ${isDarkMode ? 'text-white' : ''}`}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <h3 className="text-lg font-bold mb-3 font-['Amenti']">Base Type</h3>
+      <div className="flex space-x-4">
+        {baseTypes.map((type) => (
+          <motion.div
+            key={type.id}
+            className={`cursor-pointer p-3 rounded-lg ${baseType === type.id 
+              ? isDarkMode ? 'bg-emerald-700' : 'bg-emerald-100'
+              : isDarkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-100 hover:bg-gray-200'}`}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => onBaseTypeChange(type.id)}
+          >
+            <p className="text-center">{type.name}</p>
+            {baseType === type.id && (
+              <motion.div 
+                className="h-1 bg-emerald-500 rounded-full mt-2"
+                layoutId="baseTypeIndicator"
+              ></motion.div>
+            )}
+          </motion.div>
+        ))}
+      </div>
+    </motion.div>
+  );
+};
 // Light Amount Selector Component
-const LightAmountSelector = ({ amount, onAmountChange, isDarkMode, lightType }) => {
-  // Different amounts based on light type
+const LightAmountSelector = ({ amount, onAmountChange, isDarkMode, lightType, baseType }) => {
+  // Different amounts based on light type and base type
   const getAmountsForLightType = () => {
     switch(lightType) {
       case 'wall':
         return [1]; // Wall lights only have 1 option
       case 'floor':
         return [3]; // Floor lights have 1-3 options
-      default: // ceiling and others
-        return [1, 3, 6, 24]; // Ceiling lights have 1-5 options
+      case 'ceiling':
+        // If ceiling with rectangular base, only show 3 option
+        return baseType === 'rectangular' ? [3] : [1, 3, 6, 24];
+      default: // others
+        return [1, 3, 6, 24];
     }
   };
 
@@ -1035,6 +1078,39 @@ const LightConfigurator = () => {
   // State for animations
   const [scrollY, setScrollY] = useState(0);
   const [animatedElements, setAnimatedElements] = useState([]);
+  const [baseType, setBaseType] = useState('round');
+
+// Add this handler
+const handleBaseTypeChange = (type) => {
+  setBaseType(type);
+  
+  // If changing to rectangular, force light amount to 3
+  if (type === 'rectangular' && lightAmount !== 3) {
+    setLightAmount(3);
+  }
+  
+  // Send message to iframe
+  const iframe = document.getElementById('playcanvas-app');
+  if (iframe && iframe.contentWindow) {
+    iframe.contentWindow.postMessage(`base_type:${type}`, "*");
+    
+    // Also send current light amount and pendants
+    iframe.contentWindow.postMessage(`light_amount:${type === 'rectangular' ? 3 : lightAmount}`, "*");
+    
+    // Send pendant designs
+    pendants.forEach((pendant) => {
+      if (pendant.id < (type === 'rectangular' ? 3 : lightAmount)) {
+        const design = pendant.design || lightDesign;
+        const productId = design === 'bumble' ? 'product_1' : 
+                       design === 'radial' ? 'product_2' : 
+                       design === 'fina' ? 'product_3' : 
+                       design === 'ico' ? 'product_4' : 'product_5';
+        
+        iframe.contentWindow.postMessage(`pendant_${pendant.id}:${productId}`, "*");
+      }
+    });
+  }
+};
   
   // Refs
   const previewBoxRef = useRef(null);
@@ -2119,11 +2195,18 @@ const LightConfigurator = () => {
                   onTypeChange={handleLightTypeChange} 
                   isDarkMode={isDarkMode} 
                 />
+                <BaseTypeSelector 
+  baseType={baseType}
+  onBaseTypeChange={handleBaseTypeChange}
+  isDarkMode={isDarkMode}
+  isVisible={lightType === 'ceiling'}
+/>
                 <LightAmountSelector 
                   amount={lightAmount} 
                   onAmountChange={handleLightAmountChange} 
                   isDarkMode={isDarkMode}
                   lightType={lightType}
+                  baseType={baseType}
                 />
                 
                 {lightAmount === 1 ? (
@@ -2144,15 +2227,32 @@ const LightConfigurator = () => {
               {/* Mobile View - Tabbed components */}
               <div className="md:hidden">
                 {activeTab === 'type' && (
-                  <LightTypeSelector 
-                    selectedType={lightType} 
-                    onTypeChange={(type) => {
-                      handleLightTypeChange(type);
-                      // Auto-advance to next tab
-                      setActiveTab('amount');
-                    }} 
-                    isDarkMode={isDarkMode} 
-                  />
+                  <>
+                    <LightTypeSelector 
+                      selectedType={lightType} 
+                      onTypeChange={(type) => {
+                        handleLightTypeChange(type);
+                        // Auto-advance to base type if ceiling, otherwise to amount
+                        setActiveTab(type === 'ceiling' ? 'base' : 'amount');
+                      }} 
+                      isDarkMode={isDarkMode} 
+                    />
+                  </>
+                )}
+                
+                {activeTab === 'base' && (
+                  <>
+                    <BaseTypeSelector 
+                      baseType={baseType}
+                      onBaseTypeChange={(type) => {
+                        handleBaseTypeChange(type);
+                        // Auto-advance to amount tab
+                        setActiveTab('amount');
+                      }}
+                      isDarkMode={isDarkMode}
+                      isVisible={lightType === 'ceiling'}
+                    />
+                  </>
                 )}
                 
                 {activeTab === 'amount' && (
@@ -2165,6 +2265,7 @@ const LightConfigurator = () => {
                     }} 
                     isDarkMode={isDarkMode}
                     lightType={lightType}
+                    baseType={baseType}
                   />
                 )}
                 
