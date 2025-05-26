@@ -115,28 +115,132 @@ function HeroSection() {
     });
   };
 
+  // Add states to track loading status
+  const [textElementsReady, setTextElementsReady] = useState(false);
+  const [videoReady, setVideoReady] = useState(false);
+  const taglineCharsRef = useRef([]);
+  const subheadingCharsRef = useRef([]);
+
+  // Register GSAP plugins
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    gsap.registerPlugin(ScrollTrigger, TextPlugin);
+  }, []);
+
+  // Dedicated useEffect for video handling with optimization for large videos
   useEffect(() => {
     // Only run on client side
     if (typeof window === 'undefined') return;
     
-    gsap.registerPlugin(ScrollTrigger, TextPlugin);
-
-    // Play video
-    if (videoRef.current) {
-      try {
-        videoRef.current.play().catch(error => {
-          console.error("Video playback failed:", error);
-        });
-      } catch (error) {
-        console.error("Error playing video:", error);
+    const optimizeAndPlayVideo = () => {
+      if (!videoRef.current) return;
+      
+      // Add event listeners for video
+      videoRef.current.addEventListener('loadeddata', () => {
+        setVideoReady(true);
+        console.log('Video loaded successfully');
+      });
+      
+      videoRef.current.addEventListener('error', (e) => {
+        console.error('Video error:', e);
+      });
+      
+      // Optimize video playback for performance
+      videoRef.current.muted = true;
+      videoRef.current.playsInline = true;
+      videoRef.current.loop = true;
+      videoRef.current.preload = 'auto'; // Preload the video
+      
+      // Set video quality attributes to reduce jerking
+      videoRef.current.setAttribute('playsinline', ''); // For iOS
+      videoRef.current.setAttribute('webkit-playsinline', ''); // For older iOS
+      
+      // Reduce resolution for smoother playback
+      if (window.matchMedia && window.matchMedia('(max-width: 768px)').matches) {
+        // Lower quality on mobile
+        videoRef.current.style.filter = 'blur(1px)'; // Slight blur hides compression artifacts
       }
-    }
+      
+      // Hardware acceleration hint
+      videoRef.current.style.transform = 'translateZ(0)';
+      videoRef.current.style.willChange = 'transform'; // Hint for browser optimization
+      
+      // Lazy loading strategy - only play when visible
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            // Video is visible, play it
+            const playPromise = videoRef.current.play();
+            
+            if (playPromise !== undefined) {
+              playPromise
+                .then(() => {
+                  console.log('Video playback started successfully');
+                })
+                .catch(error => {
+                  console.error('Video autoplay was prevented:', error);
+                  
+                  // Add a click event listener to the section to play on user interaction
+                  if (sectionRef.current) {
+                    sectionRef.current.addEventListener('click', () => {
+                      videoRef.current.play()
+                        .then(() => console.log('Video started after user interaction'))
+                        .catch(e => console.error('Still cannot play video:', e));
+                    }, { once: true });
+                  }
+                });
+            }
+            
+            // Once playing, disconnect observer
+            observer.disconnect();
+          } else {
+            // Video not visible, pause it to save resources
+            videoRef.current.pause();
+          }
+        });
+      }, { threshold: 0.1 }); // Start loading when 10% visible
+      
+      // Start observing the video
+      if (videoRef.current) {
+        observer.observe(videoRef.current);
+      }
+      
+      return observer;
+    };
+    
+    // Start optimizing and playing video
+    const observer = optimizeAndPlayVideo();
+    
+    // Cleanup function
+    return () => {
+      if (videoRef.current) {
+        videoRef.current.pause();
+        videoRef.current.removeEventListener('loadeddata', () => {});
+        videoRef.current.removeEventListener('error', () => {});
+      }
+      
+      // Disconnect observer
+      if (observer) {
+        observer.disconnect();
+      }
+    };
+  }, []);
 
+  // Separate useEffect to handle text preparation - completely independent of video
+  useEffect(() => {
+    // Only run on client side
+    if (typeof window === 'undefined') return;
+    
     // Create custom text animation with character spans
     const createCharacterSpans = (element, className) => {
-      if (!element) return [];
+      if (!element) {
+        console.error(`Element for ${className} not found`);
+        return [];
+      }
       
-      const text = element.innerText;
+      // Store original text content
+      const originalContent = element.textContent;
+      const text = originalContent;
       const chars = [];
       
       // Clear the element
@@ -179,21 +283,86 @@ function HeroSection() {
         chars.push(span);
       }
       
+      // Verify all characters were added correctly
+      if (chars.length !== text.length) {
+        console.warn(`Character count mismatch: ${chars.length} created vs ${text.length} expected`);
+        // Fallback: restore original content if character count doesn't match
+        element.innerHTML = originalContent;
+        return [];
+      }
+      
+      console.log(`Successfully created ${chars.length} character spans for ${className}`);
       return chars;
     };
     
-    // Create character spans for animations
-    const taglineChars = createCharacterSpans(taglineRef.current, 'tagline-char');
-    const subheadingChars = createCharacterSpans(subheadingRef.current, 'subheading-char');
+    // Create character spans with a small delay to ensure DOM is ready
+    const prepareTextElements = () => {
+      // Check if elements exist in the DOM
+      if (!taglineRef.current || !subheadingRef.current) {
+        console.warn('Text elements not found in DOM, retrying...');
+        setTimeout(prepareTextElements, 300);
+        return;
+      }
+      
+      console.log('Preparing text elements for animation');
+      // Create character spans for animations
+      taglineCharsRef.current = createCharacterSpans(taglineRef.current, 'tagline-char');
+      subheadingCharsRef.current = createCharacterSpans(subheadingRef.current, 'subheading-char');
+      
+      // Verify both elements have characters
+      if (taglineCharsRef.current.length > 0 && subheadingCharsRef.current.length > 0) {
+        console.log('Text elements ready for animation');
+        setTextElementsReady(true);
+      } else {
+        console.warn('Text elements not properly created, retrying...');
+        // Retry once more after a longer delay
+        setTimeout(prepareTextElements, 500);
+      }
+    };
     
-    // Set initial states
-    gsap.set(scrollCueRef.current, { opacity: 0, y: -20 });
-    gsap.set(overlayRef.current, { opacity: 0 });
+    // Wait for DOM to be fully ready
+    setTimeout(prepareTextElements, 200);
+    
+    return () => {
+      // Cleanup function
+      taglineCharsRef.current = [];
+      subheadingCharsRef.current = [];
+    };
+  }, []);
+  
+  // Separate useEffect to handle animations after text elements are ready
+  useEffect(() => {
+    if (!textElementsReady || typeof window === 'undefined') return;
+    
+    console.log('Text elements are ready, preparing animations');
+    const taglineChars = taglineCharsRef.current;
+    const subheadingChars = subheadingCharsRef.current;
+    
+    // Verify we have characters to animate
+    if (!taglineChars.length || !subheadingChars.length) {
+      console.error('Character arrays are empty despite textElementsReady being true');
+      return;
+    }
+    
+    console.log(`Ready to animate ${taglineChars.length} tagline chars and ${subheadingChars.length} subheading chars`);
+    
+    // Set initial states only when text elements are ready
+    if (scrollCueRef.current) {
+      gsap.set(scrollCueRef.current, { opacity: 0, y: -20 });
+    }
+    
+    if (overlayRef.current) {
+      gsap.set(overlayRef.current, { opacity: 0 });
+    }
+    
+    // Set initial state for tagline characters
     gsap.set(taglineChars, { 
       opacity: 0, 
       y: 80,
       rotationX: -120
     });
+    
+    // Set initial state for subheading characters
     gsap.set(subheadingChars, { 
       opacity: 0, 
       y: 30 
@@ -201,39 +370,38 @@ function HeroSection() {
 
     // Listen for splash screen completion event
     const handleSplashComplete = () => {
-      // Start animations immediately after splash screen completes
+      console.log('Splash screen complete, starting animations');
       startAnimations();
     };
 
     // Add event listener for splash screen completion
     window.addEventListener('splashComplete', handleSplashComplete);
     
-    // If splash screen is already complete or doesn't exist, start animations immediately
+    // If splash screen is already complete or doesn't exist, start animations after a delay
     if (!document.querySelector('.splash-screen') || 
         document.querySelector('.splash-screen.completed')) {
-      startAnimations();
+      console.log('No splash screen detected, starting animations with delay');
+      setTimeout(startAnimations, 500);
     }
     
     // Main animation function
     function startAnimations() {
+      console.log('Starting text animations');
       // Main animation timeline
       const mainTl = gsap.timeline();
       
-      // Fade in overlay
-      mainTl.to(overlayRef.current, {
-        opacity: 0.4,
-        duration: 1,
-        ease: "power2.out"
-      })
+      // Fade in overlay if it exists
+      if (overlayRef.current) {
+        mainTl.to(overlayRef.current, {
+          opacity: 0.4,
+          duration: 1,
+          ease: "power2.out"
+        });
+      }
       
       // Piano-key-like bouncing animation for tagline characters
-      .staggerFromTo(taglineChars, 
+      mainTl.staggerTo(taglineChars, 
         0.8, 
-        { 
-          opacity: 0, 
-          y: 80, // Increased starting position for more dramatic effect
-          rotationX: -120 // More extreme rotation
-        }, 
         {
           opacity: 1,
           y: 0,
@@ -269,41 +437,48 @@ function HeroSection() {
         }, 
         0.02, 
         "-=0.3"
-      )
-      // Fade in scroll cue
-      .to(scrollCueRef.current, {
-        opacity: 1,
-        y: 0,
-        duration: 0.6,
-        ease: "power2.out"
-      }, "-=0.2");
+      );
+      
+      // Fade in scroll cue if it exists
+      if (scrollCueRef.current) {
+        mainTl.to(scrollCueRef.current, {
+          opacity: 1,
+          y: 0,
+          duration: 0.6,
+          ease: "power2.out"
+        }, "-=0.2");
 
-      // Scroll cue bounce animation
-      gsap.to(scrollCueRef.current, {
-        y: 10,
-        duration: 1.2,
-        repeat: -1,
-        yoyo: true,
-        ease: "power1.inOut"
-      });
+        // Scroll cue bounce animation
+        gsap.to(scrollCueRef.current, {
+          y: 10,
+          duration: 1.2,
+          repeat: -1,
+          yoyo: true,
+          ease: "power1.inOut"
+        });
+      }
 
-      // Parallax effect on scroll
-      gsap.to(videoRef.current, {
-        scale: 1.1,
-        ease: "none",
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top top",
-          end: "bottom top",
-          scrub: true,
-          markers: false
-        }
-      });
+      // Parallax effect on scroll if video exists
+      if (videoRef.current && sectionRef.current) {
+        gsap.to(videoRef.current, {
+          scale: 1.1,
+          ease: "none",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top top",
+            end: "bottom top",
+            scrub: true,
+            markers: false
+          }
+        });
+      }
     }
 
     // Clean up function
     return () => {
-      // Remove event listener
+      console.log('Cleaning up text animations');
+      
+      // Remove event listener for splash screen completion
       window.removeEventListener('splashComplete', handleSplashComplete);
       
       // Clean up ScrollTrigger
@@ -316,7 +491,7 @@ function HeroSection() {
         videoRef.current.load();
       }
     };
-  }, []);
+  }, [textElementsReady]);
 
   return (
     <section
@@ -330,13 +505,17 @@ function HeroSection() {
       {/* Fullscreen video background */}
       <video
         ref={videoRef}
+        className="absolute inset-0 w-full h-full object-cover"
         autoPlay
-        loop
         muted
+        loop
         playsInline
-        className="absolute top-16 left-0 w-full h-full object-cover z-0 transition-all duration-700"
-        src={"/videos/limi-web.m4v"}
-      ></video>
+        preload="auto"
+        poster="/images/hero-poster.jpg"
+        style={{ willChange: 'transform', transform: 'translateZ(0)' }}
+      >
+        <source src={isMobile ? "/videos/limi-mobile.m4v" : "/videos/limi-web.m4v"} type="video/mp4" />
+      </video>
       
       {/* Dark overlay for better text readability */}
       <div 
