@@ -14,6 +14,24 @@ export default function OnboardingSection() {
   const [homepageMessageSent, setHomepageMessageSent] = useState(false);
   const [currentType, setCurrentType] = useState('');
   const [lightAmount, setLightAmount] = useState('');
+  const [isMobile, setIsMobile] = useState(false);
+  const [loadingTimedOut, setLoadingTimedOut] = useState(false);
+  
+  // Detect mobile devices
+  useEffect(() => {
+    const checkMobile = () => {
+      const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+      const isMobileDevice = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
+      setIsMobile(isMobileDevice);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+    };
+  }, []);
   // Handle iframe messages
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -43,10 +61,33 @@ export default function OnboardingSection() {
     
     window.addEventListener('message', handleMessage);
     
+    // Set a timeout to handle cases where the app:ready1 message might not be received
+    // This is especially important for mobile browsers
+    const readyTimeout = setTimeout(() => {
+      if (!iframeLoaded) {
+        console.log('PlayCanvas ready timeout - forcing ready state');
+        setIframeLoaded(true);
+        setLoadingTimedOut(true);
+        
+        // Try to send homepage message anyway
+        if (iframeRef.current && iframeRef.current.contentWindow && !homepageMessageSent) {
+          try {
+            iframeRef.current.contentWindow.postMessage('homepage', '*');
+            iframeRef.current.contentWindow.postMessage('pendant_design:product_2', "*");
+            console.log('Sent homepage message to PlayCanvas after timeout');
+            setHomepageMessageSent(true);
+          } catch (error) {
+            console.error('Error sending message after timeout:', error);
+          }
+        }
+      }
+    }, isMobile ? 8000 : 15000); // Shorter timeout for mobile
+    
     return () => {
       window.removeEventListener('message', handleMessage);
+      clearTimeout(readyTimeout);
     };
-  }, [homepageMessageSent]);
+  }, [homepageMessageSent, iframeLoaded, isMobile]);
   
   // Function to send configuration to PlayCanvas based on step
   const sendConfigToPlayCanvas = (step, selections) => {
@@ -376,12 +417,35 @@ export default function OnboardingSection() {
                       <span className="dot"></span>
                     </div>
                   </div>
-                  <div className="text-gray-400 text-sm animate-pulse">Preparing your LIMI experience</div>
+                  <div className="text-gray-400 text-sm animate-pulse">
+                    {isMobile ? 'This may take a moment on mobile devices' : 'Preparing your LIMI experience'}
+                  </div>
                   
                   {/* Progress bar */}
                   <div className="mt-6 w-64 h-2 bg-gray-800 rounded-full overflow-hidden mx-auto">
                     <div className="h-full bg-emerald-500 animate-progress-indeterminate"></div>
                   </div>
+                  
+                  {/* Continue button for mobile */}
+                  {isMobile && (
+                    <button 
+                      onClick={() => {
+                        setIframeLoaded(true);
+                        if (!homepageMessageSent && iframeRef.current && iframeRef.current.contentWindow) {
+                          try {
+                            iframeRef.current.contentWindow.postMessage('homepage', '*');
+                            iframeRef.current.contentWindow.postMessage('pendant_design:product_2', "*");
+                            setHomepageMessageSent(true);
+                          } catch (error) {
+                            console.error('Error sending message after button click:', error);
+                          }
+                        }
+                      }}
+                      className="mt-6 px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors"
+                    >
+                      Continue Anyway
+                    </button>
+                  )}
                 </div>
               </div>
             )}
@@ -394,13 +458,39 @@ export default function OnboardingSection() {
               title="LIMI 3D Configurator"
               allow="accelerometer; autoplay; camera; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
+              importance="high"
+              loading="eager"
               onLoad={() => {
-                // Set initial quality
+                console.log('Iframe onLoad event fired');
+                // Set initial quality - lower for mobile
                 if (iframeRef.current && iframeRef.current.contentWindow) {
-                  iframeRef.current.contentWindow.postMessage("highdis", "*");
-                  console.log('Set quality to high');
+                  iframeRef.current.contentWindow.postMessage(isMobile ? "lowdis" : "highdis", "*");
+                  console.log(`Set quality to ${isMobile ? 'low' : 'high'} for ${isMobile ? 'mobile' : 'desktop'}`);
+                  
+                  // For mobile browsers, we might not get the app:ready1 message reliably
+                  // So we'll start a shorter timeout after iframe loads
+                  if (isMobile) {
+                    setTimeout(() => {
+                      if (!iframeLoaded) {
+                        console.log('Mobile iframe loaded - setting ready state after timeout');
+                        setIframeLoaded(true);
+                        
+                        // Try to send homepage message
+                        if (!homepageMessageSent) {
+                          try {
+                            iframeRef.current.contentWindow.postMessage('homepage', '*');
+                            iframeRef.current.contentWindow.postMessage('pendant_design:product_2', "*");
+                            console.log('Sent homepage message to PlayCanvas after mobile load timeout');
+                            setHomepageMessageSent(true);
+                          } catch (error) {
+                            console.error('Error sending message after mobile load:', error);
+                          }
+                        }
+                      }
+                    }, 5000); // 5 second timeout for mobile after iframe loads
+                  }
                 }
-                // We'll wait for the app:ready1 message to set iframeLoaded
+                // We'll wait for the app:ready1 message to set iframeLoaded for desktop
               }}
             ></iframe>
             
