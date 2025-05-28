@@ -426,73 +426,113 @@ export default function OnboardingSection() {
                     <div className="h-full bg-emerald-500 animate-progress-indeterminate"></div>
                   </div>
                   
-                  {/* Continue button for mobile */}
+                  {/* Mobile options */}
                   {isMobile && (
-                    <button 
-                      onClick={() => {
-                        setIframeLoaded(true);
-                        if (!homepageMessageSent && iframeRef.current && iframeRef.current.contentWindow) {
-                          try {
-                            iframeRef.current.contentWindow.postMessage('homepage', '*');
-                            iframeRef.current.contentWindow.postMessage('pendant_design:product_2', "*");
-                            setHomepageMessageSent(true);
-                          } catch (error) {
-                            console.error('Error sending message after button click:', error);
+                    <div className="mt-4 space-y-2">
+                      <p className="text-xs text-gray-400">
+                        If the 3D preview doesn't load, try these options:
+                      </p>
+                      <button 
+                        onClick={() => {
+                          setIframeLoaded(true);
+                          if (!homepageMessageSent && iframeRef.current && iframeRef.current.contentWindow) {
+                            try {
+                              iframeRef.current.contentWindow.postMessage('homepage', '*');
+                              iframeRef.current.contentWindow.postMessage('pendant_design:product_2', "*");
+                              setHomepageMessageSent(true);
+                            } catch (error) {
+                              console.error('Error sending message after button click:', error);
+                            }
                           }
-                        }
-                      }}
-                      className="mt-6 px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors"
-                    >
-                      Continue Anyway
-                    </button>
+                        }}
+                        className="w-full px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors"
+                      >
+                        Continue Anyway
+                      </button>
+                      <button 
+                        onClick={() => {
+                          // Reload the iframe with the direct player URL
+                          if (iframeRef.current) {
+                            try {
+                              const iframe = iframeRef.current;
+                              const parentNode = iframe.parentNode;
+                              parentNode.removeChild(iframe);
+                              
+                              // Create a new iframe with a direct link to the mobile version
+                              const newIframe = document.createElement('iframe');
+                              newIframe.src = 'https://playcanv.as/p/cW2W3Amn/'; // Use /p/ instead of /e/p/
+                              newIframe.className = 'w-full h-full border-0';
+                              newIframe.title = 'LIMI 3D Configurator';
+                              newIframe.allow = 'accelerometer; autoplay; camera; encrypted-media; gyroscope; picture-in-picture';
+                              newIframe.allowFullScreen = true;
+                              
+                              parentNode.appendChild(newIframe);
+                              iframeRef.current = newIframe;
+                              
+                              // Hide loading after a short delay
+                              setTimeout(() => {
+                                setIframeLoaded(true);
+                              }, 3000);
+                            } catch (error) {
+                              console.error('Error reloading iframe:', error);
+                            }
+                          }
+                        }}
+                        className="w-full px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                      >
+                        Try Alternative Version
+                      </button>
+                    </div>
                   )}
                 </div>
               </div>
             )}
             
             {/* 3D Viewer Iframe */}
-            <iframe
-              ref={iframeRef}
-              src="https://playcanv.as/e/p/cW2W3Amn/"
-              className="w-full h-full border-0"
-              title="LIMI 3D Configurator"
-              allow="accelerometer; autoplay; camera; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              importance="high"
-              loading="eager"
-              onLoad={() => {
-                console.log('Iframe onLoad event fired');
-                // Set initial quality - lower for mobile
-                if (iframeRef.current && iframeRef.current.contentWindow) {
-                  iframeRef.current.contentWindow.postMessage(isMobile ? "lowdis" : "highdis", "*");
-                  console.log(`Set quality to ${isMobile ? 'low' : 'high'} for ${isMobile ? 'mobile' : 'desktop'}`);
-                  
-                  // For mobile browsers, we might not get the app:ready1 message reliably
-                  // So we'll start a shorter timeout after iframe loads
-                  if (isMobile) {
-                    setTimeout(() => {
-                      if (!iframeLoaded) {
-                        console.log('Mobile iframe loaded - setting ready state after timeout');
-                        setIframeLoaded(true);
-                        
-                        // Try to send homepage message
-                        if (!homepageMessageSent) {
-                          try {
-                            iframeRef.current.contentWindow.postMessage('homepage', '*');
-                            iframeRef.current.contentWindow.postMessage('pendant_design:product_2', "*");
-                            console.log('Sent homepage message to PlayCanvas after mobile load timeout');
-                            setHomepageMessageSent(true);
-                          } catch (error) {
-                            console.error('Error sending message after mobile load:', error);
-                          }
-                        }
-                      }
-                    }, 5000); // 5 second timeout for mobile after iframe loads
+            {isMobile ? (
+              // For mobile devices, use the direct player URL instead of the embedded version
+              <iframe
+                ref={iframeRef}
+                src="https://playcanv.as/p/cW2W3Amn/"
+                className="w-full h-full border-0"
+                title="LIMI 3D Configurator"
+                allow="accelerometer; autoplay; camera; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                importance="high"
+                loading="eager"
+                onLoad={() => {
+                  console.log('Mobile iframe loaded with direct player URL');
+                  // Set a timeout to consider it loaded after a few seconds
+                  setTimeout(() => {
+                    if (!iframeLoaded) {
+                      console.log('Setting iframe as loaded after timeout');
+                      setIframeLoaded(true);
+                    }
+                  }, 3000);
+                }}
+              ></iframe>
+            ) : (
+              // For desktop, use the standard embedded version
+              <iframe
+                ref={iframeRef}
+                src="https://playcanv.as/e/p/cW2W3Amn/"
+                className="w-full h-full border-0"
+                title="LIMI 3D Configurator"
+                allow="accelerometer; autoplay; camera; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                importance="high"
+                loading="eager"
+                onLoad={() => {
+                  console.log('Desktop iframe onLoad event fired');
+                  // Set initial quality
+                  if (iframeRef.current && iframeRef.current.contentWindow) {
+                    iframeRef.current.contentWindow.postMessage("highdis", "*");
+                    console.log('Set quality to high for desktop');
                   }
-                }
-                // We'll wait for the app:ready1 message to set iframeLoaded for desktop
-              }}
-            ></iframe>
+                  // We'll wait for the app:ready1 message to set iframeLoaded for desktop
+                }}
+              ></iframe>
+            )}
             
             {/* Interaction hint */}
             <div className="absolute top-4 right-4 bg-black/60 text-white px-3 py-1 rounded-full text-xs flex items-center z-10 animate-pulse">

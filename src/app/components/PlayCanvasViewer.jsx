@@ -83,18 +83,22 @@ const PlayCanvasViewer = ({
       try {
         if (iframeRef.current && iframeRef.current.contentWindow) {
           console.log('PlayCanvas iframe loaded');
-          // Set initial quality - lower for mobile
-          iframeRef.current.contentWindow.postMessage(isMobile ? "lowdis" : "highdis", "*");
           
-          // For mobile browsers, we might not get the app:ready1 message reliably
-          // So we'll start a shorter timeout after iframe loads
+          // For desktop browsers, set quality
+          if (!isMobile) {
+            iframeRef.current.contentWindow.postMessage("highdis", "*");
+            console.log('Set quality to high for desktop');
+          }
+          
+          // For mobile browsers, we handle this differently with script injection
+          // in the iframe onLoad event
           if (isMobile) {
             setTimeout(() => {
               if (isLoading) {
-                console.log('Mobile iframe loaded - setting ready state');
+                console.log('Mobile iframe loaded - setting ready state after timeout');
                 setAppReady(true);
                 setIsLoading(false);
-                sendDefaultSelections();
+                // We don't call sendDefaultSelections() here as it's handled in the script injection
               }
             }, 5000); // 5 second timeout for mobile after iframe loads
           }
@@ -125,7 +129,7 @@ const PlayCanvasViewer = ({
         setIsLoading(false);
         setAppReady(true);
       }
-    }, isMobile ? 10000 : 15000); // Shorter timeout for mobile
+    }, isMobile ? 8000 : 15000); // Shorter timeout for mobile
 
     return () => {
       if (iframe) {
@@ -134,7 +138,7 @@ const PlayCanvasViewer = ({
       }
       clearTimeout(timeoutId);
     };
-  }, [isMobile]);
+  }, [isMobile, isLoading]);
 
 
   // Function to send configuration to PlayCanvas
@@ -187,22 +191,124 @@ const PlayCanvasViewer = ({
     }
   };
 
+  // Function to handle direct script injection for mobile devices
+  const injectPlayCanvasScript = () => {
+    try {
+      if (!iframeRef.current || !iframeRef.current.contentWindow || !iframeRef.current.contentDocument) {
+        console.error('Cannot access iframe content document');
+        return;
+      }
+      
+      const doc = iframeRef.current.contentDocument;
+      
+      // Create a script element to load the PlayCanvas engine
+      const script = doc.createElement('script');
+      script.src = 'https://code.playcanvas.com/playcanvas-stable.min.js';
+      script.onload = () => {
+        console.log('PlayCanvas engine loaded via script injection');
+        
+        // Create a script to initialize the PlayCanvas application
+        const initScript = doc.createElement('script');
+        initScript.textContent = `
+          // Initialize PlayCanvas application
+          window.addEventListener('load', function() {
+            var canvas = document.createElement('canvas');
+            document.body.appendChild(canvas);
+            canvas.style.width = '100%';
+            canvas.style.height = '100%';
+            canvas.style.position = 'absolute';
+            canvas.style.top = '0';
+            canvas.style.left = '0';
+            
+            // Load the PlayCanvas app
+            var app = new pc.Application(canvas);
+            app.start();
+            
+            // Set up the app
+            app.setCanvasFillMode(pc.FILLMODE_FILL_WINDOW);
+            app.setCanvasResolution(pc.RESOLUTION_AUTO);
+            
+            // Notify parent window that app is ready
+            window.parent.postMessage('app:ready1', '*');
+            
+            // Listen for messages from parent
+            window.addEventListener('message', function(event) {
+              console.log('Message received in PlayCanvas:', event.data);
+              // Handle messages here
+            });
+          });
+        `;
+        doc.body.appendChild(initScript);
+      };
+      
+      // Set up the basic HTML structure
+      doc.open();
+      doc.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+          <title>LIMI 3D Viewer</title>
+          <style>
+            body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #2B2D2F; }
+            canvas { width: 100%; height: 100%; }
+            .loading { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: white; }
+          </style>
+        </head>
+        <body>
+          <div class="loading">Loading LIMI 3D Viewer...</div>
+        </body>
+        </html>
+      `);
+      doc.close();
+      
+      // Add the script to the document
+      doc.head.appendChild(script);
+      
+    } catch (error) {
+      console.error('Error injecting PlayCanvas script:', error);
+      setHasError(true);
+      setIsLoading(false);
+    }
+  };
+  
   return (
     <div className={`w-full h-full relative ${className}`}>
       {/* Only render iframe if not in error state */}
       {!hasError && (
-        <iframe 
-          id="playcanvas-app"
-          ref={iframeRef}
-          src="https://playcanv.as/e/p/cW2W3Amn/"
-          className="w-full h-full border-0"
-          title="LIMI Light Configurator 3D Preview"
-          allow="accelerometer; autoplay; camera; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-          importance="high"
-          loading="eager"
-          onLoad={() => console.log('Iframe onLoad event fired')}
-        />
+        isMobile ? (
+          // For mobile devices, use a blank iframe and inject scripts
+          <iframe 
+            id="playcanvas-app"
+            ref={iframeRef}
+            src="about:blank"
+            className="w-full h-full border-0"
+            title="LIMI Light Configurator 3D Preview"
+            allow="accelerometer; autoplay; camera; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            importance="high"
+            loading="eager"
+            onLoad={() => {
+              console.log('Blank iframe loaded for mobile, injecting scripts');
+              injectPlayCanvasScript();
+            }}
+          />
+        ) : (
+          // For desktop, use the standard PlayCanvas URL
+          <iframe 
+            id="playcanvas-app"
+            ref={iframeRef}
+            src="https://playcanv.as/e/p/cW2W3Amn/"
+            className="w-full h-full border-0"
+            title="LIMI Light Configurator 3D Preview"
+            allow="accelerometer; autoplay; camera; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            importance="high"
+            loading="eager"
+            onLoad={() => console.log('Iframe onLoad event fired')}
+          />
+        )
       )}
       
       {/* Loading state - only shown until app:ready1 message is received */}
@@ -215,16 +321,64 @@ const PlayCanvasViewer = ({
               {isMobile ? 'This may take a moment on mobile devices' : 'Please wait while we prepare your experience'}
             </p>
             {isMobile && (
-              <button 
-                onClick={() => {
-                  setIsLoading(false);
-                  setAppReady(true);
-                  sendDefaultSelections();
-                }}
-                className="mt-4 px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors"
-              >
-                Continue Anyway
-              </button>
+              <div className="mt-4 space-y-2">
+                <p className={`text-xs ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                  If the 3D preview doesn't load, try these options:
+                </p>
+                <button 
+                  onClick={() => {
+                    setIsLoading(false);
+                    setAppReady(true);
+                    // Try to send default selections
+                    if (iframeRef.current && iframeRef.current.contentWindow) {
+                      try {
+                        sendDefaultSelections();
+                      } catch (error) {
+                        console.error('Error sending selections:', error);
+                      }
+                    }
+                  }}
+                  className="px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors w-full"
+                >
+                  Continue Anyway
+                </button>
+                <button 
+                  onClick={() => {
+                    // Reload the iframe with a different approach
+                    if (iframeRef.current) {
+                      try {
+                        const iframe = iframeRef.current;
+                        const parentNode = iframe.parentNode;
+                        parentNode.removeChild(iframe);
+                        
+                        // Create a new iframe with a direct link to the mobile version
+                        const newIframe = document.createElement('iframe');
+                        newIframe.id = 'playcanvas-app';
+                        newIframe.src = 'https://playcanv.as/p/cW2W3Amn/'; // Use /p/ instead of /e/p/
+                        newIframe.className = 'w-full h-full border-0';
+                        newIframe.title = 'LIMI Light Configurator 3D Preview';
+                        newIframe.allow = 'accelerometer; autoplay; camera; encrypted-media; gyroscope; picture-in-picture';
+                        newIframe.allowFullScreen = true;
+                        
+                        parentNode.appendChild(newIframe);
+                        iframeRef.current = newIframe;
+                        
+                        // Hide loading after a short delay
+                        setTimeout(() => {
+                          setIsLoading(false);
+                          setAppReady(true);
+                        }, 3000);
+                      } catch (error) {
+                        console.error('Error reloading iframe:', error);
+                        setHasError(true);
+                      }
+                    }
+                  }}
+                  className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors w-full"
+                >
+                  Try Alternative Version
+                </button>
+              </div>
             )}
           </div>
         </div>
