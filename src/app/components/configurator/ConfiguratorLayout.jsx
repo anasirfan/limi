@@ -1,0 +1,385 @@
+"use client";
+import { useState, useEffect, useCallback } from 'react';
+import { motion } from 'framer-motion';
+import VerticalNavBar from './VerticalNavBar';
+import HorizontalOptionsBar from './HorizontalOptionsBar';
+import { ToastContainer } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
+import PlayCanvasViewer from '../PlayCanvasViewer';
+
+const ConfiguratorLayout = () => {
+  // Main configuration state
+  const [config, setConfig] = useState({
+    lightType: 'ceiling',
+    baseType: 'round',
+    configurationType: 'pendant', // 'pendant' or 'system'
+    lightAmount: 1,
+    systemType: 'bar',
+    pendants: [],
+    selectedPendants: [],
+    lightDesign: 'radial',
+    cableColor: 'black',
+    cableLength: '2mm',
+  });
+
+  // Navigation state
+  const [activeStep, setActiveStep] = useState('lightType');
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Initialize pendants when component mounts
+  useEffect(() => {
+    // Create initial pendants based on light amount
+    const initialPendants = Array.from({ length: config.lightAmount }, (_, i) => ({
+      id: i,
+      design: i === 0 ? config.lightDesign : ['bumble', 'radial', 'fina', 'ripple'][Math.floor(Math.random() * 4)],
+    }));
+    
+    setConfig(prev => ({ ...prev, pendants: initialPendants }));
+  }, []);
+
+  // Update pendants when light amount changes
+  useEffect(() => {
+    // Only update if we already have pendants initialized
+    if (config.pendants.length > 0) {
+      let updatedPendants = [...config.pendants];
+      
+      if (config.lightAmount > config.pendants.length) {
+        // Add new pendants
+        const designOptions = ['bumble', 'radial', 'fina', 'ripple'];
+        
+        for (let i = config.pendants.length; i < config.lightAmount; i++) {
+          updatedPendants.push({
+            id: i,
+            design: designOptions[Math.floor(Math.random() * designOptions.length)],
+          });
+        }
+      } else if (config.lightAmount < config.pendants.length) {
+        // Remove excess pendants
+        updatedPendants = updatedPendants.slice(0, config.lightAmount);
+      }
+      
+      setConfig(prev => ({ ...prev, pendants: updatedPendants }));
+    }
+  }, [config.lightAmount]);
+
+  // Listen for app:ready1 message from PlayCanvas iframe
+  useEffect(() => {
+    const handleMessage = (event) => {
+      if (event.data === 'app:ready1') {
+        console.log('PlayCanvas app is ready');
+        setIsLoading(false);
+      }
+    };
+    
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
+
+  // Handle light type change
+  const handleLightTypeChange = (type) => {
+    // Set default values based on light type
+    let newAmount = config.lightAmount;
+    let newDesign = 'radial'; // Default design is radial for all light types
+    
+    if (type === 'wall') {
+      newAmount = 1;
+    } else if (type === 'floor') {
+      newAmount = 3;
+    } else if (type === 'ceiling' && config.baseType === 'rectangular') {
+      newAmount = 3;
+    } else if (type === 'ceiling') {
+      newAmount = 1;
+    }
+    
+    // Create updated pendants array with default designs
+    const updatedPendants = Array.from({ length: newAmount }, (_, i) => ({
+      id: i,
+      design: 'radial' // Default all to radial initially
+    }));
+    
+    setConfig(prev => ({ 
+      ...prev, 
+      lightType: type,
+      lightAmount: newAmount,
+      lightDesign: newDesign,
+      pendants: updatedPendants
+    }));
+    
+    // Send messages to iframe
+    setTimeout(() => {
+      // Send light type message
+      sendMessageToPlayCanvas(`light_type:${type}`);
+      
+      // Send light amount message
+      sendMessageToPlayCanvas(`light_amount:${newAmount}`);
+      
+      // Send pendant design message - product_2 corresponds to radial design
+    
+      
+      // For multiple pendants, send individual pendant messages
+      if (newAmount > 1) {
+        for (let i = 0; i < newAmount; i++) {
+          sendMessageToPlayCanvas(`pendant_${i}:product_2`);
+        }
+      } else {
+        sendMessageToPlayCanvas(`pendant_design:product_2`);
+      }
+    }, 0);
+  };
+
+  // Handle base type change
+  const handleBaseTypeChange = (type) => {
+    // If changing to rectangular, force light amount to 3
+    const newAmount = type === 'rectangular' ? 3 : config.lightAmount;
+    
+    // Create predefined pendant designs for the new base type
+    // Using a mix of designs as requested
+    const designOptions = ['bumble', 'radial', 'fina', 'ripple'];
+    const updatedPendants = Array.from({ length: newAmount }, (_, i) => ({
+      id: i,
+      // Predefined pattern: radial, ripple, radial for 3 pendants
+      design: i === 0 ? 'radial' : i === 1 ? 'ripple' : 'radial'
+    }));
+    
+    setConfig(prev => ({ 
+      ...prev, 
+      baseType: type,
+      lightAmount: newAmount,
+      pendants: updatedPendants
+    }));
+    
+    // Send messages to iframe
+    setTimeout(() => {
+      // Send base type message
+      sendMessageToPlayCanvas(`base_type:${type}`);
+      
+      // Check configuration type and send appropriate messages
+      if (config.configurationType === 'system') {
+        // For system configuration, send system type message
+        sendMessageToPlayCanvas(`system:${config.systemType}`);
+        
+        // For round base with system, send light_amount:1
+        if (type === 'round') {
+          sendMessageToPlayCanvas('light_amount:1');
+        }
+      } else {
+        // For pendant configuration
+        // Send light amount message
+        sendMessageToPlayCanvas(`light_amount:${newAmount}`);
+        
+        // Send individual pendant messages with predefined designs
+        // product_2 = radial, product_3 = fina, product_5 = ripple
+        sendMessageToPlayCanvas(`pendant_0:product_2`); // First pendant is radial
+        
+        if (newAmount > 1) {
+          sendMessageToPlayCanvas(`pendant_1:product_5`); // Second pendant is ripple
+        }
+        
+        if (newAmount > 2) {
+          sendMessageToPlayCanvas(`pendant_2:product_2`); // Third pendant is radial
+        }
+      }
+    }, 0);
+  };
+
+  // Handle configuration type change
+  const handleConfigurationTypeChange = useCallback((type) => {
+    setConfig(prev => {
+      const newConfig = { ...prev, configurationType: type };
+      
+      // Send message to iframe
+      setTimeout(() => {
+        if (type === 'system') {
+          // For system configuration, send base type and system type
+          sendMessageToPlayCanvas(`base_type:${newConfig.baseType}`);
+          sendMessageToPlayCanvas(`system:${newConfig.systemType}`);
+          
+          // Check if base is round, then send light_amount:1 message
+          if (newConfig.baseType === 'round') {
+            sendMessageToPlayCanvas('light_amount:1');
+          }
+        } else {
+          // For pendant configuration, send light type and amount
+          sendMessageToPlayCanvas(`light_type:${newConfig.lightType}`);
+          sendMessageToPlayCanvas(`light_amount:${newConfig.lightAmount}`);
+          
+          // Send individual pendant messages
+          newConfig.pendants.forEach((pendant, index) => {
+            const productId = pendant.design === 'bumble' ? 'product_1' : 
+                           pendant.design === 'radial' ? 'product_2' : 
+                           pendant.design === 'fina' ? 'product_3' : 'product_5';
+            
+            sendMessageToPlayCanvas(`pendant_${index}:${productId}`);
+          });
+        }
+      }, 0);
+      
+      return newConfig;
+    });
+  }, []);
+
+  // Handle light amount change
+  const handleLightAmountChange = (amount) => {
+    // Create random designs for the new pendants
+    const designOptions = ['bumble', 'radial', 'fina', 'ripple'];
+    const updatedPendants = Array.from({ length: amount }, (_, i) => {
+      // Keep existing pendant designs if available
+      if (i < config.pendants.length) {
+        return config.pendants[i];
+      }
+      // Create new pendants with random designs
+      return {
+        id: i,
+        design: designOptions[Math.floor(Math.random() * designOptions.length)]
+      };
+    });
+    
+    setConfig(prev => ({ ...prev, lightAmount: amount, pendants: updatedPendants }));
+    
+    // Send messages to iframe
+    setTimeout(() => {
+      // Send light amount message
+      sendMessageToPlayCanvas(`light_amount:${amount}`);
+      
+      // Special handling for single light
+      if (amount === 1) {
+        // Send light_type message
+        sendMessageToPlayCanvas(`light_type:${config.lightType}`);
+        
+        // Send a single pendant_design message
+        // Get the design of the first pendant
+        const firstPendantDesign = updatedPendants[0].design;
+        const productId = firstPendantDesign === 'bumble' ? 'product_1' : 
+                        firstPendantDesign === 'radial' ? 'product_2' : 
+                        firstPendantDesign === 'fina' ? 'product_3' : 'product_5';
+        
+        sendMessageToPlayCanvas(`pendant_design:${productId}`);
+      } else {
+        // For multiple pendants, send individual pendant messages
+        updatedPendants.forEach((pendant, index) => {
+          const productId = pendant.design === 'bumble' ? 'product_1' : 
+                          pendant.design === 'radial' ? 'product_2' : 
+                          pendant.design === 'fina' ? 'product_3' : 'product_5';
+          
+          sendMessageToPlayCanvas(`pendant_${index}:${productId}`);
+        });
+      }
+    }, 0);
+  };
+
+  // Handle system type change
+  const handleSystemTypeChange = (system) => {
+    setConfig(prev => ({ ...prev, systemType: system }));
+    
+    // Send messages to iframe
+    setTimeout(() => {
+      // Send base type message first to ensure correct context
+      sendMessageToPlayCanvas(`base_type:${config.baseType}`);
+      
+      // Send system type message
+      sendMessageToPlayCanvas(`system:${system}`);
+      
+      // For round base, send light_amount:1 as requested
+      if (config.baseType === 'round') {
+        sendMessageToPlayCanvas('light_amount:1');
+      }
+    }, 0);
+  };
+
+  // Handle pendant selection
+  const handlePendantSelection = useCallback((pendantIds) => {
+    setConfig(prev => ({ ...prev, selectedPendants: pendantIds }));
+  }, []);
+
+  // Handle pendant design change
+  const handlePendantDesignChange = useCallback((pendantIds, design) => {
+    // First update the config state with the new design
+    setConfig(prev => {
+      const updatedPendants = [...prev.pendants];
+      
+      // Update designs for selected pendants
+      pendantIds.forEach(id => {
+        if (id >= 0 && id < updatedPendants.length) {
+          updatedPendants[id] = {
+            ...updatedPendants[id],
+            design: design
+          };
+        }
+      });
+      
+      return { ...prev, pendants: updatedPendants };
+    });
+    
+    // Then send messages to iframe in a separate operation
+    // This ensures we don't have race conditions between state updates and messaging
+    setTimeout(() => {
+      const productId = design === 'bumble' ? 'product_1' : 
+                      design === 'radial' ? 'product_2' : 
+                      design === 'fina' ? 'product_3' : 'product_5';
+      
+      // Send messages for each selected pendant
+      pendantIds.forEach(id => {
+        console.log(`Updating pendant ${id} to design ${design} (${productId})`);
+        sendMessageToPlayCanvas(`pendant_${id}:${productId}`);
+      });
+    }, 10); // Slight delay to ensure state is updated first
+  }, []);
+
+  // Helper function to send messages to PlayCanvas iframe
+  const sendMessageToPlayCanvas = (message) => {
+    const iframe = document.getElementById('playcanvas-app');
+    if (iframe && iframe.contentWindow) {
+      iframe.contentWindow.postMessage(message, "*");
+    }
+  };
+
+  return (
+    <div className="relative w-full h-full bg-transparent overflow-hidden"> {/* Added right padding for vertical bar */}
+      {/* 3D Viewer */}
+      <div className="w-full h-full">
+        <PlayCanvasViewer 
+          config={config}
+          isDarkMode={true}
+          className="w-full h-full"
+        />
+        
+        {/* Loading overlay */}
+        {isLoading && (
+          <div className="absolute inset-0 bg-transparent backdrop-blur-sm flex items-center justify-center z-10">
+            <div className="bg-gray-900/80 px-6 py-4 rounded-xl text-emerald-500 text-xl font-bold flex items-center">
+              Loading 3D Preview
+              <div className="ml-2 flex space-x-1">
+                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce" style={{ animationDelay: '0s' }}></div>
+                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+              </div>
+            </div>
+          </div>
+        
+      )}
+      </div>
+      {/* Vertical Navigation Bar */}
+      {!isLoading && 
+      <VerticalNavBar 
+        activeStep={activeStep} 
+        setActiveStep={setActiveStep} 
+        config={config}
+        onLightTypeChange={handleLightTypeChange}
+        onBaseTypeChange={handleBaseTypeChange}
+        onConfigurationTypeChange={handleConfigurationTypeChange}
+        onLightAmountChange={handleLightAmountChange}
+        onSystemTypeChange={handleSystemTypeChange}
+        onPendantSelection={handlePendantSelection}
+        onPendantDesignChange={handlePendantDesignChange}
+        pendants={config.pendants}
+        selectedPendants={config.selectedPendants || []}
+        setSelectedPendants={(pendantIds) => handlePendantSelection(pendantIds)}
+      />
+}
+      {/* Toast Container for notifications */}
+      <ToastContainer position="bottom-right" theme="dark" />
+    </div>
+  );
+};
+
+export default ConfiguratorLayout;

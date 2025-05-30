@@ -1,5 +1,7 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
+import { FaSpinner } from 'react-icons/fa';
 
 const PlayCanvasViewer = ({ 
   config = {}, 
@@ -274,135 +276,154 @@ const PlayCanvasViewer = ({
   };
   
   return (
-    <div className={`w-full h-full relative ${className}`}>
-      {/* Only render iframe if not in error state */}
-      {!hasError && (
-        isMobile ? (
-          // For mobile devices, use a blank iframe and inject scripts
-          <iframe 
-            id="playcanvas-app"
-            ref={iframeRef}
-            src="about:blank"
-            className="w-full h-full border-0"
-            title="LIMI Light Configurator 3D Preview"
-            allow="accelerometer; autoplay; camera; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            importance="high"
-            loading="eager"
-            onLoad={() => {
-              console.log('Blank iframe loaded for mobile, injecting scripts');
-              injectPlayCanvasScript();
-            }}
-          />
-        ) : (
-          // For desktop, use the standard PlayCanvas URL
-          <iframe 
-            id="playcanvas-app"
-            ref={iframeRef}
-            src="https://playcanv.as/e/p/cW2W3Amn/"
-            className="w-full h-full border-0"
-            title="LIMI Light Configurator 3D Preview"
-            allow="accelerometer; autoplay; camera; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            importance="high"
-            loading="eager"
-            onLoad={() => console.log('Iframe onLoad event fired')}
-          />
-        )
-      )}
-      
-      {/* Loading state - only shown until app:ready1 message is received */}
-      {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800 z-10">
-          <div className="text-center p-4 rounded-lg bg-white dark:bg-gray-700 shadow-lg">
-            <div className="w-12 h-12 border-4 border-t-emerald-500 border-gray-200 rounded-full animate-spin mx-auto mb-4"></div>
-            <p className={`text-lg ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Loading 3D Preview...</p>
-            <p className={`text-sm mt-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-              {isMobile ? 'This may take a moment on mobile devices' : 'Please wait while we prepare your experience'}
-            </p>
-            {isMobile && (
-              <div className="mt-4 space-y-2">
-                <p className={`text-xs ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                  If the 3D preview doesn't load, try these options:
-                </p>
-                <button 
-                  onClick={() => {
-                    setIsLoading(false);
-                    setAppReady(true);
-                    // Try to send default selections
-                    if (iframeRef.current && iframeRef.current.contentWindow) {
-                      try {
-                        sendDefaultSelections();
-                      } catch (error) {
-                        console.error('Error sending selections:', error);
-                      }
-                    }
+    <div className={`relative ${className} w-full h-full`}>
+      {/* Enhanced Interactive Skeleton Loader - Only shown until app:ready1 message is received */}
+      {!appReady && (
+        <div id="playcanvas-loader" className="absolute inset-0 flex flex-col items-center justify-center bg-charleston-green z-10 overflow-hidden">
+          {/* Background animated pattern */}
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-0 left-0 w-full h-full">
+              {[...Array(20)].map((_, i) => (
+                <div 
+                  key={i}
+                  className="absolute bg-emerald-500 rounded-full"
+                  style={{
+                    width: `${Math.random() * 10 + 5}px`,
+                    height: `${Math.random() * 10 + 5}px`,
+                    top: `${Math.random() * 100}%`,
+                    left: `${Math.random() * 100}%`,
+                    opacity: Math.random() * 0.5 + 0.25,
+                    animation: `float ${Math.random() * 10 + 10}s infinite linear`,
+                    animationDelay: `${Math.random() * 5}s`
                   }}
-                  className="px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors w-full"
-                >
-                  Continue Anyway
-                </button>
-                <button 
-                  onClick={() => {
-                    // Reload the iframe with a different approach
-                    if (iframeRef.current) {
-                      try {
-                        const iframe = iframeRef.current;
-                        const parentNode = iframe.parentNode;
-                        parentNode.removeChild(iframe);
-                        
-                        // Create a new iframe with a direct link to the mobile version
-                        const newIframe = document.createElement('iframe');
-                        newIframe.id = 'playcanvas-app';
-                        newIframe.src = 'https://playcanv.as/p/cW2W3Amn/'; // Use /p/ instead of /e/p/
-                        newIframe.className = 'w-full h-full border-0';
-                        newIframe.title = 'LIMI Light Configurator 3D Preview';
-                        newIframe.allow = 'accelerometer; autoplay; camera; encrypted-media; gyroscope; picture-in-picture';
-                        newIframe.allowFullScreen = true;
-                        
-                        parentNode.appendChild(newIframe);
-                        iframeRef.current = newIframe;
-                        
-                        // Hide loading after a short delay
-                        setTimeout(() => {
-                          setIsLoading(false);
-                          setAppReady(true);
-                        }, 3000);
-                      } catch (error) {
-                        console.error('Error reloading iframe:', error);
-                        setHasError(true);
-                      }
-                    }
-                  }}
-                  className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors w-full"
-                >
-                  Try Alternative Version
-                </button>
+                />
+              ))}
+            </div>
+          </div>
+          
+          <div className="relative w-4/5 max-w-md aspect-square mb-8">
+            {/* Ceiling */}
+            <div className="absolute top-0 w-full h-8 bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800 rounded-t-lg shadow-md">
+              {/* Ceiling mount */}
+              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-3 bg-gray-600 rounded-md"></div>
+            </div>
+            
+            {/* Multiple pendants hanging from ceiling */}
+            <div className="absolute top-0 left-1/4 w-1/5 aspect-square">
+              {/* Pendant cable */}
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-0.5 h-20 bg-gray-600 origin-top animate-sway-slow"></div>
+              {/* Pendant light */}
+              <div className="absolute top-20 left-1/2 -translate-x-1/2 w-full aspect-square rounded-full bg-gradient-to-br from-gray-700 to-gray-800 shadow-lg overflow-hidden animate-sway-slow">
+                <div className="absolute inset-2 rounded-full bg-emerald-500 opacity-20 animate-pulse-slow"></div>
               </div>
-            )}
+            </div>
+            
+            {/* Main pendant being loaded */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/3 aspect-square">
+              {/* Pendant cable with loading animation */}
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1 h-24 bg-gradient-to-b from-gray-600 to-gray-700 origin-top animate-sway-reverse-slow">
+                {/* Cable loading indicator */}
+                <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
+                  <div className="w-full h-2 bg-emerald-500 opacity-40 animate-cable-loading"></div>
+                </div>
+              </div>
+              
+              {/* Main pendant light */}
+              <div className="absolute top-24 left-1/2 -translate-x-1/2 w-full aspect-square rounded-full bg-gradient-to-br from-gray-700 to-gray-800 shadow-lg overflow-hidden origin-top animate-sway-reverse-slow">
+                {/* Pendant light effect */}
+                <div className="absolute inset-2 rounded-full bg-emerald-500 opacity-30 animate-pulse-slow"></div>
+                
+                {/* Pendant detail */}
+                <div className="absolute inset-4 rounded-full border border-gray-600"></div>
+                
+                {/* Loading indicator inside pendant */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-1/2 h-1/2 rounded-full border-2 border-transparent border-t-emerald-500 animate-spin"></div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Another pendant on the right */}
+            <div className="absolute top-0 right-1/4 w-1/5 aspect-square">
+              {/* Pendant cable */}
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-0.5 h-16 bg-gray-600 origin-top animate-sway-medium"></div>
+              {/* Pendant light */}
+              <div className="absolute top-16 left-1/2 -translate-x-1/2 w-full aspect-square rounded-full bg-gradient-to-br from-gray-700 to-gray-800 shadow-lg overflow-hidden animate-sway-medium">
+                <div className="absolute inset-2 rounded-full bg-emerald-500 opacity-20 animate-pulse-slow"></div>
+              </div>
+            </div>
+            
+            {/* Glowing circle under main pendant */}
+            <div className="absolute top-3/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1/2 h-1/4 rounded-full bg-emerald-500 opacity-10 animate-ping-slow blur-md"></div>
+            
+            {/* Skeleton floor with reflection */}
+            <div className="absolute bottom-0 w-full h-1/6 bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800 rounded-lg shadow-md">
+              {/* Floor reflection */}
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/3 h-1 bg-emerald-500 opacity-20 blur-sm"></div>
+            </div>
+            
+            {/* Skeleton controls with hover effect */}
+            <div className="absolute bottom-[-80px] w-full flex justify-center space-x-6">
+              {[1, 2, 3].map((num) => (
+                <div 
+                  key={num}
+                  className="w-16 h-16 rounded-full bg-gradient-to-br from-gray-700 to-gray-800 shadow-md flex items-center justify-center group cursor-pointer"
+                  style={{ animationDelay: `${num * 0.2}s` }}
+                >
+                  <div className="w-12 h-12 rounded-full bg-gray-800 group-hover:bg-emerald-900 transition-colors duration-300 flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-full bg-gray-700 group-hover:bg-emerald-800 transition-colors duration-300 animate-pulse"></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          <div className="text-center px-4 relative z-10">
+            {/* Loading text with animated dots */}
+            <div className="h-8 flex items-center justify-center mb-3">
+              <div className="text-emerald-500 text-xl font-bold">Loading 3D Preview</div>
+              <div className="loading-dots ml-2">
+                <span className="dot"></span>
+                <span className="dot"></span>
+                <span className="dot"></span>
+              </div>
+            </div>
+            <div className="text-gray-400 text-sm animate-pulse">Preparing your LIMI experience</div>
+            
+            {/* Progress bar */}
+            <div className="mt-6 w-64 h-2 bg-gray-800 rounded-full overflow-hidden mx-auto">
+              <div className="h-full bg-emerald-500 animate-progress-indeterminate"></div>
+            </div>
           </div>
         </div>
       )}
       
-      {/* Error state */}
       {hasError && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800">
-          <div className="text-center p-6 rounded-lg bg-white dark:bg-gray-700 shadow-lg max-w-md">
-            <svg className="w-16 h-16 text-red-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-            <h3 className={`text-xl font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>3D Preview Unavailable</h3>
-            <p className={`mb-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>We're unable to load the 3D preview at this time. Please try refreshing the page or check your connection.</p>
-            <button 
-              onClick={() => window.location.reload()} 
-              className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg transition-colors"
-            >
-              Refresh Page
-            </button>
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-80 z-10">
+          <div className="text-white text-center p-4">
+            <div className="mb-2 text-red-500 text-4xl">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <p className="text-xl font-bold mb-2">Failed to load 3D Preview</p>
+            <p>Please check your connection and refresh the page.</p>
           </div>
         </div>
       )}
-    </div>
+      
+      <iframe
+        ref={iframeRef}
+        id="playcanvas-app"
+        src="https://playcanv.as/e/p/cW2W3Amn/"
+        allow="autoplay; fullscreen; vr"
+        className={`w-full h-full transition-opacity duration-500 ${appReady ? 'opacity-100' : 'opacity-0'}`}
+        style={{ border: 'none' }}
+      ></iframe>
+      
+      {/* Overlay to prevent interaction issues during loading */}
+      {!appReady && <div className="absolute inset-0 pointer-events-none z-10"></div>}
+    </div>  
   );
 };
 
