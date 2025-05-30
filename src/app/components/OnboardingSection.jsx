@@ -16,51 +16,52 @@ export default function OnboardingSection() {
   const [lightAmount, setLightAmount] = useState('');
   const [isMobile, setIsMobile] = useState(false);
   const [loadingTimedOut, setLoadingTimedOut] = useState(false);
-  
+  const [iframeKey, setIframeKey] = useState(0); // For force re-mounting iframe on mobile
+  const [iframeError, setIframeError] = useState(false);
+
   // Detect mobile devices
   useEffect(() => {
     const checkMobile = () => {
+      if (typeof window === "undefined") return;
       const userAgent = navigator.userAgent || navigator.vendor || window.opera;
       const isMobileDevice = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
       setIsMobile(isMobileDevice);
     };
-    
+
     checkMobile();
     window.addEventListener('resize', checkMobile);
-    
+
     return () => {
       window.removeEventListener('resize', checkMobile);
     };
   }, []);
+
   // Handle iframe messages
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    
+
     const handleMessage = (event) => {
       try {
         // Check if the message is from our PlayCanvas iframe
         if (event.data === 'app:ready1') {
           console.log('PlayCanvas app is ready');
           setIframeLoaded(true);
-          
+
           // Send 'homepage' message when app is ready (only once)
           if (iframeRef.current && iframeRef.current.contentWindow && !homepageMessageSent) {
             iframeRef.current.contentWindow.postMessage('homepage', '*');
             iframeRef.current.contentWindow.postMessage('pendant_design:product_2', "*");
             console.log('Sent homepage message to PlayCanvas');
             setHomepageMessageSent(true);
-            
-            // Don't send any configurations on initial load
-            // We'll wait for user interaction instead
           }
         }
       } catch (error) {
         console.error('Error handling iframe message:', error);
       }
     };
-    
+
     window.addEventListener('message', handleMessage);
-    
+
     // Set a timeout to handle cases where the app:ready1 message might not be received
     // This is especially important for mobile browsers
     const readyTimeout = setTimeout(() => {
@@ -68,7 +69,7 @@ export default function OnboardingSection() {
         console.log('PlayCanvas ready timeout - forcing ready state');
         setIframeLoaded(true);
         setLoadingTimedOut(true);
-        
+
         // Try to send homepage message anyway
         if (iframeRef.current && iframeRef.current.contentWindow && !homepageMessageSent) {
           try {
@@ -81,14 +82,14 @@ export default function OnboardingSection() {
           }
         }
       }
-    }, isMobile ? 8000 : 15000); // Shorter timeout for mobile
-    
+    }, isMobile ? 12000 : 15000); // Slightly longer for mobile
+
     return () => {
       window.removeEventListener('message', handleMessage);
       clearTimeout(readyTimeout);
     };
-  }, [homepageMessageSent, iframeLoaded, isMobile]);
-  
+  }, [homepageMessageSent, iframeLoaded, isMobile, iframeKey]);
+
   // Function to send configuration to PlayCanvas based on step
   const sendConfigToPlayCanvas = (step, selections) => {
     try {
@@ -96,11 +97,11 @@ export default function OnboardingSection() {
         console.log('Cannot send config: iframe not ready');
         return;
       }
-      
+
       console.log(`Sending config for step ${step}:`, selections);
-      
+
       // We're only sending the specific data for each step, no light amount
-      
+
       // Send different data based on the step
       switch(step) {
         case 1: // Category selection (pendant/wall/floor) - ONLY send light type
@@ -117,7 +118,7 @@ export default function OnboardingSection() {
             if(lightType === 'floor'){
               iframeRef.current.contentWindow.postMessage('light_amount:3', "*");
             }
-            
+
             if(lightType === 'floor'){
               iframeRef.current.contentWindow.postMessage('pendant_0:product_2', "*");
               iframeRef.current.contentWindow.postMessage('pendant_1:product_2', "*");
@@ -128,7 +129,7 @@ export default function OnboardingSection() {
             console.log(`Sent light type: ${lightType}`);
           }
           break;
-          
+
         case 2: // Vibe selection - ONLY send vibe
           if (selections.lightStyle) {
             // Direct mapping from vibe ID to message
@@ -166,12 +167,11 @@ export default function OnboardingSection() {
               console.log("lightAmount: ",lightAmount)
               iframeRef.current.contentWindow.postMessage(`light_amount:1`, "*");
             }
-            
-            
+
             console.log(`Sent vibe: ${vibeMessage}`);
           }
           break;
-          
+
         case 3: // Aesthetic selection - ONLY send aesthetic
           if (selections.designAesthetic) {
             // Direct mapping from aesthetic ID to message
@@ -200,13 +200,9 @@ export default function OnboardingSection() {
                 iframeRef.current.contentWindow.postMessage(`pendant_${i}:${pendantDesign}`, "*");
               }
             }
-            // Handle the special case for modern_style
-            // const formattedAesthetic = aestheticMessage === 'modern_style' ? 'modern' : aestheticMessage;
-            // iframeRef.current.contentWindow.postMessage(`aesthetic:${formattedAesthetic}`, "*");
-       
           }
           break;
-          
+
         case 4: // Final step - send all configurations for the "Let's Go" button
           // Send light type
           if (selections.lightCategory) {
@@ -219,13 +215,13 @@ export default function OnboardingSection() {
             // iframeRef.current.contentWindow.postMessage(`light_type:${lightType}`, "*");
             console.log(`Final: Sent light type: ${lightType}`);
           }
-          
+
           // Send vibe
           if (selections.lightStyle) {
             // iframeRef.current.contentWindow.postMessage(`vibe:${selections.lightStyle}`, "*");
             console.log(`Final: Sent vibe: ${selections.lightStyle}`);
           }
-          
+
           // Send aesthetic
           if (selections.designAesthetic) {
             const formattedAesthetic = selections.designAesthetic === 'modern_style' ? 'modern' : selections.designAesthetic;
@@ -233,7 +229,7 @@ export default function OnboardingSection() {
             console.log(`Final: Sent aesthetic: ${formattedAesthetic}`);
           }
           break;
-          
+
         default:
           break;
       }
@@ -241,36 +237,66 @@ export default function OnboardingSection() {
       console.error("Error sending configuration to PlayCanvas:", error);
     }
   };
-  
-  // We're removing this useEffect to avoid the infinite update loop
-  // Instead, we'll only send configurations on explicit user actions
-  
+
   // Handle step changes - only store selections, don't send to PlayCanvas yet
   const handleStepChange = (step, stepSelections) => {
     console.log(`Step changed to ${step}`, stepSelections);
     setCurrentStep(step);
     setWizardSelections(stepSelections);
-    
+
     // Only send configuration when moving to the next step (not on initial load or selection)
     // This ensures we only send when the user clicks "Next"
     if (iframeLoaded && step > 0) {
       sendConfigToPlayCanvas(step, stepSelections);
     }
   };
-  
+
   // Handle completion
   const handleComplete = (finalSelections) => {
     // Send final configuration before navigating
     if (iframeLoaded) {
       sendConfigToPlayCanvas(4, finalSelections);
     }
-    
+
     // Save final selections to localStorage
     localStorage.setItem('configuratorSelections', JSON.stringify(finalSelections));
-    
+
     // Navigate to the configurator page
     router.push('/configurator');
   };
+
+  // --- MOBILE IFRAME LOAD FIX ---
+  // On mobile, PlayCanvas iframe sometimes doesn't load due to browser restrictions.
+  // We'll force a re-mount of the iframe if it fails to load after a timeout.
+  useEffect(() => {
+    if (!isMobile) return;
+    if (iframeLoaded) return;
+
+    // If not loaded after 15s, try to reload the iframe (force re-mount)
+    const reloadTimeout = setTimeout(() => {
+      if (!iframeLoaded) {
+        console.log("Mobile iframe not loaded after 15s, forcing re-mount");
+        setIframeKey((k) => k + 1);
+        setHomepageMessageSent(false);
+        setLoadingTimedOut(false);
+        setIframeLoaded(false);
+      }
+    }, 15000);
+
+    return () => clearTimeout(reloadTimeout);
+  }, [isMobile, iframeLoaded, iframeKey]);
+
+  // --- MOBILE IFRAME VISIBILITY/LOAD FIX ---
+  // On mobile, PlayCanvas iframe may show only a green screen if the iframe is not visible or not loaded.
+  // We'll use a more robust approach: 
+  // 1. Use the embed URL (not the player URL) for both mobile and desktop.
+  // 2. Add an onLoad event that sets iframeLoaded immediately.
+  // 3. Add an onError event to show a reload button if the iframe fails to load.
+  // 4. Remove the background color from the iframe (let PlayCanvas handle it).
+  // 5. If the iframe is not loaded after 10s, show a reload button.
+
+  // We'll use the embed URL for both mobile and desktop for maximum compatibility.
+  const playcanvasEmbedUrl = "https://playcanv.as/e/p/cW2W3Amn/";
 
   return (
     <section className="bg-[#2B2D2F] text-white py-8 md:py-12">
@@ -435,6 +461,7 @@ export default function OnboardingSection() {
                       <button 
                         onClick={() => {
                           setIframeLoaded(true);
+                          setIframeError(false);
                           if (!homepageMessageSent && iframeRef.current && iframeRef.current.contentWindow) {
                             try {
                               iframeRef.current.contentWindow.postMessage('homepage', '*');
@@ -451,37 +478,23 @@ export default function OnboardingSection() {
                       </button>
                       <button 
                         onClick={() => {
-                          // Reload the iframe with the direct player URL
-                          if (iframeRef.current) {
-                            try {
-                              const iframe = iframeRef.current;
-                              const parentNode = iframe.parentNode;
-                              parentNode.removeChild(iframe);
-                              
-                              // Create a new iframe with a direct link to the mobile version
-                              const newIframe = document.createElement('iframe');
-                              newIframe.src = 'https://playcanv.as/p/cW2W3Amn/'; // Use /p/ instead of /e/p/
-                              newIframe.className = 'w-full h-full border-0';
-                              newIframe.title = 'LIMI 3D Configurator';
-                              newIframe.allow = 'accelerometer; autoplay; camera; encrypted-media; gyroscope; picture-in-picture';
-                              newIframe.allowFullScreen = true;
-                              
-                              parentNode.appendChild(newIframe);
-                              iframeRef.current = newIframe;
-                              
-                              // Hide loading after a short delay
-                              setTimeout(() => {
-                                setIframeLoaded(true);
-                              }, 3000);
-                            } catch (error) {
-                              console.error('Error reloading iframe:', error);
-                            }
-                          }
+                          // Force re-mount the iframe by changing the key
+                          setIframeKey((k) => k + 1);
+                          setHomepageMessageSent(false);
+                          setLoadingTimedOut(false);
+                          setIframeLoaded(false);
+                          setIframeError(false);
                         }}
                         className="w-full px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
                       >
-                        Try Alternative Version
+                        Try Reload 3D Preview
                       </button>
+                    </div>
+                  )}
+                  {/* Show error if iframe fails to load */}
+                  {iframeError && (
+                    <div className="mt-4 text-red-400 text-xs">
+                      Failed to load 3D preview. Please try reloading or check your connection.
                     </div>
                   )}
                 </div>
@@ -489,50 +502,36 @@ export default function OnboardingSection() {
             )}
             
             {/* 3D Viewer Iframe */}
-            {isMobile ? (
-              // For mobile devices, use the direct player URL instead of the embedded version
-              <iframe
-                ref={iframeRef}
-                src="https://playcanv.as/p/cW2W3Amn/"
-                className="w-full h-full border-0"
-                title="LIMI 3D Configurator"
-                allow="accelerometer; autoplay; camera; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                importance="high"
-                loading="eager"
-                onLoad={() => {
-                  console.log('Mobile iframe loaded with direct player URL');
-                  // Set a timeout to consider it loaded after a few seconds
-                  setTimeout(() => {
-                    if (!iframeLoaded) {
-                      console.log('Setting iframe as loaded after timeout');
-                      setIframeLoaded(true);
-                    }
-                  }, 3000);
-                }}
-              ></iframe>
-            ) : (
-              // For desktop, use the standard embedded version
-              <iframe
-                ref={iframeRef}
-                src="https://playcanv.as/e/p/cW2W3Amn/"
-                className="w-full h-full border-0"
-                title="LIMI 3D Configurator"
-                allow="accelerometer; autoplay; camera; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                importance="high"
-                loading="eager"
-                onLoad={() => {
-                  console.log('Desktop iframe onLoad event fired');
-                  // Set initial quality
-                  if (iframeRef.current && iframeRef.current.contentWindow) {
-                    iframeRef.current.contentWindow.postMessage("highdis", "*");
-                    console.log('Set quality to high for desktop');
-                  }
-                  // We'll wait for the app:ready1 message to set iframeLoaded for desktop
-                }}
-              ></iframe>
-            )}
+            <iframe
+              key={iframeKey}
+              ref={iframeRef}
+              src={playcanvasEmbedUrl}
+              className="w-full h-full border-0"
+              title="LIMI 3D Configurator"
+              allow="accelerometer; autoplay; camera; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              importance="high"
+              loading="eager"
+              onLoad={() => {
+                console.log('PlayCanvas iframe onLoad event fired');
+                setIframeLoaded(true);
+                setIframeError(false);
+                // Set initial quality for desktop
+                if (!isMobile && iframeRef.current && iframeRef.current.contentWindow) {
+                  iframeRef.current.contentWindow.postMessage("highdis", "*");
+                  console.log('Set quality to high for desktop');
+                }
+              }}
+              onError={() => {
+                setIframeError(true);
+                setIframeLoaded(false);
+                console.error('PlayCanvas iframe failed to load');
+              }}
+              style={{
+                minHeight: isMobile ? 320 : 500
+                // No background color, let PlayCanvas handle it
+              }}
+            ></iframe>
             
             {/* Interaction hint */}
             <div className="absolute top-4 right-4 bg-black/60 text-white px-3 py-1 rounded-full text-xs flex items-center z-10 animate-pulse">

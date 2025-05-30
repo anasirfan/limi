@@ -504,11 +504,16 @@ export default function HowItWorks() {
     hover: { scale: 1.2, rotate: 15, filter: "drop-shadow(0 0 8px #54BB74)" },
   };
 
+  // Responsive header margin: no gap on mobile, margin on desktop
+  const headerClass =
+    "text-center sm:pb-2 pb-0 px-4 relative z-20 bg-[#F2F0E6]" +
+    (isMobile ? "" : " mt-10");
+
   return (
     <section
       id="how-it-works"
       ref={sectionRef}
-      className="h-screen bg-[#F2F0E6] relative text-[#2B2D2F] overflow-hidden flex flex-col HowItWorks"
+      className="sm:h-screen h-[90vh] bg-[#F2F0E6] relative text-[#2B2D2F] overflow-hidden flex flex-col HowItWorks"
     >
       {/* Detail Carousel Modal */}
       <AnimatePresence>
@@ -548,18 +553,21 @@ export default function HowItWorks() {
       </div>
 
       {/* Section header */}
-      <div className="text-center pb-2 px-4 relative z-20 bg-[#F2F0E6] mt-10">
+      <div className={headerClass}>
         <h2 className="text-4xl md:text-5xl font-bold">How It Works</h2>
       </div>
 
       {/* Mobile-specific view with autoplay carousel */}
       {isMobile ? (
+        // The following div is centered horizontally using Tailwind's mx-auto and max-w-md.
+        // The flex-col parent and justify-center/align-center on children help with vertical centering of content.
+        // The card itself uses mx-auto to center it in the available width.
         <div
-          className=" z-10 flex flex-col"
-          style={{ height: "100vh", minHeight: "200px" }}
+          className="z-10 flex flex-col "
+          style={{ height: "90vh", minHeight: "500px" }}
         >
           {/* Mobile carousel */}
-          <div className="relative overflow-hidden h-full">
+          <div className="relative overflow-hidden h-screen">
             <AnimatePresence initial={false} mode="wait">
               {steps.map((step, index) => {
                 const Icon = step.icon;
@@ -588,8 +596,18 @@ export default function HowItWorks() {
                     }}
                   >
                     {/* Mobile step content */}
-                    <div className="px-4 py-4 flex flex-col">
-                      <div className="bg-[#2B2D2F] rounded-xl overflow-hidden flex flex-col shadow-xl pt-4 pb-6 max-w-md mx-auto w-full mb-10">
+                    <div className="flex flex-col h-full">
+                      {/* 
+                        The card below is centered horizontally by:
+                        - max-w-md: sets a max width
+                        - mx-auto: centers horizontally in the parent
+                        - w-full: allows it to fill available width up to max-w
+                        - flex flex-col: for vertical stacking
+                        - items-center: centers children horizontally
+                        - justify-center: centers children vertically (if parent has a set height)
+                        - mb-10: margin bottom for spacing from pagination
+                      */}
+                      <div className="bg-[#2B2D2F] rounded-xl overflow-hidden flex flex-col shadow-xl pt-4 pb-6 max-w-md mx-auto w-full">
                         {/* Step indicator - moved to top of card for better visibility */}
                         <div className="flex items-center justify-center py-3 border-b border-[#50C878]/20">
                           <div className="w-8 h-8 rounded-full bg-[#50C878] flex items-center justify-center text-white text-sm font-bold shadow-lg">
@@ -615,7 +633,7 @@ export default function HowItWorks() {
                         </div>
 
                         {/* Content - better spacing and centered text */}
-                        <div className="p-6 py-0 flex-1 flex flex-col text-white">
+                        <div className="p-6 py-0 flex-1 flex flex-col text-white items-center">
                           {/* Title with icon - centered */}
                           <div className="flex items-center justify-center mb-2">
                             <div className="mr-3 text-[#50C878]">
@@ -625,7 +643,7 @@ export default function HowItWorks() {
                           </div>
 
                           {/* Description - centered */}
-                          <p className="text-sm text-white/90 mb-2  text-center">
+                          <p className="text-sm text-white/90 mb-2 text-center">
                             {step.description}
                           </p>
 
@@ -706,33 +724,42 @@ export default function HowItWorks() {
                 />
               </svg>
             </button>
-          </div>
 
-          {/* Mobile pagination indicator */}
-          <div className="h-12 flex justify-center mb-8 items-center gap-2">
-            {steps.map((_, index) => (
-              <button
-                key={index}
-                className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                  index === mobileActiveSlide
-                    ? "bg-[#50C878] w-6"
-                    : "bg-[#50C878]/30"
-                }`}
-                onClick={() => {
-                  setMobileActiveSlide(index);
-                  // Reset autoplay timer
-                  if (autoplayTimerRef.current) {
-                    clearInterval(autoplayTimerRef.current);
-                    autoplayTimerRef.current = setInterval(() => {
-                      setMobileActiveSlide((prev) =>
-                        prev === steps.length - 1 ? 0 : prev + 1
-                      );
-                    }, 5000);
-                  }
-                }}
-                aria-label={`Go to step ${index + 1}`}
-              />
-            ))}
+            {/* Mobile pagination indicator - made visible and prominent */}
+            <div
+              className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex items-center gap-3 px-4 py-2 rounded-full"
+              style={{
+                minHeight: "40px",
+                backdropFilter: "blur(6px)",
+              }}
+            >
+              {steps.map((_, index) => (
+                <button
+                  key={index}
+                  className={`transition-all duration-300 rounded-full focus:outline-none border-2 ${
+                    index === mobileActiveSlide
+                      ? "bg-[#50C878] border-[#50C878] w-7 h-3"
+                      : "bg-[#50C878]/30 border-transparent w-3 h-3"
+                  }`}
+                  style={{
+                    transition: "all 0.3s cubic-bezier(.4,0,.2,1)",
+                  }}
+                  onClick={() => {
+                    setMobileActiveSlide(index);
+                    // Reset autoplay timer
+                    if (autoplayTimerRef.current) {
+                      clearInterval(autoplayTimerRef.current);
+                      autoplayTimerRef.current = setInterval(() => {
+                        setMobileActiveSlide((prev) =>
+                          prev === steps.length - 1 ? 0 : prev + 1
+                        );
+                      }, 5000);
+                    }
+                  }}
+                  aria-label={`Go to step ${index + 1}`}
+                />
+              ))}
+            </div>
           </div>
         </div>
       ) : (
