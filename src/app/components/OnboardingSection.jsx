@@ -30,6 +30,7 @@ export default function OnboardingSection() {
   const [iframeKey, setIframeKey] = useState(0); // For force re-mounting iframe on mobile
   const [iframeError, setIframeError] = useState(false);
   const [showTapToLoad, setShowTapToLoad] = useState(false);
+  const [showMobileBlackScreenHelp, setShowMobileBlackScreenHelp] = useState(false);
 
   // Detect mobile devices (user agent + screen size)
   useEffect(() => {
@@ -253,16 +254,27 @@ export default function OnboardingSection() {
   useEffect(() => {
     if (!isMobile) {
       setShowTapToLoad(false);
+      setShowMobileBlackScreenHelp(false);
       return;
     }
     if (iframeLoaded) {
       setShowTapToLoad(false);
+      setShowMobileBlackScreenHelp(false);
       return;
     }
     const tapTimeout = setTimeout(() => {
       if (!iframeLoaded) setShowTapToLoad(true);
     }, 2000);
-    return () => clearTimeout(tapTimeout);
+
+    // If after 5 seconds the iframe is still not loaded, show black screen help
+    const blackScreenTimeout = setTimeout(() => {
+      if (!iframeLoaded) setShowMobileBlackScreenHelp(true);
+    }, 5000);
+
+    return () => {
+      clearTimeout(tapTimeout);
+      clearTimeout(blackScreenTimeout);
+    };
   }, [isMobile, iframeLoaded, iframeKey]);
 
   // We'll use the embed URL for both mobile and desktop for maximum compatibility.
@@ -465,6 +477,23 @@ export default function OnboardingSection() {
                   {iframeError && (
                     <div className="mt-4 text-red-400 text-xs">
                       Failed to load 3D preview. Please try reloading or check your connection.
+                    </div>
+                  )}
+                  {/* Show mobile black screen help if on mobile and iframe is not loaded */}
+                  {showMobileBlackScreenHelp && isMobile && !iframeLoaded && (
+                    <div className="mt-4 text-yellow-300 text-xs bg-black/70 rounded-lg px-3 py-2">
+                      <strong>Why am I seeing a black screen?</strong>
+                      <br />
+                      On some mobile browsers (especially iOS/Safari), 3D previews in iframes may not display until you tap the screen or interact with the page. 
+                      <br />
+                      <span className="block mt-2">
+                        <span className="font-semibold">What to do:</span>
+                        <ul className="list-disc list-inside text-yellow-200 text-xs mt-1">
+                          <li>Tap the "Tap to Load 3D Preview" overlay if you see it.</li>
+                          <li>If you still see a black screen, try the "Continue Anyway" or "Try Reload 3D Preview" buttons above.</li>
+                          <li>If it still doesn't work, try reloading the page or using a different browser.</li>
+                        </ul>
+                      </span>
                     </div>
                   )}
                 </div>
