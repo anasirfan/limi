@@ -5,6 +5,17 @@ import { motion } from 'framer-motion';
 import OnboardingWizard from './onboarding/OnboardingWizard';
 import PlayCanvasViewer from './PlayCanvasViewer';
 
+// Helper: Detect mobile using user agent and screen size
+function isMobileDevice() {
+  if (typeof window === "undefined") return false;
+  const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+  // iOS 15+ Safari blocks iframe rendering unless user interacts, so treat iOS as mobile
+  const isMobileUA = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
+  // Also treat small screens as mobile
+  const isSmallScreen = window.innerWidth <= 800;
+  return isMobileUA || isSmallScreen;
+}
+
 export default function OnboardingSection() {
   const router = useRouter();
   const iframeRef = useRef(null);
@@ -16,94 +27,79 @@ export default function OnboardingSection() {
   const [lightAmount, setLightAmount] = useState('');
   const [isMobile, setIsMobile] = useState(false);
   const [loadingTimedOut, setLoadingTimedOut] = useState(false);
-  
-  // Detect mobile devices
+  const [iframeKey, setIframeKey] = useState(0); // For force re-mounting iframe on mobile
+  const [iframeError, setIframeError] = useState(false);
+  const [showTapToLoad, setShowTapToLoad] = useState(false);
+  const [showMobileBlackScreenHelp, setShowMobileBlackScreenHelp] = useState(false);
+
+  // Detect mobile devices (user agent + screen size)
   useEffect(() => {
     const checkMobile = () => {
-      const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-      const isMobileDevice = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
-      setIsMobile(isMobileDevice);
+      setIsMobile(isMobileDevice());
     };
-    
     checkMobile();
     window.addEventListener('resize', checkMobile);
-    
-    return () => {
-      window.removeEventListener('resize', checkMobile);
-    };
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
   // Handle iframe messages
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    
+
     const handleMessage = (event) => {
       try {
-        // Check if the message is from our PlayCanvas iframe
         if (event.data === 'app:ready1') {
-          console.log('PlayCanvas app is ready');
           setIframeLoaded(true);
-          
           // Send 'homepage' message when app is ready (only once)
           if (iframeRef.current && iframeRef.current.contentWindow && !homepageMessageSent) {
             iframeRef.current.contentWindow.postMessage('homepage', '*');
             iframeRef.current.contentWindow.postMessage('pendant_design:product_2', "*");
-            console.log('Sent homepage message to PlayCanvas');
             setHomepageMessageSent(true);
-            
-            // Don't send any configurations on initial load
-            // We'll wait for user interaction instead
           }
         }
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error('Error handling iframe message:', error);
       }
     };
-    
+
     window.addEventListener('message', handleMessage);
-    
+
     // Set a timeout to handle cases where the app:ready1 message might not be received
     // This is especially important for mobile browsers
     const readyTimeout = setTimeout(() => {
       if (!iframeLoaded) {
-        console.log('PlayCanvas ready timeout - forcing ready state');
         setIframeLoaded(true);
         setLoadingTimedOut(true);
-        
         // Try to send homepage message anyway
         if (iframeRef.current && iframeRef.current.contentWindow && !homepageMessageSent) {
           try {
             iframeRef.current.contentWindow.postMessage('homepage', '*');
             iframeRef.current.contentWindow.postMessage('pendant_design:product_2', "*");
-            console.log('Sent homepage message to PlayCanvas after timeout');
             setHomepageMessageSent(true);
           } catch (error) {
+            // eslint-disable-next-line no-console
             console.error('Error sending message after timeout:', error);
           }
         }
       }
-    }, isMobile ? 8000 : 15000); // Shorter timeout for mobile
-    
+    }, isMobile ? 12000 : 15000);
+
     return () => {
       window.removeEventListener('message', handleMessage);
       clearTimeout(readyTimeout);
     };
-  }, [homepageMessageSent, iframeLoaded, isMobile]);
-  
+  }, [homepageMessageSent, iframeLoaded, isMobile, iframeKey]);
+
   // Function to send configuration to PlayCanvas based on step
   const sendConfigToPlayCanvas = (step, selections) => {
     try {
       if (!iframeRef.current || !iframeRef.current.contentWindow || !iframeLoaded) {
-        console.log('Cannot send config: iframe not ready');
         return;
       }
-      
-      console.log(`Sending config for step ${step}:`, selections);
-      
       // We're only sending the specific data for each step, no light amount
-      
-      // Send different data based on the step
       switch(step) {
-        case 1: // Category selection (pendant/wall/floor) - ONLY send light type
+        case 1:
           if (selections.lightCategory) {
             const lightTypeMap = {
               'ceiling': 'ceiling',
@@ -117,7 +113,7 @@ export default function OnboardingSection() {
             if(lightType === 'floor'){
               iframeRef.current.contentWindow.postMessage('light_amount:3', "*");
             }
-            
+
             if(lightType === 'floor'){
               iframeRef.current.contentWindow.postMessage('pendant_0:product_2', "*");
               iframeRef.current.contentWindow.postMessage('pendant_1:product_2', "*");
@@ -125,14 +121,12 @@ export default function OnboardingSection() {
             } else {
               iframeRef.current.contentWindow.postMessage('pendant_design:product_2', "*");
             }
-            console.log(`Sent light type: ${lightType}`);
           }
           break;
-          
-        case 2: // Vibe selection - ONLY send vibe
+
+        case 2:
           if (selections.lightStyle) {
-            // Direct mapping from vibe ID to message
-            const vibeMessage = selections.lightStyle; // coolLux, dreamGlow, shadowHue, zenFlow
+            const vibeMessage = selections.lightStyle;
             let lightAmount = 1;
             if (currentType === 'ceiling') {
               if (vibeMessage === 'coolLux') {
@@ -144,10 +138,8 @@ export default function OnboardingSection() {
               } else {
                 lightAmount = '24';
               }
-
               setLightAmount(lightAmount);
               iframeRef.current.contentWindow.postMessage('light_type:ceiling', "*");
-
               iframeRef.current.contentWindow.postMessage(`light_amount:${lightAmount}`, "*");
               for(let i = 0; i < lightAmount; i++){
                 if(lightAmount === '1'){
@@ -157,25 +149,20 @@ export default function OnboardingSection() {
                 iframeRef.current.contentWindow.postMessage(`pendant_${i}:product_2`, "*");
               }
             } else if(currentType === 'floor') {
-                setLightAmount(3);
+              setLightAmount(3);
               iframeRef.current.contentWindow.postMessage(`light_amount:3`, "*");
               for(let i = 0; i < 3; i++){
                 iframeRef.current.contentWindow.postMessage(`pendant_${i}:product_2`, "*");
               }
             } else if(currentType === 'wall') {
-              console.log("lightAmount: ",lightAmount)
               iframeRef.current.contentWindow.postMessage(`light_amount:1`, "*");
             }
-            
-            
-            console.log(`Sent vibe: ${vibeMessage}`);
           }
           break;
-          
-        case 3: // Aesthetic selection - ONLY send aesthetic
+
+        case 3:
           if (selections.designAesthetic) {
-            // Direct mapping from aesthetic ID to message
-            const aestheticMessage = selections.designAesthetic; // aesthetic, industrial, scandinavian, modern_style
+            const aestheticMessage = selections.designAesthetic;
             let pendantDesign = '';
             if(aestheticMessage === 'modern_style'){
               pendantDesign='product_1';
@@ -186,10 +173,7 @@ export default function OnboardingSection() {
             } else if(aestheticMessage === 'scandinavian'){
               pendantDesign='product_5';
             }
-            console.log("lightAmount: ",lightAmount)
-            console.log(`Sent aesthetic: ${aestheticMessage}`, currentType, lightAmount, pendantDesign);
             for(let i = 0; i < lightAmount; i++){
-              console.log("i: ",i)
               if(currentType === 'wall'){
                 iframeRef.current.contentWindow.postMessage(`light_amount:1`, "*");
                 iframeRef.current.contentWindow.postMessage(`pendant_design:${pendantDesign}`, "*");
@@ -200,15 +184,10 @@ export default function OnboardingSection() {
                 iframeRef.current.contentWindow.postMessage(`pendant_${i}:${pendantDesign}`, "*");
               }
             }
-            // Handle the special case for modern_style
-            // const formattedAesthetic = aestheticMessage === 'modern_style' ? 'modern' : aestheticMessage;
-            // iframeRef.current.contentWindow.postMessage(`aesthetic:${formattedAesthetic}`, "*");
-       
           }
           break;
-          
-        case 4: // Final step - send all configurations for the "Let's Go" button
-          // Send light type
+
+        case 4:
           if (selections.lightCategory) {
             const lightTypeMap = {
               'ceiling': 'ceiling',
@@ -216,61 +195,90 @@ export default function OnboardingSection() {
               'floor': 'floor'
             };
             const lightType = lightTypeMap[selections.lightCategory] || 'ceiling';
-            // iframeRef.current.contentWindow.postMessage(`light_type:${lightType}`, "*");
-            console.log(`Final: Sent light type: ${lightType}`);
           }
-          
-          // Send vibe
           if (selections.lightStyle) {
-            // iframeRef.current.contentWindow.postMessage(`vibe:${selections.lightStyle}`, "*");
-            console.log(`Final: Sent vibe: ${selections.lightStyle}`);
           }
-          
-          // Send aesthetic
           if (selections.designAesthetic) {
             const formattedAesthetic = selections.designAesthetic === 'modern_style' ? 'modern' : selections.designAesthetic;
-            // iframeRef.current.contentWindow.postMessage(`aesthetic:${formattedAesthetic}`, "*");
-            console.log(`Final: Sent aesthetic: ${formattedAesthetic}`);
           }
           break;
-          
+
         default:
           break;
       }
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error("Error sending configuration to PlayCanvas:", error);
     }
   };
-  
-  // We're removing this useEffect to avoid the infinite update loop
-  // Instead, we'll only send configurations on explicit user actions
-  
+
   // Handle step changes - only store selections, don't send to PlayCanvas yet
   const handleStepChange = (step, stepSelections) => {
-    console.log(`Step changed to ${step}`, stepSelections);
     setCurrentStep(step);
     setWizardSelections(stepSelections);
-    
-    // Only send configuration when moving to the next step (not on initial load or selection)
-    // This ensures we only send when the user clicks "Next"
     if (iframeLoaded && step > 0) {
       sendConfigToPlayCanvas(step, stepSelections);
     }
   };
-  
+
   // Handle completion
   const handleComplete = (finalSelections) => {
-    // Send final configuration before navigating
     if (iframeLoaded) {
       sendConfigToPlayCanvas(4, finalSelections);
     }
-    
-    // Save final selections to localStorage
     localStorage.setItem('configuratorSelections', JSON.stringify(finalSelections));
-    
-    // Navigate to the configurator page
     router.push('/configurator');
   };
+
+  // --- MOBILE IFRAME LOAD FIX ---
+  // On mobile, PlayCanvas iframe sometimes doesn't load due to browser restrictions.
+  // We'll force a re-mount of the iframe if it fails to load after a timeout.
+  useEffect(() => {
+    if (!isMobile) return;
+    if (iframeLoaded) return;
+    // If not loaded after 15s, try to reload the iframe (force re-mount)
+    const reloadTimeout = setTimeout(() => {
+      if (!iframeLoaded) {
+        setIframeKey((k) => k + 1);
+        setHomepageMessageSent(false);
+        setLoadingTimedOut(false);
+        setIframeLoaded(false);
+      }
+    }, 15000);
+    return () => clearTimeout(reloadTimeout);
+  }, [isMobile, iframeLoaded, iframeKey]);
+
+  // --- MOBILE IFRAME TAP TO LOAD ---
+  // On some mobile browsers (especially iOS/Safari), iframes with 3D content will not render until user interacts.
+  // Show a "Tap to Load 3D Preview" overlay on mobile if not loaded after 2s.
+  useEffect(() => {
+    if (!isMobile) {
+      setShowTapToLoad(false);
+      setShowMobileBlackScreenHelp(false);
+      return;
+    }
+    if (iframeLoaded) {
+      setShowTapToLoad(false);
+      setShowMobileBlackScreenHelp(false);
+      return;
+    }
+    const tapTimeout = setTimeout(() => {
+      if (!iframeLoaded) setShowTapToLoad(true);
+    }, 2000);
+
+    // If after 5 seconds the iframe is still not loaded, show black screen help
+    const blackScreenTimeout = setTimeout(() => {
+      if (!iframeLoaded) setShowMobileBlackScreenHelp(true);
+    }, 5000);
+
+    return () => {
+      clearTimeout(tapTimeout);
+      clearTimeout(blackScreenTimeout);
+    };
+  }, [isMobile, iframeLoaded, iframeKey]);
+
+  // We'll use the embed URL for both mobile and desktop for maximum compatibility.
+  const playcanvasEmbedUrl = "https://playcanv.as/e/p/cW2W3Amn/";
 
   return (
     <section className="bg-[#2B2D2F] text-white py-8 md:py-12">
@@ -435,12 +443,14 @@ export default function OnboardingSection() {
                       <button 
                         onClick={() => {
                           setIframeLoaded(true);
+                          setIframeError(false);
                           if (!homepageMessageSent && iframeRef.current && iframeRef.current.contentWindow) {
                             try {
                               iframeRef.current.contentWindow.postMessage('homepage', '*');
                               iframeRef.current.contentWindow.postMessage('pendant_design:product_2', "*");
                               setHomepageMessageSent(true);
                             } catch (error) {
+                              // eslint-disable-next-line no-console
                               console.error('Error sending message after button click:', error);
                             }
                           }
@@ -451,88 +461,97 @@ export default function OnboardingSection() {
                       </button>
                       <button 
                         onClick={() => {
-                          // Reload the iframe with the direct player URL
-                          if (iframeRef.current) {
-                            try {
-                              const iframe = iframeRef.current;
-                              const parentNode = iframe.parentNode;
-                              parentNode.removeChild(iframe);
-                              
-                              // Create a new iframe with a direct link to the mobile version
-                              const newIframe = document.createElement('iframe');
-                              newIframe.src = 'https://playcanv.as/p/cW2W3Amn/'; // Use /p/ instead of /e/p/
-                              newIframe.className = 'w-full h-full border-0';
-                              newIframe.title = 'LIMI 3D Configurator';
-                              newIframe.allow = 'accelerometer; autoplay; camera; encrypted-media; gyroscope; picture-in-picture';
-                              newIframe.allowFullScreen = true;
-                              
-                              parentNode.appendChild(newIframe);
-                              iframeRef.current = newIframe;
-                              
-                              // Hide loading after a short delay
-                              setTimeout(() => {
-                                setIframeLoaded(true);
-                              }, 3000);
-                            } catch (error) {
-                              console.error('Error reloading iframe:', error);
-                            }
-                          }
+                          setIframeKey((k) => k + 1);
+                          setHomepageMessageSent(false);
+                          setLoadingTimedOut(false);
+                          setIframeLoaded(false);
+                          setIframeError(false);
                         }}
                         className="w-full px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
                       >
-                        Try Alternative Version
+                        Try Reload 3D Preview
                       </button>
+                    </div>
+                  )}
+                  {/* Show error if iframe fails to load */}
+                  {iframeError && (
+                    <div className="mt-4 text-red-400 text-xs">
+                      Failed to load 3D preview. Please try reloading or check your connection.
+                    </div>
+                  )}
+                  {/* Show mobile black screen help if on mobile and iframe is not loaded */}
+                  {showMobileBlackScreenHelp && isMobile && !iframeLoaded && (
+                    <div className="mt-4 text-yellow-300 text-xs bg-black/70 rounded-lg px-3 py-2">
+                      <strong>Why am I seeing a black screen?</strong>
+                      <br />
+                      On some mobile browsers (especially iOS/Safari), 3D previews in iframes may not display until you tap the screen or interact with the page. 
+                      <br />
+                      <span className="block mt-2">
+                        <span className="font-semibold">What to do:</span>
+                        <ul className="list-disc list-inside text-yellow-200 text-xs mt-1">
+                          <li>Tap the "Tap to Load 3D Preview" overlay if you see it.</li>
+                          <li>If you still see a black screen, try the "Continue Anyway" or "Try Reload 3D Preview" buttons above.</li>
+                          <li>If it still doesn't work, try reloading the page or using a different browser.</li>
+                        </ul>
+                      </span>
                     </div>
                   )}
                 </div>
               </div>
             )}
+
+            {/* Tap to load overlay for mobile (iOS/Safari fix) */}
+            {showTapToLoad && !iframeLoaded && isMobile && (
+              <div
+                className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/80"
+                onClick={() => {
+                  setShowTapToLoad(false);
+                  setIframeKey((k) => k + 1);
+                  setIframeLoaded(false);
+                  setIframeError(false);
+                  setHomepageMessageSent(false);
+                }}
+                style={{ cursor: 'pointer' }}
+              >
+                <div className="text-emerald-400 text-lg font-bold mb-2">Tap to Load 3D Preview</div>
+                <div className="text-gray-300 text-sm mb-4">Some mobile browsers require a tap to start 3D content.</div>
+                <div className="w-12 h-12 rounded-full border-4 border-emerald-400 flex items-center justify-center animate-bounce">
+                  <svg className="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                  </svg>
+                </div>
+              </div>
+            )}
             
             {/* 3D Viewer Iframe */}
-            {isMobile ? (
-              // For mobile devices, use the direct player URL instead of the embedded version
-              <iframe
-                ref={iframeRef}
-                src="https://playcanv.as/p/cW2W3Amn/"
-                className="w-full h-full border-0"
-                title="LIMI 3D Configurator"
-                allow="accelerometer; autoplay; camera; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                importance="high"
-                loading="eager"
-                onLoad={() => {
-                  console.log('Mobile iframe loaded with direct player URL');
-                  // Set a timeout to consider it loaded after a few seconds
-                  setTimeout(() => {
-                    if (!iframeLoaded) {
-                      console.log('Setting iframe as loaded after timeout');
-                      setIframeLoaded(true);
-                    }
-                  }, 3000);
-                }}
-              ></iframe>
-            ) : (
-              // For desktop, use the standard embedded version
-              <iframe
-                ref={iframeRef}
-                src="https://playcanv.as/e/p/cW2W3Amn/"
-                className="w-full h-full border-0"
-                title="LIMI 3D Configurator"
-                allow="accelerometer; autoplay; camera; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                importance="high"
-                loading="eager"
-                onLoad={() => {
-                  console.log('Desktop iframe onLoad event fired');
-                  // Set initial quality
-                  if (iframeRef.current && iframeRef.current.contentWindow) {
-                    iframeRef.current.contentWindow.postMessage("highdis", "*");
-                    console.log('Set quality to high for desktop');
-                  }
-                  // We'll wait for the app:ready1 message to set iframeLoaded for desktop
-                }}
-              ></iframe>
-            )}
+            <iframe
+              key={iframeKey}
+              ref={iframeRef}
+              src={playcanvasEmbedUrl}
+              className="w-full h-full border-0 bg-transparent"
+              title="LIMI 3D Configurator"
+              allow="accelerometer; autoplay; camera; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              importance="high"
+              loading="eager"
+              sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-pointer-lock"
+              onLoad={() => {
+                setIframeLoaded(true);
+                setIframeError(false);
+                // Set initial quality for desktop
+                if (!isMobile && iframeRef.current && iframeRef.current.contentWindow) {
+                  iframeRef.current.contentWindow.postMessage("highdis", "*");
+                }
+              }}
+              onError={() => {
+                setIframeError(true);
+                setIframeLoaded(false);
+              }}
+              style={{
+                minHeight: isMobile ? 320 : 500,
+                background: "transparent"
+              }}
+            ></iframe>
             
             {/* Interaction hint */}
             <div className="absolute top-4 right-4 bg-black/60 text-white px-3 py-1 rounded-full text-xs flex items-center z-10 animate-pulse">

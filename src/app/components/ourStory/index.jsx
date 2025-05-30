@@ -3,7 +3,7 @@ import { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ThemeProvider, useTheme } from './ThemeContext';
 import MissionSection from './MissionSection';
-import TeamSection from './TeamSection';
+// import TeamSection from './TeamSection';
 import StatsSection from './StatsSection';
 import PartnersSection from './PartnersSection';
 import CommunitySection from './CommunitySection';
@@ -99,7 +99,8 @@ function OurStoryContent() {
           <MissionSection />
           
           {/* Team Section */}
-          <TeamSection />
+          
+          {/* <TeamSection /> */}
           
           {/* Stats Section */}
           <StatsSection />
