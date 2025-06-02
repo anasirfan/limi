@@ -2,7 +2,7 @@
 import React, { useRef } from 'react';
 import { motion } from 'framer-motion';
 
-const styles = [
+const   styles = [
   {
     id: 'coolLux',
     name: 'Cool Lux',

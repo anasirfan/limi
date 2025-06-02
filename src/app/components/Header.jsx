@@ -10,6 +10,7 @@ import { removeFromFavorites } from '../redux/slices/favoritesSlice';
 import { usePathname } from 'next/navigation';
 import gsap from 'gsap';
 import { FaUser, FaSignOutAlt, FaUserCircle, FaBell, FaPortrait, FaTachometerAlt, FaChevronDown, FaHeart, FaShoppingCart, FaTrash, FaTimes, FaSignInAlt, FaComments } from 'react-icons/fa';
+
 const Header = () => {
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -17,36 +18,31 @@ const Header = () => {
   const [cartDropdownOpen, setCartDropdownOpen] = useState(false);
   const [favoritesDropdownOpen, setFavoritesDropdownOpen] = useState(false);
   const [isClient, setIsClient] = useState(false);
-  
+
   const menuRef = useRef(null);
   const menuContentRef = useRef(null);
-  const menuItemRef = useRef(null);
   const userDropdownRef = useRef(null);
   const cartDropdownRef = useRef(null);
   const favoritesDropdownRef = useRef(null);
-  
+
   // Always call hooks unconditionally
   const dispatch = useDispatch();
   const cartData = useSelector((state) => state.cart);
   const favoritesData = useSelector((state) => state.favorites);
   const userData = useSelector((state) => state.user);
-  
+
   // Then use the data conditionally
   const cart = isClient ? cartData : { items: [], totalQuantity: 0, totalAmount: 0 };
   const favorites = isClient ? favoritesData : { items: [] };
 
- 
-
   const { isLoggedIn, user } = userData || { isLoggedIn: false, user: null };
-  
 
-  
   // Get current path to determine which navigation to show
   const pathname = usePathname();
   const isHomePage = pathname === '/';
-  
+
   const isAdmin = user?.role === 'admin';
-  
+
   // Set isClient to true after component mounts
   useEffect(() => {
     setIsClient(true);
@@ -57,29 +53,29 @@ const Header = () => {
     // Close user dropdown when opening menu
     if (!menuOpen) setUserDropdownOpen(false);
   };
-  
+
   const closeMenu = () => {
     setMenuOpen(false);
   };
-  
+
   const toggleUserDropdown = () => {
     setUserDropdownOpen(!userDropdownOpen);
     setCartDropdownOpen(false);
     setFavoritesDropdownOpen(false);
   };
-  
+
   const toggleCartDropdown = () => {
     setCartDropdownOpen(!cartDropdownOpen);
     setUserDropdownOpen(false);
     setFavoritesDropdownOpen(false);
   };
-  
+
   const toggleFavoritesDropdown = () => {
     setFavoritesDropdownOpen(!favoritesDropdownOpen);
     setUserDropdownOpen(false);
     setCartDropdownOpen(false);
   };
-  
+
   const handleLogout = () => {
     dispatch(logout());
     setUserDropdownOpen(false);
@@ -89,7 +85,7 @@ const Header = () => {
     e.stopPropagation();
     dispatch(removeFromCart(id));
   };
-  
+
   const handleRemoveFromFavorites = (e, id) => {
     e.stopPropagation();
     dispatch(removeFromFavorites(id));
@@ -132,7 +128,7 @@ const Header = () => {
       menuTl.kill();
     };
   }, [menuOpen]);
-  
+
   // Handle clicks outside of user dropdown
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -153,7 +149,6 @@ const Header = () => {
     };
   }, []);
 
-
   // Homepage section links (for scrolling)
   const sections = [
     { href: '/configurator', label: 'Customize Yourself' },
@@ -172,18 +167,15 @@ const Header = () => {
     { href: '/contact-us', label: "Let's Talk" },
     { href: '/collaborate', label: 'Let’s Grow Together' },
   ];
-  
+
   // Links to show based on current page - keeping standard links for all pages
   const links = standardLinks;
 
-  const handleNavClick = (id) => {
+  // Fix: Use href for navigation, not id/scroll, for mobile menu
+  // (The original code tried to scroll to an element by id, but the sections are not in the DOM, so use router.push instead)
+  const handleMobileNav = (href) => {
     setMenuOpen(false);
-
-    // Smooth scroll to section
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
+    router.push(href);
   };
 
   // State for scroll behavior
@@ -196,17 +188,17 @@ const Header = () => {
   useEffect(() => {
     const handleScroll = () => {
       const scrollPosition = window.scrollY;
-      
+
       // Determine scroll direction
       if (scrollPosition > lastScrollY.current) {
         setScrollDirection('down');
       } else {
         setScrollDirection('up');
       }
-      
+
       // Update last scroll position
       lastScrollY.current = scrollPosition;
-      
+
       // Set scrolled state based on position
       if (scrollPosition > 50) {
         setIsScrolled(true);
@@ -237,13 +229,13 @@ const Header = () => {
                 className="drop-shadow-glow"
               />
             </Link>
-            
+
             {/* Standard Navigation Links (visible on all pages, hidden when scrolled down) */}
             <div className={`hidden md:flex items-center space-x-6 ${isScrolled && scrollDirection === 'down' ? 'opacity-0 invisible' : 'opacity-100 visible'} transition-all duration-300`}>
               {standardLinks.map((link) => (
-                <Link 
+                <Link
                   key={link.href}
-                  href={link.href} 
+                  href={link.href}
                   className="text-white hover:text-[#50C878] transition-all duration-300 relative group font-medium"
                 >
                   <span className="relative inline-block">
@@ -252,11 +244,11 @@ const Header = () => {
                   </span>
                 </Link>
               ))}
-              
+
               {/* Admin Dashboard Link (only shown if user is admin) */}
               {isLoggedIn && isAdmin && (
-                <Link 
-                  href="/dashboard" 
+                <Link
+                  href="/dashboard"
                   className="text-emerald hover:text-emerald-light transition-all duration-300 relative group font-medium"
                 >
                   <span className="relative inline-block">
@@ -267,7 +259,7 @@ const Header = () => {
               )}
             </div>
           </div>
-          
+
           <div className="flex items-center gap-3">
             {/* Hamburger button - hidden on desktop, visible on mobile */}
             <button
@@ -288,202 +280,32 @@ const Header = () => {
                   }`}
               ></span>
             </button>
-            
-            {/* Cart and Favorites icons - commented out as requested */}
-            {/* <div className="hidden md:flex items-center gap-3 mr-4">
-              <div className="relative" ref={favoritesDropdownRef}>
-                <button
-                  onClick={toggleFavoritesDropdown}
-                  className="relative p-2 text-white hover:text-[#50C878] transition-colors"
-                  aria-label="Favorites"
-                >
-                  <FaHeart size={20} />
-                  {isClient && favorites.items.length > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-[#50C878] text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
-                      {favorites.items.length}
-                    </span>
-                  )}
-                </button>
-                
-                {isClient && favoritesDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-80 bg-[#1e1e1e] border border-[#3a3d42] rounded-lg shadow-lg z-50 overflow-hidden">
-                    <div className="p-3 border-b border-[#3a3d42] flex justify-between items-center">
-                      <h3 className="font-medium text-white">My Favorites ({favorites.items.length})</h3>
-                      <button 
-                        onClick={() => setFavoritesDropdownOpen(false)}
-                        className="text-gray-400 hover:text-white"
-                      >
-                        <FaTimes />
-                      </button>
-                    </div>
-                    
-                    <div className="max-h-80 overflow-y-auto">
-                      {favorites.items.length === 0 ? (
-                        <div className="p-4 text-center text-gray-400">
-                          <p>No favorites yet</p>
-                        </div>
-                      ) : (
-                        <ul>
-                          {favorites.items.map(item => (
-                            <li key={item.id} className="border-b border-[#3a3d42] last:border-b-0">
-                              <Link 
-                                href={`/product-catalog/${item.slug}`}
-                                className="p-3 flex items-center hover:bg-[#2B2D2F] transition-colors"
-                              >
-                                <div className="w-16 h-16 bg-[#2B2D2F] rounded-md overflow-hidden relative flex-shrink-0">
-                                  {item.image && (
-                                    <Image 
-                                      src={item.image} 
-                                      alt={item.name}
-                                      fill
-                                      className="object-cover"
-                                    />
-                                  )}
-                                </div>
-                                <div className="ml-3 flex-grow">
-                                  <h4 className="text-white font-medium">{item.name}</h4>
-                                  <p className="text-[#50C878] text-sm">${item.price.toFixed(2)}</p>
-                                </div>
-                                <button 
-                                  onClick={(e) => handleRemoveFromFavorites(e, item.id)}
-                                  className="p-2 text-gray-400 hover:text-red-500 transition-colors"
-                                  aria-label="Remove from favorites"
-                                >
-                                  <FaTrash size={14} />
-                                </button>
-                              </Link>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </div>
-                    
-                    <div className="p-3 border-t border-[#3a3d42]">
-                      <Link 
-                        href="/portal"
-                        className="block w-full py-2 text-center bg-[#2B2D2F] border border-[#50C878] text-[#50C878] rounded-md hover:bg-[#50C878] hover:text-[#2B2D2F] transition-colors"
-                        onClick={() => setFavoritesDropdownOpen(false)}
-                      >
-                        View All Favorites
-                      </Link>
-                    </div>
-                  </div>
-                )}
-              </div>
-              
-              <div className="relative" ref={cartDropdownRef}>
-                <button
-                  onClick={toggleCartDropdown}
-                  className="relative p-2 text-white hover:text-[#50C878] transition-colors"
-                  aria-label="Shopping Cart"
-                >
-                  <FaShoppingCart size={20} />
-                  {cart.items.length > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-[#50C878] text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
-                      {cart.totalQuantity}
-                    </span>
-                  )}
-                </button>
-                
-                {cartDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-80 bg-[#1e1e1e] border border-[#3a3d42] rounded-lg shadow-lg z-50 overflow-hidden">
-                    <div className="p-3 border-b border-[#3a3d42] flex justify-between items-center">
-                      <h3 className="font-medium text-white">My Cart ({cart.totalQuantity})</h3>
-                      <button 
-                        onClick={() => setCartDropdownOpen(false)}
-                        className="text-gray-400 hover:text-white"
-                      >
-                        <FaTimes />
-                      </button>
-                    </div>
-                    
-                    <div className="max-h-80 overflow-y-auto">
-                      {cart.items.length === 0 ? (
-                        <div className="p-4 text-center text-gray-400">
-                          <p>Your cart is empty</p>
-                        </div>
-                      ) : (
-                        <ul>
-                          {cart.items.map(item => (
-                            <li key={item.id} className="border-b border-[#3a3d42] last:border-b-0">
-                              <Link 
-                                href={`/product-catalog/${item.slug}`}
-                                className="p-3 flex items-center hover:bg-[#2B2D2F] transition-colors"
-                              >
-                                <div className="w-16 h-16 bg-[#2B2D2F] rounded-md overflow-hidden relative flex-shrink-0">
-                                  {item.image && (
-                                    <Image 
-                                      src={item.image} 
-                                      alt={item.name}
-                                      fill
-                                      className="object-cover"
-                                    />
-                                  )}
-                                </div>
-                                <div className="ml-3 flex-grow">
-                                  <h4 className="text-white font-medium">{item.name}</h4>
-                                  <div className="flex justify-between">
-                                    <p className="text-gray-400 text-sm">Qty: {item.quantity}</p>
-                                    <p className="text-[#50C878] text-sm">${(item.price * item.quantity).toFixed(2)}</p>
-                                  </div>
-                                </div>
-                                <button 
-                                  onClick={(e) => handleRemoveFromCart(e, item.id)}
-                                  className="p-2 text-gray-400 hover:text-red-500 transition-colors"
-                                  aria-label="Remove from cart"
-                                >
-                                  <FaTrash size={14} />
-                                </button>
-                              </Link>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </div>
-                    
-                    <div className="p-3 border-t border-[#3a3d42]">
-                      <div className="flex justify-between mb-3">
-                        <span className="text-gray-300">Subtotal:</span>
-                        <span className="text-white font-medium">${cart.totalAmount.toFixed(2)}</span>
-                      </div>
-                      <Link 
-                        href="/checkout"
-                        className="block w-full py-2 text-center bg-[#50C878] text-[#2B2D2F] rounded-md hover:bg-[#3da861] transition-colors"
-                        onClick={() => setCartDropdownOpen(false)}
-                      >
-                        Checkout
-                      </Link>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div> */}
-            
+
             {/* Auth Button and User Menu - positioned at extreme right */}
             <div className="flex items-center">
               {!isClient ? (
                 <div className="w-[120px] h-[36px] bg-[#50C878] rounded-md"></div>
               ) : !isLoggedIn ? (
-                <Link 
-                  href="/portal" 
+                <Link
+                  href="/portal"
                   className={`${isScrolled ? 'px-2.5 py-1.5' : 'px-4 py-1.5'} text-charleston-green bg-[#50C878] hover:bg-[#87CEAB] transition-all duration-300 rounded-md ${isScrolled ? 'text-xs' : 'text-sm'} font-medium shadow-md hover:shadow-[#50C878]/40 flex items-center justify-center`}
                 >
                   {isScrolled ? <FaSignInAlt size={16} /> : 'Login / Sign Up'}
                 </Link>
               ) : (
                 <div className="relative" ref={userDropdownRef}>
-                  <button 
+                  <button
                     onClick={toggleUserDropdown}
                     className={`flex items-center ${isScrolled ? 'gap-1 px-2.5 py-1.5' : 'gap-2 px-3 py-1.5'} text-white hover:text-[#50C878] transition-all duration-300 bg-[#3a3d42] rounded-full border border-[#50C878]/20 hover:border-[#50C878]/40 shadow-md`}
                     aria-label="User menu"
                   >
                     <div className={`${isScrolled ? 'w-6 h-6' : 'w-7 h-7'} rounded-full bg-emerald flex items-center justify-center overflow-hidden transition-all duration-300`}>
                       {user?.avatar ? (
-                        <Image 
-                          src={user.avatar} 
-                          alt="User avatar" 
-                          width={28} 
-                          height={28} 
+                        <Image
+                          src={user.avatar}
+                          alt="User avatar"
+                          width={28}
+                          height={28}
                           className="object-cover"
                         />
                       ) : (
@@ -493,7 +315,7 @@ const Header = () => {
                     <span className={`${isScrolled ? 'hidden' : 'hidden sm:inline'} text-sm font-medium transition-all duration-300`}>{user?.data?.name || 'User'}</span>
                     <FaChevronDown className={`text-xs transition-transform duration-300 ${userDropdownOpen ? 'rotate-180' : ''}`} />
                   </button>
-                  
+
                   {/* Dropdown menu */}
                   {isClient && userDropdownOpen && (
                     <div className="absolute right-0 mt-2 w-56 bg-charleston-green-dark border border-charleston-green-light rounded-lg shadow-xl py-2 z-50 backdrop-blur-md">
@@ -501,26 +323,8 @@ const Header = () => {
                         <p className="text-sm font-medium text-emerald">{user?.data?.name || 'User'}</p>
                         <p className="text-xs text-gray-400 truncate">{user?.data?.email || 'user@example.com'}</p>
                       </div>
-                      
-                      {/* <Link 
-                        href="/notifications"
-                        className="flex items-center gap-3 px-4 py-2 text-sm text-white hover:bg-emerald/10 hover:text-emerald transition-colors duration-200"
-                        onClick={() => setUserDropdownOpen(false)}
-                      >
-                        <FaBell className="text-emerald" />
-                        Notifications
-                      </Link> */}
-                      
-                      {/* <Link 
-                        href="/account"
-                        className="flex items-center gap-3 px-4 py-2 text-sm text-white hover:bg-emerald/10 hover:text-emerald transition-colors duration-200"
-                        onClick={() => setUserDropdownOpen(false)}
-                      >
-                        <FaUser className="text-emerald" />
-                        Account
-                      </Link> */}
-                      
-                      <Link 
+
+                      <Link
                         href="/portal"
                         className="flex items-center gap-3 px-4 py-2 text-sm text-white hover:bg-emerald/10 hover:text-emerald transition-colors duration-200"
                         onClick={() => setUserDropdownOpen(false)}
@@ -528,18 +332,9 @@ const Header = () => {
                         <FaPortrait className="text-emerald" />
                         Your Space
                       </Link>
-                      
-                      {/* <Link 
-                        href="/dashboard"
-                        className="flex items-center gap-3 px-4 py-2 text-sm text-white hover:bg-emerald/10 hover:text-emerald transition-colors duration-200"
-                        onClick={() => setUserDropdownOpen(false)}
-                      >
-                        <FaTachometerAlt className="text-emerald" />
-                        Dashboard
-                      </Link> */}
-                      
+
                       <div className="border-t border-charleston-green-light mt-1 pt-1">
-                        <button 
+                        <button
                           onClick={handleLogout}
                           className="flex items-center gap-3 px-4 py-2 text-sm text-white hover:bg-emerald/10 hover:text-emerald transition-colors duration-200 w-full text-left"
                         >
@@ -571,9 +366,10 @@ const Header = () => {
             {isHomePage && sections.map((section) => (
               <button
                 key={section.label}
-                ref={menuItemRef}
-                onClick={() => handleNavClick(section.id)}
+                type="button"
                 className="navigation text-2xl md:text-3xl font-['Amenti'] hover:text-emerald transition-colors duration-300 relative group"
+                onClick={() => handleMobileNav(section.href)}
+                tabIndex={0}
               >
                 <span className="relative group inline-block pb-1 !text-white">
                   {section.label}
@@ -581,51 +377,52 @@ const Header = () => {
                 </span>
               </button>
             ))}
-           
-            
+
             {/* Standard navigation links - shown on all other pages */}
             {!isHomePage && standardLinks.map((link) => (
-              <Link
+              <button
                 key={link.href}
-                href={link.href}
+                type="button"
                 className="navigation text-2xl md:text-3xl font-['Amenti'] hover:text-emerald transition-colors duration-300 relative group"
-                onClick={() => setMenuOpen(false)}
+                onClick={() => handleMobileNav(link.href)}
+                tabIndex={0}
               >
                 <span className="relative group inline-block pb-1 !text-white">
                   {link.label}
                   <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-emerald-600 to-white group-hover:w-full transition-all duration-1000 ease-in-out"></span>
                 </span>
-              </Link>
+              </button>
             ))}
-            
+
             {/* Admin Dashboard Link - only shown if user is admin and not on homepage */}
             {!isHomePage && isLoggedIn && isAdmin && (
-              <Link
-                href="/dashboard"
+              <button
+                type="button"
                 className="navigation text-2xl md:text-3xl font-['Amenti'] text-emerald hover:text-emerald-light transition-colors duration-300 relative group"
-                onClick={() => setMenuOpen(false)}
+                onClick={() => handleMobileNav('/dashboard')}
+                tabIndex={0}
               >
                 <span className="relative group inline-block pb-1">
                   Dashboard
                   <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-emerald-600 to-white group-hover:w-full transition-all duration-1000 ease-in-out"></span>
                 </span>
-              </Link>
+              </button>
             )}
-            
+
             {/* Auth Link */}
             {!isLoggedIn && (
-              <Link
-                href="/portal"
+              <button
+                type="button"
                 className="navigation text-2xl md:text-3xl font-['Amenti'] text-emerald hover:text-emerald-light transition-colors duration-300 relative group"
-                onClick={() => setMenuOpen(false)}
+                onClick={() => handleMobileNav('/portal')}
+                tabIndex={0}
               >
                 <span className="relative group inline-block pb-1">
                   Login / Sign Up
                   <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-emerald-600 to-white group-hover:w-full transition-all duration-1000 ease-in-out"></span>
                 </span>
-              </Link>
+              </button>
             )}
-
           </nav>
         </div>
       </div>
@@ -634,6 +431,3 @@ const Header = () => {
 };
 
 export default Header;
-
-
-
