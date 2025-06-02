@@ -91,7 +91,7 @@ export default function OnboardingWizard({ onComplete, onStepChange, lightType }
   // }, [currentStep]);
 
   return (
-    <div className="bg-[#2B2D2F] rounded-2xl shadow-xl overflow-hidden">
+    <div className="bg-[#2B2D2F] mx-6 sm:mx-0  rounded-2xl shadow-xl overflow-hidden">
       <div className="p-6 md:p-8">
         <AnimatePresence mode="wait">
           {currentStep === 1 && (
