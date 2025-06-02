@@ -15,6 +15,7 @@ const ConfiguratorLayout = () => {
     configurationType: 'pendant', // 'pendant' or 'system'
     lightAmount: 1,
     systemType: 'bar',
+    systemBaseDesign: 'nexus', // Default system base design
     pendants: [],
     selectedPendants: [],
     lightDesign: 'radial',
@@ -325,6 +326,26 @@ const ConfiguratorLayout = () => {
     }, 10); // Slight delay to ensure state is updated first
   }, []);
 
+  // Handle system base design change
+  const handleSystemBaseDesignChange = useCallback((design) => {
+    setConfig(prev => ({ ...prev, systemBaseDesign: design }));
+    
+    // Send message to PlayCanvas iframe
+    setTimeout(() => {
+      // Map design names to product IDs for the iframe
+      const designMap = {
+        'nexus': 'system_base_1',
+        'vertex': 'system_base_2',
+        'quantum': 'system_base_3',
+        'fusion': 'system_base_4'
+      };
+      
+      const baseId = designMap[design] || 'system_base_1';
+      console.log(`Updating system base design to ${design} (${baseId})`);
+      sendMessageToPlayCanvas(`system_base:${baseId}`);
+    }, 10);
+  }, []);
+
   // Helper function to send messages to PlayCanvas iframe
   const sendMessageToPlayCanvas = (message) => {
     const iframe = document.getElementById('playcanvas-app');
@@ -371,6 +392,7 @@ const ConfiguratorLayout = () => {
         onSystemTypeChange={handleSystemTypeChange}
         onPendantSelection={handlePendantSelection}
         onPendantDesignChange={handlePendantDesignChange}
+        onSystemBaseDesignChange={handleSystemBaseDesignChange}
         pendants={config.pendants}
         selectedPendants={config.selectedPendants || []}
         setSelectedPendants={(pendantIds) => handlePendantSelection(pendantIds)}
