@@ -1,17 +1,53 @@
 'use client';
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from './ThemeContext'
 
 export default function MissionSection() {
   const missionRef = useRef(null);
   const videoRef = useRef(null);
+  const modalContentRef = useRef(null);
   const [videoPlaying, setVideoPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const { colors, theme } = useTheme();
+
+  // --- Fix: Always center modal on open (center from both X and Y) ---
+  // When opening the modal, scroll so that the modal is vertically centered in the viewport
+  useEffect(() => {
+    if (videoPlaying) {
+      setTimeout(() => {
+        // Get modal content height
+        const modal = modalContentRef.current;
+        let modalHeight = 0;
+        if (modal) {
+          modalHeight = modal.offsetHeight;
+        }
+        // Get viewport height
+        const viewportHeight = window.innerHeight;
+        // Calculate scroll position so that modal is centered vertically
+        // Only scroll if the page is not already at the top
+        // If modal is taller than viewport, scroll to top
+        let scrollToY = 0;
+        if (modalHeight && modalHeight < viewportHeight) {
+          // Center modal in viewport
+          // If page is already at 0, do nothing
+          scrollToY = 0;
+        } else {
+          // If modal is taller than viewport, scroll to top
+          scrollToY = 0;
+        }
+        window.scrollTo({
+          top: scrollToY,
+          left: 0,
+          behavior: 'auto'
+        });
+      }, 0);
+    }
+  }, [videoPlaying]);
+  // --- End fix ---
 
   // Prevent background scroll when modal is open
   useEffect(() => {
@@ -59,6 +95,32 @@ export default function MissionSection() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [videoPlaying, isMuted]);
+
+  // Consistent outside click to close modal
+  const handleOutsideClick = useCallback(
+    (e) => {
+      if (!videoPlaying) return;
+      // If click is not inside modal content, close modal
+      if (
+        modalContentRef.current &&
+        !modalContentRef.current.contains(e.target)
+      ) {
+        setVideoPlaying(false);
+      }
+    },
+    [videoPlaying]
+  );
+
+  useEffect(() => {
+    if (videoPlaying) {
+      document.addEventListener('mousedown', handleOutsideClick);
+      document.addEventListener('touchstart', handleOutsideClick);
+      return () => {
+        document.removeEventListener('mousedown', handleOutsideClick);
+        document.removeEventListener('touchstart', handleOutsideClick);
+      };
+    }
+  }, [videoPlaying, handleOutsideClick]);
 
   // Toggle fullscreen for the video
   const toggleFullscreen = () => {
@@ -211,28 +273,29 @@ export default function MissionSection() {
                 backdropFilter: 'blur(8px)',
                 WebkitBackdropFilter: 'blur(8px)',
                 zIndex: 9999,
+                // Ensure modal is always centered both X and Y
+                alignItems: 'center',
+                justifyContent: 'center',
+                display: 'flex',
               }}
               initial={{ opacity: 0, backdropFilter: 'blur(0px)' }}
               animate={{ opacity: 1, backdropFilter: 'blur(8px)' }}
               exit={{ opacity: 0, backdropFilter: 'blur(0px)' }}
               transition={{ duration: 0.3 }}
-              onClick={(e) => {
-                if (e.target === e.currentTarget) {
-                  setVideoPlaying(false);
-                }
-              }}
             >
               <motion.div
+                ref={modalContentRef}
                 className="relative w-full max-w-[95%] md:max-w-3xl bg-black rounded-xl overflow-hidden"
                 style={{
                   boxShadow: `0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px ${colors.primary}30`,
                   zIndex: 10000,
+                  // Center modal content vertically and horizontally
+                  margin: 'auto',
                 }}
                 initial={{ scale: 0.9, opacity: 0, y: 20 }}
                 animate={{ scale: 1, opacity: 1, y: 0 }}
                 exit={{ scale: 0.9, opacity: 0, y: 20 }}
                 transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                onClick={(e) => e.stopPropagation()}
               >
                 {/* Control buttons */}
                 <div className="absolute top-4 right-4 z-20 flex gap-2">
