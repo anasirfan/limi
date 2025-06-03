@@ -186,7 +186,7 @@ const EditModal = ({
   
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[9999] pt-10 overflow-hidden">
-      <div className="bg-[#292929] rounded-xl p-4 sm:p-6 md:p-8 w-full max-w-5xl overflow-y-auto shadow-2xl" style={{ maxHeight: '85vh' }}>
+      <div className="bg-[#292929] rounded-xl p-4 sm:p-6 md:p-8 w-full max-w-7xl overflow-y-auto shadow-2xl" style={{ maxHeight: '85vh' }}>
         <div className="flex justify-between items-center mb-6">
           <div>
             <h2 className="text-2xl font-bold text-white">Edit Slide</h2>
@@ -247,39 +247,40 @@ const EditModal = ({
             />
             
             {/* File Upload Section */}
-            <div className="bg-[#1e1e1e] p-6 rounded-xl shadow-lg">
-              <h3 className="text-lg font-semibold text-white mb-4">Upload Media File</h3>
-              <div className="mb-4">
-                <p className="text-gray-300 text-sm mb-3">Upload an image or video file directly:</p>
-                <div className="flex items-center">
-                  <label className="flex items-center justify-center bg-[#333] hover:bg-[#444] text-white px-6 py-3 rounded-lg cursor-pointer transition-all hover:shadow-md">
-                    <FaUpload className="mr-2" />
-                    {uploadingMedia ? 'Uploading...' : 'Choose File'}
-                    <input 
-                      type="file" 
-                      className="hidden" 
-                      accept="image/*,video/*" 
-                      onChange={handleFileUpload}
-                      disabled={uploadingMedia}
-                    />
-                  </label>
-                  {uploadingMedia && <FaSpinner className="ml-3 text-[#54bb74] animate-spin" />}
+            <div className="bg-[#1e1e1e] p-4 rounded-lg border border-[#333] hover:border-[#444] transition-all">
+              <div className="mb-2">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-base font-medium text-white">Upload Media</h3>
+                    <p className="text-gray-400 text-xs mt-0.5">Formats: JPG, PNG, GIF, MP4, WebM • Max: 10MB</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <label className="flex items-center bg-[#333] hover:bg-[#444] text-white px-4 py-2 rounded cursor-pointer transition-all hover:shadow-lg hover:shadow-[#54bb74]/10">
+                      <FaUpload className="mr-2" />
+                      {uploadingMedia ? 'Uploading...' : 'Choose File'}
+                      <input 
+                        type="file" 
+                        className="hidden" 
+                        accept="image/*,video/*" 
+                        onChange={handleFileUpload}
+                        disabled={uploadingMedia}
+                      />
+                    </label>
+                    {uploadingMedia && <FaSpinner className="text-[#54bb74] animate-spin" />}
+                  </div>
                 </div>
                 {uploadSuccess && (
-                  <div className="mt-2 text-[#54bb74] text-sm">
-                    File uploaded successfully! The media has been updated.
+                  <div className="mt-2 text-[#54bb74] text-xs flex items-center gap-1">
+                    <FaCheck className="text-[#54bb74]" />
+                    File uploaded successfully!
                   </div>
                 )}
                 {uploadError && (
-                  <div className="mt-2 text-red-400 text-sm">
+                  <div className="mt-2 text-red-400 text-xs flex items-center gap-1">
+                    <FaExclamationCircle className="text-red-400" />
                     Error: {uploadError}
                   </div>
                 )}
-              </div>
-              <div className="text-gray-400 text-xs">
-                <p>Supported formats: JPG, PNG, GIF, MP4, WebM</p>
-                <p>Max file size: 10MB</p>
-                <p>Files will be uploaded to our secure server</p>
               </div>
             </div>
             

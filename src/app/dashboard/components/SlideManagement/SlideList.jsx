@@ -43,7 +43,7 @@ const SlideList = ({
         <div className="space-y-2">
           {slides.map((slide, index) => (
             <div
-              key={slide.id || `slide-index-${index}`}
+              key={`slide-${slide.id}-${index}-${Date.now()}`}
               className={`p-3 rounded-md flex justify-between items-center ${
                 activeSlideIndex === index
                   ? 'bg-[#54bb74]/20 border border-[#54bb74]'
