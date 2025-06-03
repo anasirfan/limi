@@ -16,7 +16,7 @@ export default function PartnersSection() {
   const partnersRef = useRef(null);
   
   return (
-    <section data-section="partners" ref={partnersRef} className="mb-16 md:mb-24 text-center">
+    <section data-section="partners" ref={partnersRef} className="mb-8 text-center">
       <motion.p 
         className="mb-3 md:mb-6"
         style={{ color: `${colors.text}80` }}

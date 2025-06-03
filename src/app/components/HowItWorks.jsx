@@ -506,7 +506,7 @@ export default function HowItWorks() {
 
   // Responsive header margin: no gap on mobile, margin on desktop
   const headerClass =
-    "text-center sm:pb-2 pb-0 px-4 relative z-20 bg-[#F2F0E6]" +
+    "text-center sm:pb-2 pb-0 px-4 relative z-20 text-black" +
     (isMobile ? "" : " mt-10");
 
   return (
@@ -554,7 +554,9 @@ export default function HowItWorks() {
 
       {/* Section header */}
       <div className={headerClass}>
-        <h2 className="text-4xl md:text-5xl font-bold">How It Works</h2>
+        <h2 className="text-4xl md:text-5xl font-bold">
+          How <span className="text-[#50C878]">It</span> Works
+        </h2>
       </div>
 
       {/* Mobile-specific view with autoplay carousel */}

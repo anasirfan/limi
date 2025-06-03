@@ -49,7 +49,7 @@ function OurStoryContent() {
       <motion.section 
         key={theme}
         ref={sectionRef}
-        className="relative py-24 overflow-hidden"
+        className="relative py-16 overflow-hidden"
         style={{ 
           backgroundColor: colors.background,
           color: colors.text
@@ -139,7 +139,7 @@ function OurStoryContent() {
             </motion.a>
             
             <p 
-              className="mt-4 text-sm"
+              className="mt-8 text-sm"
               style={{ color: `${colors.text}80` }}
             >
               Learn more about our journey, mission, and the people shaping the future of lighting.

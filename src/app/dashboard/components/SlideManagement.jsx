@@ -925,38 +925,94 @@ export default function SlideManagement({ customer }) {
   }, [customer]);
 
   // Handle adding a new slide
-  const handleAddSlide = (layout) => {
-    const newSlide = {
-      id: generateUniqueId(),
-      layout,
-      media: {
-        type: layout === 'video-background' ? 'video' : 'image',
-        urls: [layout === 'video-background' ? '/videos/sample.mp4' : '/images/sample.jpg'],
-        position: layout === 'media-text-split' ? 'left' : 'background',
-      },
-      text: {
-        heading: `New ${layout} Slide`,
-        subheading: 'Click to edit',
-        description: 'Edit this slide content',
-        bullets: ['Feature 1', 'Feature 2', 'Feature 3'],
-        alignment: 'left',
-        verticalPosition: 'center',
-        showBullets: true,
-      },
-      appearance: {
-        theme: 'charleston',
-        backgroundColor: '#2B2D2F',
-        overlayDarken: false,
-        padding: '2rem',
-      },
-      meta: {
-        index: slides.length,
-        status: 'draft',
-        updatedAt: new Date().toISOString()
-      }
-    };
+  const handleAddSlide = () => {
+    // Create a modal element
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex bg items-center justify-center z-50';
     
-    dispatch(addSlide(newSlide));
+    // Create modal content
+    const modalContent = document.createElement('div');
+    modalContent.className = 'bg-[#1e1e1e] p-6 rounded-lg shadow-xl max-w-lg w-full';
+    
+    // Add title
+    const title = document.createElement('h2');
+    title.className = 'text-xl font-semibold mb-4 text-white';
+    title.textContent = 'Select Slide Type';
+    modalContent.appendChild(title);
+    
+    // Create buttons container
+    const buttonContainer = document.createElement('div');
+    buttonContainer.className = 'flex gap-3 justify-between';
+    
+    // Define slide types
+    const slideTypes = [
+      { id: 'media-text-split', label: 'Media + Text' },
+      { id: 'video-background', label: 'Video Background' },
+      { id: 'image-collage', label: 'Image Collage' }
+    ];
+    
+    // Create buttons for each type
+    slideTypes.forEach(type => {
+      const button = document.createElement('button');
+      button.className = 'bg-[#54bb74] hover:bg-[#93cfa2] text-white px-3 py-2 rounded-md flex justify-center items-center flex-1';
+      button.textContent = type.label;
+      
+      button.onclick = () => {
+        // Remove modal
+        document.body.removeChild(modal);
+        
+        // Create new slide with selected layout
+        const newSlide = {
+          id: generateUniqueId(),
+          layout: type.id,
+          media: {
+            type: type.id === 'video-background' ? 'video' : 'image',
+            urls: [type.id === 'video-background' ? '/videos/sample.mp4' : '/images/sample.jpg'],
+            position: type.id === 'media-text-split' ? 'left' : 'background',
+          },
+          text: {
+            heading: `New ${type.label} Slide`,
+            subheading: 'Click to edit',
+            description: 'Edit this slide content',
+            bullets: ['Feature 1', 'Feature 2', 'Feature 3'],
+            alignment: 'left',
+            verticalPosition: 'center',
+            showBullets: true,
+          },
+          appearance: {
+            theme: 'charleston',
+            backgroundColor: '#2B2D2F',
+            overlayDarken: false,
+            padding: '2rem',
+          },
+          meta: {
+            index: slides.length,
+            status: 'draft',
+            updatedAt: new Date().toISOString()
+          }
+        };
+        
+        dispatch(addSlide(newSlide));
+        setEditingSlide(newSlide);
+        setEditModalOpen(true);
+      };
+      
+      buttonContainer.appendChild(button);
+    });
+    
+    // Add close button
+    const closeButton = document.createElement('button');
+    closeButton.className = 'mt-4 w-full p-2 bg-[#333] hover:bg-[#444] text-white rounded-md transition-colors';
+    closeButton.textContent = 'Cancel';
+    closeButton.onclick = () => document.body.removeChild(modal);
+    
+    // Assemble modal
+    modalContent.appendChild(buttonContainer);
+    modalContent.appendChild(closeButton);
+    modal.appendChild(modalContent);
+    
+    // Add modal to body
+    document.body.appendChild(modal);
   };
 
   // Toggle between edit and preview modes
@@ -1341,7 +1397,7 @@ export default function SlideManagement({ customer }) {
           {previewMode ? (
             <SlidePreview />
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="">
               {/* Slide List Component */}
               <SlideList 
                 slides={slides}
