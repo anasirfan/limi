@@ -5,12 +5,12 @@ import React from 'react';
  */
 const AppearanceSettings = ({ formState, setFormState, editingSlide, dispatch, getThemeBackgroundColor }) => {
   return (
-    <div className="mb-6">
+    <div className="">
       <h3 className="text-lg font-medium text-white mb-3">Appearance</h3>
       
       {/* Theme Selection */}
       <div className="mb-4">
-        <label className="block text-gray-300 mb-2">Theme</label>
+        {/* <label className="block text-gray-300 mb-2">Theme</label> */}
         <select
           value={formState.appearance.theme}
           onChange={(e) => {
@@ -124,7 +124,7 @@ const AppearanceSettings = ({ formState, setFormState, editingSlide, dispatch, g
       </div>
       
       {/* Overlay Settings */}
-      <div className="flex items-center mb-4">
+      {/* <div className="flex items-center mb-4">
         <input
           type="checkbox"
           id="overlayDarken"
@@ -152,7 +152,7 @@ const AppearanceSettings = ({ formState, setFormState, editingSlide, dispatch, g
           className="mr-2"
         />
         <label htmlFor="overlayDarken" className="text-gray-300">Darken Overlay</label>
-      </div>
+      </div> */}
       
       {/* Animation Settings */}
       <div className="mb-4">

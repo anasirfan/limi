@@ -46,7 +46,7 @@ const MediaSettings = ({ formState, setFormState, editingSlide, dispatch }) => {
       
       {/* Media Type - Only show relevant options based on layout */}
       <div className="mb-4">
-        <label className="block text-gray-300 mb-2">Media Type</label>
+        {/* <label className="block text-gray-300 mb-2">Media Type</label> */}
         <select
           value={formState.media.type}
           onChange={(e) => {
@@ -98,77 +98,49 @@ const MediaSettings = ({ formState, setFormState, editingSlide, dispatch }) => {
         <div className="mb-4">
           <label className="block text-gray-300 mb-2">Text Position</label>
           <div className="grid grid-cols-2 gap-2">
-            <button
-              onClick={() => {
-                // Update local form state immediately for UI feedback
-                setFormState({
-                  ...formState,
-                  media: {
-                    ...formState.media,
-                    position: 'left'
-                  }
-                });
-                
-                // Update Redux state
-                dispatch({
-                  type: 'slides/updateSlide',
-                  payload: {
-                    id: editingSlide.id,
-                    field: 'media.position',
-                    value: 'left'
-                  }
-                });
-              }}
-              className={`p-3 rounded-md flex flex-col items-center transition-all duration-300 ${
-                formState.media.position === 'left' 
-                  ? 'bg-[#54bb74] text-white' 
-                  : 'bg-[#1e1e1e] text-gray-300 hover:bg-[#333]'
-              }`}
-            >
-              <div className="flex items-center justify-center w-full">
-                <div className="w-1/3 h-8 bg-[#54bb74]/50 rounded-l"></div>
-                <div className="w-2/3 h-8 bg-[#333] rounded-r flex items-center justify-center">
-                  <span className="text-xs">Text</span>
+            {['left', 'right'].map((pos) => (
+              <button
+                key={pos}
+                onClick={() => {
+                  setFormState({
+                    ...formState,
+                    media: { ...formState.media, position: pos }
+                  });
+                  dispatch({
+                    type: 'slides/updateSlide',
+                    payload: {
+                      id: editingSlide.id,
+                      field: 'media.position',
+                      value: pos
+                    }
+                  });
+                }}
+                className={`p-2 rounded-md flex flex-col items-center transition-all duration-300 ${
+                  formState.media.position === pos 
+                    ? 'bg-[#54bb74] text-white' 
+                    : 'bg-[#1e1e1e] text-gray-300 hover:bg-[#333]'
+                }`}
+              >
+                <div className="flex items-center justify-center w-full">
+                  {pos === 'left' ? (
+                    <>
+                      <div className="w-1/3 h-6 bg-[#54bb74]/50 rounded-l"></div>
+                      <div className="w-2/3 h-6 bg-[#333] rounded-r flex items-center justify-center">
+                        <span className="text-xs">Text</span>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="w-2/3 h-6 bg-[#333] rounded-l flex items-center justify-center">
+                        <span className="text-xs">Text</span>
+                      </div>
+                      <div className="w-1/3 h-6 bg-[#54bb74]/50 rounded-r"></div>
+                    </>
+                  )}
                 </div>
-              </div>
-              <span className="text-xs mt-1">Left</span>
-            </button>
-            
-            <button
-              onClick={() => {
-                // Update local form state immediately for UI feedback
-                setFormState({
-                  ...formState,
-                  media: {
-                    ...formState.media,
-                    position: 'right'
-                  }
-                });
-                
-                // Update Redux state
-                dispatch({
-                  type: 'slides/updateSlide',
-                  payload: {
-                    id: editingSlide.id,
-                    field: 'media.position',
-                    value: 'right'
-                  }
-                });
-              }}
-              className={`p-3 rounded-md flex flex-col items-center transition-all duration-300 ${
-                formState.media.position === 'right' 
-                  ? 'bg-[#54bb74] text-white' 
-                  : 'bg-[#1e1e1e] text-gray-300 hover:bg-[#333]'
-              }`}
-            >
-              <div className="flex items-center justify-center w-full">
-                <div className="w-2/3 h-8 bg-[#333] rounded-l flex items-center justify-center">
-                  <span className="text-xs">Text</span>
-                </div>
-                <div className="w-1/3 h-8 bg-[#54bb74]/50 rounded-r"></div>
-              </div>
-              <span className="text-xs mt-1">Right</span>
-            </button>
+                <span className="text-xs mt-1 capitalize">{pos}</span>
+              </button>
+            ))}
           </div>
         </div>
       )}

@@ -76,15 +76,32 @@ const Footer = () => {
             &copy; {new Date().getFullYear()} LIMI Lighting. All rights reserved.
           </p>
           <div className="flex flex-col items-center gap-2 md:flex-row md:space-x-6 md:gap-0">
-            <Link href="/privacy-policy" className="text-gray-300 hover:text-emerald-500 transition-colors">
-              Privacy Policy
-            </Link>
-            <Link href="/terms-of-service" className="text-gray-300 hover:text-emerald-500 transition-colors">
-              Terms of Service
-            </Link>
-            <Link href="/cookie-policy" className="text-gray-300 hover:text-emerald-500 transition-colors">
-              Cookie Policy
-            </Link>
+            {/* Mobile view - Privacy & Terms on one line, Cookie Policy on another */}
+            <div className="flex flex-col sm:hidden items-center">
+              <div className="flex">
+                <Link href="/privacy-policy" className="text-gray-300 hover:text-emerald-500 transition-colors">
+                  Privacy Policy |
+                </Link>
+                <Link href="/terms-of-service" className="text-gray-300 pl-1 hover:text-emerald-500 transition-colors">
+                  Terms of Service
+                </Link>
+              </div>
+              <Link href="/cookie-policy" className="text-gray-300 hover:text-emerald-500 transition-colors mt-2">
+                Cookie Policy
+              </Link>
+            </div>
+            {/* Desktop view - All links in one line */}
+            <div className="hidden sm:flex space-x-6">
+              <Link href="/privacy-policy" className="text-gray-300 hover:text-emerald-500 transition-colors">
+                Privacy Policy
+              </Link>
+              <Link href="/terms-of-service" className="text-gray-300 hover:text-emerald-500 transition-colors">
+                Terms of Service
+              </Link>
+              <Link href="/cookie-policy" className="text-gray-300 hover:text-emerald-500 transition-colors">
+                Cookie Policy
+              </Link>
+            </div>
           </div>
         </div>
       </div>

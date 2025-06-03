@@ -74,11 +74,11 @@ export default function MediaTextSplit({ slide }) {
     },
   };
   
-  const theme = themeStyles[appearance.theme] || themeStyles.charleston;
+  const theme = themeStyles[appearance?.theme] || themeStyles.charleston;
   
   // Auto-play video when component mounts
   useEffect(() => {
-    if (videoRef.current && media.type === 'video') {
+    if (videoRef.current && media?.type === 'video') {
       videoRef.current.play().catch(error => {
         console.log('Auto-play prevented:', error);
       });
@@ -86,7 +86,7 @@ export default function MediaTextSplit({ slide }) {
   }, [media]);
   
   // Determine layout order based on media position
-  const isMediaLeft = media.position === 'left';
+  const isMediaLeft = media?.position === 'left';
   
   // Define animation keyframes based on theme
   const animationClass = {
@@ -100,8 +100,8 @@ export default function MediaTextSplit({ slide }) {
     <div 
       className={`flex flex-col md:flex-row h-full w-full overflow-hidden transition-all duration-500 ease-in-out ${animationClass}`}
       style={{ 
-        background: appearance.backgroundColor || theme.gradient,
-        padding: appearance.padding || '0',
+        background: appearance?.backgroundColor || theme.gradient,
+        padding: appearance?.padding || '0',
         borderRadius: theme.borderRadius,
         boxShadow: theme.shadow,
       }}
@@ -115,10 +115,10 @@ export default function MediaTextSplit({ slide }) {
           borderRadius: isMediaLeft ? `${theme.borderRadius} 0 0 ${theme.borderRadius}` : `0 ${theme.borderRadius} ${theme.borderRadius} 0`,
         }}
       >
-        {media.type === 'video' ? (
+        {media?.type === 'video' ? (
           <video
             ref={videoRef}
-            src={media.urls[0]}
+            src={media?.urls?.[0]}
             className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 hover:scale-105"
             loop
             muted
@@ -127,8 +127,8 @@ export default function MediaTextSplit({ slide }) {
         ) : (
           <div className="relative w-full h-full overflow-hidden">
             <Image
-              src={media.urls[0]}
-              alt={text.heading}
+              src={media?.urls?.[0] || '/placeholder.jpg'}
+              alt={text?.heading || 'Media content'}
               fill
               className="object-cover transition-transform duration-700 hover:scale-105"
               sizes="(max-width: 768px) 100vw, 50vw"
@@ -138,7 +138,7 @@ export default function MediaTextSplit({ slide }) {
         )}
         
         {/* Optional overlay with theme-based styling */}
-        {appearance.overlayDarken && (
+        {appearance?.overlayDarken && (
           <div 
             className="absolute inset-0 bg-gradient-to-t from-black/50 to-black/10 transition-opacity duration-300"
             style={{ backdropFilter: 'blur(1px)' }}
@@ -151,11 +151,11 @@ export default function MediaTextSplit({ slide }) {
         className={`relative w-full md:w-1/2 flex flex-col p-8 transition-all duration-500 ${
           isMediaLeft ? 'order-2 md:order-2' : 'order-2 md:order-1'
         } ${
-          text.verticalPosition === 'top' ? 'justify-start' : 
-          text.verticalPosition === 'bottom' ? 'justify-end' : 'justify-center'
+          text?.verticalPosition === 'top' ? 'justify-start' : 
+          text?.verticalPosition === 'bottom' ? 'justify-end' : 'justify-center'
         } ${
-          text.alignment === 'center' ? 'items-center text-center' : 
-          text.alignment === 'right' ? 'items-end text-right' : 'items-start text-left'
+          text?.alignment === 'center' ? 'items-center text-center' : 
+          text?.alignment === 'right' ? 'items-end text-right' : 'items-start text-left'
         }`}
         style={{ 
           color: theme.text,
@@ -164,7 +164,7 @@ export default function MediaTextSplit({ slide }) {
       >
         <div className={theme.cardStyle ? `p-4 ${theme.cardStyle}` : 'p-4'}>
           {/* Subheading with theme-specific styling */}
-          {text.subheading && (
+          {text?.subheading && (
             <h3 
               className={`text-lg md:text-xl font-medium mb-2 transition-all duration-300 hover:translate-y-[-2px]`}
               style={{ 
@@ -180,11 +180,11 @@ export default function MediaTextSplit({ slide }) {
           <h2 
             className={`text-3xl md:text-4xl mb-4 transition-all duration-300 hover:translate-y-[-2px] ${theme.headingStyle}`}
           >
-            {text.heading}
+            {text?.heading}
           </h2>
           
           {/* Description with theme-specific styling */}
-          {text.description && (
+          {text?.description && (
             <p 
               className="text-base md:text-lg mb-6 max-w-md transition-opacity duration-300 hover:opacity-90"
               style={{ lineHeight: '1.6' }}
@@ -194,7 +194,7 @@ export default function MediaTextSplit({ slide }) {
           )}
           
           {/* Bullets with theme-specific styling */}
-          {text.showBullets && text.bullets && text.bullets.length > 0 && (
+          {text?.showBullets && text?.bullets && text.bullets.length > 0 && (
             <ul className="space-y-3 mb-6 max-w-md">
               {text.bullets.map((bullet, index) => (
                 <li 

@@ -51,7 +51,7 @@ export default function ScrollProgress() {
       
       {/* Floating scroll indicator */}
       <motion.div
-        className="fixed bottom-8 right-8 z-50 flex items-center justify-center"
+        className="fixed bottom-7 sm:bottom-8  right-5 sm:right-6 z-50 flex items-center justify-center"
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ 
           opacity: isVisible ? 1 : 0,

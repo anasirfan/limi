@@ -235,7 +235,7 @@ export default function TimelineAchievements() {
     <section 
       ref={sectionRef}
       id="timeline" 
-      className="py-24 bg-[#1F1F1F] relative overflow-hidden TimelineAchievements"
+      className="py-10 sm:py-16 bg-[#1F1F1F] relative overflow-hidden TimelineAchievements"
     >
       {/* Background subtle pattern */}
       <div className="absolute inset-0 opacity-5">

@@ -8,7 +8,7 @@ const LayoutSelector = ({ formState, setFormState, editingSlide, dispatch }) => 
   return (
     <div className="mb-6">
       <h3 className="text-lg font-medium text-white mb-3">Layout</h3>
-      <div className="grid grid-cols-3 gap-3">
+      <div className="flex gap-6">
         <button
           onClick={() => {
             // Update local form state immediately for UI feedback
@@ -49,7 +49,7 @@ const LayoutSelector = ({ formState, setFormState, editingSlide, dispatch }) => 
               window.dispatchEvent(new Event('slidesUpdated'));
             }, 100);
           }}
-          className={`p-3 rounded-md flex flex-col items-center transition-all duration-300 ${
+          className={`p-3 rounded-md flex flex-col w-full items-center transition-all duration-300 ${
             formState.layout === 'media-text-split' 
               ? 'bg-[#54bb74] text-white scale-105 shadow-lg' 
               : 'bg-[#1e1e1e] text-gray-300 hover:bg-[#333] hover:scale-105'
@@ -105,7 +105,7 @@ const LayoutSelector = ({ formState, setFormState, editingSlide, dispatch }) => 
               }
             });
           }}
-          className={`p-3 rounded-md flex flex-col items-center transition-all duration-300 ${
+          className={`p-3 rounded-md flex flex-col w-full items-center transition-all duration-300 ${
             formState.layout === 'video-background' 
               ? 'bg-[#54bb74] text-white scale-105 shadow-lg' 
               : 'bg-[#1e1e1e] text-gray-300 hover:bg-[#333] hover:scale-105'
@@ -114,7 +114,7 @@ const LayoutSelector = ({ formState, setFormState, editingSlide, dispatch }) => 
           <FaVideo className="text-2xl mb-2" />
           <span className="text-sm">Video Background</span>
         </button>
-        <button
+        {/* <button
           onClick={() => {
             // Update local form state immediately for UI feedback
             setFormState({
@@ -165,7 +165,7 @@ const LayoutSelector = ({ formState, setFormState, editingSlide, dispatch }) => 
         >
           <FaLayerGroup className="text-2xl mb-2" />
           <span className="text-sm">Image Collage</span>
-        </button>
+        </button> */}
       </div>
     </div>
   );

@@ -100,9 +100,9 @@ export default function InteractiveConfigurator() {
       <div className="container mx-auto max-w-6xl">
         {/* Section header with animation */}
         <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 animate-fadeIn">
+          <h2 className="text-4xl md:text-5xl text-[#50C878] font-bold mb-4 animate-fadeIn">
             <span className="inline-block hover:scale-105 transition-transform duration-300">Interactive</span>{' '}
-            <span className="inline-block text-[#50C878] hover:scale-105 transition-transform duration-300">3D</span>{' '}
+            <span className="inline-block hover:scale-105 transition-transform duration-300">3D</span>{' '}
             <span className="inline-block hover:scale-105 transition-transform duration-300">Configurator</span>
           </h2>
           <p className="text-xl text-[#2B2D2F] opacity-75 max-w-3xl mx-auto animate-fadeIn animation-delay-300">
@@ -118,7 +118,7 @@ export default function InteractiveConfigurator() {
         
         {/* Final CTA */}
         <div className="text-center mt-16">
-          <h3 className="text-2xl font-bold mb-4">Ready to design your perfect light?</h3>
+          <h3 className="text-2xl text-[#50C878] font-bold mb-4">Ready to design your perfect light?</h3>
           <p className="text-[#2B2D2F] opacity-75 mb-6 max-w-2xl mx-auto">Our full configurator gives you complete control over every aspect of your lighting solution.</p>
           <div className="relative z-50">
             <Link 
