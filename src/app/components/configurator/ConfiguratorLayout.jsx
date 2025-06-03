@@ -1,11 +1,13 @@
 "use client";
 import { useState, useEffect, useCallback } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import VerticalNavBar from './VerticalNavBar';
 import HorizontalOptionsBar from './HorizontalOptionsBar';
 import { ToastContainer } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
 import PlayCanvasViewer from '../PlayCanvasViewer';
+import { ConfigurationTypeSelector } from './navComponents/ConfigurationTypeSelector';
+import { Breadcrumb } from './navComponents/Breadcrumb';
 
 const ConfiguratorLayout = () => {
   // Main configuration state
@@ -23,19 +25,43 @@ const ConfiguratorLayout = () => {
     cableLength: '2mm',
   });
 
+  // State for saving light amounts
+  const [lastCeilingLightAmount, setLastCeilingLightAmount] = useState(1);
+  const [lastRoundBaseLightAmount, setLastRoundBaseLightAmount] = useState(1);
+  
+  // State for individual configuration
+  const [selectedLocation, setSelectedLocation] = useState(null);
+  const [showTypeSelector, setShowTypeSelector] = useState(false);
+  const [configuringType, setConfiguringType] = useState(null); // 'pendant' or 'system'
+  const [configuringSystemType, setConfiguringSystemType] = useState(null); // 'bar', 'ball', 'universal'
+  const [breadcrumbPath, setBreadcrumbPath] = useState([]);
+
   // Navigation state
   const [activeStep, setActiveStep] = useState('lightType');
   const [isLoading, setIsLoading] = useState(true);
 
+  // Helper function to generate random pendants
+  const generateRandomPendants = (amount) => {
+    const productCount = 4; // Number of available pendant designs
+    let pendants = [];
+    for (let i = 0; i < amount; i++) {
+      const randomDesign = ['bumble', 'radial', 'fina', 'ripple'][Math.floor(Math.random() * 4)];
+      pendants.push({
+        id: i,
+        design: randomDesign
+      });
+    }
+    return pendants;
+  };
+
   // Initialize pendants when component mounts
   useEffect(() => {
     // Create initial pendants based on light amount
-    const initialPendants = Array.from({ length: config.lightAmount }, (_, i) => ({
-      id: i,
-      design: i === 0 ? config.lightDesign : ['bumble', 'radial', 'fina', 'ripple'][Math.floor(Math.random() * 4)],
-    }));
+    const initialPendants = generateRandomPendants(config.lightAmount);
     
     setConfig(prev => ({ ...prev, pendants: initialPendants }));
+    setLastCeilingLightAmount(config.lightAmount);
+    setLastRoundBaseLightAmount(config.lightAmount);
   }, []);
 
   // Update pendants when light amount changes
@@ -78,32 +104,36 @@ const ConfiguratorLayout = () => {
 
   // Handle light type change
   const handleLightTypeChange = (type) => {
+    // Save current ceiling light amount if switching from ceiling
+    if (config.lightType === 'ceiling' && type !== 'ceiling') {
+      setLastCeilingLightAmount(config.lightAmount);
+    }
+    
     // Set default values based on light type
     let newAmount = config.lightAmount;
-    let newDesign = 'radial'; // Default design is radial for all light types
+    let newPendants = [];
     
     if (type === 'wall') {
       newAmount = 1;
+      newPendants = generateRandomPendants(1);
     } else if (type === 'floor') {
       newAmount = 3;
-    } else if (type === 'ceiling' && config.baseType === 'rectangular') {
-      newAmount = 3;
+      newPendants = generateRandomPendants(3);
     } else if (type === 'ceiling') {
-      newAmount = 1;
+      // Restore last ceiling light amount when switching back to ceiling
+      if (config.baseType === 'rectangular') {
+        newAmount = 3;
+      } else {
+        newAmount = lastCeilingLightAmount;
+      }
+      newPendants = generateRandomPendants(newAmount);
     }
-    
-    // Create updated pendants array with default designs
-    const updatedPendants = Array.from({ length: newAmount }, (_, i) => ({
-      id: i,
-      design: 'radial' // Default all to radial initially
-    }));
     
     setConfig(prev => ({ 
       ...prev, 
       lightType: type,
       lightAmount: newAmount,
-      lightDesign: newDesign,
-      pendants: updatedPendants
+      pendants: newPendants
     }));
     
     // Send messages to iframe
@@ -114,39 +144,42 @@ const ConfiguratorLayout = () => {
       // Send light amount message
       sendMessageToPlayCanvas(`light_amount:${newAmount}`);
       
-      // Send pendant design message - product_2 corresponds to radial design
-    
-      
       // For multiple pendants, send individual pendant messages
-      if (newAmount > 1) {
-        for (let i = 0; i < newAmount; i++) {
-          sendMessageToPlayCanvas(`pendant_${i}:product_2`);
-        }
-      } else {
-        sendMessageToPlayCanvas(`pendant_design:product_2`);
-      }
+      newPendants.forEach((pendant, index) => {
+        const productId = pendant.design === 'bumble' ? 'product_1' : 
+                       pendant.design === 'radial' ? 'product_2' : 
+                       pendant.design === 'fina' ? 'product_3' : 'product_5';
+        
+        sendMessageToPlayCanvas(`pendant_${index}:${productId}`);
+      });
     }, 0);
   };
 
   // Handle base type change
   const handleBaseTypeChange = (type) => {
-    // If changing to rectangular, force light amount to 3
-    const newAmount = type === 'rectangular' ? 3 : config.lightAmount;
+    // Save current round base light amount if switching from round
+    if (config.baseType === 'round' && type !== 'round') {
+      setLastRoundBaseLightAmount(config.lightAmount);
+    }
     
-    // Create predefined pendant designs for the new base type
-    // Using a mix of designs as requested
-    const designOptions = ['bumble', 'radial', 'fina', 'ripple'];
-    const updatedPendants = Array.from({ length: newAmount }, (_, i) => ({
-      id: i,
-      // Predefined pattern: radial, ripple, radial for 3 pendants
-      design: i === 0 ? 'radial' : i === 1 ? 'ripple' : 'radial'
-    }));
+    let newAmount;
+    let newPendants;
+    
+    // If changing to rectangular, force light amount to 3
+    if (type === 'rectangular') {
+      newAmount = 3;
+      newPendants = generateRandomPendants(3);
+    } else if (type === 'round') {
+      // Restore last round base light amount when switching back to round
+      newAmount = lastRoundBaseLightAmount;
+      newPendants = generateRandomPendants(newAmount);
+    }
     
     setConfig(prev => ({ 
       ...prev, 
       baseType: type,
       lightAmount: newAmount,
-      pendants: updatedPendants
+      pendants: newPendants
     }));
     
     // Send messages to iframe
@@ -154,32 +187,17 @@ const ConfiguratorLayout = () => {
       // Send base type message
       sendMessageToPlayCanvas(`base_type:${type}`);
       
-      // Check configuration type and send appropriate messages
-      if (config.configurationType === 'system') {
-        // For system configuration, send system type message
-        sendMessageToPlayCanvas(`system:${config.systemType}`);
+      // Send light amount message
+      sendMessageToPlayCanvas(`light_amount:${newAmount}`);
+      
+      // Send individual pendant messages
+      newPendants.forEach((pendant, index) => {
+        const productId = pendant.design === 'bumble' ? 'product_1' : 
+                       pendant.design === 'radial' ? 'product_2' : 
+                       pendant.design === 'fina' ? 'product_3' : 'product_5';
         
-        // For round base with system, send light_amount:1
-        if (type === 'round') {
-          sendMessageToPlayCanvas('light_amount:1');
-        }
-      } else {
-        // For pendant configuration
-        // Send light amount message
-        sendMessageToPlayCanvas(`light_amount:${newAmount}`);
-        
-        // Send individual pendant messages with predefined designs
-        // product_2 = radial, product_3 = fina, product_5 = ripple
-        sendMessageToPlayCanvas(`pendant_0:product_2`); // First pendant is radial
-        
-        if (newAmount > 1) {
-          sendMessageToPlayCanvas(`pendant_1:product_5`); // Second pendant is ripple
-        }
-        
-        if (newAmount > 2) {
-          sendMessageToPlayCanvas(`pendant_2:product_2`); // Third pendant is radial
-        }
-      }
+        sendMessageToPlayCanvas(`pendant_${index}:${productId}`);
+      });
     }, 0);
   };
 
@@ -221,50 +239,32 @@ const ConfiguratorLayout = () => {
 
   // Handle light amount change
   const handleLightAmountChange = (amount) => {
-    // Create random designs for the new pendants
-    const designOptions = ['bumble', 'radial', 'fina', 'ripple'];
-    const updatedPendants = Array.from({ length: amount }, (_, i) => {
-      // Keep existing pendant designs if available
-      if (i < config.pendants.length) {
-        return config.pendants[i];
-      }
-      // Create new pendants with random designs
-      return {
-        id: i,
-        design: designOptions[Math.floor(Math.random() * designOptions.length)]
-      };
-    });
+    // Update the appropriate saved light amount based on current configuration
+    if (config.lightType === 'ceiling') {
+      setLastCeilingLightAmount(amount);
+    }
+    if (config.baseType === 'round') {
+      setLastRoundBaseLightAmount(amount);
+    }
     
-    setConfig(prev => ({ ...prev, lightAmount: amount, pendants: updatedPendants }));
+    // Generate random pendants for the new amount
+    const newPendants = generateRandomPendants(amount);
+    
+    setConfig(prev => ({ ...prev, lightAmount: amount, pendants: newPendants }));
     
     // Send messages to iframe
     setTimeout(() => {
       // Send light amount message
       sendMessageToPlayCanvas(`light_amount:${amount}`);
       
-      // Special handling for single light
-      if (amount === 1) {
-        // Send light_type message
-        sendMessageToPlayCanvas(`light_type:${config.lightType}`);
+      // For multiple pendants, send individual pendant messages
+      newPendants.forEach((pendant, index) => {
+        const productId = pendant.design === 'bumble' ? 'product_1' : 
+                       pendant.design === 'radial' ? 'product_2' : 
+                       pendant.design === 'fina' ? 'product_3' : 'product_5';
         
-        // Send a single pendant_design message
-        // Get the design of the first pendant
-        const firstPendantDesign = updatedPendants[0].design;
-        const productId = firstPendantDesign === 'bumble' ? 'product_1' : 
-                        firstPendantDesign === 'radial' ? 'product_2' : 
-                        firstPendantDesign === 'fina' ? 'product_3' : 'product_5';
-        
-        sendMessageToPlayCanvas(`pendant_design:${productId}`);
-      } else {
-        // For multiple pendants, send individual pendant messages
-        updatedPendants.forEach((pendant, index) => {
-          const productId = pendant.design === 'bumble' ? 'product_1' : 
-                          pendant.design === 'radial' ? 'product_2' : 
-                          pendant.design === 'fina' ? 'product_3' : 'product_5';
-          
-          sendMessageToPlayCanvas(`pendant_${index}:${productId}`);
-        });
-      }
+        sendMessageToPlayCanvas(`pendant_${index}:${productId}`);
+      });
     }, 0);
   };
 
@@ -290,7 +290,58 @@ const ConfiguratorLayout = () => {
   // Handle pendant selection
   const handlePendantSelection = useCallback((pendantIds) => {
     setConfig(prev => ({ ...prev, selectedPendants: pendantIds }));
+    
+    // If a single pendant is selected, show the type selector
+    if (pendantIds.length === 1) {
+      setSelectedLocation(pendantIds[0]);
+      setShowTypeSelector(true);
+    } else {
+      setShowTypeSelector(false);
+    }
   }, []);
+  
+  // Handle location selection for individual configuration
+  const handleLocationSelection = (locationId) => {
+    setSelectedLocation(locationId);
+    setShowTypeSelector(true);
+  };
+  
+  // Handle configuration type selection from the floating selector
+  const handleConfigTypeSelection = (type) => {
+    setConfiguringType(type);
+    setShowTypeSelector(false);
+    
+    if (type === 'pendant') {
+      setBreadcrumbPath([{ id: 'configurePendant', label: 'Configure Pendant' }]);
+    } else if (type === 'system') {
+      setBreadcrumbPath([{ id: 'system', label: 'System' }]);
+      setConfiguringSystemType('bar'); // Default system type
+    }
+  };
+  
+  // Handle breadcrumb navigation
+  const handleBreadcrumbNavigation = (level) => {
+    if (level === 'home') {
+      // Reset to cable locations view
+      setConfiguringType(null);
+      setConfiguringSystemType(null);
+      setBreadcrumbPath([]);
+      setSelectedLocation(null);
+    } else if (level === 'system') {
+      // Go back to system level
+      setConfiguringSystemType(null);
+      setBreadcrumbPath([{ id: 'system', label: 'System' }]);
+    }
+  };
+  
+  // Handle system type selection
+  const handleIndividualSystemTypeSelection = (type) => {
+    setConfiguringSystemType(type);
+    setBreadcrumbPath([
+      { id: 'system', label: 'System' },
+      { id: type, label: type.charAt(0).toUpperCase() + type.slice(1) }
+    ]);
+  };
 
   // Handle pendant design change
   const handlePendantDesignChange = useCallback((pendantIds, design) => {
@@ -362,23 +413,13 @@ const ConfiguratorLayout = () => {
           config={config}
           isDarkMode={true}
           className="w-full h-full"
+          loadcanvas={isLoading}
         />
         
         {/* Loading overlay */}
-        {isLoading && (
-          <div className="absolute inset-0 bg-transparent backdrop-blur-sm flex items-center justify-center z-10">
-            <div className="bg-gray-900/80 px-6 py-4 rounded-xl text-emerald-500 text-xl font-bold flex items-center">
-              Loading 3D Preview
-              <div className="ml-2 flex space-x-1">
-                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce" style={{ animationDelay: '0s' }}></div>
-                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
-              </div>
-            </div>
-          </div>
         
-      )}
       </div>
+      
       {/* Vertical Navigation Bar */}
       {!isLoading && 
       <VerticalNavBar 
@@ -396,8 +437,29 @@ const ConfiguratorLayout = () => {
         pendants={config.pendants}
         selectedPendants={config.selectedPendants || []}
         setSelectedPendants={(pendantIds) => handlePendantSelection(pendantIds)}
+        onLocationSelection={handleLocationSelection}
+        configuringType={configuringType}
+        configuringSystemType={configuringSystemType}
+        breadcrumbPath={breadcrumbPath}
+        onBreadcrumbNavigation={handleBreadcrumbNavigation}
+        onSystemTypeSelection={handleIndividualSystemTypeSelection}
       />
-}
+      }
+      
+      {/* Configuration Type Selector */}
+      <AnimatePresence>
+        {/* {showTypeSelector && selectedLocation !== null && (
+          <ConfigurationTypeSelector 
+            onSelectType={handleConfigTypeSelection}
+            onClose={() => {
+              setShowTypeSelector(false);
+              setSelectedLocation(null);
+            }}
+            selectedLocation={selectedLocation}
+          />
+        )} */}
+      </AnimatePresence>
+      
       {/* Toast Container for notifications */}
       <ToastContainer position="bottom-right" theme="dark" />
     </div>
