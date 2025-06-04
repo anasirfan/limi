@@ -204,7 +204,8 @@ export default function CustomerProfile() {
       // Check for different response structures
       if (result && result.data && result.data.length > 0) {
         // API returns data in an array
-        return result.data[0];
+        console.log(result.data[result.data.length - 1])
+        return result.data[result.data.length - 1];
       } else if (result && result.slides && result.slides.length > 0) {
         // API returns data directly
         return result;
@@ -255,6 +256,7 @@ export default function CustomerProfile() {
             // Fetch presentation data for test customers too
             const profileId = customerId; // For test customers, use the ID as profileId
             const presentationData = await fetchPresentationData(profileId);
+            console.log("pr data : ",presentationData)
             setPresentationData(presentationData);
             
             setLoading(false);
@@ -305,6 +307,7 @@ export default function CustomerProfile() {
           
           // Now fetch presentation data
           const presentationData = await fetchPresentationData(data.profileId);
+          console.log("pr dataaa : ", presentationData)
           setPresentationData(presentationData);
           
           setLoading(false);

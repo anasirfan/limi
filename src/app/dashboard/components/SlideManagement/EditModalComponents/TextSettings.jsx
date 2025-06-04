@@ -1,4 +1,5 @@
 import React from 'react';
+import { FaAlignLeft, FaAlignCenter, FaAlignRight,FaAlignTop,FaAlignBottom,FaAlignMiddle, FaArrowUp, FaMinus, FaArrowDown } from 'react-icons/fa';
 
 /**
  * TextSettings component for managing text content settings
@@ -262,12 +263,13 @@ const TextSettings = ({ formState, setFormState, editingSlide, dispatch }) => {
       </div>
       
       {/* Text Alignment */}
-      <div className="mb-4">
+
+     <div className='flex gap-6'>
+     <div className="mb-4 w-full">
         <label className="block text-gray-300 mb-2">Text Alignment</label>
         <div className="grid grid-cols-3 gap-2">
           <button
             onClick={() => {
-              // Update local form state immediately for UI feedback
               setFormState({
                 ...formState,
                 text: {
@@ -276,7 +278,6 @@ const TextSettings = ({ formState, setFormState, editingSlide, dispatch }) => {
                 }
               });
               
-              // Update Redux state
               dispatch({
                 type: 'slides/updateSlide',
                 payload: {
@@ -286,13 +287,12 @@ const TextSettings = ({ formState, setFormState, editingSlide, dispatch }) => {
                 }
               });
             }}
-            className={`p-2 rounded-md ${formState.text.alignment === 'left' ? 'bg-[#54bb74] text-white' : 'bg-[#1e1e1e] text-gray-300'}`}
+            className={`p-2 flex justify-center items-center rounded-md ${formState.text.alignment === 'left' ? 'bg-[#54bb74] text-white' : 'bg-[#1e1e1e] text-gray-300'}`}
           >
-            Left
+            <FaAlignLeft className="w-5 h-5" />
           </button>
           <button
             onClick={() => {
-              // Update local form state immediately for UI feedback
               setFormState({
                 ...formState,
                 text: {
@@ -301,7 +301,6 @@ const TextSettings = ({ formState, setFormState, editingSlide, dispatch }) => {
                 }
               });
               
-              // Update Redux state
               dispatch({
                 type: 'slides/updateSlide',
                 payload: {
@@ -311,13 +310,12 @@ const TextSettings = ({ formState, setFormState, editingSlide, dispatch }) => {
                 }
               });
             }}
-            className={`p-2 rounded-md ${formState.text.alignment === 'center' ? 'bg-[#54bb74] text-white' : 'bg-[#1e1e1e] text-gray-300'}`}
+            className={`p-2 flex justify-center items-center rounded-md ${formState.text.alignment === 'center' ? 'bg-[#54bb74] text-white' : 'bg-[#1e1e1e] text-gray-300'}`}
           >
-            Center
+            <FaAlignCenter className="w-5 h-5" />
           </button>
           <button
             onClick={() => {
-              // Update local form state immediately for UI feedback
               setFormState({
                 ...formState,
                 text: {
@@ -326,7 +324,6 @@ const TextSettings = ({ formState, setFormState, editingSlide, dispatch }) => {
                 }
               });
               
-              // Update Redux state
               dispatch({
                 type: 'slides/updateSlide',
                 payload: {
@@ -336,20 +333,19 @@ const TextSettings = ({ formState, setFormState, editingSlide, dispatch }) => {
                 }
               });
             }}
-            className={`p-2 rounded-md ${formState.text.alignment === 'right' ? 'bg-[#54bb74] text-white' : 'bg-[#1e1e1e] text-gray-300'}`}
+            className={`p-2 flex justify-center items-center rounded-md ${formState.text.alignment === 'right' ? 'bg-[#54bb74] text-white' : 'bg-[#1e1e1e] text-gray-300'}`}
           >
-            Right
+            <FaAlignRight className="w-5 h-5" />
           </button>
         </div>
       </div>
       
       {/* Vertical Position */}
-      <div className="mb-4">
+      <div className="mb-4 w-full">
         <label className="block text-gray-300 mb-2">Vertical Position</label>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-3 gap-2 ">
           <button
             onClick={() => {
-              // Update local form state immediately for UI feedback
               setFormState({
                 ...formState,
                 text: {
@@ -358,7 +354,6 @@ const TextSettings = ({ formState, setFormState, editingSlide, dispatch }) => {
                 }
               });
               
-              // Update Redux state
               dispatch({
                 type: 'slides/updateSlide',
                 payload: {
@@ -368,13 +363,12 @@ const TextSettings = ({ formState, setFormState, editingSlide, dispatch }) => {
                 }
               });
             }}
-            className={`p-2 rounded-md ${formState.text.verticalPosition === 'top' ? 'bg-[#54bb74] text-white' : 'bg-[#1e1e1e] text-gray-300'}`}
+            className={`p-2 flex justify-center items-center rounded-md ${formState.text.verticalPosition === 'top' ? 'bg-[#54bb74] text-white' : 'bg-[#1e1e1e] text-gray-300'}`}
           >
-            Top
+            <FaArrowUp className="w-5 h-5" />
           </button>
           <button
             onClick={() => {
-              // Update local form state immediately for UI feedback
               setFormState({
                 ...formState,
                 text: {
@@ -383,7 +377,6 @@ const TextSettings = ({ formState, setFormState, editingSlide, dispatch }) => {
                 }
               });
               
-              // Update Redux state
               dispatch({
                 type: 'slides/updateSlide',
                 payload: {
@@ -393,13 +386,12 @@ const TextSettings = ({ formState, setFormState, editingSlide, dispatch }) => {
                 }
               });
             }}
-            className={`p-2 rounded-md ${formState.text.verticalPosition === 'center' ? 'bg-[#54bb74] text-white' : 'bg-[#1e1e1e] text-gray-300'}`}
+            className={`p-2 flex justify-center items-center rounded-md ${formState.text.verticalPosition === 'center' ? 'bg-[#54bb74] text-white' : 'bg-[#1e1e1e] text-gray-300'}`}
           >
-            Center
+            <FaMinus className="w-5 h-5" />
           </button>
           <button
             onClick={() => {
-              // Update local form state immediately for UI feedback
               setFormState({
                 ...formState,
                 text: {
@@ -408,7 +400,6 @@ const TextSettings = ({ formState, setFormState, editingSlide, dispatch }) => {
                 }
               });
               
-              // Update Redux state
               dispatch({
                 type: 'slides/updateSlide',
                 payload: {
@@ -418,12 +409,13 @@ const TextSettings = ({ formState, setFormState, editingSlide, dispatch }) => {
                 }
               });
             }}
-            className={`p-2 rounded-md ${formState.text.verticalPosition === 'bottom' ? 'bg-[#54bb74] text-white' : 'bg-[#1e1e1e] text-gray-300'}`}
+            className={`p-2 flex justify-center items-center rounded-md ${formState.text.verticalPosition === 'bottom' ? 'bg-[#54bb74] text-white' : 'bg-[#1e1e1e] text-gray-300'}`}
           >
-            Bottom
+            <FaArrowDown className="w-5 h-5" />
           </button>
         </div>
       </div>
+     </div>
       
       {/* Bullet Points */}
       <div className="mb-4">

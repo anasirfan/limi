@@ -586,7 +586,7 @@ export default function SlideManagement({ customer }) {
     if (!notification.show) return null;
     
     return (
-      <div className={`fixed top-4 right-4 z-50 px-6 py-3 rounded-md shadow-lg transition-all duration-300 transform ${notification.show ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0'} ${notification.type === 'success' ? 'bg-[#54BB74]/90 text-white' : 'bg-red-500/90 text-white'}`}>
+      <div className={`fixed bottom-4 right-4 z-50 px-6 py-3 rounded-md shadow-lg transition-all duration-300 transform ${notification.show ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0'} ${notification.type === 'success' ? 'bg-[#54BB74]/90 text-white' : 'bg-red-500/90 text-white'}`}>
         <div className="flex items-center">
           {notification.type === 'success' ? (
             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
