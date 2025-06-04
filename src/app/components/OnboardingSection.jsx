@@ -411,7 +411,14 @@ export default function OnboardingSection() {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="relative rounded-2xl overflow-hidden shadow-2xl bg-[#1e2022] w-full order-1"
           >
-            <div className="aspect-square md:aspect-auto md:h-[500px]">
+            <div
+  className="aspect-square md:aspect-auto md:h-[500px]"
+  style={{
+    WebkitTransform: "translateZ(0)",
+    transform: "translateZ(0)",
+    willChange: "transform"
+  }}
+>
               {/* Loading overlay */}
               {!iframeLoaded && (
                 <div
@@ -750,44 +757,33 @@ export default function OnboardingSection() {
 
               {/* 3D Viewer Iframe */}
               <iframe
-                key={iframeKey}
-                ref={iframeRef}
-                src={playcanvasEmbedUrl}
-                className="w-full h-full border-0 bg-transparent"
-                title="LIMI 3D Configurator"
-                allow="accelerometer; autoplay; camera; gyroscope; xr-spatial-tracking;"
-                allowFullScreen
-                importance="high"
-                loading="eager"
-                webkitallowfullscreen="true"
-                mozallowfullscreen="true"
-                playsInline
-                webkit-playsinline="true"
-                xr-spatial-tracking
-                execution-while-out-of-viewport
-                execution-while-not-rendered
-                web-share
-                sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-pointer-lock allow-orientation-lock allow-presentation"
-                onLoad={() => {
-                  setIframeLoaded(true);
-                  setIframeError(false);
-                  // Set initial quality for desktop
-                  if (!isMobile && iframeRef.current?.contentWindow) {
-                    iframeRef.current.contentWindow.postMessage("highdis", "*");
-                  }
-                }}
-                onError={() => {
-                  setIframeError(true);
-                  setIframeLoaded(false);
-                }}
-                style={{
-                  minHeight: isMobile ? "320px" : "500px",
-                  background: "transparent",
-                  touchAction: "manipulation",
-                  WebkitOverflowScrolling: "touch",
-                }}
-                onTouchStart={() => {}} // This helps with touch events
-              ></iframe>
+              key={iframeKey}
+              ref={iframeRef}
+              src={playcanvasEmbedUrl}
+              className="w-full h-full border-0 bg-transparent"
+              title="LIMI 3D Configurator"
+              allow="accelerometer; autoplay; camera; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              importance="high"
+              loading="eager"
+              sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-pointer-lock"
+              onLoad={() => {
+                setIframeLoaded(true);
+                setIframeError(false);
+                // Set initial quality for desktop
+                if (!isMobile && iframeRef.current && iframeRef.current.contentWindow) {
+                  iframeRef.current.contentWindow.postMessage("highdis", "*");
+                }
+              }}
+              onError={() => {
+                setIframeError(true);
+                setIframeLoaded(false);
+              }}
+              style={{
+                minHeight: isMobile ? 320 : 500,
+                background: "transparent"
+              }}
+            ></iframe>
 
               {/* Interaction hint */}
               <div className="absolute top-4 right-4 bg-black/60 text-white px-3 py-1 rounded-full text-xs flex items-center z-10 animate-pulse">

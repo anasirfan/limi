@@ -75,11 +75,10 @@ const ProductCard = ({ product, className = '', isMobile = false }) => {
       >
         {/* Product Image */}
         <div className="absolute inset-0 overflow-hidden">
-          <img 
+          <Image 
             src={imageSrc} 
             alt={product.name} 
-            
-            
+            fill
             style={{ objectFit: 'cover' }}
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             priority

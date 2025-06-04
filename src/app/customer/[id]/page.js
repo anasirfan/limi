@@ -258,7 +258,7 @@ export default function CustomerProfile() {
             const presentationData = await fetchPresentationData(profileId);
             console.log("pr data : ",presentationData)
             setPresentationData(presentationData);
-            
+            console.log("presentationData", presentationData.slides)
             setLoading(false);
           }, 1000);
           return;
@@ -309,7 +309,7 @@ export default function CustomerProfile() {
           const presentationData = await fetchPresentationData(data.profileId);
           console.log("pr dataaa : ", presentationData)
           setPresentationData(presentationData);
-          
+          console.log("presentationData", presentationData.slides)
           setLoading(false);
         } catch (apiError) {
           console.warn('API fetch failed, using fallback data:', apiError);
@@ -397,7 +397,7 @@ export default function CustomerProfile() {
                   
                   {/* Slide Carousel */}
                   <div className="bg-black rounded-lg overflow-hidden">
-                    <SlideCarousel slides={presentationData.slides} />
+                    <SlideCarousel slides={presentationData.slides} />  
                   </div>
                 </div>
               )}

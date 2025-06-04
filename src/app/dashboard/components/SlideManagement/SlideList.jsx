@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { FaPlus, FaTrash, FaEdit, FaColumns, FaVideo, FaLayerGroup } from 'react-icons/fa';
 import SlideEditor from '../../../components/SlideCarousel/SlideEditor';
 import ImageCollageThumbnail from './ImageCollageThumbnail';
@@ -16,6 +16,11 @@ const SlideList = ({
   reorderSlides, 
   setActiveSlideIndex 
 }) => {
+
+
+  useEffect(() => {
+    console.log("slides",slides)
+  }, [slides]);
   return (
     <>
       {/* Slide List */}
@@ -38,7 +43,6 @@ const SlideList = ({
             </div>
           </div>
         </div>
-
         {/* Slide List without manual reordering */}
         <div className="space-y-2">
           {slides.map((slide, index) => (

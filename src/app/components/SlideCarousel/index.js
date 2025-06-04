@@ -10,62 +10,12 @@ import SlideRenderer from './SlideRenderer';
  * SlideCarousel component for displaying customer presentation slides
  * Uses Redux for state management and supports multiple layout types
  */
-export default function SlideCarousel() {
+export default function SlideCarousel({ slides }) {
   const dispatch = useDispatch();
-  const reduxSlides = useSelector(selectSlides);
   const activeIndex = useSelector(selectActiveSlideIndex);
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
   const carouselRef = useRef(null);
-  
-  // Use the Redux slides directly instead of maintaining separate state
-  // This ensures changes are immediately reflected
-  const slides = reduxSlides;
-  
-  // Load slides from localStorage if available and update Redux store
-  useEffect(() => {
-    const loadSlidesFromStorage = () => {
-      try {
-        const savedSlides = localStorage.getItem('slides');
-        if (savedSlides) {
-          const parsedSlides = JSON.parse(savedSlides);
-          if (Array.isArray(parsedSlides) && parsedSlides.length > 0) {
-            // Update Redux store with all slides from localStorage
-            // This will automatically update the UI since we're using the Redux slides directly
-            dispatch(replaceAllSlides(parsedSlides));
-            
-            // Set active slide to the first one if needed
-            dispatch(setActiveSlideIndex(0));
-          }
-        }
-      } catch (error) {
-        console.error('Error loading slides from localStorage:', error);
-      }
-    };
-    
-    // Load slides on initial render
-    loadSlidesFromStorage();
-    
-    // Add storage event listener to update slides when localStorage changes
-    const handleStorageChange = (e) => {
-      if (e.key === 'slides') {
-        loadSlidesFromStorage();
-      }
-    };
-    
-    // Add custom event listener for slidesUpdated event
-    const handleSlidesUpdated = () => {
-      loadSlidesFromStorage();
-    };
-    
-    window.addEventListener('storage', handleStorageChange);
-    window.addEventListener('slidesUpdated', handleSlidesUpdated);
-    
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('slidesUpdated', handleSlidesUpdated);
-    };
-  }, [dispatch]);
   
   // Minimum swipe distance (in px)
   const minSwipeDistance = 50;

@@ -164,24 +164,24 @@ export default function MediaTextSplit({ slide }) {
       >
         <div className={theme.cardStyle ? `p-4 ${theme.cardStyle}` : 'p-4'}>
           {/* Subheading with theme-specific styling */}
-          {text?.subheading && (
-            <h3 
-              className={`text-lg md:text-xl font-medium mb-2 transition-all duration-300 hover:translate-y-[-2px]`}
-              style={{ 
-                color: theme.accent,
-                textShadow: theme.textShadow,
-              }}
-            >
-              {text.subheading}
-            </h3>
-          )}
           
           {/* Heading with theme-specific styling */}
           <h2 
             className={`text-3xl md:text-4xl mb-4 transition-all duration-300 hover:translate-y-[-2px] ${theme.headingStyle}`}
-          >
+            >
             {text?.heading}
           </h2>
+            {text?.subheading && (
+              <h3 
+                className={`text-lg md:text-xl font-medium mb-2 transition-all duration-300 hover:translate-y-[-2px]`}
+                style={{ 
+                  color: theme.accent,
+                  textShadow: theme.textShadow,
+                }}
+              >
+                {text.subheading}
+              </h3>
+            )}
           
           {/* Description with theme-specific styling */}
           {text?.description && (
