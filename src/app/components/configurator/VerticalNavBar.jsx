@@ -47,8 +47,6 @@ const VerticalNavBar = ({
   // Get navigation steps
   const { steps } = useNavSteps(config);
   
-
-  console.log(steps)
   // Custom dropdown state management with auto-close config panel functionality
   const { 
     openDropdown, 

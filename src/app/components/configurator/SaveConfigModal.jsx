@@ -10,10 +10,11 @@ export const SaveConfigModal = ({
   configSummary
 }) => {
   const [configName, setConfigName] = useState('');
-
+ console.log("in SaveConfigModal");
   if (!isOpen) return null;
 
   const handleSave = () => {
+    console.log("in handleSave");
     if (!configName.trim()) return;
     onSave(configName);
     setConfigName('');
@@ -21,6 +22,7 @@ export const SaveConfigModal = ({
 
   // Format the config summary for display
   const formatConfigSummary = () => {
+    console.log("in formatConfigSummary");
     const { light_type, base_type, light_amount, cables } = configSummary;
     
     let summaryText = `Light Type: ${light_type}\n`;

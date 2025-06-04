@@ -256,7 +256,6 @@ export const ConfigPanel = ({
   };
 
   const panelConfig = getPanelConfig();
-  console.log(panelConfig);
   return (
     <motion.div 
       className="absolute bottom-4 left-[40%] -translate-x-1/2 bg-black/90 backdrop-blur-sm border border-gray-800 rounded-lg z-40 max-w-[280px] w-[20%] h-[15%] shadow-lg"
