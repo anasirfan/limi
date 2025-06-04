@@ -203,7 +203,7 @@ export default function SlideCarousel() {
         <div className="flex justify-center items-center space-x-2 py-4">
           {slides.map((slide, index) => (
             <button
-              key={slide.id}
+              key={`slide-dot-${slide.id}-${index}`}
               onClick={() => goToSlide(index)}
               className={`w-3 h-3 rounded-full transition-all duration-300 ${
                 index === activeIndex
