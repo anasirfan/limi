@@ -196,7 +196,7 @@ const VerticalNavBar = ({
               }
               return true;
             }).map((step, index) => (
-              <>
+              
               <NavButton
                 key={step.id}
                 step={step}
@@ -278,7 +278,7 @@ const VerticalNavBar = ({
                   />
                 )}
               </NavButton>
-              </>
+             
             ))}
           </motion.div>
         </div>
@@ -286,7 +286,7 @@ const VerticalNavBar = ({
       
       {/* Configuration Panel */}
       <AnimatePresence>
-        {(showConfigurationTypeSelector || localConfiguringType) && (
+        {(showConfigurationTypeSelector || localConfiguringType) && selectedPendants.length > 0 && (
           <ConfigPanel
             configuringType={localConfiguringType}
             configuringSystemType={configuringSystemType}
