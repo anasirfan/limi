@@ -294,19 +294,23 @@ const VerticalNavBar = ({
             onBreadcrumbNavigation={onBreadcrumbNavigation}
             onSystemTypeSelection={onSystemTypeSelection}
             selectedLocation={selectedPendants[0]}
+            selectedPendants={selectedPendants}
             onPendantDesignChange={onPendantDesignChange}
             onSystemBaseDesignChange={onSystemBaseDesignChange}
             onSelectConfigurationType={(type) => {
               // This matches the original handleConfigTypeSelection function
               setLocalConfiguringType(type);
-              setShowConfigurationTypeSelector(false);
+     
+              // if(type == 'pendant' || type == 'system'){
+              //   setShowConfigurationTypeSelector(false);
+              // }
               
               // Update the active step based on the configuration type
               if (type === 'pendant') {
                 setActiveStep('pendantSelection');
               } else if (type === 'system') {
                 setActiveStep('systemType');
-              }
+              } 
               
               // Call the parent component's handler if it exists
               if (onConfigurationTypeChange) {

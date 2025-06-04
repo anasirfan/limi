@@ -11,6 +11,7 @@ export const IndividualConfigurationPanel = ({
   onBreadcrumbNavigation,
   onSystemTypeSelection,
   selectedLocation,
+  selectedPendants,
   onPendantDesignChange,
   onSystemBaseDesignChange
 }) => {
@@ -115,7 +116,9 @@ export const IndividualConfigurationPanel = ({
                 whileTap={{ scale: 0.95 }}
                 onClick={() => {
                   setCurrentDesign(design.id);
-                  onPendantDesignChange([selectedLocation], design.id);
+                  // Use all selected pendants if available, otherwise fall back to just the first one
+                  const pendantsToUpdate = selectedPendants && selectedPendants.length > 0 ? selectedPendants : [selectedLocation];
+                  onPendantDesignChange(pendantsToUpdate, design.id);
                 }}
               >
                 <div className={`w-12 h-12 rounded-full overflow-hidden relative ${currentDesign === design.id ? 'ring-2 ring-emerald-500' : ''}`}>

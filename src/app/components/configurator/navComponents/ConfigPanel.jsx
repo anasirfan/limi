@@ -11,6 +11,7 @@ export const ConfigPanel = ({
   onBreadcrumbNavigation,
   onSystemTypeSelection,
   selectedLocation,
+  selectedPendants,
   onPendantDesignChange,
   onSystemBaseDesignChange,
   onSelectConfigurationType,
@@ -24,6 +25,8 @@ export const ConfigPanel = ({
     path: [],
     ids: {}
   });
+
+  const [currentConfig, SetcurrentConfig] = useState(null);
   
   // Update navigation state when configuringType or configuringSystemType changes
   useEffect(() => {
@@ -63,6 +66,11 @@ export const ConfigPanel = ({
     setNavState(newState);
   };
   const carouselRef = useRef(null);
+  
+  const getCurrentConfig = () => {
+    const config = getPanelConfig();
+    SetcurrentConfig(config);
+  };
   
   // Carousel scroll functionality
   const scrollCarousel = (direction) => {
@@ -125,7 +133,9 @@ export const ConfigPanel = ({
       ];
       config.onItemSelect = (itemId) => {
         setCurrentDesign(itemId);
-        onPendantDesignChange([selectedLocation], itemId);
+        // Use all selected pendants if available, otherwise fall back to just the first one
+        const pendantsToUpdate = selectedPendants && selectedPendants.length > 0 ? selectedPendants : [selectedLocation];
+        onPendantDesignChange(pendantsToUpdate, itemId);
       };
       config.selectedItem = currentDesign;
       config.breadcrumbItems = [
@@ -143,7 +153,10 @@ export const ConfigPanel = ({
           { id: 'ball', name: 'Ball', icon: <FaCubes size={16} className="text-emerald-500" /> },
           { id: 'universal', name: 'Universal', icon: <FaCubes size={16} className="text-emerald-500" /> }
         ];
-        config.onItemSelect = onSystemTypeSelection;
+        config.onItemSelect = (systemType) => {
+          // Call the parent handler to update state and send message to iframe
+          onSystemTypeSelection(systemType);
+        };
         config.selectedItem = configuringSystemType;
         config.useIcon = true;
         config.breadcrumbItems = [
@@ -152,7 +165,7 @@ export const ConfigPanel = ({
         ];
       } else {
         // System base design selection
-        config.title = "System Base Design";
+        config.title = "System Bases";
         config.showBreadcrumb = true;
         config.items = [
           { id: 'nexus', name: 'Nexus', image: '/images/configOptions/system_base_1.png' },
@@ -182,18 +195,8 @@ export const ConfigPanel = ({
     // Use the navigation state to determine where to go
     if (id === 'home') {
       // Reset to configuration type selection (first level)
-      console.log("Home clicked");
-      setCurrentDesign(null);
-      
-      // Reset navigation state
-      setNavState({ level: 0, path: [], ids: {} });
-      
-      // Instead of closing the panel, just reset the configuration type
-      // This will show the configuration type selection panel
-      if (onSelectConfigurationType) {
-        onSelectConfigurationType(null);
-      }
-      
+      console.log('Home clicked')
+      onSelectConfigurationType(null);
       // Do NOT call onClose() as we want to keep the panel open
     } else if (id === 'system' && navState.level === 2) {
       // If we're in system base design and click on System Type breadcrumb,
@@ -224,8 +227,36 @@ export const ConfigPanel = ({
   };
   
   // Get the current panel configuration
+  const formatSelectedLocations = (locations) => {
+    if (typeof locations === 'number') {
+      return locations + 1;
+    }
+
+    if (Array.isArray(locations) && locations.length > 0) {
+      const numericLocations = locations.filter(loc => typeof loc === 'number');
+      if (numericLocations.length === 0) return ''; // Handle empty or invalid array
+
+      const displayLocations = numericLocations.map(loc => loc + 1).sort((a, b) => a - b);
+
+      if (displayLocations.length === 0) return ''; // Should be caught by numericLocations.length check, but good for safety
+
+      if (displayLocations.length > 5) {
+        const firstFew = displayLocations.slice(0, 4);
+        return `${firstFew.join(', ')}, ...`;
+      } else if (displayLocations.length === 1) {
+        return displayLocations[0];
+      } else if (displayLocations.length === 2) {
+        return `${displayLocations[0]} & ${displayLocations[1]}`;
+      } else { // 3 to 5 locations
+        const lastItem = displayLocations.pop();
+        return `${displayLocations.join(', ')} & ${lastItem}`;
+      }
+    }
+    return ''; // Default for other cases (null, undefined, etc.)
+  };
+
   const panelConfig = getPanelConfig();
-  
+  console.log(panelConfig);
   return (
     <motion.div 
       className="absolute bottom-4 left-[45%] -translate-x-1/2 bg-black/90 backdrop-blur-sm border border-gray-800 rounded-lg z-40 max-w-[280px] w-[17%] h-[15%] shadow-lg"
@@ -245,7 +276,7 @@ export const ConfigPanel = ({
             <>
               <div className="flex items-center">
                 <h3 className="text-xs font-medium text-white font-['Amenti']">
-                  {panelConfig.showLocationLabel ? `Configure Location ${selectedLocation + 1}` : panelConfig.title}
+                  {panelConfig.showLocationLabel ? `Configure Cable${selectedPendants && selectedPendants.length > 1 ? 's' : ''} ${formatSelectedLocations(selectedPendants || selectedLocation)}` : panelConfig.title}
                 </h3>
               </div>
               {panelConfig.showCloseButton && (

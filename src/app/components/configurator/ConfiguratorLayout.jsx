@@ -341,6 +341,11 @@ const ConfiguratorLayout = () => {
       { id: 'system', label: 'System' },
       { id: type, label: type.charAt(0).toUpperCase() + type.slice(1) }
     ]);
+    
+    // Call handleSystemTypeChange to update state and send message to iframe
+    if (type) {
+      handleSystemTypeChange(type);
+    }
   };
 
   // Handle pendant design change
