@@ -6,7 +6,8 @@ import { FaSpinner } from 'react-icons/fa';
 const PlayCanvasViewer = ({ 
   config = {}, 
   isDarkMode,
-  className = ''
+  className = '',
+  loadcanvas
 }) => {
   const iframeRef = useRef(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -45,6 +46,11 @@ const PlayCanvasViewer = ({
     };
     
     window.addEventListener('message', handleMessage);
+    
+    // Update loading state based on loadcanvas prop
+    if (loadcanvas !== undefined) {
+      setIsLoading(loadcanvas);
+    }
     
     // Set a timeout to handle cases where the app:ready1 message might not be received
     // This is especially important for mobile browsers

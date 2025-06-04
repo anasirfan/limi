@@ -526,6 +526,7 @@ export default function SlideManagement({ customer }) {
       // }
       
       console.log(`Making ${method} request to ${url}`);
+      console.log(slideshowData)
       const response = await fetch(url, {
         method: method,
         headers: {
@@ -534,6 +535,8 @@ export default function SlideManagement({ customer }) {
         },
         body: JSON.stringify(slideshowData)
       });
+
+      console.log(response)
       
       if (!response.ok) {
         const errorText = await response.text();
