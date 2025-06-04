@@ -3,11 +3,13 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import VerticalNavBar from './VerticalNavBar';
 import HorizontalOptionsBar from './HorizontalOptionsBar';
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
 import PlayCanvasViewer from '../PlayCanvasViewer';
 import { ConfigurationTypeSelector } from './navComponents/ConfigurationTypeSelector';
 import { Breadcrumb } from './navComponents/Breadcrumb';
+import { PreviewControls } from './PreviewControls';
+import { SaveConfigModal } from './SaveConfigModal';
 
 const ConfiguratorLayout = () => {
   // Main configuration state
@@ -24,6 +26,13 @@ const ConfiguratorLayout = () => {
     cableColor: 'black',
     cableLength: '2mm',
   });
+  
+  // Preview mode state
+  const [isPreviewMode, setIsPreviewMode] = useState(false);
+  
+  // Save modal state
+  const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
+  const [configToSave, setConfigToSave] = useState(null);
 
   // State for saving light amounts
   const [lastCeilingLightAmount, setLastCeilingLightAmount] = useState(1);
@@ -250,7 +259,17 @@ const ConfiguratorLayout = () => {
     // Generate random pendants for the new amount
     const newPendants = generateRandomPendants(amount);
     
-    setConfig(prev => ({ ...prev, lightAmount: amount, pendants: newPendants }));
+    // Filter selectedPendants to only include valid indices for the new amount
+    const filteredSelectedPendants = config.selectedPendants ? 
+      config.selectedPendants.filter(index => index < amount) : 
+      [];
+    
+    setConfig(prev => ({ 
+      ...prev, 
+      lightAmount: amount, 
+      pendants: newPendants,
+      selectedPendants: filteredSelectedPendants // Update selectedPendants state
+    }));
     
     // Send messages to iframe
     setTimeout(() => {
@@ -281,9 +300,9 @@ const ConfiguratorLayout = () => {
       sendMessageToPlayCanvas(`system:${system}`);
       
       // For round base, send light_amount:1 as requested
-      if (config.baseType === 'round') {
-        sendMessageToPlayCanvas('light_amount:1');
-      }
+      // if (config.baseType === 'round') {
+      //   sendMessageToPlayCanvas('light_amount:1');
+      // }
     }, 0);
   };
 
@@ -398,9 +417,19 @@ const ConfiguratorLayout = () => {
       
       const baseId = designMap[design] || 'system_base_1';
       console.log(`Updating system base design to ${design} (${baseId})`);
-      sendMessageToPlayCanvas(`system_base:${baseId}`);
+      
+      // Get the selected cable number(s)
+      const selectedCables = config.selectedPendants && config.selectedPendants.length > 0 
+        ? config.selectedPendants 
+        : [0]; // Default to cable 0 if none selected
+      
+      // Send message for each selected cable
+      selectedCables.forEach(cableNo => {
+        sendMessageToPlayCanvas(`system_${cableNo}:${baseId}`);
+        console.log(`Sending system_${cableNo}:${baseId} to iframe`);
+      });
     }, 10);
-  }, []);
+  }, [config.selectedPendants]);
 
   // Helper function to send messages to PlayCanvas iframe
   const sendMessageToPlayCanvas = (message) => {
@@ -409,9 +438,105 @@ const ConfiguratorLayout = () => {
       iframe.contentWindow.postMessage(message, "*");
     }
   };
+  
+  // Prepare configuration for saving
+  const prepareConfigForSave = () => {
+    // Create a summary of the current configuration
+    const configSummary = {
+      light_type: config.lightType,
+      light_amount: config.lightAmount,
+      cables: {}
+    };
+    
+    // Only include base_type for ceiling lights
+    if (config.lightType === 'ceiling') {
+      configSummary.base_type = config.baseType;
+    }
+    
+    // Add individual cable configurations
+    config.pendants.forEach((pendant, index) => {
+      configSummary.cables[index] = {};
+      
+      // Determine if this is a pendant or system
+      if (pendant.design === 'bumble' || pendant.design === 'radial' || 
+          pendant.design === 'fina' || pendant.design === 'ripple') {
+        // It's a pendant
+        const productId = pendant.design === 'bumble' ? 'product_1' : 
+                       pendant.design === 'radial' ? 'product_2' : 
+                       pendant.design === 'fina' ? 'product_3' : 'product_5';
+        
+        configSummary.cables[index] = {
+          pendant: productId
+        };
+      } else {
+        // It's a system
+        const systemType = pendant.systemType || config.systemType;
+        const baseDesign = pendant.systemBaseDesign || config.systemBaseDesign;
+        const baseId = baseDesign === 'nexus' ? 'system_base_1' : 
+                    baseDesign === 'vertex' ? 'system_base_2' : 
+                    baseDesign === 'quantum' ? 'system_base_3' : 'system_base_4';
+        
+        configSummary.cables[index] = {
+          system_type: systemType,
+          system_base: baseId
+        };
+      }
+    });
+    
+    return configSummary;
+  };
+  
+  // Save configuration function
+  const handleSaveConfig = () => {
+    const configSummary = prepareConfigForSave();
+    setConfigToSave(configSummary);
+    setIsSaveModalOpen(true);
+  };
+  
+  // Final save with name
+  const handleFinalSave = (configName) => {
+    if (!configToSave) return;
+    
+    // Add name to the configuration
+    const finalConfig = {
+      ...configToSave,
+      name: configName
+    };
+    
+    // Log the configuration summary
+    console.log('Saved Configuration:', finalConfig);
+    
+    // Close modal and show success toast
+    setIsSaveModalOpen(false);
+    toast.success('Configuration saved successfully');
+    
+    // In a real application, you would save this to localStorage, a database, or an API
+    // localStorage.setItem('limiConfig', JSON.stringify(finalConfig));
+  };
+  
+  // Load configuration function
+  const handleLoadConfig = () => {
+    // In a real application, you would load from localStorage, a database, or an API
+    // const savedConfig = JSON.parse(localStorage.getItem('limiConfig'));
+    
+    // For now, just log that the load function was called
+    console.log('Load configuration function called');
+    toast.info('Load configuration function called');
+    
+    // Example of how you would load a configuration
+    // if (savedConfig) {
+    //   setConfig({
+    //     ...config,
+    //     lightType: savedConfig.light_type,
+    //     baseType: savedConfig.base_type,
+    //     lightAmount: savedConfig.light_amount,
+    //     // etc.
+    //   });
+    // }
+  };
 
   return (
-    <div className="relative w-full h-full bg-transparent overflow-hidden"> {/* Added right padding for vertical bar */}
+    <div className="relative w-full h-full bg-transparent overflow-hidden">
       {/* 3D Viewer */}
       <div className="w-full h-full">
         <PlayCanvasViewer 
@@ -420,55 +545,83 @@ const ConfiguratorLayout = () => {
           className="w-full h-full"
           loadcanvas={isLoading}
         />
-        
-        {/* Loading overlay */}
-        
       </div>
       
-      {/* Vertical Navigation Bar */}
-      {!isLoading && 
-      <VerticalNavBar 
-        activeStep={activeStep} 
-        setActiveStep={setActiveStep} 
+      {/* Preview Controls - Always visible */}
+      <PreviewControls 
+        isPreviewMode={isPreviewMode}
+        setIsPreviewMode={setIsPreviewMode}
         config={config}
-        onLightTypeChange={handleLightTypeChange}
-        onBaseTypeChange={handleBaseTypeChange}
-        onConfigurationTypeChange={handleConfigurationTypeChange}
-        onLightAmountChange={handleLightAmountChange}
-        onSystemTypeChange={handleSystemTypeChange}
-        onPendantSelection={handlePendantSelection}
-        onPendantDesignChange={handlePendantDesignChange}
-        onSystemBaseDesignChange={handleSystemBaseDesignChange}
-        pendants={config.pendants}
-        selectedPendants={config.selectedPendants || []}
-        setSelectedPendants={(pendantIds) => handlePendantSelection(pendantIds)}
-        onLocationSelection={handleLocationSelection}
-        configuringType={configuringType}
-        configuringSystemType={configuringSystemType}
-        breadcrumbPath={breadcrumbPath}
-        onBreadcrumbNavigation={handleBreadcrumbNavigation}
-        onSystemTypeSelection={handleIndividualSystemTypeSelection}
+        onSaveConfig={handleSaveConfig}
+        onLoadConfig={handleLoadConfig}
       />
-      }
       
-      {/* Configuration Type Selector */}
-      <AnimatePresence>
-        {/* {showTypeSelector && selectedLocation !== null && (
-          <ConfigurationTypeSelector 
-            onSelectType={handleConfigTypeSelection}
-            onClose={() => {
-              setShowTypeSelector(false);
-              setSelectedLocation(null);
-            }}
-            selectedLocation={selectedLocation}
+      {/* Only show UI elements when not in preview mode */}
+      {!isPreviewMode && (
+        <>
+          {/* Vertical Navigation Bar */}
+          {!isLoading && 
+          <VerticalNavBar 
+            activeStep={activeStep} 
+            setActiveStep={setActiveStep} 
+            config={config}
+            onLightTypeChange={handleLightTypeChange}
+            onBaseTypeChange={handleBaseTypeChange}
+            onConfigurationTypeChange={handleConfigurationTypeChange}
+            onLightAmountChange={handleLightAmountChange}
+            onSystemTypeChange={handleSystemTypeChange}
+            onPendantSelection={handlePendantSelection}
+            onPendantDesignChange={handlePendantDesignChange}
+            onSystemBaseDesignChange={handleSystemBaseDesignChange}
+            pendants={config.pendants}
+            selectedPendants={config.selectedPendants || []}
+            setSelectedPendants={(pendantIds) => handlePendantSelection(pendantIds)}
+            onLocationSelection={handleLocationSelection}
+            configuringType={configuringType}
+            configuringSystemType={configuringSystemType}
+            breadcrumbPath={breadcrumbPath}
+            onBreadcrumbNavigation={handleBreadcrumbNavigation}
+            onSystemTypeSelection={handleIndividualSystemTypeSelection}
           />
-        )} */}
+          }
+          
+          {/* Configuration Type Selector */}
+          <AnimatePresence>
+            {/* {showTypeSelector && selectedLocation !== null && (
+              <ConfigurationTypeSelector 
+                onSelectType={handleConfigTypeSelection}
+                onClose={() => setShowTypeSelector(false)}
+              />
+            )} */}
+          </AnimatePresence>
+          
+          {/* Horizontal Options Bar */}
+          {/* {!isLoading && !configuringType && 
+          <HorizontalOptionsBar 
+            config={config}
+            onLightTypeChange={handleLightTypeChange}
+            onBaseTypeChange={handleBaseTypeChange}
+            onLightAmountChange={handleLightAmountChange}
+            onSystemTypeChange={handleSystemTypeChange}
+          />
+          } */}
+        </>
+      )}
+      
+      {/* Save Configuration Modal */}
+      <AnimatePresence>
+        {isSaveModalOpen && (
+          <SaveConfigModal
+            isOpen={isSaveModalOpen}
+            onClose={() => setIsSaveModalOpen(false)}
+            onSave={handleFinalSave}
+            configSummary={configToSave}
+          />
+        )}
       </AnimatePresence>
       
-      {/* Toast Container for notifications */}
-      <ToastContainer position="bottom-right" theme="dark" />
+      <ToastContainer position="bottom-center" autoClose={3000} />
     </div>
   );
 };
-
 export default ConfiguratorLayout;

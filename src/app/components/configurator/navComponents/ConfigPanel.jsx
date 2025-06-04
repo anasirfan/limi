@@ -170,7 +170,7 @@ export const ConfigPanel = ({
         config.items = [
           { id: 'nexus', name: 'Nexus', image: '/images/configOptions/system_base_1.png' },
           { id: 'vertex', name: 'Vertex', image: '/images/configOptions/system_base_2.png' },
-          { id: 'quantum', name: 'Quantum', image: '/images/configOptions/system_base_3.png' },
+          // { id: 'quantum', name: 'Quantum', image: '/images/configOptions/system_base_3.png' },
           { id: 'fusion', name: 'Fusion', image: '/images/configOptions/system_base_4.png' }
         ];
         config.onItemSelect = (itemId) => {
@@ -259,7 +259,7 @@ export const ConfigPanel = ({
   console.log(panelConfig);
   return (
     <motion.div 
-      className="absolute bottom-4 left-[45%] -translate-x-1/2 bg-black/90 backdrop-blur-sm border border-gray-800 rounded-lg z-40 max-w-[280px] w-[17%] h-[15%] shadow-lg"
+      className="absolute bottom-4 left-[40%] -translate-x-1/2 bg-black/90 backdrop-blur-sm border border-gray-800 rounded-lg z-40 max-w-[280px] w-[20%] h-[15%] shadow-lg"
       initial={{ y: 30, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       exit={{ y: 30, opacity: 0 }}

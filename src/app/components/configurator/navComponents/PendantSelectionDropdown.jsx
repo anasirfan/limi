@@ -23,20 +23,22 @@ export const PendantSelectionDropdown = ({
       
       {/* Pendant selection controls */}
       <div className="flex justify-between mb-3">
-        <button 
-          onClick={selectAllPendants}
-          className="px-3 py-1 rounded-lg text-xs bg-gray-700 hover:bg-gray-600 text-white"
-        >
-          Select All
-        </button>
-        
         {selectedPendants.length > 0 && (
-          <button 
-            onClick={clearSelections}
-            className="px-3 py-1 rounded-lg text-xs bg-gray-700 hover:bg-gray-600 text-white"
-          >
-            Clear ({selectedPendants.length})
-          </button>
+          <>
+            <button 
+              onClick={selectAllPendants}
+              className="px-3 py-1 rounded-lg text-xs bg-gray-700 hover:bg-gray-600 text-white"
+            >
+              Select All
+            </button>
+            
+            <button 
+              onClick={clearSelections}
+              className="px-3 py-1 rounded-lg text-xs bg-gray-700 hover:bg-gray-600 text-white"
+            >
+              Clear ({selectedPendants.length})
+            </button>
+          </>
         )}
       </div>
       
