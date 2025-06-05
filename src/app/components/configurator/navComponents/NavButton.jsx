@@ -106,9 +106,12 @@ export const NavButton = ({
         {openDropdown === step?.id && (
           <motion.div
             ref={el => step?.id && (dropdownRefs.current[step.id] = el)}
-            className="absolute right-full mr-3 top-0 bg-gray-800 rounded-lg shadow-xl z-50 overflow-hidden"
+            className="absolute right-full mr-4 top-0 bg-gray-800 rounded-lg shadow-xl z-50 overflow-hidden
+              sm:right-full sm:mr-3 sm:top-0
+              xs:right-0 xs:mr-0 xs:top-full xs:mt-3"
             style={{ 
               width: '280px',
+              maxWidth: 'calc(100vw - 2rem)',
               boxShadow: `0 4px 20px rgba(0,0,0,0.3), 0 0 0 1px ${emerald}20`
             }}
             initial={{ opacity: 0, x: 20, width: 0 }}

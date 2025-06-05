@@ -99,7 +99,7 @@ export default function StepThree({ selection, onSelect, onNext, onPrevious }) {
       initial="hidden"
       animate="visible"
       exit="exit"
-      className="space-y-6"
+      className="space-y-6 px-6"
     >
       <motion.div variants={itemVariants}>
         <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">What's your aesthetic?</h2>
@@ -233,7 +233,7 @@ export default function StepThree({ selection, onSelect, onNext, onPrevious }) {
         ))}
       </div>
       
-      <div className="pt-4 flex space-x-4 relative z-50">
+      <div className="py-4 flex space-x-4 relative z-50">
         <button
           onClick={handlePreviousButtonClick}
           className="w-1/3 py-4 rounded-lg font-medium text-lg transition-all duration-300 bg-gray-700 text-white hover:bg-gray-600"
