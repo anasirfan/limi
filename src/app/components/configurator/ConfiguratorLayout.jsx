@@ -161,6 +161,7 @@ console.log(localStorage)
       sendMessageToPlayCanvas(`light_amount:${newAmount}`);
       
       // For multiple pendants, send individual pendant messages
+      if (newAmount > 1) {
       newPendants.forEach((pendant, index) => {
         const productId = pendant.design === 'bumble' ? 'product_1' : 
                        pendant.design === 'radial' ? 'product_2' : 
@@ -168,6 +169,12 @@ console.log(localStorage)
         
         sendMessageToPlayCanvas(`pendant_${index}:${productId}`);
       });
+    } else {
+      const productId = newPendants.design === 'bumble' ? 'product_1' : 
+                       newPendants.design === 'radial' ? 'product_2' : 
+                       newPendants.design === 'fina' ? 'product_3' : 'product_5';
+      sendMessageToPlayCanvas(`pendant_design:${productId}`);
+    }
     }, 0);
   };
 
@@ -207,6 +214,7 @@ console.log(localStorage)
       sendMessageToPlayCanvas(`light_amount:${newAmount}`);
       
       // Send individual pendant messages
+      if (newAmount > 1) {
       newPendants.forEach((pendant, index) => {
         const productId = pendant.design === 'bumble' ? 'product_1' : 
                        pendant.design === 'radial' ? 'product_2' : 
@@ -214,6 +222,13 @@ console.log(localStorage)
         
         sendMessageToPlayCanvas(`pendant_${index}:${productId}`);
       });
+    } else {
+      const productId = newPendants.design === 'bumble' ? 'product_1' : 
+                       newPendants.design === 'radial' ? 'product_2' : 
+                       newPendants.design === 'fina' ? 'product_3' : 'product_5';
+      
+      sendMessageToPlayCanvas(`pendant_design:${productId}`);
+    }
     }, 0);
   };
 
@@ -223,31 +238,31 @@ console.log(localStorage)
       const newConfig = { ...prev, configurationType: type };
       
       // Send message to iframe
-      setTimeout(() => {
-        if (type === 'system') {
-          // For system configuration, send base type and system type
-          sendMessageToPlayCanvas(`base_type:${newConfig.baseType}`);
-          sendMessageToPlayCanvas(`system:${newConfig.systemType}`);
+      // setTimeout(() => {
+      //   if (type === 'system') {
+      //     // For system configuration, send base type and system type
+      //     sendMessageToPlayCanvas(`base_type:${newConfig.baseType}`);
+      //     sendMessageToPlayCanvas(`system:${newConfig.systemType}`);
           
-          // Check if base is round, then send light_amount:1 message
-          if (newConfig.baseType === 'round') {
-            sendMessageToPlayCanvas('light_amount:1');
-          }
-        } else {
-          // For pendant configuration, send light type and amount
-          sendMessageToPlayCanvas(`light_type:${newConfig.lightType}`);
-          sendMessageToPlayCanvas(`light_amount:${newConfig.lightAmount}`);
+      //     // Check if base is round, then send light_amount:1 message
+      //     if (newConfig.baseType === 'round') {
+      //       sendMessageToPlayCanvas('light_amount:1');
+      //     }
+      //   } else {
+      //     // For pendant configuration, send light type and amount
+      //     sendMessageToPlayCanvas(`light_type:${newConfig.lightType}`);
+      //     sendMessageToPlayCanvas(`light_amount:${newConfig.lightAmount}`);
           
-          // Send individual pendant messages
-          newConfig.pendants.forEach((pendant, index) => {
-            const productId = pendant.design === 'bumble' ? 'product_1' : 
-                           pendant.design === 'radial' ? 'product_2' : 
-                           pendant.design === 'fina' ? 'product_3' : 'product_5';
+      //     // Send individual pendant messages
+      //     newConfig.pendants.forEach((pendant, index) => {
+      //       const productId = pendant.design === 'bumble' ? 'product_1' : 
+      //                      pendant.design === 'radial' ? 'product_2' : 
+      //                      pendant.design === 'fina' ? 'product_3' : 'product_5';
             
-            sendMessageToPlayCanvas(`pendant_${index}:${productId}`);
-          });
-        }
-      }, 0);
+      //       sendMessageToPlayCanvas(`pendant_${index}:${productId}`);
+      //     });
+      //   }
+      // }, 0);
       
       return newConfig;
     });
@@ -283,6 +298,7 @@ console.log(localStorage)
       // Send light amount message
       sendMessageToPlayCanvas(`light_amount:${amount}`);
       
+      if (amount > 1) {
       // For multiple pendants, send individual pendant messages
       newPendants.forEach((pendant, index) => {
         const productId = pendant.design === 'bumble' ? 'product_1' : 
@@ -291,6 +307,12 @@ console.log(localStorage)
         
         sendMessageToPlayCanvas(`pendant_${index}:${productId}`);
       });
+    } else {
+      const productId = newPendants.design === 'bumble' ? 'product_1' : 
+                       newPendants.design === 'radial' ? 'product_2' : 
+                       newPendants.design === 'fina' ? 'product_3' : 'product_5';
+      sendMessageToPlayCanvas(`pendant_design:${productId}`);
+    }
     }, 0);
   };
 
@@ -299,18 +321,18 @@ console.log(localStorage)
     setConfig(prev => ({ ...prev, systemType: system }));
     
     // Send messages to iframe
-    setTimeout(() => {
-      // Send base type message first to ensure correct context
-      sendMessageToPlayCanvas(`base_type:${config.baseType}`);
+    // setTimeout(() => {
+    //   // Send base type message first to ensure correct context
+    //   sendMessageToPlayCanvas(`base_type:${config.baseType}`);
       
-      // Send system type message
-      sendMessageToPlayCanvas(`system:${system}`);
+    //   // Send system type message
+    //   sendMessageToPlayCanvas(`system:${system}`);
       
-      // For round base, send light_amount:1 as requested
-      // if (config.baseType === 'round') {
-      //   sendMessageToPlayCanvas('light_amount:1');
-      // }
-    }, 0);
+    //   // For round base, send light_amount:1 as requested
+    //   // if (config.baseType === 'round') {
+    //   //   sendMessageToPlayCanvas('light_amount:1');
+    //   // }
+    // }, 0);
   };
 
   // Handle pendant selection
@@ -417,9 +439,10 @@ console.log(localStorage)
       // Map design names to product IDs for the iframe
       const designMap = {
         'nexus': 'product_6',
-        'vertex': 'product_7',
-        'quantum': 'product_8',
-        'fusion': 'product_9'
+        'vertex': 'product_8',
+        'quantum': 'product_7',
+        'fusion': 'product_9',
+        'aurora': 'product_10'
       };
       
       const baseId = designMap[design] || 'product_6';
@@ -513,8 +536,9 @@ console.log(localStorage)
         const systemType = pendant.systemType || config.systemType;
         const baseDesign = pendant.systemBaseDesign || config.systemBaseDesign;
         const baseId = baseDesign === 'nexus' ? 'product_6' : 
-                    baseDesign === 'vertex' ? 'product_7' : 
-                    baseDesign === 'quantum' ? 'product_8' : 'product_9';
+                    baseDesign === 'vertex' ? 'product_8' : 
+                    baseDesign === 'quantum' ? 'product_7' : 
+                    baseDesign === 'aurora' ? 'product_10' : 'product_9';
         
         configSummary.cables[index] = {
           system_type: systemType,

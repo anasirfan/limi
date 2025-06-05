@@ -172,14 +172,15 @@ export const ConfigPanel = ({
         // Map of base IDs to names and image numbers based on available files
         const baseOptions = {
           'bar': [
-            { id: 'nexus', name: 'Nexus', baseNumber: '1' }
+            { id: 'nexus', name: 'Nexus', baseNumber: '6' }
           ],
           'ball': [
-            { id: 'quantum', name: 'Quantum', baseNumber: '3' }
+            { id: 'quantum', name: 'Quantum', baseNumber: '7' }
           ],
           'universal': [
-            { id: 'vertex', name: 'Vertex', baseNumber: '4' },
-            { id: 'fusion', name: 'Fusion', baseNumber: '2' }
+            { id: 'vertex', name: 'Vertex', baseNumber: '8' },
+            { id: 'fusion', name: 'Fusion', baseNumber: '9' },
+            { id: 'aurora', name: 'Aurora', baseNumber: '10' },
           ]
         };
         
