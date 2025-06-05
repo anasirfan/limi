@@ -10,8 +10,14 @@ import { ConfigurationTypeSelector } from './navComponents/ConfigurationTypeSele
 import { Breadcrumb } from './navComponents/Breadcrumb';
 import { PreviewControls } from './PreviewControls';
 import { SaveConfigModal } from './SaveConfigModal';
+import { useSelector, useDispatch } from 'react-redux';
+import { saveConfiguration } from '../../../app/redux/slices/userSlice.js';
+import { useRouter } from 'next/navigation';
 
 const ConfiguratorLayout = () => {
+  const router = useRouter();
+  const dispatch = useDispatch();
+  const { isLoggedIn, user } = useSelector(state => state.user);
   // Main configuration state
   const [config, setConfig] = useState({
     lightType: 'ceiling',
@@ -438,10 +444,43 @@ const ConfiguratorLayout = () => {
       iframe.contentWindow.postMessage(message, "*");
     }
   };
+
+  // Save configuration function
+  const handleSaveConfig = (configParam) => {
+    console.log("in handleSaveConfig");
+    // Log all configuration details
+    console.log('Configuration Details:');
+    console.log('Light Type:', configParam.lightType);
+    console.log('Base Type:', configParam.baseType);
+    console.log('Light Amount:', configParam.lightAmount);
+    console.log('System Type:', configParam.systemType);
+    console.log('System Base Design:', configParam.systemBaseDesign);
+    console.log('Selected Pendants:', configParam.selectedPendants);
+    console.log('All Pendants:', configParam.pendants);
+    console.log('Cable Color:', configParam.cableColor);
+    console.log('Cable Length:', configParam.cableLength);
+    
+    // Check if user is logged in
+    if (!isLoggedIn) {
+      toast.info('Please log in to save your configuration');
+      // Redirect to login page
+      setTimeout(() => {
+        router.push('/portal');
+      }, 1500);
+      return;
+    }
+    
+    // User is logged in, prepare config and show save modal
+    const configSummary = prepareConfigForSave();
+    console.log('Config Summary for Save:', configSummary);
+    setConfigToSave(configSummary);
+    setIsSaveModalOpen(true);
+  };
   
   // Prepare configuration for saving
   const prepareConfigForSave = () => {
     // Create a summary of the current configuration
+    console.log("in prepareConfigForSave")
     const configSummary = {
       light_type: config.lightType,
       light_amount: config.lightAmount,
@@ -486,44 +525,59 @@ const ConfiguratorLayout = () => {
     return configSummary;
   };
   
-  // Save configuration function
-  const handleSaveConfig = () => {
-    const configSummary = prepareConfigForSave();
-    setConfigToSave(configSummary);
-    setIsSaveModalOpen(true);
-  };
-  
-  // Final save with name
+  // Handle final save after user enters configuration name
   const handleFinalSave = (configName) => {
-    if (!configToSave) return;
+    console.log('handleFinalSave called with configName:', configName);
+    console.log('configToSave:', configToSave);
+    
+    if (!configToSave) {
+      console.error('configToSave is null or undefined');
+      return;
+    }
     
     // Add name to the configuration
     const finalConfig = {
       ...configToSave,
-      name: configName
+      name: configName,
+      date: new Date().toISOString()
     };
     
-    // Log the configuration summary
-    console.log('Saved Configuration:', finalConfig);
+    console.log('Final configuration to save:', finalConfig);
+    
+    // Save configuration to Redux store
+    dispatch(saveConfiguration(finalConfig));
+    console.log('saveConfiguration action dispatched');
     
     // Close modal and show success toast
     setIsSaveModalOpen(false);
     toast.success('Configuration saved successfully');
-    
-    // In a real application, you would save this to localStorage, a database, or an API
-    // localStorage.setItem('limiConfig', JSON.stringify(finalConfig));
   };
   
   // Load configuration function
   const handleLoadConfig = () => {
-    // In a real application, you would load from localStorage, a database, or an API
-    // const savedConfig = JSON.parse(localStorage.getItem('limiConfig'));
+    // Check if user is logged in
+    if (!isLoggedIn) {
+      toast.info('Please log in to load your saved configurations');
+      // Redirect to login page
+      setTimeout(() => {
+        router.push('/portal');
+      }, 1500);
+      return;
+    }
     
+    // User is logged in, check if they have saved configurations
+    if (!user || !user.savedConfigurations || user.savedConfigurations.length === 0) {
+      toast.info('You have no saved configurations');
+      return;
+    }
+    
+    // In a real application, you would show a modal with saved configurations
     // For now, just log that the load function was called
     console.log('Load configuration function called');
-    toast.info('Load configuration function called');
+    toast.info('Load configuration feature coming soon!');
     
     // Example of how you would load a configuration
+    // const savedConfig = user.savedConfigurations[0];
     // if (savedConfig) {
     //   setConfig({
     //     ...config,
