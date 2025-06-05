@@ -690,7 +690,7 @@ console.log(localStorage)
   return (
     <div 
       ref={containerRef}
-      className="relative w-full h-full max-sm:h-[calc(100vh)] bg-transparent overflow-hidden"
+      className="relative w-full h-full max-sm:h-[90vh] bg-transparent overflow-hidden"
     >
       {/* 3D Viewer */}
       <div className="w-full h-full">
