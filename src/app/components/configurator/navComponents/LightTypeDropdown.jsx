@@ -3,7 +3,11 @@ import Image from 'next/image';
 
 export const LightTypeDropdown = ({ config, onLightTypeChange, setActiveStep, setOpenDropdown }) => {
   return (
-    <div className="max-sm:bottom-20 max-sm:left-0 max-sm:w-full max-sm:h-full p-4">
+    <div 
+      className=" max-sm:left-0 max-sm:w-full p-4"
+      onClick={(e) => e.stopPropagation()}
+      onTouchStart={(e) => e.stopPropagation()}
+    >
       <h3 className="text-base font-bold text-white mb-3 font-['Amenti']">Light Type</h3>
       <div className="flex space-x-3">
         {['wall', 'ceiling', 'floor'].map((type) => {

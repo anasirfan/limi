@@ -37,13 +37,39 @@ const VerticalNavBar = ({
   configuringSystemType,
   breadcrumbPath,
   onBreadcrumbNavigation,
-  onSystemTypeSelection
+  onSystemTypeSelection,
+  containerDimensions
 }) => {
   // Define colors from LIMI brand palette
   const emerald = '#50C878';
   const charlestonGreen = '#2B2D2F';
   const textColor = '#FFFFFF';
   
+  const [isMobile, setIsMobile] = useState(false);
+
+  
+  // Effect to check screen size and update on resize
+  useEffect(() => {
+    // Check if window is defined (client-side)
+    if (typeof window !== 'undefined') {
+      // Initial check
+      setIsMobile(window.innerWidth < 640);
+
+      
+      // Function to update on resize
+      const handleResize = () => {
+        setIsMobile(window.innerWidth < 640);
+      };
+      
+      // Add event listener
+      window.addEventListener('resize', handleResize);
+      
+      // Clean up
+      return () => {
+        window.removeEventListener('resize', handleResize);
+      };
+    }
+  }, []);
   // Get navigation steps
   const { steps } = useNavSteps(config);
   
@@ -186,9 +212,18 @@ const VerticalNavBar = ({
     <>
       {/* Only show vertical nav when not configuring individual pendant/system */}
       {showVerticalNav && (
-        <div className="absolute right-4 top-1/2 transform -translate-y-1/2 z-50">
+        <div 
+          className="absolute right-4 top-1/2 transform -translate-y-1/2 z-[100] pointer-events-auto"
+          onClick={(e) => e.stopPropagation()}
+          onTouchStart={(e) => e.stopPropagation()}
+        >
           <ProgressIndicator progress={calculateProgress()} emerald={emerald} />
-          <motion.div className="p-3 rounded-full flex flex-col gap-4" style={{ backgroundColor: charlestonGreen }}>
+          <motion.div 
+            className="p-3 rounded-full flex flex-col gap-4" 
+            style={{ backgroundColor: charlestonGreen }}
+            onClick={(e) => e.stopPropagation()}
+            onTouchStart={(e) => e.stopPropagation()}
+          >
             
             {steps.filter(step => {
               // Hide baseType step when not ceiling light type
@@ -208,8 +243,10 @@ const VerticalNavBar = ({
                 toggleDropdown={toggleDropdown}
                 getNavIcon={getNavIcon}
                 emerald={emerald}
+                charlestonGreen={charlestonGreen}
                 textColor={textColor}
                 dropdownRefs={dropdownRefs}
+                containerDimensions={containerDimensions}
               >
                 {step?.id === 'lightType' && openDropdown === step?.id && (
                   <LightTypeDropdown 
@@ -266,6 +303,42 @@ const VerticalNavBar = ({
                     applyToAllPendants={applyToAllPendants}
                     getDesignImageNumber={getDesignImageNumber}
                     handleSaveConfig={handleSaveConfig}
+                    configuringType={localConfiguringType}
+                    configuringSystemType={configuringSystemType}
+                    breadcrumbPath={breadcrumbPath}
+                    onBreadcrumbNavigation={onBreadcrumbNavigation}
+                    onSystemTypeSelection={onSystemTypeSelection}
+                    selectedLocation={selectedPendants[0]}
+                    onPendantDesignChange={onPendantDesignChange}
+                    onSystemBaseDesignChange={onSystemBaseDesignChange}
+                    onSelectConfigurationType={(type) => {
+                      // This matches the original handleConfigTypeSelection function
+                      setLocalConfiguringType(type);
+             
+                      // if(type == 'pendant' || type == 'system'){
+                      //   setShowConfigurationTypeSelector(false);
+                      // }
+                      
+                      // Update the active step based on the configuration type
+                      if (type === 'pendant') {
+                        setActiveStep('pendantSelection');
+                      } else if (type === 'system') {
+                        setActiveStep('systemType');
+                      } 
+                      
+                      // Call the parent component's handler if it exists
+                      if (onConfigurationTypeChange) {
+                        onConfigurationTypeChange(type);
+                      }
+                    }}
+                    onClose={() => {
+                      setShowConfigurationTypeSelector(false);
+                      // Call parent handler to reset configuration type
+                      if (onConfigurationTypeChange) {
+                        onConfigurationTypeChange(null);
+                      }
+                    }}
+                    
                   />
                 )}
                 
@@ -287,7 +360,7 @@ const VerticalNavBar = ({
       
       {/* Configuration Panel */}
       <AnimatePresence>
-        {(showConfigurationTypeSelector || localConfiguringType) && selectedPendants.length > 0 && (
+        {(showConfigurationTypeSelector || localConfiguringType) && selectedPendants.length > 0 && !isMobile && (
           <ConfigPanel
             configuringType={localConfiguringType}
             configuringSystemType={configuringSystemType}

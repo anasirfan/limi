@@ -12,8 +12,10 @@ export const NavButton = ({
   toggleDropdown,
   getNavIcon,
   emerald,
+  charlestonGreen,
   textColor,
   dropdownRefs,
+  containerDimensions,
   children
 }) => {
   // State to track if we're on mobile and screen dimensions
@@ -51,7 +53,7 @@ export const NavButton = ({
     <div key={step?.id} className="relative">
       {/* Tooltip only shows when dropdown is closed */}
       {openDropdown !== step?.id && (
-        <Tooltip content={step?.tooltip || 'Navigation option'} position="left">
+        <Tooltip content={step?.tooltip || 'Navigation option'} position="left" className="">
           <div className="relative group">
             <motion.button
               className={`rounded-full flex items-center justify-center transition-all duration-300 w-10 h-10`}
@@ -62,18 +64,14 @@ export const NavButton = ({
                       activeStep === step?.id ? '#FFFFFF' : 
                       step?.isActive ? `${textColor}80` : `${textColor}40`
               }}
-              onClick={() => handleStepClick(step?.id)}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleStepClick(step?.id);
+              }}
+              onTouchStart={(e) => e.stopPropagation()}
               whileHover={step?.isActive ? { scale: 1.1 } : {}}
               whileTap={step?.isActive ? { scale: 0.95 } : {}}
               disabled={!step?.isActive}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ 
-                type: "spring", 
-                stiffness: 300, 
-                damping: 20,
-                delay: 0.1 * index 
-              }}
             >
               {getNavIcon && step?.id && getNavIcon(step.id) ? (
                 <Image 
@@ -103,10 +101,14 @@ export const NavButton = ({
         <motion.button
           className={`rounded-full flex items-center justify-center transition-all duration-300 w-10 h-10`}
           style={{
-            backgroundColor: emerald,
+            backgroundColor: isMobile ? charlestonGreen : emerald,
             color: '#FFFFFF'
           }}
-          onClick={() => toggleDropdown(step?.id)}
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleDropdown(step?.id);
+          }}
+          onTouchStart={(e) => e.stopPropagation()}
           whileTap={{ scale: 0.95 }}
         >
           {getNavIcon && step?.id && getNavIcon(step?.id) ? (
@@ -134,18 +136,20 @@ export const NavButton = ({
       {/* <AnimatePresence> */}
         {openDropdown === step?.id && (
           <div
-            // ref={el => step?.id && (dropdownRefs.current[step.id] = el)}
-            className="absolute right-full mr-4 top-0 bg-gray-800 rounded-lg shadow-xl z-[100] overflow-hidden
-              sm:right-full sm:mr-3 sm:top-0 max-sm:top-[25vh] max-sm:-mr-[28px] max-sm:left- max-sm:right-0"
+            ref={el => step?.id && (dropdownRefs.current[step.id] = el)}
+            className="absolute max-sm:fixed right-full mr-4 top-0 bg-gray-800 max-sm:bg-[#2b2d2f] rounded-lg shadow-xl z-[200] overflow-hidden
+              sm:right-full sm:mr-3 sm:top-0 max-sm:top-[25vh] max-sm:-mr-[16px] max-sm:right-0"
             style={{
-              boxShadow: `0 4px 20px rgba(0,0,0,0.3), 0 0 0 1px ${emerald}20`,
-              width: isMobile ? `${screenWidth}px` : '280px', // Subtract 32px (16px padding on each side)
-              maxWidth: isMobile ? `${screenWidth}px` : 'calc(100vw - 2rem)'
+              boxShadow: `0 4px 20px rgba(0,0,0,0.3), 0 0 0 1px ${isMobile ? charlestonGreen : emerald}20`,
+              width: isMobile ? `${containerDimensions.width || screenWidth}px` : '280px',
+              maxWidth: isMobile ? `${containerDimensions.width || screenWidth}px` : 'calc(100vw - 2rem)',
+              // Position at 25% from the top of the container on mobile
+              ...(isMobile && containerDimensions.height > 0 && {
+                top: `${containerDimensions.top + (containerDimensions.height * 0.40)}px`,
+              })
             }}
-            // initial={isMobile ? { opacity: 0, y: 100 } : { opacity: 0, x: 20, width: 0 }}
-            // animate={isMobile ? { opacity: 1, y: 0 } : { opacity: 1, x: 0, width: '280px' }}
-            // exit={isMobile ? { opacity: 0, y: 100 } : { opacity: 0, x: 20, width: 0 }}
-            // transition={{ type: "spring", stiffness: 500, damping: 30 }}
+            onClick={(e) => e.stopPropagation()}
+            onTouchStart={(e) => e.stopPropagation()}
           >
             {children}
           </div>

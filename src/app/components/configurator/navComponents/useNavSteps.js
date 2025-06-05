@@ -35,7 +35,7 @@ export const useNavSteps = (config) => {
     { 
       id: 'lightType', 
       icon: <FaLightbulb />, // Fallback icon
-      image: getLightTypeImage(),
+      // image: getLightTypeImage(),
       label: 'Light Type',
       tooltip: 'Select light type (wall, ceiling, floor)',
       isActive: true, // Always active
@@ -44,7 +44,7 @@ export const useNavSteps = (config) => {
     { 
       id: 'baseType', 
       icon: <FaLayerGroup />, // Fallback icon
-      image: getBaseTypeImage(),
+      // image: getBaseTypeImage(),
       label: 'Base Type',
       tooltip: 'Select base type (round, rectangular)',
       isActive: config.lightType === 'ceiling', // Only active for ceiling lights
@@ -53,7 +53,7 @@ export const useNavSteps = (config) => {
     { 
       id: 'lightAmount', 
       icon: <FaRegLightbulb />, // Fallback icon
-      image: getLightAmountImage(),
+      // image: getLightAmountImage(),
       label: 'Light Amount',
       tooltip: 'Select number of lights',
       isActive: true, // Always active

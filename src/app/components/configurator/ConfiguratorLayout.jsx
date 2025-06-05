@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import VerticalNavBar from './VerticalNavBar';
 import HorizontalOptionsBar from './HorizontalOptionsBar';
@@ -633,8 +633,41 @@ console.log(localStorage)
     // }
   };
 
+  // Create ref for the container
+  const containerRef = useRef(null);
+  const [containerDimensions, setContainerDimensions] = useState({ width: 0, height: 0, top: 0, left: 0 });
+  
+  // Update dimensions on resize
+  useEffect(() => {
+    const updateDimensions = () => {
+      if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect();
+        setContainerDimensions({
+          width: rect.width,
+          height: rect.height,
+          top: rect.top,
+          left: rect.left
+        });
+      }
+    };
+    
+    // Initial update
+    updateDimensions();
+    
+    // Add resize listener
+    window.addEventListener('resize', updateDimensions);
+    
+    // Cleanup
+    return () => {
+      window.removeEventListener('resize', updateDimensions);
+    };
+  }, []);
+
   return (
-    <div className="relative w-full h-full max-sm:h-[calc(100vh-80px)] bg-transparent overflow-hidden">
+    <div 
+      ref={containerRef}
+      className="relative w-full h-full max-sm:h-[calc(100vh)] bg-transparent overflow-hidden"
+    >
       {/* 3D Viewer */}
       <div className="w-full h-full">
         <PlayCanvasViewer 
@@ -660,6 +693,7 @@ console.log(localStorage)
           {/* Vertical Navigation Bar */}
           {!isLoading && 
           <VerticalNavBar 
+            containerDimensions={containerDimensions}
             activeStep={activeStep} 
             setActiveStep={setActiveStep} 
             config={config}
