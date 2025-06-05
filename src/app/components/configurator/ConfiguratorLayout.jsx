@@ -18,6 +18,7 @@ const ConfiguratorLayout = () => {
   const router = useRouter();
   const dispatch = useDispatch();
   const { isLoggedIn, user } = useSelector(state => state.user);
+console.log(localStorage)
   // Main configuration state
   const [config, setConfig] = useState({
     lightType: 'ceiling',
@@ -415,13 +416,13 @@ const ConfiguratorLayout = () => {
     setTimeout(() => {
       // Map design names to product IDs for the iframe
       const designMap = {
-        'nexus': 'system_base_1',
-        'vertex': 'system_base_2',
-        'quantum': 'system_base_3',
-        'fusion': 'system_base_4'
+        'nexus': 'product_6',
+        'vertex': 'product_7',
+        'quantum': 'product_8',
+        'fusion': 'product_9'
       };
       
-      const baseId = designMap[design] || 'system_base_1';
+      const baseId = designMap[design] || 'product_6';
       console.log(`Updating system base design to ${design} (${baseId})`);
       
       // Get the selected cable number(s)
@@ -431,7 +432,7 @@ const ConfiguratorLayout = () => {
       
       // Send message for each selected cable
       selectedCables.forEach(cableNo => {
-        sendMessageToPlayCanvas(`system_${cableNo}:${baseId}`);
+        sendMessageToPlayCanvas(`pendant_${cableNo}:${baseId}`);
         console.log(`Sending system_${cableNo}:${baseId} to iframe`);
       });
     }, 10);
@@ -511,13 +512,13 @@ const ConfiguratorLayout = () => {
         // It's a system
         const systemType = pendant.systemType || config.systemType;
         const baseDesign = pendant.systemBaseDesign || config.systemBaseDesign;
-        const baseId = baseDesign === 'nexus' ? 'system_base_1' : 
-                    baseDesign === 'vertex' ? 'system_base_2' : 
-                    baseDesign === 'quantum' ? 'system_base_3' : 'system_base_4';
+        const baseId = baseDesign === 'nexus' ? 'product_6' : 
+                    baseDesign === 'vertex' ? 'product_7' : 
+                    baseDesign === 'quantum' ? 'product_8' : 'product_9';
         
         configSummary.cables[index] = {
           system_type: systemType,
-          system_base: baseId
+          product: baseId
         };
       }
     });
@@ -526,7 +527,7 @@ const ConfiguratorLayout = () => {
   };
   
   // Handle final save after user enters configuration name
-  const handleFinalSave = (configName) => {
+  const handleFinalSave = async (configName) => {
     console.log('handleFinalSave called with configName:', configName);
     console.log('configToSave:', configToSave);
     
@@ -542,15 +543,58 @@ const ConfiguratorLayout = () => {
       date: new Date().toISOString()
     };
     
-    console.log('Final configuration to save:', finalConfig);
+    // Generate a random ID
+    const generateRandomId = () => {
+      return 'config_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    };
     
-    // Save configuration to Redux store
-    dispatch(saveConfiguration(finalConfig));
-    console.log('saveConfiguration action dispatched');
+    // Prepare data for API
+    const apiPayload = {
+      name: configName,
+      thumbnail: "", // This could be updated later with an actual thumbnail
+      config: configToSave, // Using the configSummary we created
+      user_id: user?.data?._id || "" ,// Get user_id from Redux store
+      iframe:{},
+      date: new Date().toISOString(),
+      id: generateRandomId() // Generate a random ID
+    };
     
-    // Close modal and show success toast
-    setIsSaveModalOpen(false);
-    toast.success('Configuration saved successfully');
+    console.log('API payload to send:', apiPayload);
+    
+    try {
+      // Get dashboardToken from localStorage
+      const dashboardToken = localStorage.getItem('limiToken');
+      console.log('Using dashboardToken:', dashboardToken);
+      
+      // Send data to backend API
+      const response = await fetch('https://api1.limitless-lighting.co.uk/admin/products/light-configs', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `${dashboardToken}` // Include token in authorization header
+        },
+        body: JSON.stringify(apiPayload)
+      });
+      
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('API response:', data);
+      
+      // Save configuration to Redux store
+      dispatch(saveConfiguration(finalConfig));
+      console.log('saveConfiguration action dispatched');
+      
+      // Close modal and show success toast
+      setIsSaveModalOpen(false);
+      toast.success('Configuration saved successfully');
+    } catch (error) {
+      console.error('Error saving configuration to API:', error);
+      toast.error('Failed to save configuration. Please try again.');
+      setIsSaveModalOpen(false);
+    }
   };
   
   // Load configuration function

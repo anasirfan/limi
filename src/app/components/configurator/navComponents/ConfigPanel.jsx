@@ -87,10 +87,10 @@ export const ConfigPanel = ({
       'radial': '2.png',
       'fina': '3.png',
       'ripple': '5.png',
-      'nexus': 'system_base_1.png',
-      'vertex': 'system_base_2.png',
-      'quantum': 'system_base_3.png',
-      'fusion': 'system_base_4.png',
+      'nexus': 'product_1.png',
+      'vertex': 'product_2.png',
+      'quantum': 'product_3.png',
+      'fusion': 'product_4.png',
     };
     
     return designMap[designName] || `${designName}.jpg`;
@@ -112,8 +112,8 @@ export const ConfigPanel = ({
       config.title = "Configuration Type";
       config.showBreadcrumb = false;
       config.items = [
-        { id: 'pendant', name: 'Pendant', icon: <FaLightbulb size={16} className="text-emerald-500" /> },
-        { id: 'system', name: 'System', icon: <FaCubes size={16} className="text-emerald-500" /> }
+        { id: 'pendant', name: 'Pendant', image: '/images/configOptions/pendant.png' },
+        { id: 'system', name: 'System', image: '/images/configOptions/system.png' }
       ];
       config.onItemSelect = onSelectConfigurationType;
       config.selectedItem = null;
@@ -149,34 +149,59 @@ export const ConfigPanel = ({
         config.title = "System Type";
         config.showBreadcrumb = true;
         config.items = [
-          { id: 'bar', name: 'Bar', icon: <FaCubes size={16} className="text-emerald-500" /> },
-          { id: 'ball', name: 'Ball', icon: <FaCubes size={16} className="text-emerald-500" /> },
-          { id: 'universal', name: 'Universal', icon: <FaCubes size={16} className="text-emerald-500" /> }
+          { id: 'bar', name: 'Bar', image: '/images/configOptions/bar.png' },
+          { id: 'ball', name: 'Ball', image: '/images/configOptions/ball.png' },
+          { id: 'universal', name: 'Universal', image: '/images/configOptions/universal.png' }
         ];
         config.onItemSelect = (systemType) => {
           // Call the parent handler to update state and send message to iframe
           onSystemTypeSelection(systemType);
         };
         config.selectedItem = configuringSystemType;
-        config.useIcon = true;
+        config.useIcon = false;
         config.breadcrumbItems = [
           { id: 'home', name: 'icon-home' },
           { id: 'system', name: 'System Type' }
         ];
       } else {
-        // System base design selection
-        config.title = "System Bases";
+        // System base design selection based on the selected system type
+        config.title = `${configuringSystemType.charAt(0).toUpperCase() + configuringSystemType.slice(1)} System Bases`;
         config.showBreadcrumb = true;
-        config.items = [
-          { id: 'nexus', name: 'Nexus', image: '/images/configOptions/system_base_1.png' },
-          { id: 'vertex', name: 'Vertex', image: '/images/configOptions/system_base_2.png' },
-          // { id: 'quantum', name: 'Quantum', image: '/images/configOptions/system_base_3.png' },
-          { id: 'fusion', name: 'Fusion', image: '/images/configOptions/system_base_4.png' }
-        ];
+        
+        // Map of base IDs to names and image numbers based on available files
+        const baseOptions = {
+          'bar': [
+            { id: 'nexus', name: 'Nexus', baseNumber: '1' }
+          ],
+          'ball': [
+            { id: 'quantum', name: 'Quantum', baseNumber: '3' }
+          ],
+          'universal': [
+            { id: 'vertex', name: 'Vertex', baseNumber: '4' },
+            { id: 'fusion', name: 'Fusion', baseNumber: '2' }
+          ]
+        };
+        
+        // Get the appropriate bases for the selected system type
+        const systemTypeBases = baseOptions[configuringSystemType] || [];
+        
+        // Create items with images from the type-specific folder
+        config.items = systemTypeBases.map(base => ({
+          id: base.id,
+          name: base.name,
+          image: `/images/configOptions/${configuringSystemType}/${base.baseNumber}.png`,
+          baseNumber: base.baseNumber // Store the base number for sending to PlayCanvas
+        }));
+        
         config.onItemSelect = (itemId) => {
+          // Find the selected base to get its baseNumber
+          const selectedBase = config.items.find(item => item.id === itemId);
           setCurrentDesign(itemId);
+          
+          // Pass the design name to maintain backward compatibility
           onSystemBaseDesignChange(itemId);
         };
+        
         config.selectedItem = currentDesign;
         config.breadcrumbItems = [
           { id: 'home', name: 'icon-home' },
@@ -319,18 +344,12 @@ export const ConfigPanel = ({
                 <div className={`w-16 h-16 rounded-full overflow-hidden relative ${
                   panelConfig.selectedItem === item.id ? 'ring-2 ring-emerald-500' : ''
                 }`}>
-                  {panelConfig.useIcon ? (
-                    <div className="w-full h-full flex items-center justify-center bg-gray-800">
-                      <div className="scale-100">{item.icon}</div>
-                    </div>
-                  ) : (
-                    <Image
-                      src={item.image}
-                      alt={item.name}
-                      fill
-                      className="object-cover"
-                    />
-                  )}
+                  <Image
+                    src={item.image}
+                    alt={item.name}
+                    fill
+                    className="object-cover"
+                  />
                   {panelConfig.selectedItem === item.id && (
                     <div className="absolute inset-0 bg-emerald-500/20 flex items-center justify-center">
                       <FaCheck className="text-white text-[8px]" />

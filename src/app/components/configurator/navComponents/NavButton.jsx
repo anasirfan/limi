@@ -50,8 +50,8 @@ export const NavButton = ({
                 <Image 
                   src={getNavIcon(step.id)}
                   alt={step?.label || 'Navigation button'}
-                  width={32}
-                  height={32}
+                  width={16}
+                  height={16}
                   className="object-contain"
                   onError={(e) => {
                     // Fallback to the original icon if image fails to load

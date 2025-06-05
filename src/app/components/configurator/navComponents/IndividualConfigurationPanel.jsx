@@ -33,10 +33,10 @@ export const IndividualConfigurationPanel = ({
       'radial': '2.png',
       'fina': '3.png',
       'ripple': '5.png',
-      'nexus': 'system_base_1.png',
-      'vertex': 'system_base_2.png',
-      'quantum': 'system_base_3.png',
-      'fusion': 'system_base_4.png',
+      'nexus': 'product_1.png',
+      'vertex': 'product_2.png',
+      'quantum': 'product_3.png',
+      'fusion': 'product_4.png',
     };
     
     return designMap[designName] || `${designName}.jpg`;
@@ -178,10 +178,10 @@ export const IndividualConfigurationPanel = ({
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
             {[
-              { id: 'nexus', name: 'Nexus', image: '/images/configOptions/system_base_1.png' },
-              { id: 'vertex', name: 'Vertex', image: '/images/configOptions/system_base_2.png' },
-              { id: 'quantum', name: 'Quantum', image: '/images/configOptions/system_base_3.png' },
-              { id: 'fusion', name: 'Fusion', image: '/images/configOptions/system_base_4.png' },
+              { id: 'nexus', name: 'Nexus', image: '/images/configOptions/product_1.png' },
+              { id: 'vertex', name: 'Vertex', image: '/images/configOptions/product_2.png' },
+              { id: 'quantum', name: 'Quantum', image: '/images/configOptions/product_3.png' },
+              { id: 'fusion', name: 'Fusion', image: '/images/configOptions/product_4.png' },
             ].map((design) => (
               <motion.div
                 key={design.id}

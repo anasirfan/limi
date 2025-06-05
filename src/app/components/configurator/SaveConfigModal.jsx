@@ -39,7 +39,7 @@ export const SaveConfigModal = ({
       if (cable.pendant) {
         summaryText += `Pendant (${cable.pendant.replace('product_', '')})\n`;
       } else if (cable.system) {
-        summaryText += `System ${cable.system_type} with Base ${cable.system_base.replace('system_base_', '')}\n`;
+        summaryText += `System ${cable.system_type} with Base ${cable.product.replace('product_', '')}\n`;
       }
     });
     

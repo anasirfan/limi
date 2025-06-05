@@ -8,11 +8,34 @@ import {
 } from "react-icons/fa";
 
 export const useNavSteps = (config) => {
+  // Get dynamic image paths based on selected configuration
+  const getLightTypeImage = () => {
+    if (config.lightType) {
+      return `/images/verticalNavbar/lightType/${config.lightType}.png`;
+    }
+    return null;
+  };
+  
+  const getBaseTypeImage = () => {
+    if (config.baseType) {
+      return `/images/verticalNavbar/baseType/${config.baseType}.png`;
+    }
+    return null;
+  };
+  
+  const getLightAmountImage = () => {
+    if (config.lightAmount) {
+      return `/images/verticalNavbar/lightAmount/${config.lightAmount}.png`;
+    }
+    return null;
+  };
+  
   // Define navigation steps
   const steps = [
     { 
       id: 'lightType', 
-      icon: <FaLightbulb />, 
+      icon: <FaLightbulb />, // Fallback icon
+      image: getLightTypeImage(),
       label: 'Light Type',
       tooltip: 'Select light type (wall, ceiling, floor)',
       isActive: true, // Always active
@@ -20,7 +43,8 @@ export const useNavSteps = (config) => {
     },
     { 
       id: 'baseType', 
-      icon: <FaLayerGroup />, 
+      icon: <FaLayerGroup />, // Fallback icon
+      image: getBaseTypeImage(),
       label: 'Base Type',
       tooltip: 'Select base type (round, rectangular)',
       isActive: config.lightType === 'ceiling', // Only active for ceiling lights
@@ -28,17 +52,17 @@ export const useNavSteps = (config) => {
     },
     { 
       id: 'lightAmount', 
-      icon: <FaRegLightbulb />, 
+      icon: <FaRegLightbulb />, // Fallback icon
+      image: getLightAmountImage(),
       label: 'Light Amount',
       tooltip: 'Select number of lights',
       isActive: true, // Always active
       isCompleted: Boolean(config.lightAmount)
     },
     
-
     { 
       id: 'pendantSelection', 
-      icon: <FaList />, 
+      icon: <FaList />, // Keep using icon for this one
       label: config.configurationType === 'pendant' ? 'Select Pendants' : 'Select Systems',
       tooltip: config.configurationType === 'pendant' 
         ? 'Configure individual pendants' 
