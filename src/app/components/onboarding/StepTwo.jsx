@@ -2,7 +2,7 @@
 import React, { useRef } from 'react';
 import { motion } from 'framer-motion';
 
-const   styles = [
+const styles = [
   {
     id: 'coolLux',
     name: 'Cool Lux',
@@ -33,7 +33,7 @@ const   styles = [
   }
 ];
 
-// Animation variants
+// Animation variants remain the same
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -63,68 +63,45 @@ const itemVariants = {
 };
 
 export default function StepTwo({ selection, onSelect, onNext, onPrevious, lightType }) {
-  // Auto-select based on lightType if needed
+  // Auto-select based on lightType
   React.useEffect(() => {
     if (lightType === 'wall' && selection !== 'coolLux') {
-      console.log("lightType: ",lightType)
       onSelect('coolLux');
     } else if (lightType === 'floor' && selection !== 'shadowHue') {
-      console.log("lightType: ",lightType)
       onSelect('shadowHue');
     }
   }, [lightType, onSelect, selection]);
 
   const hasSelection = !!selection;
   const carouselRef = useRef(null);
-  
-  // Determine if a style should be disabled
-  const isStyleDisabled = (styleId) => {
+
+  // Filter styles based on lightType
+  const filteredStyles = React.useMemo(() => {
     if (lightType === 'wall') {
-      return styleId !== 'coolLux';
+      return styles.filter(style => style.id === 'coolLux');
     } else if (lightType === 'floor') {
-      return styleId !== 'shadowHue';
+      return styles.filter(style => style.id === 'shadowHue');
     }
-    return false; // All enabled for other types
-  };
-  
-  // These functions are directly called when the buttons are clicked
+    return styles; // Show all styles for ceiling
+  }, [lightType]);
+
   const handleNextButtonClick = (e) => {
-    // Stop event propagation to prevent any parent elements from capturing the click
     e.stopPropagation();
-    // Call the onNext function passed as prop
     onNext();
   };
   
   const handlePreviousButtonClick = (e) => {
-    // Stop event propagation to prevent any parent elements from capturing the click
     e.stopPropagation();
-    // Call the onPrevious function passed as prop
     onPrevious();
   };
-  
-  // Scroll the carousel left
-  const scrollLeft = () => {
-    if (carouselRef.current) {
-      const scrollAmount = carouselRef.current.clientWidth * 0.85; // Approximately one card width
-      carouselRef.current.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-    }
-  };
-  
-  // Scroll the carousel right
-  const scrollRight = () => {
-    if (carouselRef.current) {
-      const scrollAmount = carouselRef.current.clientWidth * 0.85; // Approximately one card width
-      carouselRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-    }
-  };
-  
+
   return (
     <motion.div
       variants={containerVariants}
       initial="hidden"
       animate="visible"
       exit="exit"
-      className="space-y-6"
+      className="space-y-6 mx-6"
     >
       <motion.div variants={itemVariants}>
         <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">Choose your vibe</h2>
@@ -133,39 +110,17 @@ export default function StepTwo({ selection, onSelect, onNext, onPrevious, light
       
       {/* Mobile Carousel View */}
       <div className="md:hidden relative">
-        {/* Left indicator */}
-        {/* <button 
-          onClick={scrollLeft}
-          className="absolute left-0 top-1/2 -translate-y-1/2 bg-black bg-opacity-30 rounded-r-lg p-1 z-10 cursor-pointer hover:bg-opacity-50 transition-all"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-        </button> */}
-        
-        {/* Right indicator */}
-        {/* <button 
-          onClick={scrollRight}
-          className="absolute right-0 top-1/2 -translate-y-1/2 bg-black bg-opacity-30 rounded-l-lg p-1 z-10 cursor-pointer hover:bg-opacity-50 transition-all"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </button> */}
-        
         <div ref={carouselRef} className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide space-x-3 max-sm:space-x-4 pb-4 max-sm:-mb-6">
-          {styles.map((style) => (
+          {filteredStyles.map((style) => (
             <motion.div
               key={style.id}
               variants={itemVariants}
               className={`flex-none w-[85%] max-sm:w-[75%] snap-center rounded-xl overflow-hidden transition-all duration-300 ${
                 selection === style.id 
                   ? 'ring-3 ring-[#50C878] shadow-[0_0_15px_rgba(80,200,120,0.5)]' 
-                  : isStyleDisabled(style.id)
-                    ? 'opacity-50 cursor-not-allowed ring-1 ring-transparent'
-                    : 'ring-1 ring-transparent cursor-pointer'
+                  : 'ring-1 ring-transparent cursor-pointer'
               }`}
-              onClick={() => !isStyleDisabled(style.id) && onSelect(style.id)}
+              onClick={() => onSelect(style.id)}
               style={{
                 background: `linear-gradient(135deg, #2B2D2F 0%, #3a3d42 100%)`,
               }}
@@ -207,18 +162,16 @@ export default function StepTwo({ selection, onSelect, onNext, onPrevious, light
       
       {/* Desktop Grid Layout */}
       <div className="hidden md:grid md:grid-cols-2 md:gap-4">
-        {styles.map((style) => (
+        {filteredStyles.map((style) => (
           <motion.div
             key={style.id}
             variants={itemVariants}
             className={`relative overflow-hidden rounded-xl transition-all duration-300 transform ${
               selection === style.id 
                 ? 'ring-4 ring-[#50C878] shadow-[0_0_15px_rgba(80,200,120,0.5)]' 
-                : isStyleDisabled(style.id)
-                  ? 'opacity-50 cursor-not-allowed'
-                  : 'ring-2 ring-transparent hover:ring-[#87CEAB] cursor-pointer hover:scale-[1.02]'
+                : 'ring-2 ring-transparent hover:ring-[#87CEAB] cursor-pointer hover:scale-[1.02]'
             }`}
-            onClick={() => !isStyleDisabled(style.id) && onSelect(style.id)}
+            onClick={() => onSelect(style.id)}
             style={{
               background: `linear-gradient(135deg, #2B2D2F 0%, #3a3d42 100%)`,
             }}
@@ -262,7 +215,7 @@ export default function StepTwo({ selection, onSelect, onNext, onPrevious, light
         ))}
       </div>
       
-      <div className="pt-4 flex space-x-4 relative z-50">
+      <div className="py-4 flex space-x-4 relative z-50">
         <button
           onClick={handlePreviousButtonClick}
           className="w-1/3 py-4 rounded-lg font-medium text-lg transition-all duration-300 bg-gray-700 text-white hover:bg-gray-600"

@@ -153,17 +153,17 @@ export default function StepFour({ selections, onComplete, onPrevious }) {
           </div>
         </div>
         
-        <div className="pt-4 flex space-x-4 relative z-50">
+        <div className="py-4 flex space-x-3 relative z-50">
           <button
             onClick={handlePreviousButtonClick}
-            className="w-1/3 py-4 rounded-lg font-medium text-lg transition-all duration-300 bg-gray-700 text-white hover:bg-gray-600"
+            className="w-1/3 py-2 rounded-lg font-medium text-base transition-all duration-300 bg-gray-700 text-white hover:bg-gray-600"
           >
             Back
           </button>
           
           <Link 
             href="/configurator" 
-            className="block w-2/3 py-4 rounded-lg font-medium text-lg transition-all duration-300 bg-[#50C878] text-white hover:bg-[#3da861] text-center"
+            className="block w-2/3 py-2 rounded-lg font-medium text-base transition-all duration-300 bg-[#50C878] text-white hover:bg-[#3da861] text-center"
             onClick={handleCompleteButtonClick}
           >
             Launch Your Configurator

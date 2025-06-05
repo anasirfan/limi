@@ -212,7 +212,7 @@ export default function StepOne({ selection, onSelect, onNext }) {
         <button
           onClick={handleNextButtonClick}
           disabled={!hasSelection}
-          className={`w-full py-4 rounded-lg font-medium text-lg transition-all duration-300 ${
+          className={`w-full py-4 mb-4 rounded-lg font-medium text-lg transition-all duration-300 ${
             hasSelection 
               ? 'bg-[#50C878] text-white hover:bg-[#3da861]' 
               : 'bg-gray-600 text-gray-300 cursor-not-allowed'

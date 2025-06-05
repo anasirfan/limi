@@ -97,7 +97,7 @@ export default function InteractiveConfigurator() {
         </div>
       </div>
       
-      <div className="container mx-auto max-w-6xl">
+      <div className="w-full">
         {/* Section header with animation */}
         <div className="text-center mb-12">
           <h2 className="text-4xl md:text-5xl text-[#50C878] font-bold mb-4 animate-fadeIn">

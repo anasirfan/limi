@@ -15,10 +15,44 @@ export default function SlideCarousel({ slides }) {
   const activeIndex = useSelector(selectActiveSlideIndex);
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
+  const [isMobile, setIsMobile] = useState(false);
   const carouselRef = useRef(null);
+  const autoPlayTimerRef = useRef(null);
   
   // Minimum swipe distance (in px)
   const minSwipeDistance = 50;
+  
+  // Check if device is mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+  
+  // Auto-play functionality
+  useEffect(() => {
+    const startAutoPlay = () => {
+      autoPlayTimerRef.current = setInterval(() => {
+        if (activeIndex === slides.length - 1) {
+          goToSlide(0); // Reset to first slide
+        } else {
+          goToNextSlide();
+        }
+      }, 2000);
+    };
+    
+    startAutoPlay();
+    
+    return () => {
+      if (autoPlayTimerRef.current) {
+        clearInterval(autoPlayTimerRef.current);
+      }
+    };
+  }, [activeIndex, slides.length]);
   
   // Handle navigation
   const goToSlide = (index) => {
@@ -96,7 +130,7 @@ export default function SlideCarousel({ slides }) {
       {/* Main carousel container */}
       <div 
         ref={carouselRef}
-        className="relative w-full h-[600px] md:h-[500px] overflow-hidden"
+        className="relative w-full h-[500px] sm:h-[400px] md:h-[450px] lg:h-[500px] overflow-hidden"
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
@@ -120,8 +154,8 @@ export default function SlideCarousel({ slides }) {
           </motion.div>
         </AnimatePresence>
         
-        {/* Navigation arrows */}
-        {slides.length > 1 && (
+        {/* Navigation arrows - only show on desktop */}
+        {!isMobile && slides.length > 1 && (
           <>
             <button
               onClick={goToPrevSlide}
@@ -150,7 +184,7 @@ export default function SlideCarousel({ slides }) {
       
       {/* Pagination dots */}
       {slides.length > 1 && (
-        <div className="flex justify-center items-center space-x-2 py-4">
+        <div className="flex justify-center items-center space-x-2 pt-4 ">
           {slides.map((slide, index) => (
             <button
               key={`slide-dot-${slide.id}-${index}`}

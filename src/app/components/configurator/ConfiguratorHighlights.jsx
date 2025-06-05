@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 
 export default function ConfiguratorHighlights() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 mt-12">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 mx-4 mt-12">
       <motion.div 
         className="bg-[#292929] rounded-lg p-6 text-center"
         initial={{ opacity: 0, y: 20 }}
