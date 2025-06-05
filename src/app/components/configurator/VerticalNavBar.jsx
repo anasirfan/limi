@@ -172,8 +172,11 @@ const VerticalNavBar = ({
   
   // Function to get icon for navigation buttons
   const getNavIcon = (stepId) => {
-    // Return null to use the React icon components
-    return null;
+    // Find the step with this ID
+    const step = steps.find(s => s.id === stepId);
+    
+    // Return the image path if it exists, otherwise null to use the React icon
+    return step?.image || null;
   };
 
   // Determine if we should show the vertical nav bar
