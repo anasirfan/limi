@@ -672,7 +672,7 @@ const HorizontalOptionsBar = ({
             exit="exit"
           >
             <h3 className="text-lg font-bold mb-3 text-white font-['Amenti']">System Configuration</h3>
-            <div className="p-4 rounded-lg bg-gray-800">
+            <div className="p-4 rounded-lg bg-gray-800  ">
               <p className="text-center text-gray-300">System configuration options for {config.systemType} system</p>
               
               {/* Placeholder for system-specific options */}

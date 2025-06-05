@@ -283,32 +283,32 @@ export const ConfigPanel = ({
   const panelConfig = getPanelConfig();
   return (
     <motion.div 
-      className="absolute bottom-4 left-[40%] -translate-x-1/2 bg-black/90 backdrop-blur-sm border border-gray-800 rounded-lg z-40 max-w-[280px] w-[20%] h-[15%] shadow-lg"
+      className="fixed bottom-0 left-0 right-0 md:absolute md:bottom-4 md:left-[40%] md:-translate-x-1/2 bg-black/90 backdrop-blur-sm border border-gray-800 rounded-t-lg md:rounded-lg z-40 w-full md:max-w-[350px] shadow-lg"
       initial={{ y: 30, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       exit={{ y: 30, opacity: 0 }}
       transition={{ type: 'spring', damping: 25 }}
     >
-      <div className="px-3 py-4">
-        <div className="flex items-center justify-between mb-2">
+      <div className="px-4 py-4 md:px-3">
+        <div className="flex items-center justify-between mb-3 md:mb-2">
           {panelConfig.showBreadcrumb ? (
             <>
               <Breadcrumb path={panelConfig.breadcrumbItems} onNavigate={handleBreadcrumbNavigation} />
-              <h3 className="text-xs font-medium text-white font-['Amenti']">{panelConfig.title}</h3>
+              <h3 className="text-sm md:text-xs font-medium text-white font-['Amenti']">{panelConfig.title}</h3>
             </>
           ) : (
             <>
               <div className="flex items-center">
-                <h3 className="text-xs font-medium text-white font-['Amenti']">
+                <h3 className="text-sm md:text-xs font-medium text-white font-['Amenti']">
                   {panelConfig.showLocationLabel ? `Configure Cable${selectedPendants && selectedPendants.length > 1 ? 's' : ''} ${formatSelectedLocations(selectedPendants || selectedLocation)}` : panelConfig.title}
                 </h3>
               </div>
               {panelConfig.showCloseButton && (
                 <button 
                   onClick={onClose}
-                  className="w-5 h-5 rounded-full bg-gray-800 flex items-center justify-center hover:bg-gray-700"
+                  className="w-6 h-6 md:w-5 md:h-5 rounded-full bg-gray-800 flex items-center justify-center hover:bg-gray-700"
                 >
-                  <FaTimes size={8} className="text-gray-400" />
+                  <FaTimes size={10} className="text-gray-400 md:text-[8px]" />
                 </button>
               )}
             </>
@@ -321,16 +321,16 @@ export const ConfigPanel = ({
             <div className="absolute left-0 top-1/2 -translate-y-1/2 z-10">
               <button 
                 onClick={() => scrollCarousel('left')}
-                className="w-5 h-5 rounded-full bg-gray-800 text-white flex items-center justify-center hover:bg-gray-700 transition-colors"
+                className="w-6 h-6 md:w-5 md:h-5 rounded-full bg-gray-800 text-white flex items-center justify-center hover:bg-gray-700 transition-colors"
               >
-                <FaChevronLeft size={8} />
+                <FaChevronLeft size={10} className="md:text-[8px]" />
               </button>
             </div>
           )}
           
           <div 
             ref={carouselRef}
-            className="flex gap-1 overflow-x-auto scrollbar-hide py-1 px-5 max-w-full"
+            className="flex gap-2 md:gap-1 overflow-x-auto scrollbar-hide py-2 md:py-1 px-6 md:px-5 max-w-full"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
             {panelConfig.items.map((item) => (
@@ -341,7 +341,7 @@ export const ConfigPanel = ({
                 whileTap={{ scale: 0.95 }}
                 onClick={() => panelConfig.onItemSelect(item.id)}
               >
-                <div className={`w-16 h-16 rounded-full overflow-hidden relative ${
+                <div className={`w-20 h-20 md:w-16 md:h-16 rounded-full overflow-hidden relative ${
                   panelConfig.selectedItem === item.id ? 'ring-2 ring-emerald-500' : ''
                 }`}>
                   <Image
@@ -352,11 +352,11 @@ export const ConfigPanel = ({
                   />
                   {panelConfig.selectedItem === item.id && (
                     <div className="absolute inset-0 bg-emerald-500/20 flex items-center justify-center">
-                      <FaCheck className="text-white text-[8px]" />
+                      <FaCheck className="text-white text-[10px] md:text-[8px]" />
                     </div>
                   )}
                 </div>
-                <p className="text-center text-[10px] mt-0.5 text-gray-300 capitalize">{item.name}</p>
+                <p className="text-center text-xs md:text-[10px] mt-1 md:mt-0.5 text-gray-300 capitalize">{item.name}</p>
               </motion.div>
             ))}
           </div>
@@ -365,9 +365,9 @@ export const ConfigPanel = ({
             <div className="absolute right-0 top-1/2 -translate-y-1/2 z-10">
               <button 
                 onClick={() => scrollCarousel('right')}
-                className="w-5 h-5 rounded-full bg-gray-800 text-white flex items-center justify-center hover:bg-gray-700 transition-colors"
+                className="w-6 h-6 md:w-5 md:h-5 rounded-full bg-gray-800 text-white flex items-center justify-center hover:bg-gray-700 transition-colors"
               >
-                <FaChevronRight size={8} />
+                <FaChevronRight size={10} className="md:text-[8px]" />
               </button>
             </div>
           )}
