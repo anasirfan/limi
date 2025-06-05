@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { Tooltip } from '../Tooltip';
+import { useState, useEffect } from 'react';
 
 export const NavButton = ({
   step,
@@ -15,6 +16,34 @@ export const NavButton = ({
   dropdownRefs,
   children
 }) => {
+  // State to track if we're on mobile and screen dimensions
+  const [isMobile, setIsMobile] = useState(false);
+  const [screenWidth, setScreenWidth] = useState(0);
+  
+  // Effect to check screen size and update on resize
+  useEffect(() => {
+    // Check if window is defined (client-side)
+    if (typeof window !== 'undefined') {
+      // Initial check
+      setIsMobile(window.innerWidth < 640);
+      setScreenWidth(window.innerWidth);
+      
+      // Function to update on resize
+      const handleResize = () => {
+        setIsMobile(window.innerWidth < 640);
+        setScreenWidth(window.innerWidth);
+      };
+      
+      // Add event listener
+      window.addEventListener('resize', handleResize);
+      
+      // Clean up
+      return () => {
+        window.removeEventListener('resize', handleResize);
+      };
+    }
+  }, []);
+  
   // Guard against undefined or null step
   if (!step) return null;
   
@@ -102,27 +131,26 @@ export const NavButton = ({
       )}
       
       {/* Dropdown content */}
-      <AnimatePresence>
+      {/* <AnimatePresence> */}
         {openDropdown === step?.id && (
-          <motion.div
-            ref={el => step?.id && (dropdownRefs.current[step.id] = el)}
-            className="absolute right-full mr-4 top-0 bg-gray-800 rounded-lg shadow-xl z-50 overflow-hidden
-              sm:right-full sm:mr-3 sm:top-0
-              xs:right-0 xs:mr-0 xs:top-full xs:mt-3"
-            style={{ 
-              width: '280px',
-              maxWidth: 'calc(100vw - 2rem)',
-              boxShadow: `0 4px 20px rgba(0,0,0,0.3), 0 0 0 1px ${emerald}20`
+          <div
+            // ref={el => step?.id && (dropdownRefs.current[step.id] = el)}
+            className="absolute right-full mr-4 top-0 bg-gray-800 rounded-lg shadow-xl z-[100] overflow-hidden
+              sm:right-full sm:mr-3 sm:top-0 max-sm:top-[25vh] max-sm:-mr-[28px] max-sm:left- max-sm:right-0"
+            style={{
+              boxShadow: `0 4px 20px rgba(0,0,0,0.3), 0 0 0 1px ${emerald}20`,
+              width: isMobile ? `${screenWidth}px` : '280px', // Subtract 32px (16px padding on each side)
+              maxWidth: isMobile ? `${screenWidth}px` : 'calc(100vw - 2rem)'
             }}
-            initial={{ opacity: 0, x: 20, width: 0 }}
-            animate={{ opacity: 1, x: 0, width: '280px' }}
-            exit={{ opacity: 0, x: 20, width: 0 }}
-            transition={{ type: "spring", stiffness: 500, damping: 30 }}
+            // initial={isMobile ? { opacity: 0, y: 100 } : { opacity: 0, x: 20, width: 0 }}
+            // animate={isMobile ? { opacity: 1, y: 0 } : { opacity: 1, x: 0, width: '280px' }}
+            // exit={isMobile ? { opacity: 0, y: 100 } : { opacity: 0, x: 20, width: 0 }}
+            // transition={{ type: "spring", stiffness: 500, damping: 30 }}
           >
             {children}
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
+      {/* </AnimatePresence> */}
     </div>
   );
 };

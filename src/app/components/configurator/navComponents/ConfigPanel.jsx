@@ -283,7 +283,7 @@ export const ConfigPanel = ({
   const panelConfig = getPanelConfig();
   return (
     <motion.div 
-      className="absolute bottom-4 left-0 w-full sm:left-[40%] -translate-x-1/2 bg-black/90 backdrop-blur-sm border border-gray-800 rounded-lg z-40 sm:max-w-[320px] shadow-lg"
+      className="absolute bottom-4 left-[40%] -translate-x-1/2 bg-black/90 backdrop-blur-sm border border-gray-800 rounded-lg z-40 max-w-[280px] w-[20%] h-[15%] shadow-lg"
       initial={{ y: 30, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       exit={{ y: 30, opacity: 0 }}

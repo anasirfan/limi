@@ -634,7 +634,7 @@ console.log(localStorage)
   };
 
   return (
-    <div className="relative w-full h-full bg-transparent overflow-hidden">
+    <div className="relative w-full h-full max-sm:h-[calc(100vh-80px)] bg-transparent overflow-hidden">
       {/* 3D Viewer */}
       <div className="w-full h-full">
         <PlayCanvasViewer 
