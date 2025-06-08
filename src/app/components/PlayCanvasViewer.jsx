@@ -54,18 +54,18 @@ const PlayCanvasViewer = ({
     
     // Set a timeout to handle cases where the app:ready1 message might not be received
     // This is especially important for mobile browsers
-    const readyTimeout = setTimeout(() => {
-      if (!appReady) {
-        console.log('PlayCanvas ready timeout - forcing ready state');
-        setAppReady(true);
-        setIsLoading(false);
-        sendDefaultSelections();
-      }
-    }, 8000); // 8 second timeout for mobile
+    // const readyTimeout = setTimeout(() => {
+    //   if (!appReady) {
+    //     console.log('PlayCanvas ready timeout - forcing ready state');
+    //     setAppReady(true);
+    //     setIsLoading(false);
+    //     sendDefaultSelections();
+    //   }
+    // }, 8000); // 8 second timeout for mobile
     
     return () => {
       window.removeEventListener('message', handleMessage);
-      clearTimeout(readyTimeout);
+      // clearTimeout(readyTimeout);
     };
   }, [appReady]);
   
@@ -100,16 +100,16 @@ const PlayCanvasViewer = ({
           
           // For mobile browsers, we handle this differently with script injection
           // in the iframe onLoad event
-          if (isMobile) {
-            setTimeout(() => {
-              if (isLoading) {
-                console.log('Mobile iframe loaded - setting ready state after timeout');
-                setAppReady(true);
-                setIsLoading(false);
-                // We don't call sendDefaultSelections() here as it's handled in the script injection
-              }
-            }, 5000); // 5 second timeout for mobile after iframe loads
-          }
+          // if (isMobile) {
+          //   setTimeout(() => {
+          //     if (isLoading) {
+          //       console.log('Mobile iframe loaded - setting ready state after timeout');
+          //       setAppReady(true);
+          //       setIsLoading(false);
+          //       // We don't call sendDefaultSelections() here as it's handled in the script injection
+          //     }
+          //   }, 5000); // 5 second timeout for mobile after iframe loads
+          // }
         }
       } catch (error) {
         console.error("Error during iframe load:", error);
@@ -131,20 +131,20 @@ const PlayCanvasViewer = ({
     }
 
     // Set a timeout to handle cases where the iframe might not trigger events
-    const timeoutId = setTimeout(() => {
-      if (isLoading) {
-        console.warn("PlayCanvas iframe load timeout - forcing completion");
-        setIsLoading(false);
-        setAppReady(true);
-      }
-    }, isMobile ? 8000 : 15000); // Shorter timeout for mobile
+    // const timeoutId = setTimeout(() => {
+    //   if (isLoading) {
+    //     console.warn("PlayCanvas iframe load timeout - forcing completion");
+    //     setIsLoading(false);
+    //     setAppReady(true);
+    //   }
+    // }, isMobile ? 8000 : 15000); // Shorter timeout for mobile
 
     return () => {
       if (iframe) {
         iframe.removeEventListener('load', handleIframeLoad);
         iframe.removeEventListener('error', handleIframeError);
       }
-      clearTimeout(timeoutId);
+      // clearTimeout(timeoutId);
     };
   }, [isMobile, isLoading]);
 

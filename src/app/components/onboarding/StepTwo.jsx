@@ -10,13 +10,7 @@ const styles = [
     color: '#50C878',
     image: '/images/onboarding/cool-lux.jpg'
   },
-  {
-    id: 'dreamGlow',
-    name: 'DreamGlow',
-    description: 'Soft, ambient lighting with warm hues for a cozy atmosphere.',
-    color: '#87CEAB',
-    image: '/images/onboarding/dream-glow.jpg'
-  },
+ 
   {
     id: 'shadowHue',
     name: 'ShadowHue',

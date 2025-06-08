@@ -78,37 +78,37 @@ export default function OnboardingSection() {
 
     // Set a timeout to handle cases where the app:ready1 message might not be received
     // This is especially important for mobile browsers
-    const readyTimeout = setTimeout(
-      () => {
-        if (!iframeLoaded) {
-          setIframeLoaded(true);
-          setLoadingTimedOut(true);
-          // Try to send homepage message anyway
-          if (
-            iframeRef.current &&
-            iframeRef.current.contentWindow &&
-            !homepageMessageSent
-          ) {
-            try {
-              iframeRef.current.contentWindow.postMessage("homepage", "*");
-              iframeRef.current.contentWindow.postMessage(
-                "pendant_design:product_2",
-                "*"
-              );
-              setHomepageMessageSent(true);
-            } catch (error) {
-              // eslint-disable-next-line no-console
-              console.error("Error sending message after timeout:", error);
-            }
-          }
-        }
-      },
-      isMobile ? 12000 : 15000
-    );
+    // const readyTimeout = setTimeout(
+    //   () => {
+    //     if (!iframeLoaded) {
+    //       setIframeLoaded(true);
+    //       setLoadingTimedOut(true);
+    //       // Try to send homepage message anyway
+    //       if (
+    //         iframeRef.current &&
+    //         iframeRef.current.contentWindow &&
+    //         !homepageMessageSent
+    //       ) {
+    //         try {
+    //           iframeRef.current.contentWindow.postMessage("homepage", "*");
+    //           iframeRef.current.contentWindow.postMessage(
+    //             "pendant_design:product_2",
+    //             "*"
+    //           );
+    //           setHomepageMessageSent(true);
+    //         } catch (error) {
+    //           // eslint-disable-next-line no-console
+    //           console.error("Error sending message after timeout:", error);
+    //         }
+    //       }
+    //     }
+    //   },
+    //   isMobile ? 12000 : 15000
+    // );
 
     return () => {
       window.removeEventListener("message", handleMessage);
-      clearTimeout(readyTimeout);
+      // clearTimeout(readyTimeout);
     };
   }, [homepageMessageSent, iframeLoaded, isMobile, iframeKey]);
 
@@ -525,7 +525,7 @@ export default function OnboardingSection() {
                     </div>
                   </div>
 
-                  <div className="text-center px-4 relative z-10">
+                  <div className="text-center px-4 pb-4 relative z-10">
                     {/* Loading text with animated dots */}
                     <div className="h-8 flex items-center justify-center mb-3">
                       <div className="text-emerald-500 text-xl font-bold">
@@ -537,7 +537,7 @@ export default function OnboardingSection() {
                         <span className="dot"></span>
                       </div>
                     </div>
-                    <div className="text-gray-400 text-sm animate-pulse">
+                    <div className="text-gray-400 text-sm mb-2 animate-pulse">
                       {isMobile
                         ? "This may take a moment on mobile devices"
                         : "Preparing your LIMI experience"}
@@ -768,7 +768,7 @@ export default function OnboardingSection() {
               loading="eager"
               sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-pointer-lock"
               onLoad={() => {
-                setIframeLoaded(true);
+                // setIframeLoaded(true);
                 setIframeError(false);
                 // Set initial quality for desktop
                 if (!isMobile && iframeRef.current && iframeRef.current.contentWindow) {

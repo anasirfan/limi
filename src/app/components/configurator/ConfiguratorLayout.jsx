@@ -159,7 +159,7 @@ console.log(localStorage)
       
       // Send light amount message
       sendMessageToPlayCanvas(`light_amount:${newAmount}`);
-      
+    
       // For multiple pendants, send individual pendant messages
       if (newAmount > 1) {
       newPendants.forEach((pendant, index) => {
@@ -422,13 +422,20 @@ console.log(localStorage)
                       design === 'radial' ? 'product_2' : 
                       design === 'fina' ? 'product_3' : 'product_5';
       
-      // Send messages for each selected pendant
-      pendantIds.forEach(id => {
-        console.log(`Updating pendant ${id} to design ${design} (${productId})`);
-        sendMessageToPlayCanvas(`pendant_${id}:${productId}`);
-      });
+      // Check if we have only 1 pendant or multiple pendants
+      if (config.lightAmount === 1) {
+        // For single pendant, send a global pendant design message
+        console.log(`Updating single pendant to design ${design} (${productId})`);
+        sendMessageToPlayCanvas(`pendant_design:${productId}`);
+      } else {
+        // For multiple pendants, send individual pendant messages
+        pendantIds.forEach(id => {
+          console.log(`Updating pendant ${id} to design ${design} (${productId})`);
+          sendMessageToPlayCanvas(`pendant_${id}:${productId}`);
+        });
+      }
     }, 10); // Slight delay to ensure state is updated first
-  }, []);
+  }, [config.lightAmount]);
 
   // Handle system base design change
   const handleSystemBaseDesignChange = useCallback((design) => {
