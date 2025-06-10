@@ -80,7 +80,7 @@ console.log(localStorage)
     setLastRoundBaseLightAmount(config.lightAmount);
   }, []);
       
-  
+
 
   // Update pendants when light amount changes
   useEffect(() => {
@@ -163,20 +163,20 @@ console.log(localStorage)
       sendMessageToPlayCanvas(`light_amount:${newAmount}`);
     
       // For multiple pendants, send individual pendant messages
-      if (newAmount > 1) {
+    //   if (newAmount > 0) {
       newPendants.forEach((pendant, index) => {
         const productId = pendant.design === 'bumble' ? 'product_1' : 
                        pendant.design === 'radial' ? 'product_2' : 
                        pendant.design === 'fina' ? 'product_3' : 'product_5';
         
-        sendMessageToPlayCanvas(`pendant_${index}:${productId}`);
+        sendMessageToPlayCanvas(`cable_${index}:${productId}`);
       });
-    } else {
-      const productId = newPendants.design === 'bumble' ? 'product_1' : 
-                       newPendants.design === 'radial' ? 'product_2' : 
-                       newPendants.design === 'fina' ? 'product_3' : 'product_5';
-      sendMessageToPlayCanvas(`pendant_design:${productId}`);
-    }
+    // } else {
+    //   const productId = newPendants.design === 'bumble' ? 'product_1' : 
+    //                    newPendants.design === 'radial' ? 'product_2' : 
+    //                    newPendants.design === 'fina' ? 'product_3' : 'product_5';
+    //   sendMessageToPlayCanvas(`cable_design:${productId}`);
+    // }
     }, 0);
   };
 
@@ -216,20 +216,20 @@ console.log(localStorage)
       sendMessageToPlayCanvas(`light_amount:${newAmount}`);
       
       // Send individual pendant messages
-      if (newAmount > 1) {
+      if (newAmount > 0) {
       newPendants.forEach((pendant, index) => {
         const productId = pendant.design === 'bumble' ? 'product_1' : 
                        pendant.design === 'radial' ? 'product_2' : 
                        pendant.design === 'fina' ? 'product_3' : 'product_5';
         
-        sendMessageToPlayCanvas(`pendant_${index}:${productId}`);
+        sendMessageToPlayCanvas(`cable_${index}:${productId}`);
       });
     } else {
       const productId = newPendants.design === 'bumble' ? 'product_1' : 
                        newPendants.design === 'radial' ? 'product_2' : 
                        newPendants.design === 'fina' ? 'product_3' : 'product_5';
       
-      sendMessageToPlayCanvas(`pendant_design:${productId}`);
+      sendMessageToPlayCanvas(`cable_design:${productId}`);
     }
     }, 0);
   };
@@ -261,7 +261,7 @@ console.log(localStorage)
       //                      pendant.design === 'radial' ? 'product_2' : 
       //                      pendant.design === 'fina' ? 'product_3' : 'product_5';
             
-      //       sendMessageToPlayCanvas(`pendant_${index}:${productId}`);
+      //       sendMessageToPlayCanvas(`cable_${index}:${productId}`);
       //     });
       //   }
       // }, 0);
@@ -307,13 +307,13 @@ console.log(localStorage)
                        pendant.design === 'radial' ? 'product_2' : 
                        pendant.design === 'fina' ? 'product_3' : 'product_5';
         
-        sendMessageToPlayCanvas(`pendant_${index}:${productId}`);
+        sendMessageToPlayCanvas(`cable_${index}:${productId}`);
       });
     } else {
       const productId = newPendants.design === 'bumble' ? 'product_1' : 
                        newPendants.design === 'radial' ? 'product_2' : 
                        newPendants.design === 'fina' ? 'product_3' : 'product_5';
-      sendMessageToPlayCanvas(`pendant_design:${productId}`);
+      sendMessageToPlayCanvas(`cable_design:${productId}`);
     }
     }, 0);
   };
@@ -323,18 +323,18 @@ console.log(localStorage)
     setConfig(prev => ({ ...prev, systemType: system }));
     
     // Send messages to iframe
-    // setTimeout(() => {
-    //   // Send base type message first to ensure correct context
-    //   sendMessageToPlayCanvas(`base_type:${config.baseType}`);
+    setTimeout(() => {
+      // Send base type message first to ensure correct context
+      sendMessageToPlayCanvas(`base_type:${config.baseType}`);
       
-    //   // Send system type message
-    //   sendMessageToPlayCanvas(`system:${system}`);
+      // Send system type message
+      sendMessageToPlayCanvas(`system:${system}`);
       
-    //   // For round base, send light_amount:1 as requested
-    //   // if (config.baseType === 'round') {
-    //   //   sendMessageToPlayCanvas('light_amount:1');
-    //   // }
-    // }, 0);
+      // For round base, send light_amount:1 as requested
+      // if (config.baseType === 'round') {
+      //   sendMessageToPlayCanvas('light_amount:1');
+      // }
+    }, 0);
   };
 
   // Handle pendant selection
@@ -389,7 +389,7 @@ console.log(localStorage)
     setConfiguringSystemType(type);
     setBreadcrumbPath([
       { id: 'system', label: 'System' },
-      { id: type, label: type.charAt(0).toUpperCase() + type.slice(1) }
+      { id: type, label: type?.charAt(0)?.toUpperCase() + type?.slice(1) }
     ]);
     
     // Call handleSystemTypeChange to update state and send message to iframe
@@ -428,12 +428,12 @@ console.log(localStorage)
       if (config.lightAmount === 1) {
         // For single pendant, send a global pendant design message
         console.log(`Updating single pendant to design ${design} (${productId})`);
-        sendMessageToPlayCanvas(`pendant_design:${productId}`);
+        sendMessageToPlayCanvas(`cable_0:${productId}`);
       } else {
         // For multiple pendants, send individual pendant messages
         pendantIds.forEach(id => {
           console.log(`Updating pendant ${id} to design ${design} (${productId})`);
-          sendMessageToPlayCanvas(`pendant_${id}:${productId}`);
+          sendMessageToPlayCanvas(`cable_${id}:${productId}`);
         });
       }
     }, 10); // Slight delay to ensure state is updated first
@@ -447,11 +447,11 @@ console.log(localStorage)
     setTimeout(() => {
       // Map design names to product IDs for the iframe
       const designMap = {
-        'nexus': 'product_6',
-        'vertex': 'product_8',
-        'quantum': 'product_7',
-        'fusion': 'product_9',
-        'aurora': 'product_10'
+        'nexus': 'product_0',
+        'vertex': 'product_0',
+        'quantum': 'product_0',
+        'fusion': 'product_1',
+        'aurora': 'product_2'
       };
       
       const baseId = designMap[design] || 'product_6';
@@ -464,8 +464,8 @@ console.log(localStorage)
       
       // Send message for each selected cable
       selectedCables.forEach(cableNo => {
-        sendMessageToPlayCanvas(`pendant_${cableNo}:${baseId}`);
-        console.log(`Sending system_${cableNo}:${baseId} to iframe`);
+        sendMessageToPlayCanvas(`cable_${cableNo}:${baseId}`);
+        console.log(`Sending cable_${cableNo}:${baseId} to iframe`);
       });
     }, 10);
   }, [config.selectedPendants]);
@@ -544,10 +544,10 @@ console.log(localStorage)
         // It's a system
         const systemType = pendant.systemType || config.systemType;
         const baseDesign = pendant.systemBaseDesign || config.systemBaseDesign;
-        const baseId = baseDesign === 'nexus' ? 'product_6' : 
-                    baseDesign === 'vertex' ? 'product_8' : 
-                    baseDesign === 'quantum' ? 'product_7' : 
-                    baseDesign === 'aurora' ? 'product_10' : 'product_9';
+        const baseId = baseDesign === 'nexus' ? 'product_0' : 
+                    baseDesign === 'vertex' ? 'product_0' : 
+                    baseDesign === 'quantum' ? 'product_0' : 
+                    baseDesign === 'aurora' ? 'product_2' : 'product_1';
         
         configSummary.cables[index] = {
           system_type: systemType,
