@@ -140,7 +140,7 @@ export default function AboutUs() {
               </p>
               <div className="flex items-center gap-3">
                 <div className="w-12 h-1 bg-[#50C878]"></div>
-                <p className="text-[#50C878] font-medium">Founded in 2020</p>
+                <p className="text-[#50C878] font-medium">Founded in 2024</p>
               </div>
             </div>
             <div className="relative h-[400px] rounded-lg overflow-hidden shadow-xl">
@@ -217,58 +217,38 @@ export default function AboutUs() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div className="team-card bg-white rounded-lg overflow-hidden shadow-md">
-              <div className="relative h-64">
-                <Image
-                  src="https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=1974&auto=format&fit=crop"
-                  alt="Umer Asif - CEO"
-                  fill
-                  className="object-cover"
-                />
-              </div>
+         
               <div className="p-6">
-                <h3 className="text-xl font-bold mb-1">Umer Asif</h3>
-                <p className="text-[#50C878] font-medium mb-3">CEO & Founder</p>
+                <h3 className="text-xl font-bold mb-1">Umer Asif  — </h3>
+                <p className="text-[#50C878] font-medium mb-3">Founder & CEO</p>
                 <p className="text-[#2B2D2F]/70">
-                  With over 15 years in lighting design and technology, Alex founded LIMI to bring smart lighting to everyone.
-                </p>
+                Inventor and cloud systems architect with deep expertise across hardware, UX, software, LLMs, and edge AI. Leads product innovation and AI-first experience strategy.   </p>
               </div>
             </div>
             
+
             <div className="team-card bg-white rounded-lg overflow-hidden shadow-md">
-              <div className="relative h-64">
-                <Image
-                  src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=1976&auto=format&fit=crop"
-                  alt="Karen Law - CTO"
-                  fill
-                  className="object-cover"
-                />
-              </div>
+            
+            <div className="p-6">
+              <h3 className="text-xl font-bold mb-1">Shahrukh Ahmed  — </h3>
+              <p className="text-[#50C878] font-medium mb-3">Co-Founder & CTO</p>
+              <p className="text-[#2B2D2F]/70">
+              Seasoned engineering leader with a track record of delivering large-scale, mission-critical platforms — including the UK’s national COVID health pass system. Brings deep expertise in architecting scalable, secure cloud and edge AI infrastructure.   </p>
+            </div>
+          </div>
+
+
+            <div className="team-card bg-white rounded-lg overflow-hidden shadow-md">
+  
               <div className="p-6">
-                <h3 className="text-xl font-bold mb-1">Karen Law</h3>
-                <p className="text-[#50C878] font-medium mb-3">Chief Technology Officer</p>
+                <h3 className="text-xl font-bold mb-1">Karen Law — </h3>
+                <p className="text-[#50C878] font-medium mb-3">Co-Founder & Head of Behavioral Intelligence</p>
                 <p className="text-[#2B2D2F]/70">
-                  Sarah leads our R&D team, bringing her expertise in IoT and smart home technology to create our innovative lighting systems.
-                </p>
+               PhD in Counseling Psychology. Specializes in behavioral data interpretation and human-environment interaction. Drives our AI’s ability to understand emotional, contextual, and lifestyle patterns for adaptive lighting personalization. </p>
               </div>
             </div>
             
-            <div className="team-card bg-white rounded-lg overflow-hidden shadow-md">
-              <div className="relative h-64">
-                <Image
-                  src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=1974&auto=format&fit=crop"
-                  alt="Shahrukh Ahmed - COO"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <div className="p-6">
-                <h3 className="text-xl font-bold mb-1">Shahrukh Ahmed</h3>
-                <p className="text-[#50C878] font-medium mb-3">C O O</p>
-                <p className="text-[#2B2D2F]/70">
-                  David ensures that all LIMI products are not only functional but also beautiful, with a focus on minimalist and timeless design.
-                </p>
-              </div>
-            </div>
+      
           </div>
         </div>
       </section>
