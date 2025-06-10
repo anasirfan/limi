@@ -360,10 +360,10 @@ const HorizontalOptionsBar = ({
                     break;
                   case 'ceiling':
                     // If ceiling with rectangular base, only show 3 option
-                    amounts = config.baseType === 'rectangular' ? [3] : [1, 3, 6, 24];
+                    amounts = config.baseType === 'rectangular' ? [3] : [1, 6, 24];
                     break;
                   default:
-                    amounts = [1, 3, 6, 24];
+                    amounts = [1, 6, 24];
                 }
                 
                 return amounts.map((num) => (

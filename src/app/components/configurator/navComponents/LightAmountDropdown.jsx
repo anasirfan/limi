@@ -36,7 +36,7 @@ export const LightAmountDropdown = ({
       lightAmounts = [3];
     } else {
       // Always include 3 and 6 for ceiling lights with round base
-      lightAmounts = [1, 3, 6, 24];
+      lightAmounts = [1, 6, 24];
     }
   }
   
