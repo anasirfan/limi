@@ -447,14 +447,14 @@ console.log(localStorage)
     setTimeout(() => {
       // Map design names to product IDs for the iframe
       const designMap = {
-        'nexus': 'product_0',
-        'vertex': 'product_0',
-        'quantum': 'product_0',
-        'fusion': 'product_1',
-        'aurora': 'product_2'
+        'nexus': 'system_base_0',
+        'vertex': 'system_base_0',
+        'quantum': 'system_base_0',
+        'fusion': 'system_base_1',
+        'aurora': 'system_base_2'
       };
       
-      const baseId = designMap[design] || 'product_6';
+      const baseId = designMap[design] || 'system_base_6';
       console.log(`Updating system base design to ${design} (${baseId})`);
       
       // Get the selected cable number(s)
@@ -544,10 +544,10 @@ console.log(localStorage)
         // It's a system
         const systemType = pendant.systemType || config.systemType;
         const baseDesign = pendant.systemBaseDesign || config.systemBaseDesign;
-        const baseId = baseDesign === 'nexus' ? 'product_0' : 
-                    baseDesign === 'vertex' ? 'product_0' : 
-                    baseDesign === 'quantum' ? 'product_0' : 
-                    baseDesign === 'aurora' ? 'product_2' : 'product_1';
+        const baseId = baseDesign === 'nexus' ? 'system_base_0' : 
+                    baseDesign === 'vertex' ? 'system_base_0' : 
+                    baseDesign === 'quantum' ? 'system_base_0' : 
+                    baseDesign === 'aurora' ? 'system_base_2' : 'system_base_1';
         
         configSummary.cables[index] = {
           system_type: systemType,
