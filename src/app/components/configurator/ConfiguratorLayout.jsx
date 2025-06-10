@@ -79,6 +79,8 @@ console.log(localStorage)
     setLastCeilingLightAmount(config.lightAmount);
     setLastRoundBaseLightAmount(config.lightAmount);
   }, []);
+      
+  
 
   // Update pendants when light amount changes
   useEffect(() => {
