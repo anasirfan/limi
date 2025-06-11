@@ -787,6 +787,6 @@ console.log(localStorage)
       
       <ToastContainer position="bottom-center" autoClose={3000} />
     </div>
-  );
+  ); 
 };
 export default ConfiguratorLayout;
