@@ -1,5 +1,6 @@
-import React, { useEffect } from 'react';
-import { FaPlus, FaTrash, FaEdit, FaColumns, FaVideo, FaLayerGroup } from 'react-icons/fa';
+import React, { useEffect, useState } from 'react';
+import { FaPlus, FaTrash, FaEdit, FaColumns, FaVideo, FaLayerGroup, FaClone } from 'react-icons/fa';
+import DuplicateSlideModal from './DuplicateSlideModal';
 import SlideEditor from '../../../components/SlideCarousel/SlideEditor';
 import ImageCollageThumbnail from './ImageCollageThumbnail';
 
@@ -14,13 +15,40 @@ const SlideList = ({
   dispatch, 
   removeSlide, 
   reorderSlides, 
-  setActiveSlideIndex 
+  setActiveSlideIndex,
+  addSlide
 }) => {
 
+
+  const [showDuplicateModal, setShowDuplicateModal] = useState(false);
 
   useEffect(() => {
     console.log("slides",slides)
   }, [slides]);
+  
+  // Handle duplicate slide from another customer
+  const handleDuplicateSlide = (slideToClone) => {
+    // Generate a new ID for the duplicated slide
+    const timestamp = Date.now();
+    const randomStr = Math.random().toString(36).substring(2, 10);
+    const newId = `slide-${timestamp}-${randomStr}`;
+    
+    // Create a new slide object with the cloned content but new ID
+    const duplicatedSlide = {
+      ...slideToClone,
+      id: newId,
+      meta: {
+        ...(slideToClone.meta || {}),
+        index: slides.length,
+        status: 'draft',
+        updatedAt: new Date().toISOString(),
+        duplicatedFrom: slideToClone.id
+      }
+    };
+    
+    // Add the duplicated slide to the presentation
+    dispatch(addSlide(duplicatedSlide));
+  };
   return (
     <>
       {/* Slide List */}
@@ -34,12 +62,20 @@ const SlideList = ({
           </h3>
           <div className="relative">
             <div>
-              <button
-                onClick={() => handleAddSlide()}
-                className="bg-[#54bb74] hover:bg-[#93cfa2] text-white px-3 py-2 rounded-md flex items-center"
-              >
-                <FaPlus className="mr-2" /> Add Slide
-              </button>
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => setShowDuplicateModal(true)}
+                  className="bg-[#3a7d50] hover:bg-[#54bb74] text-white px-3 py-2 rounded-md flex items-center"
+                >
+                  <FaClone className="mr-2" /> Duplicate from Customer
+                </button>
+                <button
+                  onClick={() => handleAddSlide()}
+                  className="bg-[#54bb74] hover:bg-[#93cfa2] text-white px-3 py-2 rounded-md flex items-center"
+                >
+                  <FaPlus className="mr-2" /> Add Slide
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -137,6 +173,13 @@ const SlideList = ({
           </div>
         )}
       </div> */}
+      
+      {/* Duplicate Slide Modal */}
+      <DuplicateSlideModal
+        isOpen={showDuplicateModal}
+        onClose={() => setShowDuplicateModal(false)}
+        onDuplicate={handleDuplicateSlide}
+      />
     </>
   );
 };
