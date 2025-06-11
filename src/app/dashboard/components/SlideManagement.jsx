@@ -895,6 +895,7 @@ export default function SlideManagement({ customer }) {
                 setActiveSlideIndex={setActiveSlideIndex}
                 removeSlide={removeSlide}
                 reorderSlides={reorderSlides}
+                addSlide={addSlide}
               />
 
               {/* Slide Editor */}

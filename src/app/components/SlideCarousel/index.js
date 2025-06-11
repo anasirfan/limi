@@ -19,6 +19,7 @@ export default function SlideCarousel({ slides }) {
   const carouselRef = useRef(null);
   const autoPlayTimerRef = useRef(null);
   
+  console.log("slides",slides)
   // Minimum swipe distance (in px)
   const minSwipeDistance = 50;
   
@@ -37,7 +38,7 @@ export default function SlideCarousel({ slides }) {
   useEffect(() => {
     const startAutoPlay = () => {
       autoPlayTimerRef.current = setInterval(() => {
-        if (activeIndex === slides.length - 1) {
+        if (activeIndex === slides?.length - 1) {
           goToSlide(0); // Reset to first slide
         } else {
           goToNextSlide();
@@ -52,12 +53,12 @@ export default function SlideCarousel({ slides }) {
         clearInterval(autoPlayTimerRef.current);
       }
     };
-  }, [activeIndex, slides.length]);
+  }, [activeIndex, slides?.length]);
   
   // Handle navigation
   const goToSlide = (index) => {
     // Ensure index is within bounds
-    const newIndex = Math.max(0, Math.min(slides.length - 1, index));
+    const newIndex = Math.max(0, Math.min(slides?.length - 1, index));
     dispatch(setActiveSlideIndex(newIndex));
   };
   
@@ -83,7 +84,7 @@ export default function SlideCarousel({ slides }) {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [activeIndex, slides.length]);
+  }, [activeIndex, slides?.length]);
   
   // Handle touch events for mobile swipe
   const onTouchStart = (e) => {
@@ -155,7 +156,7 @@ export default function SlideCarousel({ slides }) {
         </AnimatePresence>
         
         {/* Navigation arrows - only show on desktop */}
-        {!isMobile && slides.length > 1 && (
+        {!isMobile && slides?.length > 1 && (
           <>
             <button
               onClick={goToPrevSlide}
@@ -170,9 +171,9 @@ export default function SlideCarousel({ slides }) {
             
             <button
               onClick={goToNextSlide}
-              disabled={activeIndex === slides.length - 1}
+              disabled={activeIndex === slides?.length - 1}
               className={`absolute right-4 top-1/2 transform -translate-y-1/2 z-10 p-2 rounded-full bg-black/30 backdrop-blur-sm text-white ${
-                activeIndex === slides.length - 1 ? 'opacity-30 cursor-not-allowed' : 'opacity-70 hover:opacity-100'
+                activeIndex === slides?.length - 1 ? 'opacity-30 cursor-not-allowed' : 'opacity-70 hover:opacity-100'
               } transition-opacity duration-300`}
               aria-label="Next slide"
             >
@@ -183,7 +184,7 @@ export default function SlideCarousel({ slides }) {
       </div>
       
       {/* Pagination dots */}
-      {slides.length > 1 && (
+      {slides?.length > 1 && (
         <div className="flex justify-center items-center space-x-2 pt-4 ">
           {slides.map((slide, index) => (
             <button

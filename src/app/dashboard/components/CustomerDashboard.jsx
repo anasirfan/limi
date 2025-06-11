@@ -1467,7 +1467,7 @@ export default function CustomerDashboard({ token }) {
           ) : (
             <div className="bg-[#1e1e1e] p-6 rounded-lg">
               <div className="flex flex-col items-center justify-center py-8">
-                <p className="text-gray-300 mb-6">Please select a customer to manage their slideshow or add a new customer</p>
+                <p className="text-gray-300 mb-6"> Please select a customer to manage their slideshow or add a new customer</p>
                 <button
                   onClick={() => setShowAddCustomerModal(true)}
                   className="bg-[#54BB74] text-[#1e1e1e] px-6 py-3 rounded-md hover:bg-[#93cfa2] transition-colors flex items-center font-medium"
