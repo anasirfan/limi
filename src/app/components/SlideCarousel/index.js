@@ -18,16 +18,22 @@ export default function SlideCarousel({ slides }) {
   const [isMobile, setIsMobile] = useState(false);
   const carouselRef = useRef(null);
   const autoPlayTimerRef = useRef(null);
-  
-  console.log("slides",slides)
-  // Minimum swipe distance (in px)
-  const minSwipeDistance = 50;
-  
-  // Check if device is mobile
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
+  const safeSlides = slides || [];
+const hasSlides = safeSlides.length > 0;
+const currentIndex = hasSlides ? Math.min(activeIndex, safeSlides.length - 1) : 0;
+const currentSlide = hasSlides ? safeSlides[currentIndex] : null;
+
+
+
+console.log("slides",slides);
+// Minimum swipe distance (in px)
+const minSwipeDistance = 50;
+
+// Check if device is mobile
+useEffect(() => {
+  const checkMobile = () => {
+    setIsMobile(window.innerWidth <= 768);
+  };
     
     checkMobile();
     window.addEventListener('resize', checkMobile);
@@ -36,10 +42,12 @@ export default function SlideCarousel({ slides }) {
   
   // Auto-play functionality
   useEffect(() => {
+    if (!hasSlides) return;
+  
     const startAutoPlay = () => {
       autoPlayTimerRef.current = setInterval(() => {
-        if (activeIndex === slides?.length - 1) {
-          goToSlide(0); // Reset to first slide
+        if (currentIndex === safeSlides.length - 1) {
+          goToSlide(0);
         } else {
           goToNextSlide();
         }
@@ -53,7 +61,7 @@ export default function SlideCarousel({ slides }) {
         clearInterval(autoPlayTimerRef.current);
       }
     };
-  }, [activeIndex, slides?.length]);
+  }, [currentIndex, hasSlides, safeSlides.length]);
   
   // Handle navigation
   const goToSlide = (index) => {
@@ -137,22 +145,29 @@ export default function SlideCarousel({ slides }) {
         onTouchEnd={onTouchEnd}
       >
         {/* Slide content */}
-        <AnimatePresence initial={false} custom={activeIndex}>
-          <motion.div
-            key={slides[activeIndex]?.id || 'empty'}
-            custom={activeIndex}
-            variants={slideVariants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            transition={{
-              x: { type: 'spring', stiffness: 300, damping: 30 },
-              opacity: { duration: 0.2 },
-            }}
-            className="absolute inset-0 w-full h-full"
-          >
-            <SlideRenderer slide={slides[activeIndex]} />
-          </motion.div>
+        <AnimatePresence initial={false} custom={currentIndex}>
+          {currentSlide ? (
+            <motion.div
+              key={currentSlide.id || 'empty'}
+              custom={currentIndex}
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{
+                x: { type: 'spring', stiffness: 300, damping: 30 },
+                opacity: { duration: 0.2 },
+              }}
+              className="absolute inset-0 w-full h-full"
+            >
+              <SlideRenderer slide={currentSlide} />
+            </motion.div>
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center text-gray-400">
+              No slides available
+              
+            </div>
+          )}
         </AnimatePresence>
         
         {/* Navigation arrows - only show on desktop */}
@@ -184,14 +199,14 @@ export default function SlideCarousel({ slides }) {
       </div>
       
       {/* Pagination dots */}
-      {slides?.length > 1 && (
-        <div className="flex justify-center items-center space-x-2 pt-4 ">
-          {slides.map((slide, index) => (
+      {safeSlides.length > 1 && (
+        <div className="flex justify-center items-center space-x-2 pt-4 pb-4">
+          {safeSlides.map((slide, index) => (
             <button
-              key={`slide-dot-${slide.id}-${index}`}
+              key={`slide-dot-${slide?.id || index}`}
               onClick={() => goToSlide(index)}
               className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                index === activeIndex
+                index === currentIndex
                   ? 'bg-[#50C878] scale-110'
                   : 'bg-white/30 hover:bg-white/50'
               }`}
