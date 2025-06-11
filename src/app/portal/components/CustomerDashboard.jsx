@@ -26,7 +26,14 @@ import AccountSettings from './dashboard/AccountSettings';
 // Mock data for user dashboard
 import { mockConfigurations, mockOrders, mockFavorites, mockPromotions } from '../data/mockData';
 
-export default function CustomerDashboard({ user, onLogout }) {
+const defaultUser = {
+  name: 'John Doe',
+  email: 'johndoe@example.com',
+  phone: '123-456-7890',
+  avatar: null,
+};
+
+export default function CustomerDashboard({ user = defaultUser, onLogout }) {
   const [activeSection, setActiveSection] = useState('configurations');
   
   // Dashboard navigation items

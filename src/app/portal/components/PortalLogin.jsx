@@ -31,7 +31,9 @@ export default function PortalLogin({ onLogin }) {
   // Update parent component when login is successful
   useEffect(() => {
     if (isLoggedIn && user) {
-      onLogin(user);
+      onLogin(user);  
+      // Don't switch to signup after successful login
+      setShowSignup(false);
     }
   }, [isLoggedIn, user, onLogin]);
   
@@ -256,6 +258,7 @@ export default function PortalLogin({ onLogin }) {
                       className="bg-charleston-green text-white w-full pl-10 pr-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald"
                       placeholder="your@email.com"
                       required
+                      disabled={loginStatus === 'loading'}
                     />
                   </div>
                 </div>
@@ -273,6 +276,7 @@ export default function PortalLogin({ onLogin }) {
                       className="bg-charleston-green text-white w-full pl-10 pr-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald"
                       placeholder="••••••••"
                       required
+                      disabled={loginStatus === 'loading'}
                     />
                   </div>
                 </div>
@@ -280,7 +284,7 @@ export default function PortalLogin({ onLogin }) {
                 <button
                   type="submit"
                   disabled={loginStatus === 'loading'}
-                  className="w-full bg-emerald text-charleston-green-dark py-3 rounded-md hover:bg-emerald-light transition-colors flex items-center justify-center gap-2 font-medium"
+                  className="w-full bg-emerald text-charleston-green-dark py-3 rounded-md hover:bg-emerald-light transition-colors flex items-center justify-center gap-2 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loginStatus === 'loading' ? (
                     <div className="animate-spin h-5 w-5 border-2 border-charleston-green-dark border-t-transparent rounded-full"></div>
@@ -429,13 +433,13 @@ export default function PortalLogin({ onLogin }) {
             
             <div className="mt-6 text-center">
               <div className="flex flex-col gap-2">
-                <button
+                {/* <button
                   type="button"
                   onClick={loginAsDemoUser}
                   className="text-emerald hover:underline"
                 >
                   Login as Demo User
-                </button>
+                </button> */}
                 
                 <button
                   type="button"
