@@ -99,6 +99,9 @@ export const mockPromotions = [
 export const mockConfigurations = [
   {
     id: 'config-001',
+    light_type: 'ceiling',
+    light_amount: 6,
+    base_type: 'round',
     name: 'Living Room Pendant Setup',
     createdAt: '2025-03-15T14:30:00',
     updatedAt: '2025-03-18T09:45:00',
@@ -119,6 +122,9 @@ export const mockConfigurations = [
   },
   {
     id: 'config-002',
+    light_type: 'floor',
+    light_amount: 3,
+    base_type: null,
     name: 'Dining Room Chandelier',
     createdAt: '2025-04-02T16:20:00',
     updatedAt: '2025-04-02T16:20:00',
@@ -139,6 +145,9 @@ export const mockConfigurations = [
   },
   {
     id: 'config-003',
+    light_type: 'wall',
+    light_amount: 1,
+    base_type: null,
     name: 'Office Track Lighting',
     createdAt: '2025-03-28T11:15:00',
     updatedAt: '2025-04-05T14:30:00',
@@ -160,6 +169,9 @@ export const mockConfigurations = [
   },
   {
     id: 'config-004',
+    light_type: 'ceiling',
+    light_amount: 24,
+    base_type: 'rectangular',
     name: 'Bedroom Ambient Lighting',
     createdAt: '2025-02-10T20:45:00',
     updatedAt: '2025-02-12T08:15:00',
@@ -180,6 +192,9 @@ export const mockConfigurations = [
   },
   {
     id: 'config-005',
+    light_type: 'ceiling',
+    light_amount: 6,
+    base_type: 'round',
     name: 'Kitchen Under-Cabinet',
     createdAt: '2025-01-20T15:30:00',
     updatedAt: '2025-01-25T10:20:00',

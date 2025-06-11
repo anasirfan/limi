@@ -324,6 +324,18 @@ export const userSlice = createSlice({
         saveUserToStorage(state.user);
       }
     },
+    updateUserAvatar(state, action) {
+      if (state.user) {
+        try {
+          state.user.avatar = action.payload;
+          // Save to localStorage
+          saveUserToStorage(state.user);
+        } catch (error) {
+          console.error('Error updating avatar in Redux:', error);
+          // Optionally handle the error (e.g., show a notification)
+        }
+      }
+    },
     removeAddress(state, action) {
       if (state.user) {
         const addressId = action.payload;
@@ -483,7 +495,8 @@ export const {
   removePaymentMethod, 
   setDefaultPaymentMethod,
   saveConfiguration,
-  removeSavedConfiguration
+  removeSavedConfiguration,
+  updateUserAvatar
 } = userSlice.actions;
 
 export default userSlice.reducer;

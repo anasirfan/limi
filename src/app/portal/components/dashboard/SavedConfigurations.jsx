@@ -350,7 +350,7 @@ export default function SavedConfigurations({ configurations }) {
                         <div className="w-2 h-2 rounded-full bg-[#54BB74]"></div>
                         <div className="text-sm font-medium text-gray-400">Light Type</div>
                       </div>
-                      <div className="text-lg font-semibold text-white">Ceiling</div>
+                      <div className="text-lg font-semibold text-white">{selectedConfig.light_type}</div>
                     </div>
                     
                     <div className="bg-[#292929] p-4 rounded-xl border border-[#333] hover:border-[#54BB74] transition-all duration-300">
@@ -358,16 +358,18 @@ export default function SavedConfigurations({ configurations }) {
                         <div className="w-2 h-2 rounded-full bg-[#54BB74]"></div>
                         <div className="text-sm font-medium text-gray-400">Light Amount</div>
                       </div>
-                      <div className="text-lg font-semibold text-white">6</div>
+                      <div className="text-lg font-semibold text-white">{selectedConfig.light_amount}</div>
                     </div>
                     
-                    <div className="bg-[#292929] p-4 rounded-xl border border-[#333] hover:border-[#54BB74] transition-all duration-300">
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className="w-2 h-2 rounded-full bg-[#54BB74]"></div>
-                        <div className="text-sm font-medium text-gray-400">Base Type</div>
+                    {selectedConfig.base_type && (
+                      <div className="bg-[#292929] p-4 rounded-xl border border-[#333] hover:border-[#54BB74] transition-all duration-300">
+                        <div className="flex items-center gap-2 mb-2">
+                          <div className="w-2 h-2 rounded-full bg-[#54BB74]"></div>
+                          <div className="text-sm font-medium text-gray-400">Base Type</div>
+                        </div>
+                        <div className="text-lg font-semibold text-white">{selectedConfig.base_type}</div>
                       </div>
-                      <div className="text-lg font-semibold text-white">Round</div>
-                    </div>
+                    )}
                   </div>
                 </div>
                 <div className="flex gap-3">
