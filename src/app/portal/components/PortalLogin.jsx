@@ -404,7 +404,7 @@ export default function PortalLogin({ onLogin }) {
               </div>
             )}
             
-            <div className="mt-6">
+            {/* <div className="mt-6">
               <div className="relative flex items-center justify-center">
                 <div className="border-t border-charleston-green-light w-full"></div>
                 <span className="bg-charleston-green-dark text-gray-400 px-3 text-sm relative z-10">
@@ -430,7 +430,7 @@ export default function PortalLogin({ onLogin }) {
                 </button>
               </div>
             </div>
-            
+             */}
             <div className="mt-6 text-center">
               <div className="flex flex-col gap-2">
                 {/* <button
@@ -495,7 +495,7 @@ export default function PortalLogin({ onLogin }) {
               </div>
             </div>
           </div>
-          
+{/*           
           <div className="text-sm text-gray-400">
             <p>Don't have the LIMI app yet?</p>
             <div className="mt-2 flex gap-4 justify-center md:justify-start">
@@ -516,7 +516,7 @@ export default function PortalLogin({ onLogin }) {
                 <span>Google Play</span>
               </Link>
             </div>
-          </div>
+          </div> */}
         </motion.div>
       </div>
     </div>

@@ -796,13 +796,13 @@ export default function CustomerDashboard({ token }) {
           Customers
         </button>
         
-        <button
+        {/* <button
           onClick={() => setActiveTab('analytics')}
           className={`px-4 py-2 rounded-md flex items-center ${activeTab === 'analytics' ? 'bg-[#54BB74] text-[#1e1e1e] font-medium' : 'bg-[#333333] text-white hover:bg-[#444444]'}`}
         >
           <FaChartLine className="mr-2" />
           Analytics
-        </button>
+        </button> */}
         
         <button
           onClick={() => setActiveTab('tracking')}
@@ -1431,7 +1431,7 @@ export default function CustomerDashboard({ token }) {
         </div>
       )}
       
-      {activeTab === 'products' && (
+      {activeTab === 'productManagement' && (
         <ProductManagement token={token} />
       )}
       

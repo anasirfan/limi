@@ -159,20 +159,11 @@ export default function SlideManagement({ customer }) {
           setShowTemplates(false);
         } else {
           // No slides in localStorage either, show templates
-          setNotification({
-            show: true,
-            message: "No slides found, showing templates",
-            type: "info",
-          });
+        
           setShowTemplates(true);
         }
       } else {
         // No slides in localStorage either, show templates
-        setNotification({
-          show: true,
-          message: "No slides found, showing templates",
-          type: "info",
-        });
         setShowTemplates(true);
       }
     } catch (error) {
