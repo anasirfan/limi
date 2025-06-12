@@ -229,7 +229,7 @@ console.log(localStorage)
                        newPendants.design === 'radial' ? 'product_2' : 
                        newPendants.design === 'fina' ? 'product_3' : 'product_5';
       
-      sendMessageToPlayCanvas(`cable_design:${productId}`);
+      sendMessageToPlayCanvas(`cable_0:${productId}`);
     }
     }, 0);
   };
@@ -313,7 +313,7 @@ console.log(localStorage)
       const productId = newPendants.design === 'bumble' ? 'product_1' : 
                        newPendants.design === 'radial' ? 'product_2' : 
                        newPendants.design === 'fina' ? 'product_3' : 'product_5';
-      sendMessageToPlayCanvas(`cable_design:${productId}`);
+      sendMessageToPlayCanvas(`cable_0:${productId}`);
     }
     }, 0);
   };
