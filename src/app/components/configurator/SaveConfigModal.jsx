@@ -36,10 +36,29 @@ export const SaveConfigModal = ({
       summaryText += `Cable ${parseInt(cableId) + 1}: `;
       const cable = cables[cableId];
       
-      if (cable.pendant) {
-        summaryText += `Pendant (${cable.pendant.replace('product_', '')})\n`;
-      } else if (cable.system) {
-        summaryText += `System ${cable.system_type} with Base ${cable.product.replace('product_', '')}\n`;
+      if (typeof cable === 'string' && cable.includes('System Type')) {
+        // This is already a formatted string from ConfiguratorLayout
+        summaryText += `${cable.split('Cable ' + (parseInt(cableId) + 1) + ':')[1].trim()}\n`;
+      } else if (cable.pendant) {
+        // It's a pendant cable
+        const pendantMap = {
+          'product_1': 'Bumble',
+          'product_2': 'Radial',
+          'product_3': 'Fina',
+          'product_5': 'Ripple'
+        };
+        const pendantName = pendantMap[cable.pendant] || cable.pendant.replace('product_', '');
+        summaryText += `Pendant (${pendantName})\n`;
+      } else if (cable.system_type) {
+        // It's a system cable
+        const baseMap = {
+          'system_base_0': 'Nexus/Quantum/Vertex',
+          'system_base_1': 'Fusion',
+          'system_base_2': 'Aurora'
+        };
+        const baseName = baseMap[cable.product] || cable.product.replace('system_base_', '');
+        const systemType = cable.system_type.charAt(0).toUpperCase() + cable.system_type.slice(1);
+        summaryText += `{\nSystem Type : ${systemType}\nBase Design: ${baseName}\n}\n`;
       }
     });
     

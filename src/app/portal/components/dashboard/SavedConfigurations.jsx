@@ -1,9 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import { useSelector } from "react-redux";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   FaEye,
   FaDownload,
@@ -15,35 +19,120 @@ import {
   FaSortAmountDown,
   FaChevronDown,
   FaExternalLinkAlt,
+  FaSpinner,
 } from "react-icons/fa";
 
-export default function SavedConfigurations({ configurations }) {
+export default function SavedConfigurations() {
+  const router = useRouter();
+  const { user } = useSelector(state => state.user);
+  const [configurations, setConfigurations] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("updatedAt");
   const [sortOrder, setSortOrder] = useState("desc");
   const [filterStatus, setFilterStatus] = useState("all");
   const [selectedConfig, setSelectedConfig] = useState(null);
+  const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+  
+  // Fetch configurations when component mounts
+  useEffect(() => {
+    if (user?.data?._id) {
+      fetchConfigurations();
+    }
+  }, [user]);
+  
+
+  // Fetch configurations from API
+  const fetchConfigurations = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch('https://api1.limitless-lighting.co.uk/admin/products/users/light-configs', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ userId: user.data._id })
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch configurations');
+      }
+      
+      const data = await response.json();
+      setConfigurations(data);
+      console.log('Fetched configurations:', data);
+    } catch (error) {
+      console.error('Error fetching configurations:', error);
+      toast.error('Failed to load configurations');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  // Delete configuration
+  const deleteConfiguration = async (configId) => {
+    if (window.confirm('Are you sure you want to delete this configuration?')) {
+      setIsDeleting(true);
+      try {
+        const response = await fetch(`https://api1.limitless-lighting.co.uk/admin/products/light-configs/${configId}`, {
+          method: 'DELETE'
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to delete configuration');
+        }
+        
+        // Remove from local state
+        setConfigurations(prev => prev.filter(config => config._id !== configId));
+        
+        // Close modal if the deleted config was selected
+        if (selectedConfig && selectedConfig._id === configId) {
+          setSelectedConfig(null);
+        }
+        
+        toast.success('Configuration deleted successfully');
+      } catch (error) {
+        console.error('Error deleting configuration:', error);
+        toast.error('Failed to delete configuration');
+      } finally {
+        setIsDeleting(false);
+      }
+    }
+  };
+  
+  // View in configurator
+  const viewInConfigurator = (configId) => {
+    router.push(`/configurator?configId=${configId}`);
+  };
 
   // Filter and sort configurations
   const filteredConfigurations = configurations
     .filter((config) => {
       // Filter by search term
-      const matchesSearch =
-        config.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        config.description.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesSearch = searchTerm === "" || 
+        (config.name && config.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (config.config && config.config.light_type && config.config.light_type.toLowerCase().includes(searchTerm.toLowerCase()));
 
-      // Filter by status
-      const matchesStatus =
-        filterStatus === "all" ||
-        (filterStatus === "saved" && config.status === "saved") ||
-        (filterStatus === "ordered" && config.status === "ordered");
+      // Filter by status - currently all configs have same status, but keeping for future use
+      const matchesStatus = filterStatus === "all";
 
       return matchesSearch && matchesStatus;
     })
     .sort((a, b) => {
       // Sort by selected field
-      const aValue = a[sortBy];
-      const bValue = b[sortBy];
+      let aValue, bValue;
+      
+      if (sortBy === "updatedAt" || sortBy === "createdAt") {
+        aValue = new Date(a[sortBy] || a.createdAt).getTime();
+        bValue = new Date(b[sortBy] || b.createdAt).getTime();
+      } else if (sortBy === "name") {
+        aValue = a.name || "";
+        bValue = b.name || "";
+      } else if (sortBy === "lightAmount") {
+        aValue = a.config?.light_amount || 0;
+        bValue = b.config?.light_amount || 0;
+      }
 
       if (sortOrder === "asc") {
         return aValue < bValue ? -1 : 1;
@@ -79,6 +168,7 @@ export default function SavedConfigurations({ configurations }) {
 
   return (
     <div>
+      <ToastContainer position="top-right" autoClose={3000} />
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <div>
           <h2 className="text-xl font-bold text-white">Saved Configurations</h2>
@@ -104,37 +194,29 @@ export default function SavedConfigurations({ configurations }) {
 
           <div className="flex gap-2">
             <div className="relative">
-              <button className="flex items-center gap-2 bg-[#292929] text-white px-3 py-2 rounded-md hover:bg-[#333] transition-colors">
+              <button 
+                onClick={() => setShowFilterDropdown(!showFilterDropdown)}
+                className="flex items-center gap-2 bg-[#292929] text-white px-3 py-2 rounded-md hover:bg-[#333] transition-colors"
+              >
                 <FaFilter />
                 <span className="text-sm">
-                  {filterStatus === "all"
-                    ? "All"
-                    : filterStatus === "saved"
-                    ? "Saved"
-                    : "Ordered"}
+                  {filterStatus === "all" ? "All" : filterStatus}
                 </span>
                 <FaChevronDown className="text-xs" />
               </button>
-              <div className="absolute top-full right-0 mt-1 bg-[#292929] rounded-md shadow-lg z-10 w-40 py-1 hidden">
-                <button
-                  onClick={() => setFilterStatus("all")}
-                  className="w-full text-left px-4 py-2 text-white hover:bg-[#333] transition-colors"
-                >
-                  All
-                </button>
-                <button
-                  onClick={() => setFilterStatus("saved")}
-                  className="w-full text-left px-4 py-2 text-white hover:bg-[#333] transition-colors"
-                >
-                  Saved
-                </button>
-                <button
-                  onClick={() => setFilterStatus("ordered")}
-                  className="w-full text-left px-4 py-2 text-white hover:bg-[#333] transition-colors"
-                >
-                  Ordered
-                </button>
-              </div>
+              {showFilterDropdown && (
+                <div className="absolute top-full right-0 mt-1 bg-[#292929] rounded-md shadow-lg z-10 w-40 py-1">
+                  <button
+                    onClick={() => {
+                      setFilterStatus("all");
+                      setShowFilterDropdown(false);
+                    }}
+                    className="w-full text-left px-4 py-2 text-white hover:bg-[#333] transition-colors"
+                  >
+                    All
+                  </button>
+                </div>
+              )}
             </div>
 
             <button
@@ -149,18 +231,22 @@ export default function SavedConfigurations({ configurations }) {
         </div>
       </div>
 
-      {filteredConfigurations.length === 0 ? (
+      {isLoading ? (
+        <div className="flex justify-center items-center py-16">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
+        </div>
+      ) : filteredConfigurations.length === 0 ? (
         <div className="text-center py-12">
           <p className="text-gray-400">No configurations found.</p>
           <p className="text-gray-500 text-sm mt-2">
-            Create configurations in the LIMI mobile app to see them here.
+            Create configurations in the configurator to see them here.
           </p>
           <div className="mt-4">
             <Link
-              href="/product-catalog"
+              href="/configurator"
               className="inline-flex items-center gap-2 bg-[#54BB74] text-white px-4 py-2 rounded-md hover:bg-[#48a064] transition-colors"
             >
-              <span>Browse Products</span>
+              <span>Go to Configurator</span>
             </Link>
           </div>
         </div>
@@ -168,42 +254,48 @@ export default function SavedConfigurations({ configurations }) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {filteredConfigurations.map((config) => (
             <motion.div
-              key={config.id}
+              key={config._id}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
               className="bg-[#292929] rounded-lg overflow-hidden"
             >
               <div className="relative h-48">
-                <Image
-                  src={config.thumbnail}
-                  alt={config.name}
-                  fill
-                  className="object-cover"
-                />
-                {config.status === "ordered" && (
-                  <div className="absolute top-2 right-2 bg-[#54BB74] text-white text-xs font-bold px-2 py-1 rounded">
-                    Ordered
-                  </div>
+                {config.thumbnail?.url ? (
+                  <img
+                    src={config.thumbnail.url}
+                    alt={config.name || 'Configuration'}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = `/images/homepage-products/${Math.floor(Math.random() * 7) + 1}-mobile.jpg`;
+                    }}
+                  />
+                ) : (
+                  <img
+                    src={`/images/homepage-products/${Math.floor(Math.random() * 7) + 1}-mobile.jpg`}
+                    alt="Fallback image"
+                    className="w-full h-full object-cover"
+                  />
                 )}
               </div>
 
               <div className="p-4">
                 <h3 className="text-lg font-semibold text-white mb-1">
-                  {config.name}
+                  {config.name || 'Unnamed Configuration'}
                 </h3>
-                {/* <p className="text-gray-400 text-sm mb-3 line-clamp-2">
-                  {config.description}
-                </p> */}
+
+                <div className="text-sm text-gray-400 mb-2">
+                  <p>Light Type: {config.config?.light_type || 'N/A'}</p>
+                  <p>Light Amount: {config.config?.light_amount || 'N/A'}</p>
+                  {config.config?.base_type && <p>Base Type: {config.config.base_type}</p>}
+                </div>
 
                 <div className="flex justify-between items-center text-sm text-gray-400 mb-4">
                   <div>
-                    <span>Last updated: </span>
-                    <span>{formatDate(config.updatedAt)}</span>
+                    <span>Created: </span>
+                    <span>{formatDate(config.createdAt)}</span>
                   </div>
-                  {/* <div className="font-semibold text-[#54BB74]">
-                    ${config.totalPrice.toFixed(2)}
-                  </div> */}
                 </div>
 
                 <div className="flex flex-wrap gap-2">
@@ -214,14 +306,21 @@ export default function SavedConfigurations({ configurations }) {
                     <FaEye />
                     <span className="text-sm">View</span>
                   </button>
-{/* 
-                  <button className="flex items-center justify-center gap-1 bg-[#292929] border border-gray-700 text-white px-3 py-2 rounded hover:bg-[#333] transition-colors">
-                    <FaShoppingCart />
-                    <span className="text-sm">Order</span>
-                  </button> */}
 
-                  <button className="flex items-center justify-center gap-1 bg-[#292929] border border-gray-700 text-white px-3 py-2 rounded hover:bg-[#333] transition-colors">
-                    <FaDownload />
+                  <button 
+                    onClick={() => viewInConfigurator(config._id)}
+                    className="flex-1 flex items-center justify-center gap-1 bg-[#292929] border border-[#54BB74] text-[#54BB74] px-3 py-2 rounded hover:bg-[#54BB74] hover:text-white transition-colors"
+                  >
+                    <FaEdit />
+                    <span className="text-sm">Open</span>
+                  </button>
+
+                  <button 
+                    onClick={() => deleteConfiguration(config._id)}
+                    className="flex items-center justify-center gap-1 bg-[#292929] border border-gray-700 text-white px-3 py-2 rounded hover:bg-red-600 hover:border-red-600 transition-colors"
+                    disabled={isDeleting}
+                  >
+                    {isDeleting ? <FaSpinner className="animate-spin" /> : <FaTrash />}
                   </button>
                 </div>
               </div>
@@ -232,21 +331,32 @@ export default function SavedConfigurations({ configurations }) {
 
       {/* Configuration Details Modal */}
       {selectedConfig && (
-        <div className="fixed inset-0 pt-20 bg-black/70 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.3 }}
-            className="bg-[#1e1e1e] rounded-lg max-w-5xl w-full max-h-[90vh] overflow-y-auto"
+            className="bg-[#1e1e1e] rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto"
           >
             <div className="relative">
-              <div className="h-80 relative">
-                <Image
-                  src={selectedConfig.thumbnail}
-                  alt={selectedConfig.name}
-                  fill
-                  className="object-cover  rounded-t-lg"
-                />
+              <div className="h-64 relative">
+                {selectedConfig.thumbnail?.url ? (
+                  <img
+                    src={selectedConfig.thumbnail.url}
+                    alt={selectedConfig.name || 'Configuration'}
+                    className="w-full h-full object-cover rounded-t-lg"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = `/images/homepage-products/${Math.floor(Math.random() * 7) + 1}-mobile.jpg`;
+                    }}
+                  />
+                ) : (
+                  <img
+                    src={`/images/homepage-products/${Math.floor(Math.random() * 7) + 1}-mobile.jpg`}
+                    alt="Fallback image"
+                    className="w-full h-full object-cover rounded-t-lg"
+                  />
+                )}
                 <button
                   onClick={closeConfigDetails}
                   className="absolute top-4 right-4 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors"
@@ -271,86 +381,24 @@ export default function SavedConfigurations({ configurations }) {
               <div className="p-6">
                 <div className="flex justify-between items-center mb-6">
                   <h2 className="text-2xl font-bold text-white">
-                    {selectedConfig.name}
+                    {selectedConfig.name || 'Unnamed Configuration'}
                   </h2>
                   <div className="text-sm text-gray-400">
                     Created: {formatDate(selectedConfig.createdAt)}
                   </div>
                 </div>
+                
                 <div className="mb-6">
                   <h3 className="text-lg font-semibold text-white mb-3">
-                    Products
+                    Configuration Details
                   </h3>
-                  <div className="space-y-3">
-                    {selectedConfig.products.map((product, index) => (
-                      <div
-                        key={index}
-                        className="flex justify-between items-center bg-[#292929] p-3 rounded-lg"
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-[#333] rounded-md flex items-center justify-center text-[#54BB74] text-base">
-                            {product.quantity}x
-                          </div>
-                          <div>
-                            <div className="text-white font-medium text-base">
-                              {product.name}
-                            </div>
-                            <div className="text-sm text-gray-400">
-                              ID: {product.id}
-                            </div>
-                            <Link
-                              href={`/product-catalog/${product.id}`}
-                              target="_blank"
-                              className="inline-flex items-center gap-1 text-sm text-[#50C878] hover:underline mt-1"
-                            >
-                              <span>View Product</span>
-                              <FaExternalLinkAlt size={12} />
-                            </Link>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-               
-              
-                <div className="mb-6">
-                  <h3 className="text-lg font-semibold text-white mb-3">
-                    Settings
-                  </h3>
-                   {/*     {/* <div className="grid grid-cols-3 gap-4">
-                    <div className="bg-[#292929] p-3 rounded-lg">
-                      <div className="text-sm text-gray-400">Brightness</div>
-                      <div className="text-base text-white font-medium">{selectedConfig.settings.brightness}%</div>
-                      <div className="mt-2 h-1 bg-[#333] rounded-full overflow-hidden">
-                        <div 
-                          className="h-full bg-[#54BB74]" 
-                          style={{ width: `${selectedConfig.settings.brightness}%` }}
-                        ></div>
-                      </div>
-                    </div>
-                    
-                    <div className="bg-[#292929] p-3 rounded-lg">
-                      <div className="text-sm text-gray-400">Color Temperature</div>
-                      <div className="text-base text-white font-medium">
-                        {typeof selectedConfig.settings.colorTemperature === 'number' 
-                          ? `${selectedConfig.settings.colorTemperature}K` 
-                          : selectedConfig.settings.colorTemperature}
-                      </div>
-                    </div>
-                    
-                    <div className="bg-[#292929] p-3 rounded-lg">
-                      <div className="text-sm text-gray-400">Scene</div>
-                      <div className="text-base text-white font-medium">{selectedConfig.settings.scene}</div>
-                    </div>
-                  </div> */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div className="bg-[#292929] p-4 rounded-xl border border-[#333] hover:border-[#54BB74] transition-all duration-300">
                       <div className="flex items-center gap-2 mb-2">
                         <div className="w-2 h-2 rounded-full bg-[#54BB74]"></div>
                         <div className="text-sm font-medium text-gray-400">Light Type</div>
                       </div>
-                      <div className="text-lg font-semibold text-white">{selectedConfig.light_type}</div>
+                      <div className="text-lg font-semibold text-white">{selectedConfig.config?.light_type || 'N/A'}</div>
                     </div>
                     
                     <div className="bg-[#292929] p-4 rounded-xl border border-[#333] hover:border-[#54BB74] transition-all duration-300">
@@ -358,37 +406,70 @@ export default function SavedConfigurations({ configurations }) {
                         <div className="w-2 h-2 rounded-full bg-[#54BB74]"></div>
                         <div className="text-sm font-medium text-gray-400">Light Amount</div>
                       </div>
-                      <div className="text-lg font-semibold text-white">{selectedConfig.light_amount}</div>
+                      <div className="text-lg font-semibold text-white">{selectedConfig.config?.light_amount || 'N/A'}</div>
                     </div>
                     
-                    {selectedConfig.base_type && (
+                    {selectedConfig.config?.base_type && (
                       <div className="bg-[#292929] p-4 rounded-xl border border-[#333] hover:border-[#54BB74] transition-all duration-300">
                         <div className="flex items-center gap-2 mb-2">
                           <div className="w-2 h-2 rounded-full bg-[#54BB74]"></div>
                           <div className="text-sm font-medium text-gray-400">Base Type</div>
                         </div>
-                        <div className="text-lg font-semibold text-white">{selectedConfig.base_type}</div>
+                        <div className="text-lg font-semibold text-white">{selectedConfig.config.base_type}</div>
                       </div>
                     )}
                   </div>
                 </div>
+                
+                {/* Pendants/System Attached */}
+                {selectedConfig.config?.cables && Object.keys(selectedConfig.config.cables).length > 0 && (
+                  <div className="mb-6">
+                    <h3 className="text-lg font-semibold text-white mb-3">
+                      Pendants/System Attached
+                    </h3>
+                    <div className="bg-[#292929] p-4 rounded-lg overflow-auto max-h-48">
+                      {Object.entries(selectedConfig.config.cables).map(([key, value]) => (
+                        <div key={key} className="mb-4 pb-3 border-b border-gray-700 last:border-0 last:pb-0 last:mb-0">
+                          <div className="font-medium text-white mb-2">Cable {parseInt(key) + 1}</div>
+                          <div className="text-sm text-gray-400">
+                            {value.replace(/^Cable \d+: \{|\}$/g, '').split('\n').map((line, index) => 
+                              line.trim() ? (
+                                <div key={index} className="mb-1 flex">
+                                  <span className="mr-2">•</span>
+                                  {line.includes(':') ? (
+                                    <>
+                                      <span className="font-medium">{line.split(':')[0].trim()}</span>
+                                      <span>: {line.split(':')[1].trim()}</span>
+                                    </>
+                                  ) : (
+                                    <span>{line.trim()}</span>
+                                  )}
+                                </div>
+                              ) : null
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
                 <div className="flex gap-3">
-                  {/* <button className="flex-1 flex items-center justify-center gap-2 bg-[#54BB74] text-white px-4 py-3 rounded-md hover:bg-[#48a064] transition-colors text-base">
-                    <FaShoppingCart />
-                    <span>Order Configuration</span>
-                  </button> */}
-
-                  <Link
-                    href="#"
+                  <button
+                    onClick={() => viewInConfigurator(selectedConfig._id)}
                     className="flex-1 flex items-center justify-center gap-2 bg-[#292929] border border-[#54BB74] text-[#54BB74] px-4 py-3 rounded-md hover:bg-[#54BB74] hover:text-white transition-colors text-base"
                   >
                     <FaEdit />
                     <span>View in Configurator</span>
-                  </Link>
+                  </button>
 
-                  <button className="flex-1 flex items-center justify-center gap-2 bg-[#292929] border border-gray-700 text-white px-4 py-3 rounded-md hover:bg-[#333] transition-colors text-base">
-                    <FaDownload />
-                    <span>Download</span>
+                  <button 
+                    onClick={() => deleteConfiguration(selectedConfig._id)}
+                    className="flex-1 flex items-center justify-center gap-2 bg-[#292929] border border-red-600 text-red-600 px-4 py-3 rounded-md hover:bg-red-600 hover:text-white transition-colors text-base"
+                    disabled={isDeleting}
+                  >
+                    {isDeleting ? <FaSpinner className="animate-spin" /> : <FaTrash />}
+                    <span>Delete Configuration</span>
                   </button>
                 </div>
               </div>
