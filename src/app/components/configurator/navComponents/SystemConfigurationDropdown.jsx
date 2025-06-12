@@ -50,6 +50,7 @@ export const SystemConfigurationDropdown = ({ config, onSystemBaseDesignChange, 
   // Apply design to selected systems
   const applyDesignToSelected = (design) => {
     if (selectedSystems.length === 0) return;
+    console.log(`Applying design ${design} to selected systems for system type ${config.systemType}`);
     onSystemBaseDesignChange(design);
     // Keep the design selector open after selection
   };
@@ -167,12 +168,28 @@ export const SystemConfigurationDropdown = ({ config, onSystemBaseDesignChange, 
               </div>
               
               <div className="flex space-x-4 overflow-x-auto hide-scrollbar py-2">
-                {[
-                  { id: 'nexus', name: 'Nexus', image: '/images/configOptions/system/nexus.png' },
-                  { id: 'vertex', name: 'Vertex', image: '/images/configOptions/system/vertex.png' },
-                  { id: 'quantum', name: 'Quantum', image: '/images/configOptions/system/quantum.png' },
-                  { id: 'fusion', name: 'Fusion', image: '/images/configOptions/system/fusion.png' },
-                ].map((design) => (
+                {(() => {
+                  // Define available designs based on system type
+                  const systemTypeDesigns = {
+                    'bar': [
+                      { id: 'nexus', name: 'Nexus', image: `/images/configOptions/bar/0.png` }
+                    ],
+                    'ball': [
+                      { id: 'quantum', name: 'Quantum', image: `/images/configOptions/ball/0.png` }
+                    ],
+                    'universal': [
+                      { id: 'vertex', name: 'Vertex', image: `/images/configOptions/universal/0.png` },
+                      { id: 'fusion', name: 'Fusion', image: `/images/configOptions/universal/1.png` },
+                      { id: 'aurora', name: 'Aurora', image: `/images/configOptions/universal/2.png` }
+                    ]
+                  };
+                  
+                  // Get designs for current system type or default to universal
+                  const systemType = config.systemType || 'universal';
+                  const designs = systemTypeDesigns[systemType] || systemTypeDesigns.universal;
+                  
+                  return designs;
+                })().map((design) => (
                   <motion.div
                     key={design.id}
                     className="flex-shrink-0 cursor-pointer"
