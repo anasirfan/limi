@@ -13,12 +13,18 @@ import { SaveConfigModal } from './SaveConfigModal';
 import { LoadConfigModal } from './LoadConfigModal';
 import { useSelector, useDispatch } from 'react-redux';
 import { saveConfiguration } from '../../../app/redux/slices/userSlice.js';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 const ConfiguratorLayout = () => {
   const router = useRouter();
   const dispatch = useDispatch();
   const { isLoggedIn, user } = useSelector(state => state.user);
+  const searchParams = useSearchParams();
+  
+  // State for loading configuration from URL
+  const [isLoadingFromUrl, setIsLoadingFromUrl] = useState(false);
+  const [configFromUrl, setConfigFromUrl] = useState(null);
+  const [hasConfigIdParam, setHasConfigIdParam] = useState(false);
 console.log(user)
   // Main configuration state
   const [config, setConfig] = useState({
@@ -74,13 +80,34 @@ console.log(user)
 
   // Initialize pendants when component mounts
   useEffect(() => {
-    // Create initial pendants based on light amount
-    const initialPendants = generateRandomPendants(config.lightAmount);
-    
-    setConfig(prev => ({ ...prev, pendants: initialPendants }));
-    setLastCeilingLightAmount(config.lightAmount);
-    setLastRoundBaseLightAmount(config.lightAmount);
-  }, []);
+    // Check if we have a configId in the URL
+    // If so, don't send default initialization messages as they'll be overridden
+    if (!hasConfigIdParam) {
+      // Create initial pendants based on light amount
+      const initialPendants = generateRandomPendants(config.lightAmount);
+      
+      setConfig(prev => ({ ...prev, pendants: initialPendants }));
+      setLastCeilingLightAmount(config.lightAmount);
+      setLastRoundBaseLightAmount(config.lightAmount);
+      
+      // Send initial messages to PlayCanvas if no configId in URL
+      if (playCanvasReadyRef.current) {
+        // Send default configuration messages
+        sendMessageToPlayCanvas(`light_type:${config.lightType}`);
+        sendMessageToPlayCanvas(`light_amount:${config.lightAmount}`);
+        sendMessageToPlayCanvas(`base_type:${config.baseType}`);
+        
+        // Send default pendant messages
+        initialPendants.forEach((pendant, index) => {
+          const productId = pendant.design === 'bumble' ? 'product_1' : 
+                        pendant.design === 'radial' ? 'product_2' : 
+                        pendant.design === 'fina' ? 'product_3' : 'product_5';
+          
+          sendMessageToPlayCanvas(`cable_${index}:${productId}`);
+        });
+      }
+    }
+  }, [hasConfigIdParam]);
       
 
 
@@ -113,14 +140,22 @@ console.log(user)
   useEffect(() => {
     const handleMessage = (event) => {
       if (event.data === 'app:ready1') {
-        // console.log('PlayCanvas app is ready');
+        console.log('PlayCanvas app is ready');
         setIsLoading(false);
+        playCanvasReadyRef.current = true;
+        
+        // If we have a configuration from URL, load it now
+        if (configFromUrl) {
+          console.log('Loading configuration from URL now that PlayCanvas is ready');
+          handleLoadSpecificConfig(configFromUrl);
+          setIsLoadingFromUrl(false);
+        }
       }
     };
     
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
-  }, []);
+  }, [configFromUrl]);
 
   // Handle light type change
   const handleLightTypeChange = (type) => {
@@ -898,9 +933,38 @@ Base Design: ${baseName}
     }));
   };
   
-  // Create ref for the container
+  // Container ref for PlayCanvas viewer
   const containerRef = useRef(null);
+  
+  // Ref for tracking if PlayCanvas is ready
+  const playCanvasReadyRef = useRef(false);
+  
+
+  // Check for configId in URL parameters on initial load
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const configId = urlParams.get('configId');
+    if (configId) {
+      setHasConfigIdParam(true);
+      setIsLoadingFromUrl(true);
+      // Load configuration data but don't apply it yet - wait for app:ready1
+      fetch(`https://api1.limitless-lighting.co.uk/admin/products/light-configs/${configId}`)
+        .then(response => response.json())
+        .then(data => {
+          setConfigFromUrl(data);
+          // Don't call handleLoadSpecificConfig yet - wait for app:ready1
+          // Just keep the loading state active
+        })
+        .catch(error => {
+          console.error('Error loading configuration from URL:', error);
+          setIsLoadingFromUrl(false);
+          toast.error('Failed to load configuration');
+        });
+    }
+  }, []);
+
   const [containerDimensions, setContainerDimensions] = useState({ width: 0, height: 0, top: 0, left: 0 });
+  
   // Update dimensions on resize
   useEffect(() => {
     const updateDimensions = () => {
@@ -932,6 +996,16 @@ Base Design: ${baseName}
       ref={containerRef}
       className="relative w-full h-full max-sm:h-[100vh] bg-transparent overflow-hidden"
     >
+      {/* Loading overlay */}
+      {isLoadingFromUrl && (
+        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center">
+          <div className="bg-[#1e1e1e] p-8 rounded-lg flex flex-col items-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-emerald-500 mb-4"></div>
+            <p className="text-white text-lg">Loading your configuration...</p>
+          </div>
+        </div>
+      )}
+      
       {/* 3D Viewer */}
       <div className="w-full h-full">
         <PlayCanvasViewer 

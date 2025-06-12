@@ -62,7 +62,7 @@ export default function OnboardingSection() {
           ) {
             iframeRef.current.contentWindow.postMessage("homepage", "*");
             iframeRef.current.contentWindow.postMessage(
-              "pendant_design:product_2",
+              "cable_0:product_2",
               "*"
             );
             setHomepageMessageSent(true);
@@ -92,7 +92,7 @@ export default function OnboardingSection() {
     //         try {
     //           iframeRef.current.contentWindow.postMessage("homepage", "*");
     //           iframeRef.current.contentWindow.postMessage(
-    //             "pendant_design:product_2",
+    //             "cable_0:product_2",
     //             "*"
     //           );
     //           setHomepageMessageSent(true);
@@ -148,20 +148,20 @@ export default function OnboardingSection() {
 
             if (lightType === "floor") {
               iframeRef.current.contentWindow.postMessage(
-                "pendant_0:product_2",
+                "cable_0:product_2",
                 "*"
               );
               iframeRef.current.contentWindow.postMessage(
-                "pendant_1:product_2",
+                "cable_1:product_2",
                 "*"
               );
               iframeRef.current.contentWindow.postMessage(
-                "pendant_2:product_2",
+                "cable_2:product_2",
                 "*"
               );
             } else {
               iframeRef.current.contentWindow.postMessage(
-                "pendant_design:product_2",
+                "cable_0:product_2",
                 "*"
               );
             }
@@ -194,13 +194,13 @@ export default function OnboardingSection() {
               for (let i = 0; i < lightAmount; i++) {
                 if (lightAmount === "1") {
                   iframeRef.current.contentWindow.postMessage(
-                    `pendant_design:product_2`,
+                    `cable_0:product_2`,
                     "*"
                   );
                   break;
                 }
                 iframeRef.current.contentWindow.postMessage(
-                  `pendant_${i}:product_2`,
+                  `cable_${i}:product_2`,
                   "*"
                 );
               }
@@ -212,7 +212,7 @@ export default function OnboardingSection() {
               );
               for (let i = 0; i < 3; i++) {
                 iframeRef.current.contentWindow.postMessage(
-                  `pendant_${i}:product_2`,
+                  `cable_${i}:product_2`,
                   "*"
                 );
               }
@@ -245,18 +245,18 @@ export default function OnboardingSection() {
                   "*"
                 );
                 iframeRef.current.contentWindow.postMessage(
-                  `pendant_design:${pendantDesign}`,
+                  `cable_0:${pendantDesign}`,
                   "*"
                 );
                 break;
               } else if (currentType === "floor") {
                 iframeRef.current.contentWindow.postMessage(
-                  `pendant_${i}:${pendantDesign}`,
+                  `cable_${i}:${pendantDesign}`,
                   "*"
                 );
               } else {
                 iframeRef.current.contentWindow.postMessage(
-                  `pendant_${i}:${pendantDesign}`,
+                  `cable_${i}:${pendantDesign}`,
                   "*"
                 );
               }
@@ -569,7 +569,7 @@ export default function OnboardingSection() {
                                   "*"
                                 );
                                 iframeRef.current.contentWindow.postMessage(
-                                  "pendant_design:product_2",
+                                  "cable_0:product_2",
                                   "*"
                                 );
                                 setHomepageMessageSent(true);
@@ -722,7 +722,7 @@ export default function OnboardingSection() {
                               "*"
                             );
                             iframeRef.current.contentWindow.postMessage(
-                              "pendant_design:product_2",
+                              "cable_0:product_2",
                               "*"
                             );
                             setHomepageMessageSent(true);
