@@ -18,7 +18,7 @@ const ConfiguratorLayout = () => {
   const router = useRouter();
   const dispatch = useDispatch();
   const { isLoggedIn, user } = useSelector(state => state.user);
-console.log(localStorage)
+console.log(user)
   // Main configuration state
   const [config, setConfig] = useState({
     lightType: 'ceiling',
@@ -111,7 +111,7 @@ console.log(localStorage)
   useEffect(() => {
     const handleMessage = (event) => {
       if (event.data === 'app:ready1') {
-        console.log('PlayCanvas app is ready');
+        // console.log('PlayCanvas app is ready');
         setIsLoading(false);
       }
     };
@@ -229,7 +229,7 @@ console.log(localStorage)
                        newPendants.design === 'radial' ? 'product_2' : 
                        newPendants.design === 'fina' ? 'product_3' : 'product_5';
       
-      sendMessageToPlayCanvas(`cable_0:${productId}`);
+      sendMessageToPlayCanvas(`cable_design:${productId}`);
     }
     }, 0);
   };
@@ -313,7 +313,7 @@ console.log(localStorage)
       const productId = newPendants.design === 'bumble' ? 'product_1' : 
                        newPendants.design === 'radial' ? 'product_2' : 
                        newPendants.design === 'fina' ? 'product_3' : 'product_5';
-      sendMessageToPlayCanvas(`cable_0:${productId}`);
+      sendMessageToPlayCanvas(`cable_design:${productId}`);
     }
     }, 0);
   };
@@ -513,7 +513,8 @@ console.log(localStorage)
   // Prepare configuration for saving
   const prepareConfigForSave = () => {
     // Create a summary of the current configuration
-    console.log("in prepareConfigForSave")
+    console.log('Preparing config for save, config state:', config);
+
     const configSummary = {
       light_type: config.lightType,
       light_amount: config.lightAmount,
@@ -525,14 +526,40 @@ console.log(localStorage)
       configSummary.base_type = config.baseType;
     }
     
+    // Check if we have selected pendants that should be systems
+    const selectedPendants = config.selectedPendants || [];
+    
     // Add individual cable configurations
     config.pendants.forEach((pendant, index) => {
       configSummary.cables[index] = {};
       
+      // Check if this cable is selected for system configuration
+      const isSelectedForSystem = selectedPendants.includes(index) && config.systemType;
+      
+      // Special case: if this is the last cable and we have a systemType, make it a system
+      const isLastCableWithSystem = (index === config.pendants.length - 1) && config.systemType;
+      
       // Determine if this is a pendant or system
-      if (pendant.design === 'bumble' || pendant.design === 'radial' || 
+      if (isSelectedForSystem || isLastCableWithSystem) {
+        // It's a system
+        console.log(`Cable ${index} identified as system type`);
+        const systemType = config.systemType || 'universal';
+        const baseDesign = config.systemBaseDesign || 'fusion';
+        
+        // Map base design to product ID
+        const baseId = baseDesign === 'nexus' ? 'system_base_0' : 
+                    baseDesign === 'vertex' ? 'system_base_4' : 
+                    baseDesign === 'quantum' ? 'system_base_6' : 
+                    baseDesign === 'aurora' ? 'system_base_2' : 'system_base_1';
+        
+        configSummary.cables[index] = {
+          system_type: systemType,
+          product: baseId
+        };
+      } else if (pendant.design === 'bumble' || pendant.design === 'radial' || 
           pendant.design === 'fina' || pendant.design === 'ripple') {
         // It's a pendant
+        console.log(`Cable ${index} identified as pendant type: ${pendant.design}`);
         const productId = pendant.design === 'bumble' ? 'product_1' : 
                        pendant.design === 'radial' ? 'product_2' : 
                        pendant.design === 'fina' ? 'product_3' : 'product_5';
@@ -541,12 +568,13 @@ console.log(localStorage)
           pendant: productId
         };
       } else {
-        // It's a system
-        const systemType = pendant.systemType || config.systemType;
-        const baseDesign = pendant.systemBaseDesign || config.systemBaseDesign;
+        // Default to system if design is not recognized
+        console.log(`Cable ${index} defaulting to system type (no recognized design)`);
+        const systemType = config.systemType || 'universal';
+        const baseDesign = config.systemBaseDesign || 'fusion';
         const baseId = baseDesign === 'nexus' ? 'system_base_0' : 
-                    baseDesign === 'vertex' ? 'system_base_0' : 
-                    baseDesign === 'quantum' ? 'system_base_0' : 
+                    baseDesign === 'vertex' ? 'system_base_4' : 
+                    baseDesign === 'quantum' ? 'system_base_6' : 
                     baseDesign === 'aurora' ? 'system_base_2' : 'system_base_1';
         
         configSummary.cables[index] = {
@@ -561,8 +589,7 @@ console.log(localStorage)
   
   // Handle final save after user enters configuration name
   const handleFinalSave = async (configName) => {
-    console.log('handleFinalSave called with configName:', configName);
-    console.log('configToSave:', configToSave);
+       console.log('configToSave:', configToSave);
     
     if (!configToSave) {
       console.error('configToSave is null or undefined');
@@ -581,15 +608,145 @@ console.log(localStorage)
       return 'config_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
     };
     
+    // Collect all iframe messages in the sequence they would be sent to the iframe
+    const iframeMessagesArray = [];
+    
+    // First add the light type
+    iframeMessagesArray.push(`light_type:${configToSave.light_type}`);
+    
+    // Then add light amount
+    iframeMessagesArray.push(`light_amount:${configToSave.light_amount}`);
+    
+    // Add base type if it exists
+    if (configToSave.base_type) {
+      iframeMessagesArray.push(`base_type:${configToSave.base_type}`);
+    }
+    
+    // Add system type if any cable uses it
+    let hasSystem = false;
+    let systemType = null;
+    
+    // First check if we have any system types in the config
+    if (configToSave.cables) {
+      Object.values(configToSave.cables).forEach(cable => {
+        if (cable.system_type) {
+          hasSystem = true;
+          if (!systemType) {
+            systemType = cable.system_type;
+          }
+        }
+      });
+    }
+    
+    // If we don't have a system type from cables, check if it's in the main config
+    if (!systemType && config.systemType) {
+      systemType = config.systemType;
+      hasSystem = true;
+    }
+    
+    // Add the system type message if we found one
+    if (hasSystem && systemType) {
+      console.log(`Adding system type: system:${systemType}`);
+      iframeMessagesArray.push(`system:${systemType}`);
+    }
+    
+    // Add individual cable configurations
+    if (configToSave.cables) {
+      Object.entries(configToSave.cables).forEach(([index, cable]) => {
+        // For pendant type
+        if (cable.pendant) {
+          console.log(`Adding pendant cable: cable_${index}:${cable.pendant}`);
+          iframeMessagesArray.push(`cable_${index}:${cable.pendant}`);
+        }
+        // For system type
+        else if (cable.product) {
+          console.log(`Adding system cable: cable_${index}:${cable.product}`);
+          iframeMessagesArray.push(`cable_${index}:${cable.product}`);
+          
+          // Make sure we have a system type for this cable
+          if (cable.system_type && !iframeMessagesArray.includes(`system:${cable.system_type}`)) {
+            console.log(`Adding missing system type: system:${cable.system_type}`);
+            iframeMessagesArray.push(`system:${cable.system_type}`);
+          }
+        }
+      });
+    }
+    
+    // Add any additional parameters that might be needed
+    if (configToSave.cable_color) {
+      iframeMessagesArray.push(`cable_color:${configToSave.cable_color}`);
+    }
+    
+    if (configToSave.cable_length) {
+      iframeMessagesArray.push(`cable_length:${configToSave.cable_length}`);
+    }
+    
+    console.log('Iframe messages array:', iframeMessagesArray);
+    
+    // Prepare UI-friendly config for display
+    const uiConfig = {
+      light_type: configToSave.light_type.charAt(0).toUpperCase() + configToSave.light_type.slice(1),
+      light_amount: configToSave.light_amount,
+      cables: {}
+    };
+    
+    // Add base type if it exists
+    if (configToSave.base_type) {
+      uiConfig.base_type = configToSave.base_type.charAt(0).toUpperCase() + configToSave.base_type.slice(1);
+    }
+    
+    // Format cable information for UI display
+    if (configToSave.cables) {
+      Object.entries(configToSave.cables).forEach(([index, cable]) => {
+        const cableNumber = parseInt(index) + 1;
+        
+        // For pendant type
+        if (cable.pendant) {
+          // Map product IDs to friendly names
+          const pendantNameMap = {
+            'product_1': 'Bumble',
+            'product_2': 'Radial',
+            'product_3': 'Fina',
+            'product_5': 'Ripple'
+          };
+          
+          const pendantName = pendantNameMap[cable.pendant] || 'Unknown';
+          uiConfig.cables[index] = `Cable ${cableNumber}: ${pendantName}`;
+        }
+        // For system type
+        else if (cable.system_type && cable.product) {
+          // Map system base IDs to friendly names
+          const baseNameMap = {
+            'system_base_0': 'Nexus',
+            'system_base_1': 'Fusion',
+            'system_base_2': 'Aurora',
+            'system_base_4': 'Vertex',
+            'system_base_6': 'Quantum'
+          };
+          
+          const baseName = baseNameMap[cable.product] || 'Unknown';
+          const systemType = cable.system_type.charAt(0).toUpperCase() + cable.system_type.slice(1);
+          
+          // Format the system cable information as a string with proper formatting
+          uiConfig.cables[index] = `Cable ${cableNumber}: {
+System Type : ${systemType}
+Base Design: ${baseName}
+}`;
+        }
+      });
+    }
+    
     // Prepare data for API
     const apiPayload = {
       name: configName,
-      thumbnail: "", // This could be updated later with an actual thumbnail
-      config: configToSave, // Using the configSummary we created
-      user_id: user?.data?._id || "" ,// Get user_id from Redux store
-      iframe:{},
-      date: new Date().toISOString(),
-      id: generateRandomId() // Generate a random ID
+      thumbnail: {
+        url:"",
+        public_id:""
+      }, // Will be updated after screenshot upload
+      config: uiConfig, // UI-friendly structured data for display
+      user_id: user?.data?._id || "", // Get user_id from Redux store
+      iframe: iframeMessagesArray, // Raw messages from iframe in sequence
+
     };
     
     console.log('API payload to send:', apiPayload);
@@ -597,7 +754,13 @@ console.log(localStorage)
     try {
       // Get dashboardToken from localStorage
       const dashboardToken = localStorage.getItem('limiToken');
-      console.log('Using dashboardToken:', dashboardToken);
+      
+      // Take screenshot of the configurator area
+      const configuratorElement = document.getElementById('playcanvas-app');
+      
+     
+      // Log the API payload for debugging
+      console.log('Final API payload:', JSON.stringify(apiPayload, null, 2));
       
       // Send data to backend API
       const response = await fetch('https://api1.limitless-lighting.co.uk/admin/products/light-configs', {
@@ -608,6 +771,9 @@ console.log(localStorage)
         },
         body: JSON.stringify(apiPayload)
       });
+      
+      // Log the response status
+      console.log('API response status:', response.status);
       
       if (!response.ok) {
         throw new Error(`API error: ${response.status}`);
@@ -625,7 +791,7 @@ console.log(localStorage)
       toast.success('Configuration saved successfully');
     } catch (error) {
       console.error('Error saving configuration to API:', error);
-      toast.error('Failed to save configuration. Please try again.');
+      // toast.error('Failed to save configuration. Please try again.');
       setIsSaveModalOpen(false);
     }
   };
@@ -650,7 +816,7 @@ console.log(localStorage)
     
     // In a real application, you would show a modal with saved configurations
     // For now, just log that the load function was called
-    console.log('Load configuration function called');
+
     toast.info('Load configuration feature coming soon!');
     
     // Example of how you would load a configuration
@@ -787,6 +953,6 @@ console.log(localStorage)
       
       <ToastContainer position="bottom-center" autoClose={3000} />
     </div>
-  ); 
+  );
 };
 export default ConfiguratorLayout;
