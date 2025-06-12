@@ -1,5 +1,5 @@
 "use client";
-
+import { FaCamera, FaSave } from "react-icons/fa";
 import { useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Image from "next/image";
@@ -227,19 +227,39 @@ export default function AccountSettings() {
 
   // Render profile tab
   const renderProfileTab = () => (
-    <div>
-      <div className="mb-6">
-        <h3 className="text-lg font-semibold text-white mb-4">
-          Personal Information
-        </h3>
+    <div className="space-y-8">
+      <div className="bg-[#1f1f1f] rounded-xl p-0 sm:p-6 shadow-lg">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h3 className="text-xl font-semibold text-white">
+              Personal Information
+            </h3>
+            <p className="text-sm text-gray-400 mt-1">
+              Update your personal details and contact information
+            </p>
+          </div>
+          {!editMode && (
+            <button
+              type="button"
+              onClick={() => setEditMode(true)}
+              className="inline-flex items-center gap-2 bg-[#292929] hover:bg-[#333] text-white px-4 py-2.5 rounded-lg transition-colors duration-200 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-[#54BB74]/20 sm:w-auto w-full"
+            >
+              <FaEdit className="text-sm" />
+              <span>Edit Profile</span>
+            </button>
+          )}
+        </div>
 
-        <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <div>
-              <label className="block text-gray-300 mb-2">Full Name</label>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Full Name Field */}
+            <div className="space-y-1.5">
+              <label className="block text-sm font-medium text-gray-300 mb-1.5">
+                Full Name
+              </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                  <FaUser className="text-gray-500" />
+                <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
+                  <FaUser className="text-gray-500 text-sm" />
                 </div>
                 {editMode ? (
                   <input
@@ -248,22 +268,26 @@ export default function AccountSettings() {
                     onChange={(e) =>
                       setFormData({ ...formData, name: e.target.value })
                     }
-                    className="bg-[#292929] text-white w-full pl-10 pr-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-[#54BB74]"
+                    className="bg-[#292929] text-white w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-700 focus:border-[#54BB74] focus:ring-2 focus:ring-[#54BB74]/20 focus:outline-none transition-all duration-200"
+                    placeholder="Enter your full name"
                     required
                   />
                 ) : (
-                  <div className="bg-[#292929] text-white w-full pl-10 pr-4 py-3 rounded-md">
-                    {user?.name || "Not set"}
+                  <div className="bg-[#292929] text-white w-full pl-10 pr-4 py-2.5 rounded-lg border border-transparent">
+                    {user?.name || <span className="text-gray-500">Not set</span>}
                   </div>
                 )}
               </div>
             </div>
 
-            <div>
-              <label className="block text-gray-300 mb-2">Email Address</label>
+            {/* Email Field */}
+            <div className="space-y-1.5">
+              <label className="block text-sm font-medium text-gray-300 mb-1.5">
+                Email Address
+              </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                  <FaEnvelope className="text-gray-500" />
+                <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
+                  <FaEnvelope className="text-gray-500 text-sm" />
                 </div>
                 {editMode ? (
                   <input
@@ -272,22 +296,29 @@ export default function AccountSettings() {
                     onChange={(e) =>
                       setFormData({ ...formData, email: e.target.value })
                     }
-                    className="bg-[#292929] text-white w-full pl-10 pr-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-[#54BB74]"
+                    className="bg-[#292929] text-white w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-700 focus:border-[#54BB74] focus:ring-2 focus:ring-[#54BB74]/20 focus:outline-none transition-all duration-200"
+                    placeholder="your.email@example.com"
                     required
                   />
                 ) : (
-                  <div className="bg-[#292929] text-white w-full pl-10 pr-4 py-3 rounded-md">
-                    {user?.email || "Not set"}
+                  <div className="bg-[#292929] text-white w-full pl-10 pr-4 py-2.5 rounded-lg border border-transparent">
+                    {user?.email || <span className="text-gray-500">Not set</span>}
                   </div>
                 )}
               </div>
             </div>
 
-            <div>
-              <label className="block text-gray-300 mb-2">Phone Number</label>
+            {/* Phone Number Field */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <label className="block text-sm font-medium text-gray-300 mb-1.5">
+                  Phone Number
+                </label>
+                <span className="text-xs text-gray-500">Optional</span>
+              </div>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                  <FaMobileAlt className="text-gray-500" />
+                <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
+                  <FaMobileAlt className="text-gray-500 text-sm" />
                 </div>
                 {editMode ? (
                   <input
@@ -296,21 +327,25 @@ export default function AccountSettings() {
                     onChange={(e) =>
                       setFormData({ ...formData, phone: e.target.value })
                     }
-                    className="bg-[#292929] text-white w-full pl-10 pr-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-[#54BB74]"
+                    className="bg-[#292929] text-white w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-700 focus:border-[#54BB74] focus:ring-2 focus:ring-[#54BB74]/20 focus:outline-none transition-all duration-200"
+                    placeholder="+1 (555) 123-4567"
                   />
                 ) : (
-                  <div className="bg-[#292929] text-white w-full pl-10 pr-4 py-3 rounded-md">
-                    {user?.phone || "Not set"}
+                  <div className="bg-[#292929] text-white w-full pl-10 pr-4 py-2.5 rounded-lg border border-transparent">
+                    {user?.phone || <span className="text-gray-500">Not set</span>}
                   </div>
                 )}
               </div>
             </div>
 
-            <div>
-              <label className="block text-gray-300 mb-2">Password</label>
+            {/* Password Field */}
+            <div className="space-y-1.5">
+              <label className="block text-sm font-medium text-gray-300 mb-1.5">
+                Password
+              </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                  <FaLock className="text-gray-500" />
+                <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
+                  <FaLock className="text-gray-500 text-sm" />
                 </div>
                 {editMode ? (
                   <div className="relative">
@@ -320,196 +355,255 @@ export default function AccountSettings() {
                       onChange={(e) =>
                         setFormData({ ...formData, password: e.target.value })
                       }
-                      className="bg-[#292929] text-white w-full pl-10 pr-10 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-[#54BB74]"
+                      className="bg-[#292929] text-white w-full pl-10 pr-10 py-2.5 rounded-lg border border-gray-700 focus:border-[#54BB74] focus:ring-2 focus:ring-[#54BB74]/20 focus:outline-none transition-all duration-200"
+                      placeholder="••••••••"
                     />
                     <button
                       type="button"
-                      className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setShowPassword(!showPassword);
-                      }}
+                      className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-white transition-colors"
+                      onClick={() => setShowPassword(!showPassword)}
+                      aria-label={showPassword ? "Hide password" : "Show password"}
                     >
                       {showPassword ? (
-                        <FaEyeSlash className="text-gray-500" />
+                        <FaEyeSlash className="text-sm" />
                       ) : (
-                        <FaEye className="text-gray-500" />
+                        <FaEye className="text-sm" />
                       )}
                     </button>
+                    {formData.password && (
+                      <div className="mt-1.5 text-xs text-gray-500">
+                        {formData.password.length < 8 
+                          ? "Password should be at least 8 characters" 
+                          : "Password strength: " + (formData.password.length > 12 ? "Strong" : "Good")}
+                      </div>
+                    )}
                   </div>
                 ) : (
-                  <div className="bg-[#292929] text-white w-full pl-10 pr-4 py-3 rounded-md">
-                    {formData.password}
+                  <div className="bg-[#292929] text-white w-full pl-10 pr-4 py-2.5 rounded-lg border border-transparent">
+                    ••••••••••••
                   </div>
                 )}
               </div>
             </div>
           </div>
 
-          <div className="flex justify-end gap-3">
-            {editMode ? (
-              <>
-                <button
-                  type="button"
-                  onClick={() => setEditMode(false)}
-                  className="bg-[#292929] border border-gray-700 text-white px-4 py-2 rounded-md hover:bg-[#333] transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="bg-[#54BB74] text-white px-4 py-2 rounded-md hover:bg-[#48a064] transition-colors"
-                >
-                  Save Changes
-                </button>
-              </>
-            ) : (
+          {editMode && (
+            <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-gray-800 mt-6">
               <button
                 type="button"
-                onClick={() => setEditMode(true)}
-                className="flex items-center gap-2 bg-[#292929] border border-gray-700 text-white px-4 py-2 rounded-md hover:bg-[#333] transition-colors"
+                onClick={() => {
+                  setEditMode(false);
+                  // Reset form to original user data
+                  setFormData({
+                    name: user?.name || "",
+                    email: user?.email || "",
+                    phone: user?.phone || "",
+                    password: ""
+                  });
+                }}
+                className="px-4 py-2.5 text-sm font-medium text-gray-300 hover:text-white bg-[#292929] hover:bg-[#333] rounded-lg border border-gray-700 transition-colors duration-200 w-full sm:w-auto"
               >
-                <FaEdit />
-                <span>Edit Profile</span>
+                Cancel
               </button>
-            )}
-          </div>
+              <button
+                type="submit"
+                className="px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-[#54BB74] to-[#3a9b5a] hover:from-[#48a064] hover:to-[#2e8a4f] rounded-lg shadow-md hover:shadow-[#54BB74]/20 transition-all duration-200 flex items-center justify-center gap-2 w-full sm:w-auto"
+              >
+                <FaSave className="text-sm" />
+                <span>Save Changes</span>
+              </button>
+            </div>
+          )}
         </form>
       </div>
 
-      <div className="mb-6">
-        <h3 className="text-lg font-semibold text-white mb-4">
-          Profile Picture
+      <div className="mb-10">
+        <h3 className="text-2xl font-bold text-white mb-6 pb-3 border-b border-gray-700/50">
+          Profile Settings
         </h3>
-        <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
-  <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden bg-[#292929] mx-auto sm:mx-0">
-    <Image
-      src={
-        user?.avatar
-          ? user.avatar.startsWith("http")
-            ? user.avatar
-            : `https://api1.limitless-lighting.co.uk${user.avatar}`
-          : `https://ui-avatars.com/api/?name=${encodeURIComponent(
-              user?.name || "User"
-            )}&background=54BB74&color=fff`
-      }
-      alt={user?.name || "User"}
-      width={96}
-      height={96}
-      className="object-cover w-full h-full"
-      onError={(e) => {
-        e.target.onerror = null;
-        e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(
-          user?.name || "User"
-        )}&background=54BB74&color=fff`;
-      }}
-    />
-  </div>
-  <div className="w-full sm:w-auto flex flex-col items-center sm:items-start gap-3">
-    <input
-      type="file"
-      ref={fileInputRef}
-      onChange={handleFileUpload}
-      accept="image/*"
-      className="hidden"
-    />
-    <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-      <button
-        type="button"
-        onClick={() => fileInputRef.current?.click()}
-        disabled={uploadingMedia}
-        className="flex items-center justify-center gap-2 bg-[#292929] border border-gray-700 text-white px-4 py-2 rounded-md hover:bg-[#333] transition-colors disabled:opacity-50 w-full sm:w-auto"
-      >
-        <FaEdit />
-        <span>{uploadingMedia ? "Uploading..." : "Change Picture"}</span>
-      </button>
-      {user?.avatar && (
-        <button
-          type="button"
-          onClick={handleRemovePicture}
-          disabled={uploadingMedia}
-          className="text-red-500 text-sm hover:text-red-400 transition-colors disabled:opacity-50 px-4 py-2 sm:px-0 sm:py-0"
-        >
-          Remove Picture
-        </button>
-      )}
-    </div>
-    {uploadError && (
-      <p className="text-red-500 text-sm text-center sm:text-left w-full">{uploadError}</p>
-    )}
-    {uploadSuccess && (
-      <p className="text-green-500 text-sm text-center sm:text-left w-full">
-        Profile picture updated successfully!
-      </p>
-    )}
-  </div>
-</div>
-
+        
+        {/* Profile Picture Section */}
+        <div className="bg-[#1a1a1a] p-6 rounded-2xl border border-gray-800/50 shadow-lg mb-8">
+          <h4 className="text-lg font-medium text-white mb-5 flex items-center gap-2">
+            <span className="w-1.5 h-5 bg-[#54BB74] rounded-full"></span>
+            Profile Picture
+          </h4>
+          
+          <div className="flex flex-col sm:flex-row items-center gap-8">
+            <div className="relative group">
+              <div className="w-32 h-32 sm:w-36 sm:h-36 rounded-full overflow-hidden bg-gradient-to-br from-[#2a2a2a] to-[#1f1f1f] p-1">
+                <div className="relative w-full h-full rounded-full overflow-hidden ring-2 ring-[#333] group-hover:ring-[#54BB74] transition-all duration-300">
+                  <Image
+                    src={
+                      user?.avatar
+                        ? user.avatar.startsWith("http")
+                          ? user.avatar
+                          : `https://api1.limitless-lighting.co.uk${user.avatar}`
+                        : `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                            user?.name || "User"
+                          )}&background=54BB74&color=fff&size=256`
+                    }
+                    alt={user?.name || "User"}
+                    width={144}
+                    height={144}
+                    className="object-cover w-full h-full"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                        user?.name || "User"
+                      )}&background=54BB74&color=fff`;
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer">
+                    <div className="bg-white/10 backdrop-blur-sm p-3 rounded-full">
+                      <FaCamera className="text-white text-xl" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+            
+            </div>
+            
+            <div className="flex-1 w-full mt-6 sm:mt-0">
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileUpload}
+                accept="image/*"
+                className="hidden"
+                onClick={(e) => e.stopPropagation()}
+              />
+              
+              <div className="flex flex-col sm:flex-row gap-3 w-full">
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploadingMedia}
+                  className="flex items-center justify-center gap-2 bg-gradient-to-r from-[#54BB74] to-[#3a9b5a] hover:from-[#4aaa67] hover:to-[#2d8a4f] text-white px-6 py-3 rounded-xl transition-all duration-300 disabled:opacity-50 w-full sm:w-auto shadow-lg hover:shadow-[#54BB74]/30 hover:-translate-y-0.5"
+                >
+                  {uploadingMedia ? (
+                    <>
+                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Uploading...
+                    </>
+                  ) : (
+                    <>
+                      <FaEdit />
+                      Change Picture
+                    </>
+                  )}
+                </button>
+                
+                {user?.avatar && (
+                  <button
+                    type="button"
+                    onClick={handleRemovePicture}
+                    disabled={uploadingMedia}
+                    className="flex items-center justify-center gap-2 bg-[#2a2a2a] hover:bg-[#333] text-gray-300 hover:text-white px-4 py-3 rounded-xl transition-all duration-200 disabled:opacity-50 border border-gray-700/50 hover:border-gray-600 w-full sm:w-auto"
+                  >
+                    <FaTrash className="text-red-500" />
+                    <span>Remove</span>
+                  </button>
+                )}
+              </div>
+              
+              <div className="mt-4 space-y-2">
+                {uploadError && (
+                  <div className="flex items-start gap-2 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
+                    <div className="text-red-400 mt-0.5">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <p className="text-red-400 text-sm">
+                      {uploadError}
+                    </p>
+                  </div>
+                )}
+                
+                {uploadSuccess && (
+                  <div className="flex items-start gap-2 p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
+                    <div className="text-green-400 mt-0.5">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <p className="text-green-400 text-sm">
+                      Profile picture updated successfully!
+                    </p>
+                  </div>
+                )}
+                
+                <p className="text-gray-400 text-xs mt-3">
+                  Recommended size: 512x512px. Max file size: 2MB. Formats: JPG, PNG, or GIF.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Notification Settings */}
         <div className="space-y-4">
-          <div className="flex items-center justify-between bg-[#292929] p-4 rounded-lg">
-            <div className="flex items-center gap-3">
-              <FaEnvelope className="text-[#54BB74]" />
-              <div>
-                <div className="text-white">Email Notifications</div>
-                <div className="text-sm text-gray-400">
-                  Receive order updates and promotions via email
+          <h4 className="text-lg font-medium text-white mb-5 flex items-center gap-2">
+            <span className="w-1.5 h-5 bg-[#54BB74] rounded-full"></span>
+            Notification Preferences
+          </h4>
+          
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {[
+              {
+                id: 'email',
+                icon: <FaEnvelope className="text-xl" />,
+                title: 'Email Notifications',
+                description: 'Receive order updates and promotions via email',
+                checked: user?.notifications?.email || false
+              },
+              {
+                id: 'sms',
+                icon: <FaMobileAlt className="text-xl" />,
+                title: 'SMS Notifications',
+                description: 'Get important updates and alerts via SMS',
+                checked: user?.notifications?.sms || false
+              },
+              {
+                id: 'app',
+                icon: <FaBell className="text-xl" />,
+                title: 'Push Notifications',
+                description: 'Receive updates in the LIMI mobile app',
+                checked: user?.notifications?.app || false
+              }
+            ].map((item) => (
+              <div 
+                key={item.id}
+                className="bg-[#1a1a1a] hover:bg-[#202020] p-5 rounded-xl border border-gray-800/50 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5"
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="p-2.5 bg-[#54BB74]/10 rounded-lg text-[#54BB74]">
+                      {item.icon}
+                    </div>
+                    <div>
+                      <h5 className="text-white font-medium">{item.title}</h5>
+                      <p className="text-sm text-gray-400 mt-1">{item.description}</p>
+                    </div>
+                  </div>
+                  
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      className="sr-only peer"
+                      checked={item.checked}
+                      onChange={() => toggleNotification(item.id)}
+                    />
+                    <div className="w-10 h-5 sm:w-11 sm:h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-4 sm:peer-checked:after:translate-x-5 peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 sm:after:h-5 sm:after:w-5 after:transition-all peer-checked:bg-[#54BB74] after:shadow-lg"></div>
+                  </label>
                 </div>
               </div>
-            </div>
-
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                className="sr-only peer"
-                checked={user?.notifications?.email || false}
-                onChange={() => toggleNotification("email")}
-              />
-              <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#54BB74]"></div>
-            </label>
-          </div>
-
-          <div className="flex items-center justify-between bg-[#292929] p-4 rounded-lg">
-            <div className="flex items-center gap-3">
-              <FaMobileAlt className="text-[#54BB74]" />
-              <div>
-                <div className="text-white">SMS Notifications</div>
-                <div className="text-sm text-gray-400">
-                  Receive order updates and promotions via SMS
-                </div>
-              </div>
-            </div>
-
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                className="sr-only peer"
-                checked={user?.notifications?.sms || false}
-                onChange={() => toggleNotification("sms")}
-              />
-              <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#54BB74]"></div>
-            </label>
-          </div>
-
-          <div className="flex items-center justify-between bg-[#292929] p-4 rounded-lg">
-            <div className="flex items-center gap-3">
-              <FaBell className="text-[#54BB74]" />
-              <div>
-                <div className="text-white">App Notifications</div>
-                <div className="text-sm text-gray-400">
-                  Receive notifications in the LIMI mobile app
-                </div>
-              </div>
-            </div>
-
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                className="sr-only peer"
-                checked={user?.notifications?.app || false}
-                onChange={() => toggleNotification("app")}
-              />
-              <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#54BB74]"></div>
-            </label>
+            ))}
           </div>
         </div>
       </div>
@@ -1053,48 +1147,51 @@ export default function AccountSettings() {
   };
 
   return (
-    <div>
-      <div className="mb-6">
-        <h2 className="text-xl font-bold text-white">Account Settings</h2>
-        <p className="text-gray-400 text-sm">
-          Manage your profile, addresses, and payment methods
-        </p>
-      </div>
-
-      <div className="flex border-b border-gray-700 mb-6">
-        <button
-          onClick={() => setActiveTab("profile")}
-          className={`px-4 py-3 font-medium flex items-center gap-2 ${
-            activeTab === "profile"
-              ? "text-[#54BB74] border-b-2 border-[#54BB74]"
-              : "text-gray-400 hover:text-gray-300"
-          }`}
-        >
-          <FaUser />
-          Profile
-        </button>
-        <button
-          onClick={() => setActiveTab("addresses")}
-          className={`px-4 py-3 font-medium flex items-center gap-2 ${
-            activeTab === "addresses"
-              ? "text-[#54BB74] border-b-2 border-[#54BB74]"
-              : "text-gray-400 hover:text-gray-300"
-          }`}
-        >
-          <FaHome />
-          Addresses
-        </button>
-        <button
-          onClick={() => setActiveTab("payment")}
-          className={`px-4 py-3 font-medium flex items-center gap-2 ${
-            activeTab === "payment"
-              ? "text-[#54BB74] border-b-2 border-[#54BB74]"
-              : "text-gray-400 hover:text-gray-300"
-          }`}
-        >
-          <FaCreditCard />
-          Payment Methods
-        </button>
+    <div className="max-w-6xl mx-auto">
+      <div className="mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-2">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold text-white">Account Settings</h1>
+            <p className="text-gray-400 mt-1">
+              Manage your profile, addresses, and payment methods in one place
+            </p>
+          </div>
+          <div className="flex items-center gap-2 text-sm text-gray-400">
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-[#54BB74] animate-pulse"></span>
+              <span>Active</span>
+            </span>
+            <span>•</span>
+            <span>Last updated: {new Date().toLocaleDateString()}</span>
+          </div>
+        </div>
+        
+        <div className="relative">
+          <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gray-700 to-transparent"></div>
+          <div className="flex overflow-x-auto scrollbar-hide -mb-px">
+            {[
+              { id: 'profile', icon: <FaUser className="hidden sm:block text-sm sm:text-lg" />, label: 'Profile' },
+              { id: 'addresses', icon: <FaHome className="hidden sm:block text-sm sm:text-lg" />, label: 'Addresses' },
+              { id: 'payment', icon: <FaCreditCard className="hidden sm:block text-sm sm:text-lg" />, label: 'Payment Methods' }
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`relative px-5 py-3.5 font-medium text-sm flex items-center gap-2 transition-all duration-200 ${
+                  activeTab === tab.id
+                    ? 'text-[#54BB74]'
+                    : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800/30'
+                }`}
+              >
+                {tab.icon}
+                <span>{tab.label}</span>
+                {activeTab === tab.id && (
+                  <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-[#54BB74] to-[#3a9b5a] rounded-full"></span>
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
       {renderTabContent()}

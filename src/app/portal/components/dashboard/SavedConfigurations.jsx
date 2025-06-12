@@ -331,7 +331,7 @@ export default function SavedConfigurations() {
 
       {/* Configuration Details Modal */}
       {selectedConfig && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 pt-20 bg-black/70 flex items-center justify-center z-50 p-4">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -457,19 +457,19 @@ export default function SavedConfigurations() {
                 <div className="flex gap-3">
                   <button
                     onClick={() => viewInConfigurator(selectedConfig._id)}
-                    className="flex-1 flex items-center justify-center gap-2 bg-[#292929] border border-[#54BB74] text-[#54BB74] px-4 py-3 rounded-md hover:bg-[#54BB74] hover:text-white transition-colors text-base"
+                    className="flex-1 flex items-center  justify-center gap-1 bg-[#292929] border border-[#54BB74] text-[#54BB74] px-2 py-4 rounded-md hover:bg-[#54BB74] hover:text-white transition-colors text-sm"
                   >
-                    <FaEdit />
-                    <span>View in Configurator</span>
+                    <FaEdit className="h-4 w-4" />
+                    <span>View</span>
                   </button>
 
                   <button 
                     onClick={() => deleteConfiguration(selectedConfig._id)}
-                    className="flex-1 flex items-center justify-center gap-2 bg-[#292929] border border-red-600 text-red-600 px-4 py-3 rounded-md hover:bg-red-600 hover:text-white transition-colors text-base"
+                    className="flex-1 flex items-center justify-center gap-1 bg-[#292929] border border-red-600 text-red-600 px-2 py-2 rounded-md hover:bg-red-600 hover:text-white transition-colors text-sm"
                     disabled={isDeleting}
                   >
-                    {isDeleting ? <FaSpinner className="animate-spin" /> : <FaTrash />}
-                    <span>Delete Configuration</span>
+                    {isDeleting ? <FaSpinner className="animate-spin h-4 w-4" /> : <FaTrash className="h-4 w-4" />}
+                    <span>Delete</span>
                   </button>
                 </div>
               </div>
