@@ -33,19 +33,18 @@ import {
   setDefaultPaymentMethod,
 } from "../../../redux/slices/userSlice";
 
-export default function AccountSettings() {
+export default function AccountSettings({ user }) {
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.user.user);
   const [activeTab, setActiveTab] = useState("profile");
   const [editMode, setEditMode] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-
+console.log(user);
   // Form state for editing (to avoid direct Redux updates until form submission)
   const [formData, setFormData] = useState({
-    name: user?.name || "",
-    email: user?.email || "",
-    phone: user?.phone || "",
-    password: "••••••••••",
+    name: user.data.name || "",
+    email: user.data.email || "",
+    phone: user.data.phone || "",
+    password: user.data.password || "••••••••••",
   });
 
   // Address form state
@@ -79,17 +78,89 @@ export default function AccountSettings() {
   const [uploadError, setUploadError] = useState("");
 
   // Handle form submission
-  const handleSubmit = (e) => {
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState('');
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch(
-      updatePersonalInfo({
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
-        // Password would typically be handled separately with proper validation
-      })
-    );
-    setEditMode(false);
+    setIsSaving(true);
+    setSaveError('');
+    
+    try {
+      // Prepare the update data
+      const updateData = {};
+      
+      // Only include fields that have changed and are not the password mask
+      if (formData.name !== user?.name) updateData.name = formData.name;
+      if (formData.email !== user?.email) updateData.email = formData.email;
+      if (formData.phone !== user?.phone) updateData.phone = formData.phone;
+      if (formData.password && formData.password !== '••••••••••' && formData.password.length >= 6) {
+        updateData.password = formData.password;
+      }
+      
+      // If there's nothing to update, just exit edit mode
+      if (Object.keys(updateData).length === 0) {
+        setEditMode(false);
+        return;
+      }
+      
+      // Get the token from localStorage
+      const token = localStorage.getItem('limiToken');
+      if (!token) {
+        throw new Error('Authentication required. Please log in again.');
+      }
+      
+      // Make the API call to update profile
+      const response = await fetch('https://api1.limitless-lighting.co.uk/client/user/profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token
+        },
+        body: JSON.stringify(updateData)
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Failed to update profile');
+      }
+      
+      // After successful update, fetch the latest user data
+      const profileResponse = await fetch('https://api1.limitless-lighting.co.uk/client/user/profile', {
+        headers: {
+          'Authorization': token
+        }
+      });
+      
+      if (!profileResponse.ok) {
+        throw new Error('Profile updated but failed to fetch updated user data');
+      }
+      
+      const updatedUser = await profileResponse.json();
+      console.log(updatedUser)
+      // Save updated user data to localStorage
+      localStorage.setItem('limiUser', JSON.stringify(updatedUser));
+      
+      // Update the user data in the parent component
+      // if (onLogin) {
+      //   onLogin(updatedUser);
+      // }
+      
+      // Update local state
+      setFormData({
+        name: updatedUser.data.name || '',
+        email: updatedUser.data.email || '',
+        phone: updatedUser.data.phone || '',
+        password: '••••••••••' // Reset to masked password
+      });
+      
+      setEditMode(false);
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      setSaveError(error.message || 'Failed to update profile. Please try again.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   // Toggle notification settings
@@ -140,9 +211,16 @@ export default function AccountSettings() {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Check file size (10MB max)
-    if (file.size > 10 * 1024 * 1024) {
-      setUploadError("File size exceeds 10MB limit");
+    // Check file size (5MB max)
+    if (file.size > 5 * 1024 * 1024) {
+      setUploadError("File size exceeds 5MB limit");
+      return;
+    }
+
+    // Check file type
+    const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+    if (!validTypes.includes(file.type)) {
+      setUploadError("Invalid file type. Please upload a JPG, PNG, or GIF image.");
       return;
     }
 
@@ -152,60 +230,52 @@ export default function AccountSettings() {
 
     try {
       const formData = new FormData();
-      formData.append("media", file); // Changed from 'image' to 'media' to match EditModal
+      formData.append("profilePicture", file);
 
       const token = localStorage.getItem("limiToken");
       if (!token) {
         throw new Error("Authentication required. Please log in again.");
       }
 
+      // Upload profile picture using PUT method
       const response = await fetch(
-        "https://api1.limitless-lighting.co.uk/admin/slide/upload-media",
+        "https://api1.limitless-lighting.co.uk/client/user/profile/picture",
         {
-          method: "POST",
+          method: "PUT",
           body: formData,
           headers: {
-            Authorization: `Bearer ${token}`,
+            'Authorization': token
           },
         }
       );
 
       if (!response.ok) {
-        throw new Error(`Upload failed with status: ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `Upload failed with status: ${response.status}`);
       }
 
-      const data = await response.json();
-
-      // Extract URL from the response data array - matching EditModal's structure
-      let mediaUrl = "";
-      if (
-        data.success &&
-        data.data &&
-        data.data.length > 0 &&
-        data.data[0].url
-      ) {
-        mediaUrl = data.data[0].url;
-      } else if (data.url) {
-        // Fallback to direct URL if available
-        mediaUrl = data.url;
-      } else {
-        throw new Error("Invalid response format from server");
+      // Get the updated user data from the response
+      const updatedUser = await response.json();
+      
+      if (!updatedUser || !updatedUser.profilePicture) {
+        throw new Error('Failed to update profile picture');
       }
-
-      if (!mediaUrl) {
-        throw new Error("No URL returned from server");
-      }
-
-      // Update the avatar in Redux store
-      dispatch(updateUserAvatar(mediaUrl));
+      
+      // Update the avatar in Redux store and localStorage
+      dispatch(updateUserAvatar(updatedUser.profilePicture.url));
+      
+      // Update parent component with new user data
+      // if (onLogin) {
+      //   onLogin(updatedUser);
+      // }
 
       setUploadSuccess(true);
       setTimeout(() => setUploadSuccess(false), 3000);
     } catch (error) {
-      console.error("Error uploading file:", error);
+      console.error("Error uploading profile picture:", error);
       setUploadError(
         error.message ||
-          "Failed to upload file. Please try again or contact support."
+          "Failed to upload profile picture. Please try again or contact support."
       );
     } finally {
       setUploadingMedia(false);
@@ -217,11 +287,55 @@ export default function AccountSettings() {
   };
 
   // Handle remove profile picture
-  const handleRemovePicture = () => {
-    if (
-      window.confirm("Are you sure you want to remove your profile picture?")
-    ) {
-      dispatch(updateUserAvatar(""));
+  const handleRemovePicture = async () => {
+    if (!window.confirm("Are you sure you want to remove your profile picture?")) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("limiToken");
+      if (!token) {
+        throw new Error("Authentication required. Please log in again.");
+      }
+
+      const response = await fetch(
+        "https://api1.limitless-lighting.co.uk/client/user/profile/picture",
+        {
+          method: "DELETE",
+          headers: {
+            'Authorization': token
+          }
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Failed to remove profile picture');
+      }
+
+      // Get updated user data
+      const profileResponse = await fetch(
+        'https://api1.limitless-lighting.co.uk/client/user/profile',
+        {
+          headers: { 'Authorization': token }
+        }
+      );
+
+      if (!profileResponse.ok) {
+        throw new Error('Failed to fetch updated profile');
+      }
+
+      const updatedUser = await profileResponse.json();
+      
+      // Update Redux store with empty avatar
+      dispatch(updateUserAvatar({ url: '' }));
+      
+      // Show success message
+      setUploadSuccess(true);
+      setTimeout(() => setUploadSuccess(false), 3000);
+    } catch (error) {
+      console.error('Error removing profile picture:', error);
+      setUploadError(error.message || 'Failed to remove profile picture');
     }
   };
 
@@ -238,16 +352,7 @@ export default function AccountSettings() {
               Update your personal details and contact information
             </p>
           </div>
-          {!editMode && (
-            <button
-              type="button"
-              onClick={() => setEditMode(true)}
-              className="inline-flex items-center gap-2 bg-[#292929] hover:bg-[#333] text-white px-4 py-2.5 rounded-lg transition-colors duration-200 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-[#54BB74]/20 sm:w-auto w-full"
-            >
-              <FaEdit className="text-sm" />
-              <span>Edit Profile</span>
-            </button>
-          )}
+  
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -274,7 +379,7 @@ export default function AccountSettings() {
                   />
                 ) : (
                   <div className="bg-[#292929] text-white w-full pl-10 pr-4 py-2.5 rounded-lg border border-transparent">
-                    {user?.name || <span className="text-gray-500">Not set</span>}
+                    {formData.name || <span className="text-gray-500">Not set</span>}
                   </div>
                 )}
               </div>
@@ -294,7 +399,7 @@ export default function AccountSettings() {
                     type="email"
                     value={formData.email}
                     onChange={(e) =>
-                      setFormData({ ...formData, email: e.target.value })
+                      f({ ...formData, email: e.target.value })
                     }
                     className="bg-[#292929] text-white w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-700 focus:border-[#54BB74] focus:ring-2 focus:ring-[#54BB74]/20 focus:outline-none transition-all duration-200"
                     placeholder="your.email@example.com"
@@ -302,7 +407,7 @@ export default function AccountSettings() {
                   />
                 ) : (
                   <div className="bg-[#292929] text-white w-full pl-10 pr-4 py-2.5 rounded-lg border border-transparent">
-                    {user?.email || <span className="text-gray-500">Not set</span>}
+                    {formData.email || <span className="text-gray-500">Not set</span>}
                   </div>
                 )}
               </div>
@@ -332,7 +437,7 @@ export default function AccountSettings() {
                   />
                 ) : (
                   <div className="bg-[#292929] text-white w-full pl-10 pr-4 py-2.5 rounded-lg border border-transparent">
-                    {user?.phone || <span className="text-gray-500">Not set</span>}
+                    {formData.phone || <span className="text-gray-500">Not set</span>}
                   </div>
                 )}
               </div>
@@ -344,9 +449,9 @@ export default function AccountSettings() {
                 Password
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
+                {/* <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
                   <FaLock className="text-gray-500 text-sm" />
-                </div>
+                </div> */}
                 {editMode ? (
                   <div className="relative">
                     <input
@@ -356,37 +461,55 @@ export default function AccountSettings() {
                         setFormData({ ...formData, password: e.target.value })
                       }
                       className="bg-[#292929] text-white w-full pl-10 pr-10 py-2.5 rounded-lg border border-gray-700 focus:border-[#54BB74] focus:ring-2 focus:ring-[#54BB74]/20 focus:outline-none transition-all duration-200"
-                      placeholder="••••••••"
+                      placeholder="Enter new password"
+                      autoComplete="new-password"
                     />
-                    <button
-                      type="button"
-                      className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-white transition-colors"
-                      onClick={() => setShowPassword(!showPassword)}
-                      aria-label={showPassword ? "Hide password" : "Show password"}
-                    >
-                      {showPassword ? (
-                        <FaEyeSlash className="text-sm" />
-                      ) : (
-                        <FaEye className="text-sm" />
-                      )}
-                    </button>
-                    {formData.password && (
-                      <div className="mt-1.5 text-xs text-gray-500">
-                        {formData.password.length < 8 
-                          ? "Password should be at least 8 characters" 
-                          : "Password strength: " + (formData.password.length > 12 ? "Strong" : "Good")}
+                    {formData.password && formData.password !== '••••••••••' && (
+                      <div className="mt-2">
+                        <div className="h-1.5 w-full bg-gray-700 rounded-full overflow-hidden">
+                          <div 
+                            className={`h-full transition-all duration-300 ${
+                              formData.password.length < 4 ? 'bg-red-500 w-1/4' : 
+                              formData.password.length < 8 ? 'bg-yellow-500 w-1/2' :
+                              'bg-green-500 w-full'
+                            }`}
+                          />
+                        </div>
+                        <div className="mt-1 text-xs text-gray-400">
+                          {formData.password.length < 4 
+                            ? 'Weak password' 
+                            : formData.password.length < 8 
+                              ? 'Could be stronger' 
+                              : 'Strong password'}
+                        </div>
+                        {formData.password.length > 0 && formData.password.length < 8 && (
+                          <p className="mt-1 text-xs text-amber-400">
+                            Use at least 8 characters for a stronger password
+                          </p>
+                        )}
                       </div>
                     )}
                   </div>
                 ) : (
-                  <div className="bg-[#292929] text-white w-full pl-10 pr-4 py-2.5 rounded-lg border border-transparent">
-                    ••••••••••••
+                  <div className="flex items-center bg-[#292929] text-white w-full pl-10 pr-4 py-2.5 rounded-lg border border-transparent">
+                    <span className="tracking-widest">••••••••••••</span>
                   </div>
                 )}
               </div>
             </div>
           </div>
-
+          {!editMode && (
+            <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-gray-800 mt-6">
+            <button
+              type="button"
+              onClick={() => setEditMode(true)}
+              className="inline-flex items-center gap-2 bg-[#292929] hover:bg-[#333] text-white px-4 py-2.5 rounded-lg transition-colors duration-200 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-[#54BB74]/20 sm:w-auto w-full"
+            >
+              <FaEdit className="text-sm" />
+              <span>Edit Profile</span>
+            </button>
+            </div>
+          )}
           {editMode && (
             <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-gray-800 mt-6">
               <button
@@ -398,20 +521,37 @@ export default function AccountSettings() {
                     name: user?.name || "",
                     email: user?.email || "",
                     phone: user?.phone || "",
-                    password: ""
+                    password: user?.password || "",
                   });
                 }}
                 className="px-4 py-2.5 text-sm font-medium text-gray-300 hover:text-white bg-[#292929] hover:bg-[#333] rounded-lg border border-gray-700 transition-colors duration-200 w-full sm:w-auto"
               >
                 Cancel
               </button>
-              <button
-                type="submit"
-                className="px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-[#54BB74] to-[#3a9b5a] hover:from-[#48a064] hover:to-[#2e8a4f] rounded-lg shadow-md hover:shadow-[#54BB74]/20 transition-all duration-200 flex items-center justify-center gap-2 w-full sm:w-auto"
-              >
-                <FaSave className="text-sm" />
-                <span>Save Changes</span>
-              </button>
+              <div className="relative w-full sm:w-auto">
+                <button
+                  type="submit"
+                  disabled={isSaving}
+                  className={`px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-[#54BB74] to-[#3a9b5a] hover:from-[#48a064] hover:to-[#2e8a4f] rounded-lg shadow-md hover:shadow-[#54BB74]/20 transition-all duration-200 flex items-center justify-center gap-2 w-full sm:w-auto ${isSaving ? 'opacity-75 cursor-not-allowed' : ''}`}
+                >
+                  {isSaving ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      <span>Saving...</span>
+                    </>
+                  ) : (
+                    <>
+                      <FaSave className="text-sm" />
+                      <span>Save Changes</span>
+                    </>
+                  )}
+                </button>
+                {saveError && (
+                  <div className="absolute left-0 right-0 -bottom-6 text-xs text-red-400 text-center">
+                    {saveError}
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </form>
@@ -434,16 +574,8 @@ export default function AccountSettings() {
               <div className="w-32 h-32 sm:w-36 sm:h-36 rounded-full overflow-hidden bg-gradient-to-br from-[#2a2a2a] to-[#1f1f1f] p-1">
                 <div className="relative w-full h-full rounded-full overflow-hidden ring-2 ring-[#333] group-hover:ring-[#54BB74] transition-all duration-300">
                   <Image
-                    src={
-                      user?.avatar
-                        ? user.avatar.startsWith("http")
-                          ? user.avatar
-                          : `https://api1.limitless-lighting.co.uk${user.avatar}`
-                        : `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                            user?.name || "User"
-                          )}&background=54BB74&color=fff&size=256`
-                    }
-                    alt={user?.name || "User"}
+                          src={user.data.profilePicture.url || ''}
+                          alt={user.data.name }
                     width={144}
                     height={144}
                     className="object-cover w-full h-full"
@@ -498,7 +630,7 @@ export default function AccountSettings() {
                   )}
                 </button>
                 
-                {user?.avatar && (
+                {user.data.profilePicture.url && (
                   <button
                     type="button"
                     onClick={handleRemovePicture}

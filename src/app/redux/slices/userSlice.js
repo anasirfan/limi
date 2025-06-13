@@ -445,6 +445,12 @@ export const userSlice = createSlice({
         saveUserToStorage(state.user);
       }
     },
+    updateUserAvatar: (state, action) => {
+      if (state.user) {
+        state.user.avatar = action.payload;
+        saveUserToStorage(state.user);
+      }
+    },
   },
   extraReducers: (builder) => {
     builder

@@ -30,6 +30,7 @@ const Header = () => {
   const cartData = useSelector((state) => state.cart);
   const favoritesData = useSelector((state) => state.favorites);
   const userData = useSelector((state) => state.user);
+  
 
   // Then use the data conditionally
   const cart = isClient ? cartData : { items: [], totalQuantity: 0, totalAmount: 0 };
@@ -300,10 +301,10 @@ const Header = () => {
                     aria-label="User menu"
                   >
                     <div className={`${isScrolled ? 'w-6 h-6' : 'w-7 h-7'} rounded-full bg-emerald flex items-center justify-center overflow-hidden transition-all duration-300`}>
-                      {user?.avatar ? (
+                      {userData.user.data.profilePicture.url ? (
                         <Image
-                          src={user.avatar}
-                          alt="User avatar"
+                          src={userData.user.data.profilePicture.url}
+                          alt={userData.user.data.name}
                           width={28}
                           height={28}
                           className="object-cover"

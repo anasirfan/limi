@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaEnvelope, FaLock, FaMobileAlt, FaArrowRight, FaGoogle, FaApple } from 'react-icons/fa';
+import { FaEnvelope, FaLock, FaMobileAlt, FaArrowRight, FaGoogle, FaApple, FaEye, FaEyeSlash } from 'react-icons/fa';
 import { loginUser, clearAuthStatus } from '../../redux/slices/userSlice';
 import SignupForm from './SignupForm';
 
@@ -14,6 +14,7 @@ export default function PortalLogin({ onLogin }) {
   const [showSignup, setShowSignup] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [phone, setPhone] = useState('');
   const [otp, setOtp] = useState('');
   const [otpSent, setOtpSent] = useState(false);
@@ -255,7 +256,7 @@ export default function PortalLogin({ onLogin }) {
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="bg-charleston-green text-white w-full pl-10 pr-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald"
+                      className="bg-charleston-green w-full pl-10 pr-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald"
                       placeholder="your@email.com"
                       required
                       disabled={loginStatus === 'loading'}
@@ -270,14 +271,22 @@ export default function PortalLogin({ onLogin }) {
                       <FaLock className="text-gray-500" />
                     </div>
                     <input
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="bg-charleston-green text-white w-full pl-10 pr-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald"
+                      className="bg-charleston-green text-white w-full pl-10 pr-12 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald"
                       placeholder="••••••••"
                       required
                       disabled={loginStatus === 'loading'}
                     />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-white transition-colors"
+                      disabled={loginStatus === 'loading'}
+                    >
+                      {showPassword ? <FaEyeSlash /> : <FaEye />}
+                    </button>
                   </div>
                 </div>
                 

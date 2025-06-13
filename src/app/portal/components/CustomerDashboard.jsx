@@ -25,6 +25,7 @@ import AccountSettings from './dashboard/AccountSettings';
 
 // Mock data for user dashboard
 import { mockConfigurations, mockOrders, mockFavorites, mockPromotions } from '../data/mockData';
+import { useSelector } from 'react-redux';
 
 const defaultUser = {
   name: 'John Doe',
@@ -33,9 +34,10 @@ const defaultUser = {
   avatar: null,
 };
 
-export default function CustomerDashboard({ user = defaultUser, onLogout }) {
+export default function CustomerDashboard({ onLogout }) {
   const [activeSection, setActiveSection] = useState('configurations');
-  
+  const user = useSelector((state) => state.user);
+  console.log(user);
   // Dashboard navigation items
   const navItems = [
     { id: 'configurations', label: 'Saved Configurations', icon: <FaCog /> },
@@ -44,7 +46,7 @@ export default function CustomerDashboard({ user = defaultUser, onLogout }) {
     // { id: 'promotions', label: 'Promotions', icon: <FaTag /> },
     { id: 'account', label: 'Account Settings', icon: <FaUser /> },
   ];
-  
+  console.log(user);
   // Render the active section content
   const renderSectionContent = () => {
     switch (activeSection) {
@@ -57,7 +59,7 @@ export default function CustomerDashboard({ user = defaultUser, onLogout }) {
       case 'promotions':
         return <Promotions promotions={mockPromotions} />;
       case 'account':
-        return <AccountSettings user={user} />;
+        return <AccountSettings user={user.user} />;
       default:
         return <SavedConfigurations configurations={mockConfigurations} />;
     }
@@ -76,16 +78,16 @@ export default function CustomerDashboard({ user = defaultUser, onLogout }) {
           <div className="flex items-center gap-4">
             <div className="relative w-16 h-16 rounded-full overflow-hidden">
               <Image 
-                src={user.avatar || `https://ui-avatars.com/api/?name=${user.name}&background=54BB74&color=fff`}
-                alt={user.name}
+                src={user.user.data.profilePicture.url || `https://ui-avatars.com/api/?name=${user.user.data.name}&background=54BB74&color=fff`}
+                alt={user.user.data.name}
                 fill
                 className="object-cover"
               />
             </div>
             
             <div>
-              <h1 className="text-2xl font-bold text-white">Welcome, {user.name}</h1>
-              <p className="text-gray-400">{user.email || user.phone}</p>
+              <h1 className="text-2xl font-bold text-white">Welcome, {user.user.data.name}</h1>
+              <p className="text-gray-400">{user.user.data.email || user.user.data.phone}</p>
             </div>
           </div>
           
