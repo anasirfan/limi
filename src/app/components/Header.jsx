@@ -37,7 +37,7 @@ const Header = () => {
   const favorites = isClient ? favoritesData : { items: [] };
 
   const { isLoggedIn, user } = userData || { isLoggedIn: false, user: null };
-
+  console.log("data",userData)
   // Get current path to determine which navigation to show
   const pathname = usePathname();
   const isHomePage = pathname === '/';
@@ -301,7 +301,8 @@ const Header = () => {
                     aria-label="User menu"
                   >
                     <div className={`${isScrolled ? 'w-6 h-6' : 'w-7 h-7'} rounded-full bg-emerald flex items-center justify-center overflow-hidden transition-all duration-300`}>
-                      {userData.user.data.profilePicture.url ? (
+                     
+                      {userData?.user?.data?.profilePicture?.url ? (
                         <Image
                           src={userData.user.data.profilePicture.url}
                           alt={userData.user.data.name}

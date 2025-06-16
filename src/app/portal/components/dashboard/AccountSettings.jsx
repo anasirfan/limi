@@ -33,7 +33,7 @@ import {
   setDefaultPaymentMethod,
 } from "../../../redux/slices/userSlice";
 
-export default function AccountSettings({ user }) {
+export default function AccountSettings({ user,onUserUpdate }) {
   const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState("profile");
   const [editMode, setEditMode] = useState(false);
@@ -81,6 +81,27 @@ console.log(user);
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState('');
 
+  // Helper function to fetch fresh user data
+  const fetchUserData = async () => {
+    const token = localStorage.getItem('limiToken');
+    if (!token) return null;
+    
+    try {
+      const response = await fetch('https://api1.limitless-lighting.co.uk/client/user/profile', {
+        headers: { 'Authorization': token }
+      });
+      
+      if (!response.ok) throw new Error('Failed to fetch user data');
+      
+      const userData = await response.json();
+      localStorage.setItem('limiUser', JSON.stringify(userData));
+      return userData;
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      return null;
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSaving(true);
@@ -91,9 +112,9 @@ console.log(user);
       const updateData = {};
       
       // Only include fields that have changed and are not the password mask
-      if (formData.name !== user?.name) updateData.name = formData.name;
-      if (formData.email !== user?.email) updateData.email = formData.email;
-      if (formData.phone !== user?.phone) updateData.phone = formData.phone;
+      if (formData.name !== user?.data?.name) updateData.name = formData.name;
+      if (formData.email !== user?.data?.email) updateData.email = formData.email;
+      if (formData.phone !== user?.data?.phone) updateData.phone = formData.phone;
       if (formData.password && formData.password !== '••••••••••' && formData.password.length >= 6) {
         updateData.password = formData.password;
       }
@@ -125,26 +146,17 @@ console.log(user);
         throw new Error(errorData.message || 'Failed to update profile');
       }
       
-      // After successful update, fetch the latest user data
-      const profileResponse = await fetch('https://api1.limitless-lighting.co.uk/client/user/profile', {
-        headers: {
-          'Authorization': token
-        }
-      });
+      // Fetch fresh user data after successful update
+      const updatedUser = await fetchUserData();
       
-      if (!profileResponse.ok) {
-        throw new Error('Profile updated but failed to fetch updated user data');
+      if (!updatedUser) {
+        throw new Error('Profile updated but failed to refresh user data');
       }
       
-      const updatedUser = await profileResponse.json();
-      console.log(updatedUser)
-      // Save updated user data to localStorage
-      localStorage.setItem('limiUser', JSON.stringify(updatedUser));
-      
-      // Update the user data in the parent component
-      // if (onLogin) {
-      //   onLogin(updatedUser);
-      // }
+      // Update the user data in the parent component and Redux store
+      if (onUserUpdate) {
+        onUserUpdate(updatedUser);
+      }
       
       // Update local state
       setFormData({
@@ -268,7 +280,9 @@ console.log(user);
       // if (onLogin) {
       //   onLogin(updatedUser);
       // }
-
+      if (onUserUpdate) {
+        onUserUpdate(updatedUser);
+      }
       setUploadSuccess(true);
       setTimeout(() => setUploadSuccess(false), 3000);
     } catch (error) {
@@ -291,13 +305,13 @@ console.log(user);
     if (!window.confirm("Are you sure you want to remove your profile picture?")) {
       return;
     }
-
+  
     try {
       const token = localStorage.getItem("limiToken");
       if (!token) {
         throw new Error("Authentication required. Please log in again.");
       }
-
+  
       const response = await fetch(
         "https://api1.limitless-lighting.co.uk/client/user/profile/picture",
         {
@@ -307,12 +321,12 @@ console.log(user);
           }
         }
       );
-
+  
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.message || 'Failed to remove profile picture');
       }
-
+  
       // Get updated user data
       const profileResponse = await fetch(
         'https://api1.limitless-lighting.co.uk/client/user/profile',
@@ -320,15 +334,20 @@ console.log(user);
           headers: { 'Authorization': token }
         }
       );
-
+  
       if (!profileResponse.ok) {
         throw new Error('Failed to fetch updated profile');
       }
-
+  
       const updatedUser = await profileResponse.json();
       
       // Update Redux store with empty avatar
       dispatch(updateUserAvatar({ url: '' }));
+      
+      // Update parent component with the new user data
+      if (onUserUpdate) {
+        onUserUpdate(updatedUser);
+      }
       
       // Show success message
       setUploadSuccess(true);
@@ -573,9 +592,10 @@ console.log(user);
             <div className="relative group">
               <div className="w-32 h-32 sm:w-36 sm:h-36 rounded-full overflow-hidden bg-gradient-to-br from-[#2a2a2a] to-[#1f1f1f] p-1">
                 <div className="relative w-full h-full rounded-full overflow-hidden ring-2 ring-[#333] group-hover:ring-[#54BB74] transition-all duration-300">
+                {user?.data?.profilePicture?.url && (
                   <Image
-                          src={user.data.profilePicture.url || ''}
-                          alt={user.data.name }
+                          src={user?.data?.profilePicture?.url || ''}
+                          alt={user?.data?.name }
                     width={144}
                     height={144}
                     className="object-cover w-full h-full"
@@ -586,6 +606,7 @@ console.log(user);
                       )}&background=54BB74&color=fff`;
                     }}
                   />
+                  )}
                   <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer">
                     <div className="bg-white/10 backdrop-blur-sm p-3 rounded-full">
                       <FaCamera className="text-white text-xl" />
@@ -630,7 +651,7 @@ console.log(user);
                   )}
                 </button>
                 
-                {user.data.profilePicture.url && (
+                {user?.data?.profilePicture?.url && (
                   <button
                     type="button"
                     onClick={handleRemovePicture}

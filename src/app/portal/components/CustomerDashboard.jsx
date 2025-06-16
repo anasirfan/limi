@@ -1,9 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { useDispatch } from 'react-redux';
+import { updateUser } from '../../redux/slices/userSlice';
 import { 
   FaUser, 
   FaSignOutAlt, 
@@ -34,10 +36,41 @@ const defaultUser = {
   avatar: null,
 };
 
+
+
 export default function CustomerDashboard({ onLogout }) {
+  const dispatch = useDispatch();
   const [activeSection, setActiveSection] = useState('configurations');
-  const user = useSelector((state) => state.user);
-  console.log(user);
+  const [isLoading, setIsLoading] = useState(true);
+  const user = useSelector(state => state.user);
+  console.log("user : ",user);
+  
+  // Fetch user data when component mounts
+  useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        const token = localStorage.getItem('limiToken');
+        if (token) {
+          const response = await fetch('https://api1.limitless-lighting.co.uk/client/user/profile', {
+            headers: {
+              'Authorization': token
+            }
+          });
+          
+          if (response.ok) {
+            const userData = await response.json();
+            dispatch(updateUser(userData));
+          }
+        }
+      } catch (error) {
+        console.error('Error loading user data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadUserData();
+  }, [dispatch]);
   // Dashboard navigation items
   const navItems = [
     { id: 'configurations', label: 'Saved Configurations', icon: <FaCog /> },
@@ -46,7 +79,15 @@ export default function CustomerDashboard({ onLogout }) {
     // { id: 'promotions', label: 'Promotions', icon: <FaTag /> },
     { id: 'account', label: 'Account Settings', icon: <FaUser /> },
   ];
-  console.log(user);
+  console.log(user);  
+
+
+  const handleUserUpdate = (updatedUser) => {
+    // Update the Redux store with the new user data
+    dispatch(updateUser(updatedUser));
+  };
+
+
   // Render the active section content
   const renderSectionContent = () => {
     switch (activeSection) {
@@ -59,12 +100,21 @@ export default function CustomerDashboard({ onLogout }) {
       case 'promotions':
         return <Promotions promotions={mockPromotions} />;
       case 'account':
-        return <AccountSettings user={user.user} />;
+        return <AccountSettings user={user.user} onUserUpdate={handleUserUpdate} />;
       default:
         return <SavedConfigurations configurations={mockConfigurations} />;
     }
   };
   
+  // Show loading state while fetching user data
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#54BB74]"></div>
+      </div>
+    );
+  }
+
   return (
     <div>
       {/* Dashboard Header */}
@@ -78,8 +128,8 @@ export default function CustomerDashboard({ onLogout }) {
           <div className="flex items-center gap-4">
             <div className="relative w-16 h-16 rounded-full overflow-hidden">
               <Image 
-                src={user.user.data.profilePicture.url || `https://ui-avatars.com/api/?name=${user.user.data.name}&background=54BB74&color=fff`}
-                alt={user.user.data.name}
+                src={user?.user?.data?.profilePicture?.url || `https://ui-avatars.com/api/?name=${user?.user?.data?.name}&background=54BB74&color=fff`}
+                alt={user?.user?.data?.name}
                 fill
                 className="object-cover"
               />

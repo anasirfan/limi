@@ -40,7 +40,9 @@ const defaultUserData = {
   },
   addresses: [],
   paymentMethods: [],
-  savedConfigurations: []
+  savedConfigurations: [],
+  // Add token expiration tracking
+  tokenExpiresAt: null
 };
 
 // Merge saved user with default structure to ensure all fields exist
@@ -96,15 +98,18 @@ export const loginUser = createAsyncThunk(
       
       const data = await response.json();
       
-      // Save token to localStorage
+      // Save token to localStorage with Bearer prefix for consistency
       if (data.token) {
-        localStorage.setItem('limiToken', data.token);
+        const token = data.token.startsWith('Bearer ') ? data.token : `${data.token}`;
+        localStorage.setItem('limiToken', token);
       }
       
       // Get user profile with token
+      const token = data.token.startsWith('Bearer ') ? data.token : `${data.token}`;
+      console.log("token : ",token);
       const profileResponse = await fetch('https://api1.limitless-lighting.co.uk/client/user/profile', {
         headers: {
-          'Authorization': `${data.token}`
+          'Authorization': token
         }
       });
       
@@ -211,39 +216,44 @@ export const updateUserProfile = createAsyncThunk(
     try {
       // Get current user and token
       const { user } = getState().user;
-      const token = localStorage.getItem('limiToken');
+      let token = localStorage.getItem('limiToken');
       
       if (!user || !token) {
-        return rejectWithValue('User not logged in');
+        return rejectWithValue('Please log in to update your profile');
       }
+
+      // Ensure token has Bearer prefix
+      token = token.startsWith('Bearer ') ? token : `Bearer ${token}`;
       
-      // Make API request
-      const response = await fetch('/client/user/profile', {
+      // Make API request with full URL
+      const response = await fetch('https://api1.limitless-lighting.co.uk/client/user/profile', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Authorization': token
         },
         body: JSON.stringify(profileData),
       });
       
+      if (response.status === 401) {
+        // Token might be expired, clear it
+        localStorage.removeItem('limiToken');
+        return rejectWithValue('Your session has expired. Please log in again.');
+      }
+      
       if (!response.ok) {
-        const errorData = await response.json();
-        return rejectWithValue(errorData.message || 'Profile update failed');
+        const errorData = await response.json().catch(() => ({}));
+        return rejectWithValue(errorData.message || 'Failed to update profile. Please try again.');
       }
       
-      // Get updated profile
-      const profileResponse = await fetch('/client/user/profile', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      
-      if (!profileResponse.ok) {
-        return rejectWithValue('Failed to fetch updated profile');
+      // Return the updated user data from the response if available
+      let updatedUser;
+      try {
+        updatedUser = await response.json();
+      } catch (e) {
+        // If no response body, use the profileData as fallback
+        updatedUser = { ...user, ...profileData };
       }
-      
-      const updatedUser = await profileResponse.json();
       
       // Save to localStorage
       saveUserToStorage(updatedUser);
@@ -259,6 +269,20 @@ export const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
+    updateUser: (state, action) => {
+      if (state.user) {
+        state.user = {
+          ...state.user,
+          ...action.payload,
+          // Preserve nested objects if not provided in the update
+          data: {
+            ...state.user.data,
+            ...(action.payload.data || {})
+          }
+        };
+        saveUserToStorage(state.user);
+      }
+    },
     login: (state, action) => {
       state.isLoggedIn = true;
       state.user = action.payload;
@@ -332,7 +356,8 @@ export const userSlice = createSlice({
           saveUserToStorage(state.user);
         } catch (error) {
           console.error('Error updating avatar in Redux:', error);
-          // Optionally handle the error (e.g., show a notification)
+          // The error will be caught by the error boundary or can be handled by the component
+          throw error; // Re-throw to allow error handling in components
         }
       }
     },
@@ -445,12 +470,6 @@ export const userSlice = createSlice({
         saveUserToStorage(state.user);
       }
     },
-    updateUserAvatar: (state, action) => {
-      if (state.user) {
-        state.user.avatar = action.payload;
-        saveUserToStorage(state.user);
-      }
-    },
   },
   extraReducers: (builder) => {
     builder
@@ -502,7 +521,8 @@ export const {
   setDefaultPaymentMethod,
   saveConfiguration,
   removeSavedConfiguration,
-  updateUserAvatar
+  updateUserAvatar,
+  updateUser
 } = userSlice.actions;
 
 export default userSlice.reducer;
