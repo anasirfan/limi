@@ -1,15 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback, useMemo } from "react";
+import PropTypes from 'prop-types';
 import { motion, AnimatePresence } from "framer-motion";
 import { FaSave, FaShoppingCart, FaUser, FaCheck, FaTimes, FaSignInAlt, FaUserPlus, FaEnvelope, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
-import { addToCart } from "../../../redux/slices/cartSlice";
-import { saveConfiguration, loginUser, registerUser } from "../../../redux/slices/userSlice";
+// import { addToCart } from "../../../redux/slices/cartSlice";
+// import { saveConfiguration, loginUser, registerUser } from "../../../redux/slices/userSlice";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
-const ConfigurationSummary = ({ totalPrice, lightType, lightAmount, cableColor, cableLength, pendants, isDarkMode }) => {
+const ConfigurationSummary = ({ 
+  totalPrice, 
+  lightType, 
+  lightAmount, 
+  cableColor, 
+  cableLength, 
+  pendants = [], 
+  isDarkMode = false 
+}) => {
   // Redux setup
   const dispatch = useDispatch();
   const router = useRouter();
@@ -32,38 +41,57 @@ const ConfigurationSummary = ({ totalPrice, lightType, lightAmount, cableColor, 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // Memoize the configuration summary
+  const configSummary = useMemo(() => ({
+    lightType,
+    lightAmount,
+    cableColor,
+    cableLength,
+    pendants: pendants.map(p => p.design).join(', '),
+    price: totalPrice
+  }), [lightType, lightAmount, cableColor, cableLength, pendants, totalPrice]);
+
   // Function to handle adding the current configuration to cart
-  function handleAddToCart() {
-    // Create a product object from the current configuration
-    const product = {
-      id: `light_${Date.now()}`,
-      name: `${lightType.charAt(0).toUpperCase() + lightType.slice(1)} Light (${lightAmount > 1 ? `${lightAmount} pendants` : pendants[0]?.design || 'bumble'})`,
-      price: parseFloat(totalPrice),
-      thumbnail: `/images/products/${lightType}-${pendants[0]?.design || 'bumble'}.jpg`,
-      slug: `${lightType}-light-${pendants[0]?.design || 'bumble'}`,
-      category: 'Lighting',
-      configuration: {
-        lightType,
-        lightAmount,
-        pendants: pendants.map(p => ({ design: p.design, color: p.color })),
-        cableColor,
-        cableLength,
-      }
-    };
-    
-    // Dispatch action to add to cart
-    dispatch(addToCart({ product, quantity: 1 }));
-    
-    // Show success notification
-    toast.success('Added to cart successfully!', {
-      position: "bottom-right",
-      autoClose: 3000,
-      theme: isDarkMode ? "dark" : "light"
-    });
-  }
+  const handleAddToCart = useCallback(() => {
+    try {
+      // Create a product object from the current configuration
+      const product = {
+        id: `light_${Date.now()}`,
+        name: `${lightType.charAt(0).toUpperCase() + lightType.slice(1)} Light (${lightAmount > 1 ? `${lightAmount} pendants` : pendants[0]?.design || 'bumble'})`,
+        price: parseFloat(totalPrice || 0),
+        thumbnail: `/images/products/${lightType}-${pendants[0]?.design || 'bumble'}.jpg`,
+        slug: `${lightType}-light-${pendants[0]?.design || 'bumble'}`,
+        category: 'Lighting',
+        configuration: {
+          lightType,
+          lightAmount,
+          pendants: pendants.map(p => ({ design: p.design, color: p.color })),
+          cableColor,
+          cableLength,
+        }
+      };
+      
+      // Dispatch action to add to cart
+      dispatch(addToCart({ product, quantity: 1 }));
+      
+      // Show success notification
+      toast.success('Added to cart successfully!', {
+        position: "bottom-right",
+        autoClose: 3000,
+        theme: isDarkMode ? "dark" : "light"
+      });
+    } catch (err) {
+      console.error('Error adding to cart:', err);
+      toast.error('Failed to add to cart. Please try again.', {
+        position: "bottom-right",
+        autoClose: 3000,
+        theme: isDarkMode ? "dark" : "light"
+      });
+    }
+  }, [lightType, lightAmount, pendants, cableColor, cableLength, totalPrice, isDarkMode, dispatch]);
   
   // Function to handle saving the current configuration
-  function handleSaveConfig() {
+  const handleSaveConfig = useCallback(() => {
     if (!isLoggedIn) {
       setShowAuthModal(true);
       return;
@@ -71,56 +99,65 @@ const ConfigurationSummary = ({ totalPrice, lightType, lightAmount, cableColor, 
     
     setShowSaveModal(true);
     setConfigName(`${lightType.charAt(0).toUpperCase() + lightType.slice(1)} Light Configuration`);
-  }
+  }, [isLoggedIn, lightType]);
   
   // Function to save configuration to Redux
-  function saveConfigToRedux() {
-    if (!configName.trim()) {
-      toast.error('Please enter a name for your configuration', {
+  const saveConfigToRedux = useCallback(() => {
+    try {
+      if (!configName.trim()) {
+        toast.error('Please enter a name for your configuration', {
+          position: "bottom-right",
+          autoClose: 3000,
+          theme: isDarkMode ? "dark" : "light"
+        });
+        return;
+      }
+      
+      // Create configuration object
+      const configData = {
+        name: configName,
+        lightType,
+        lightAmount,
+        pendants: pendants.map(p => ({ design: p.design, color: p.color })),
+        cableColor,
+        cableLength,
+        price: parseFloat(totalPrice || 0),
+        thumbnail: `/images/products/${lightType}-${pendants[0]?.design || 'bumble'}.jpg`,
+        date: new Date().toISOString(),
+      };
+      
+      // Dispatch action to save configuration
+      dispatch(saveConfiguration(configData));
+      
+      // Close modal and show success notification
+      setShowSaveModal(false);
+      
+      toast.success('Configuration saved successfully!', {
         position: "bottom-right",
         autoClose: 3000,
-        theme: "dark"
+        theme: isDarkMode ? "dark" : "light"
       });
-      return;
+    } catch (err) {
+      console.error('Error saving configuration:', err);
+      toast.error('Failed to save configuration. Please try again.', {
+        position: "bottom-right",
+        autoClose: 3000,
+        theme: isDarkMode ? "dark" : "light"
+      });
     }
-    
-    // Create configuration object
-    const configData = {
-      name: configName,
-      lightType,
-      lightAmount,
-      pendants: pendants.map(p => ({ design: p.design, color: p.color })),
-      cableColor,
-      cableLength,
-      price: parseFloat(totalPrice),
-      thumbnail: `/images/products/${lightType}-${pendants[0]?.design || 'bumble'}.jpg`,
-      date: new Date().toISOString(),
-    };
-    
-    // Dispatch action to save configuration
-    dispatch(saveConfiguration(configData));
-    
-    // Close modal and show success notification
-    setShowSaveModal(false);
-    
-    toast.success('Configuration saved successfully!', {
-      position: "bottom-right",
-      autoClose: 3000,
-      theme: "dark"
-    });
-  }
+  }, [configName, lightType, lightAmount, pendants, cableColor, cableLength, totalPrice, isDarkMode, dispatch]);
   
   // Handle auth form change
-  function handleAuthFormChange(e) {
+  const handleAuthFormChange = useCallback((e) => {
     const { name, value } = e.target;
     setAuthForm(prev => ({
       ...prev,
       [name]: value
     }));
-  }
+  }, []);
   
   // Handle auth form submission
-  async function handleAuthSubmit(e) {
+  const handleAuthSubmit = useCallback(async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
@@ -128,6 +165,18 @@ const ConfigurationSummary = ({ totalPrice, lightType, lightAmount, cableColor, 
     try {
       if (authView === 'signup') {
         // Validate form
+        if (!authForm.name.trim()) {
+          throw new Error('Name is required');
+        }
+        
+        if (!authForm.email.trim()) {
+          throw new Error('Email is required');
+        }
+        
+        if (!authForm.password) {
+          throw new Error('Password is required');
+        }
+        
         if (authForm.password !== authForm.confirmPassword) {
           throw new Error('Passwords do not match');
         }
@@ -138,27 +187,31 @@ const ConfigurationSummary = ({ totalPrice, lightType, lightAmount, cableColor, 
         
         // Register user
         await dispatch(registerUser({
-          name: authForm.name,
-          email: authForm.email,
+          name: authForm.name.trim(),
+          email: authForm.email.trim(),
           password: authForm.password
         }));
         
         toast.success('Account created successfully!', {
           position: "bottom-right",
           autoClose: 3000,
-          theme: "dark"
+          theme: isDarkMode ? "dark" : "light"
         });
       } else {
         // Login user
+        if (!authForm.email.trim() || !authForm.password) {
+          throw new Error('Email and password are required');
+        }
+        
         await dispatch(loginUser({
-          email: authForm.email,
+          email: authForm.email.trim(),
           password: authForm.password
         }));
         
         toast.success('Logged in successfully!', {
           position: "bottom-right",
           autoClose: 3000,
-          theme: "dark"
+          theme: isDarkMode ? "dark" : "light"
         });
       }
       
@@ -172,7 +225,18 @@ const ConfigurationSummary = ({ totalPrice, lightType, lightAmount, cableColor, 
     } finally {
       setLoading(false);
     }
-  }
+  }, [authView, authForm, lightType, isDarkMode, dispatch]);
+
+  // Toggle password visibility
+  const togglePasswordVisibility = useCallback(() => {
+    setShowPassword(prev => !prev);
+  }, []);
+
+  // Toggle auth view between login and signup
+  const toggleAuthView = useCallback((view) => {
+    setAuthView(view);
+    setError('');
+  }, []);
 
   return (
     <motion.div 
@@ -498,6 +562,26 @@ const ConfigurationSummary = ({ totalPrice, lightType, lightAmount, cableColor, 
       </AnimatePresence>
     </motion.div>
   );
+};
+
+ConfigurationSummary.propTypes = {
+  totalPrice: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  lightType: PropTypes.string.isRequired,
+  lightAmount: PropTypes.number.isRequired,
+  cableColor: PropTypes.string.isRequired,
+  cableLength: PropTypes.string.isRequired,
+  pendants: PropTypes.arrayOf(
+    PropTypes.shape({
+      design: PropTypes.string.isRequired,
+      color: PropTypes.string
+    })
+  ),
+  isDarkMode: PropTypes.bool
+};
+
+ConfigurationSummary.defaultProps = {
+  pendants: [],
+  isDarkMode: false
 };
 
 export default ConfigurationSummary;

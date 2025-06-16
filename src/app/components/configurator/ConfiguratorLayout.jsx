@@ -14,6 +14,7 @@ import { LoadConfigModal } from './LoadConfigModal';
 import { useSelector, useDispatch } from 'react-redux';
 import { saveConfiguration } from '../../../app/redux/slices/userSlice.js';
 import { useRouter, useSearchParams } from 'next/navigation';
+import ConfigurationSummary from '../lightConfigurator/ConfigurationSummary';
 
 const ConfiguratorLayout = () => {
   const router = useRouter();
@@ -1103,6 +1104,17 @@ Base Design: ${baseName}
       </AnimatePresence>
       
       <ToastContainer position="bottom-center" autoClose={3000} />
+
+{/* 
+      <ConfigurationSummary
+        totalPrice={totalPrice}
+        lightType={lightType}
+        lightAmount={lightAmount}
+        cableColor={cableColor}
+        cableLength={cableLength}
+        pendants={pendants}
+        isDarkMode={isDarkMode}
+      /> */}
     </div>
   );
 };
