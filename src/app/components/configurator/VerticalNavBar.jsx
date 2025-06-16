@@ -17,12 +17,14 @@ import {
 } from './navComponents';
 import { IndividualConfigurationPanel } from './navComponents/IndividualConfigurationPanel';
 import { ConfigPanel } from './navComponents/ConfigPanel';
+import BaseColorPanel from './navComponents/BaseColorPanel';
 const VerticalNavBar = ({ 
   activeStep, 
   setActiveStep, 
   config,
   onLightTypeChange,
   onBaseTypeChange,
+  onBaseColorChange,
   onConfigurationTypeChange,
   onLightAmountChange,
   onSystemTypeChange,
@@ -266,6 +268,13 @@ const VerticalNavBar = ({
                   />
                 )}
                 
+                {step?.id === 'baseColor' && openDropdown === step?.id && (
+                  <BaseColorPanel 
+                    currentBaseColor={config.baseColor}
+                    onBaseColorChange={onBaseColorChange}
+                  />
+                )}
+                
                 {/* Configuration type dropdown removed */}
                 
                 {step?.id === 'systemType' && openDropdown === step?.id && (
@@ -342,15 +351,7 @@ const VerticalNavBar = ({
                   />
                 )}
                 
-                {step?.id === 'systemConfiguration' && openDropdown === step?.id && (
-                  <SystemConfigurationDropdown 
-                    config={config}
-                    onSystemBaseDesignChange={onSystemBaseDesignChange}
-                    setActiveStep={setActiveStep}
-                    setOpenDropdown={setOpenDropdown}
-                    handleSaveConfig={handleSaveConfig}
-                  />
-                )}
+                
               </NavButton>
              
             ))}

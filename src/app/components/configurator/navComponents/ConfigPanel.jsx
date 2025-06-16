@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { FaChevronLeft, FaChevronRight, FaCheck, FaCubes, FaLightbulb, FaTimes } from "react-icons/fa";
 import { Breadcrumb } from './Breadcrumb';
+import BaseColorPanel from './BaseColorPanel';
 
 export const ConfigPanel = ({
   configuringType,
@@ -14,6 +15,7 @@ export const ConfigPanel = ({
   selectedPendants,
   onPendantDesignChange,
   onSystemBaseDesignChange,
+  onBaseColorChange,
   onSelectConfigurationType,
   onClose,
   className = '' // Add className prop with default empty string
@@ -172,15 +174,32 @@ export const ConfigPanel = ({
         // Map of base IDs to names and image numbers based on available files
         const baseOptions = {
           'bar': [
-            { id: 'nexus', name: 'Nexus', baseNumber: '6' }
-          ],
-          'ball': [
-            { id: 'quantum', name: 'Quantum', baseNumber: '7' }
+            { id: 'prism', name: 'Prism', baseNumber: '1' },
+            { id: 'helix', name: 'Helix', baseNumber: '2' },
+            { id: 'orbit', name: 'Orbit', baseNumber: '3' },
+            { id: 'zenith', name: 'Zenith', baseNumber: '4' },
+            { id: 'pulse', name: 'Pulse', baseNumber: '5' },
+            { id: 'vortex', name: 'Vortex', baseNumber: '6' },
+            { id: 'nexus', name: 'Nexus', baseNumber: '7' },
+            { id: 'quasar', name: 'Quasar', baseNumber: '8' },
+            { id: 'nova', name: 'Nova', baseNumber: '9' }
           ],
           'universal': [
-            { id: 'vertex', name: 'Vertex', baseNumber: '8' },
-            { id: 'fusion', name: 'Fusion', baseNumber: '9' },
-            { id: 'aurora', name: 'Aurora', baseNumber: '10' },
+            { id: 'atom', name: 'Atom', baseNumber: '1' },
+            { id: 'nebula', name: 'Nebula', baseNumber: '2' },
+            { id: 'cosmos', name: 'Cosmos', baseNumber: '3' },
+            { id: 'stellar', name: 'Stellar', baseNumber: '4' },
+            { id: 'eclipse', name: 'Eclipse', baseNumber: '5' },
+            { id: 'aurora', name: 'Aurora', baseNumber: '6' },
+            { id: 'solstice', name: 'Solstice', baseNumber: '7' },
+            { id: 'quantum', name: 'Quantum', baseNumber: '8' },
+            { id: 'vertex', name: 'Vertex', baseNumber: '9' },
+            { id: 'horizon', name: 'Horizon', baseNumber: '10' },
+            { id: 'zenith', name: 'Zenith', baseNumber: '11' },
+            { id: 'equinox', name: 'Equinox', baseNumber: '12' },
+            { id: 'meridian', name: 'Meridian', baseNumber: '13' },
+            { id: 'polaris', name: 'Polaris', baseNumber: '14' },
+            { id: 'celestial', name: 'Celestial', baseNumber: '15' }
           ]
         };
         
@@ -354,12 +373,21 @@ export const ConfigPanel = ({
                 <div className={`${isMobileView ? 'w-16 h-16' : 'w-16 h-16'} rounded-full overflow-hidden relative ${
                   panelConfig.selectedItem === item.id ? 'ring-2 ring-emerald-500' : ''
                 }`}>
-                  <Image
-                    src={item.image}
-                    alt={item.name}
-                    fill
-                    className="object-cover"
-                  />
+                  {parseInt(item.baseNumber) <= 5 ? (
+                    <Image
+                      src={item.image}
+                      alt={item.name}
+                      fill
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div 
+                      className="w-full h-full flex items-center justify-center" 
+                      style={{ backgroundColor: '#2C3539', color: 'white' }}
+                    >
+                      <p className="text-lg font-bold">{item.baseNumber}</p>
+                    </div>
+                  )}
                   {panelConfig.selectedItem === item.id && (
                     <div className="absolute inset-0 bg-emerald-500/20 flex items-center justify-center">
                       <FaCheck className="text-white text-[8px]" />

@@ -11,6 +11,7 @@ import { Breadcrumb } from './navComponents/Breadcrumb';
 import { PreviewControls } from './PreviewControls';
 import { SaveConfigModal } from './SaveConfigModal';
 import { LoadConfigModal } from './LoadConfigModal';
+import BaseColorPanel from './navComponents/BaseColorPanel';
 import { useSelector, useDispatch } from 'react-redux';
 import { saveConfiguration } from '../../../app/redux/slices/userSlice.js';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -34,11 +35,13 @@ console.log(user)
     lightAmount: 1,
     systemType: 'bar',
     systemBaseDesign: 'nexus', // Default system base design
+    baseColor: 'black',    // color of the base (black, gold, silver, midnight blue)
     pendants: [],
     selectedPendants: [],
     lightDesign: 'radial',
     cableColor: 'black',
     cableLength: '2mm',
+    systemConfigurations: {}
   });
   
   // Preview mode state
@@ -78,6 +81,35 @@ console.log(user)
     return pendants;
   };
 
+  // Helper function to generate random system configurations
+  const generateRandomSystems = (amount) => {
+    // Available system types and their base designs
+    const systemTypes = ['bar', 'universal'];
+    const baseDesigns = {
+      'bar': ['prism', 'helix', 'orbit', 'zenith', 'pulse', 'vortex', 'nexus', 'quasar', 'nova'],
+      'universal': ['atom', 'nebula', 'cosmos', 'stellar', 'eclipse']
+    };
+    
+    let systems = {};
+    
+    for (let i = 0; i < amount; i++) {
+      // Randomly select system type
+      const randomSystemType = systemTypes[Math.floor(Math.random() * systemTypes.length)];
+      
+      // Randomly select base design for this system type
+      const availableDesigns = baseDesigns[randomSystemType];
+      const randomDesign = availableDesigns[Math.floor(Math.random() * availableDesigns.length)];
+      
+      // Store the system configuration for this cable
+      systems[i] = {
+        systemType: randomSystemType,
+        baseDesign: randomDesign
+      };
+    }
+    
+    return systems;
+  };
+
   // Initialize pendants when component mounts
   useEffect(() => {
     // Check if we have a configId in the URL
@@ -86,7 +118,15 @@ console.log(user)
       // Create initial pendants based on light amount
       const initialPendants = generateRandomPendants(config.lightAmount);
       
-      setConfig(prev => ({ ...prev, pendants: initialPendants }));
+      // Create initial systems based on light amount
+      const initialSystems = generateRandomSystems(config.lightAmount);
+      
+      setConfig(prev => ({ 
+        ...prev, 
+        pendants: initialPendants,
+        systemConfigurations: initialSystems
+      }));
+      
       setLastCeilingLightAmount(config.lightAmount);
       setLastRoundBaseLightAmount(config.lightAmount);
       
@@ -218,59 +258,7 @@ console.log(user)
   };
 
   // Handle base type change
-  const handleBaseTypeChange = (type) => {
-    // Save current round base light amount if switching from round
-    if (config.baseType === 'round' && type !== 'round') {
-      setLastRoundBaseLightAmount(config.lightAmount);
-    }
-    
-    let newAmount;
-    let newPendants;
-    
-    // If changing to rectangular, force light amount to 3
-    if (type === 'rectangular') {
-      newAmount = 3;
-      newPendants = generateRandomPendants(3);
-    } else if (type === 'round') {
-      // Restore last round base light amount when switching back to round
-      newAmount = lastRoundBaseLightAmount;
-      newPendants = generateRandomPendants(newAmount);
-    }
-    
-    setConfig(prev => ({ 
-      ...prev, 
-      baseType: type,
-      lightAmount: newAmount,
-      pendants: newPendants
-    }));
-    
-    // Send messages to iframe
-    setTimeout(() => {
-      // Send base type message
-      sendMessageToPlayCanvas(`base_type:${type}`);
-      
-      // Send light amount message
-      sendMessageToPlayCanvas(`light_amount:${newAmount}`);
-      
-      // Send individual pendant messages
-      if (newAmount > 0) {
-      newPendants.forEach((pendant, index) => {
-        const productId = pendant.design === 'bumble' ? 'product_1' : 
-                       pendant.design === 'radial' ? 'product_2' : 
-                       pendant.design === 'fina' ? 'product_3' : 'product_5';
-        
-        sendMessageToPlayCanvas(`cable_${index}:${productId}`);
-      });
-    } else {
-      const productId = newPendants.design === 'bumble' ? 'product_1' : 
-                       newPendants.design === 'radial' ? 'product_2' : 
-                       newPendants.design === 'fina' ? 'product_3' : 'product_5';
-      
-      sendMessageToPlayCanvas(`cable_design:${productId}`);
-    }
-    }, 0);
-  };
-
+ 
   // Handle configuration type change
   const handleConfigurationTypeChange = useCallback((type) => {
     setConfig(prev => {
@@ -387,21 +375,9 @@ console.log(user)
       // Send system type message to iframe
       sendMessageToPlayCanvas(`system:${system}`);
       console.log(`Sending system:${system} to iframe`);
-    }, 10);
-  };
-
-  // Handle pendant selection
-  const handlePendantSelection = useCallback((pendantIds) => {
-    setConfig(prev => ({ ...prev, selectedPendants: pendantIds }));
-    
-    // If a single pendant is selected, show the type selector
-    if (pendantIds.length === 1) {
-      setSelectedLocation(pendantIds[0]);
-      setShowTypeSelector(true);
-    } else {
       setShowTypeSelector(false);
-    }
-  }, []);
+    }, 10);
+  }
   
   // Handle location selection for individual configuration
   const handleLocationSelection = (locationId) => {
@@ -492,6 +468,51 @@ console.log(user)
     }, 10); // Slight delay to ensure state is updated first
   }, [config.lightAmount]);
 
+  // Handle base type change
+  const handleBaseTypeChange = useCallback((baseType) => {
+    console.log(`Changing base type to: ${baseType}`);
+    
+    // Update config state
+    setConfig(prev => ({
+      ...prev,
+      baseType
+    }));
+    
+    // Send message to PlayCanvas iframe
+    sendMessageToPlayCanvas(`base_type:${baseType}`);
+    
+    // Move to next step
+    setActiveStep('baseColor');
+  }, []);
+  
+  // Handle base color change
+  const handleBaseColorChange = useCallback((baseColor) => {
+    console.log(`Changing base color to: ${baseColor}`);
+    
+    // Update config state
+    setConfig(prev => ({
+      ...prev,
+      baseColor
+    }));
+    
+    // Send message to PlayCanvas iframe
+    sendMessageToPlayCanvas(`base_color:${baseColor}`);
+    
+    // Move to next step
+    setActiveStep('systemType');
+  }, []);
+  
+  // Handle pendant selection
+  const handlePendantSelection = useCallback((pendantIds) => {
+    console.log('Selected pendants:', pendantIds);
+    
+    // Update config state with selected pendants
+    setConfig(prev => ({
+      ...prev,
+      selectedPendants: pendantIds
+    }));
+  }, []);
+
   // Handle system base design change
   const handleSystemBaseDesignChange = useCallback((design) => {
     // Update the system base design in the config
@@ -503,15 +524,34 @@ console.log(user)
       // Each system type (bar/ball/universal) has its own set of base designs with specific IDs
       const systemTypeBaseMap = {
         'bar': {
-          'nexus': 'system_base_0' // Bar system uses 0.png
-        },
-        'ball': {
-          'quantum': 'system_base_0' // Ball system uses 0.png
+          // Bar system uses baseNumbers 0-8
+          'prism': 'system_base_1',
+          'helix': 'system_base_2',
+          'orbit': 'system_base_3',
+          'zenith': 'system_base_4',
+          'pulse': 'system_base_5',
+          'vortex': 'system_base_6',
+          'nexus': 'system_base_7',
+          'quasar': 'system_base_8',
+          'nova': 'system_base_9'
         },
         'universal': {
-          'vertex': 'system_base_0', // Universal system uses 0.png
-          'fusion': 'system_base_1',
-          'aurora': 'system_base_2'
+          // Universal system uses baseNumbers 1-15
+          'atom': 'system_base_1',
+          'nebula': 'system_base_2',
+          'cosmos': 'system_base_3',
+          'stellar': 'system_base_4',
+          'eclipse': 'system_base_5',
+          'aurora': 'system_base_6',
+          'solstice': 'system_base_7',
+          'quantum': 'system_base_8',
+          'vertex': 'system_base_9',
+          'horizon': 'system_base_10',
+          'zenith': 'system_base_11',
+          'equinox': 'system_base_12',
+          'meridian': 'system_base_13',
+          'polaris': 'system_base_14',
+          'celestial': 'system_base_15'
         }
       };
       
@@ -592,6 +632,7 @@ console.log(user)
     const configSummary = {
       light_type: config.lightType,
       light_amount: config.lightAmount,
+      base_color: config.baseColor,
       cables: {}
     };
     
@@ -606,15 +647,32 @@ console.log(user)
     // Map system types to their base design options
     const systemTypeBaseMap = {
       'bar': {
-        'nexus': 'system_base_0' // Bar system uses 0.png
-      },
-      'ball': {
-        'quantum': 'system_base_0' // Ball system uses 0.png
+        'prism': 'system_base_1',
+        'helix': 'system_base_2',
+        'orbit': 'system_base_3',
+        'zenith': 'system_base_4',
+        'pulse': 'system_base_5',
+        'vortex': 'system_base_6',
+        'nexus': 'system_base_7',
+        'quasar': 'system_base_8',
+        'nova': 'system_base_9'
       },
       'universal': {
-        'vertex': 'system_base_0', // Universal system uses 0.png
-        'fusion': 'system_base_1',
-        'aurora': 'system_base_2'
+        'atom': 'system_base_1',
+        'nebula': 'system_base_2',
+        'cosmos': 'system_base_3',
+        'stellar': 'system_base_4',
+        'eclipse': 'system_base_5',
+        'aurora': 'system_base_6',
+        'solstice': 'system_base_7',
+        'quantum': 'system_base_8',
+        'vertex': 'system_base_9',
+        'horizon': 'system_base_10',
+        'zenith': 'system_base_11',
+        'equinox': 'system_base_12',
+        'meridian': 'system_base_13',
+        'polaris': 'system_base_14',
+        'celestial': 'system_base_15'
       }
     };
     
@@ -676,8 +734,13 @@ console.log(user)
         const designMap = systemTypeBaseMap[cableSystemType] || systemTypeBaseMap.universal;
         
         // Get the base ID for this design within the current system type
-        const baseDesign = config.systemBaseDesign || 'fusion';
-        const baseId = designMap[baseDesign] || 'system_base_0';
+        // Use a valid default value based on the system type
+        const baseDesign = config.systemBaseDesign || 
+                          (cableSystemType === 'bar' ? 'prism' : 
+                           cableSystemType === 'universal' ? 'atom' : 'atom');
+        
+        // Get the base ID using the design map
+        const baseId = designMap[baseDesign] || 'system_base_1';
         
         configSummary.cables[index] = {
           system_type: cableSystemType,
@@ -751,6 +814,10 @@ console.log(user)
     }
     
     // Add any additional parameters that might be needed
+    if (configToSave.base_color) {
+      iframeMessagesArray.push(`base_color:${configToSave.base_color}`);
+    }
+    
     if (configToSave.cable_color) {
       iframeMessagesArray.push(`cable_color:${configToSave.cable_color}`);
     }
@@ -922,6 +989,7 @@ Base Design: ${baseName}
     const lightType = configData.config.light_type.toLowerCase();
     const baseType = configData.config.base_type?.toLowerCase() || 'round';
     const lightAmount = configData.config.light_amount || 1;
+    const baseColor = configData.config.base_color || 'black';
     
     // Update the config state
     setConfig(prev => ({
@@ -929,6 +997,7 @@ Base Design: ${baseName}
       lightType,
       baseType,
       lightAmount,
+      baseColor,
       // We don't need to update pendants or other details as they will be handled by the iframe messages
     }));
   };
@@ -1037,6 +1106,7 @@ Base Design: ${baseName}
             config={config}
             onLightTypeChange={handleLightTypeChange}
             onBaseTypeChange={handleBaseTypeChange}
+            onBaseColorChange={handleBaseColorChange}
             onConfigurationTypeChange={handleConfigurationTypeChange}
             onLightAmountChange={handleLightAmountChange}
             onSystemTypeChange={handleSystemTypeChange}
