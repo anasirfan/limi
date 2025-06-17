@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -9,6 +9,8 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { FaHandshake, FaChartLine, FaGlobe, FaTools, FaUserTie, FaCheck } from 'react-icons/fa';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Collaborate() {
   const heroRef = useRef(null);
@@ -16,6 +18,107 @@ export default function Collaborate() {
   const processRef = useRef(null);
   const partnersRef = useRef(null);
   const ctaRef = useRef(null);
+
+  const [formData, setFormData] = useState({
+    companyName: '',
+    website: '',
+    contactName: '',
+    position: '',
+    email: '',
+    phone: '',
+    region: '',
+    experience: '',
+    message: '',
+    privacyPolicy: false
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState({ success: null, message: '' });
+
+  const handleChange = (e) => {
+    const { id, name, value, type, checked } = e.target;
+    const fieldName = name || id; // Use name if available, otherwise fall back to id
+    setFormData(prev => ({
+      ...prev,
+      [fieldName]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitStatus({ success: null, message: '' });
+
+    try {
+      // Map form field names to match the API expected format
+      const requestBody = {
+        name: formData.contactName,
+        company: formData.companyName,
+        contactName: formData.contactName,
+        title: formData.position,
+        email: formData.email,
+        phoneNumber: formData.phone,
+        country: formData.region,
+        experience: formData.experience,
+        message: formData.message,
+        privacyPolicy: formData.privacyPolicy,
+        website: formData.website
+      };
+      const token = localStorage.getItem('limiToken');
+      if (!token) {
+        throw new Error('Please log in to send a message');
+      }
+      
+      const response = await fetch('https://api1.limitless-lighting.co.uk/client/user/distributor/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization':token
+        },
+        body: JSON.stringify(requestBody)
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to submit form');
+      }
+
+      const result = await response.json();
+      
+      setSubmitStatus({ success: true, message: 'Thank you for your submission! We will get back to you soon.' });
+      
+      // Show success toast
+      toast.success('Your message has been sent successfully!', {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      
+      // Reset form
+      setFormData({
+        companyName: '',
+        website: '',
+        contactName: '',
+        position: '',
+        email: '',
+        phone: '',
+        region: '',
+        experience: '',
+        message: '',
+        privacyPolicy: false
+      });
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      setSubmitStatus({ 
+        success: false, 
+        message: error.message || 'An error occurred while submitting the form. Please try again.' 
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   useEffect(() => {
     // Register ScrollTrigger
@@ -77,6 +180,7 @@ export default function Collaborate() {
 
   return (
     <main className="min-h-screen bg-[#F2F0E6] text-[#2B2D2F]">
+      <ToastContainer />
       <Header />
       
       {/* Hero Section */}
@@ -192,177 +296,6 @@ export default function Collaborate() {
         </div>
       </section>
       
-      {/* Partnership Process Section */}
-      <section 
-        ref={processRef}
-        className="py-20 bg-[#2B2D2F] text-white"
-      >
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold mb-4">Our Partnership Process</h2>
-            <p className="text-lg text-white/70 max-w-2xl mx-auto">
-              A straightforward journey to becoming a LIMI distributor
-            </p>
-          </div>
-          
-          <div className="max-w-4xl mx-auto">
-            <div className="relative">
-              {/* Steps with alternating line */}
-              <div className="space-y-12">
-                {/* Step 1 */}
-                <div className="process-step relative flex flex-col md:flex-row items-start gap-6">
-                  {/* Left side - number */}
-                  <div className="flex items-center md:w-1/2 md:justify-end md:pr-8">
-                    <div className="relative">
-                      <div className="w-8 h-8 rounded-full bg-[#50C878] flex items-center justify-center z-10">
-                        <span className="font-bold">1</span>
-                      </div>
-                      {/* Line pointing right */}
-                      <div className="hidden md:block absolute left-8 top-1/2 h-0.5 w-8 bg-[#50C878] transform -translate-y-1/2"></div>
-                      {/* Vertical line below */}
-                      <div className="hidden md:block absolute left-4 top-4 w-0.5 h-[calc(100%+48px)] bg-[#50C878]/30"></div>
-                    </div>
-                  </div>
-                  {/* Right side - content */}
-                  <div className="pl-12 md:pl-0 md:w-1/2 md:text-left">
-                    <h3 className="text-xl font-bold mb-2">Application</h3>
-                    <p className="text-white/70">
-                      Submit your application through our online form. We'll review your business profile, market reach, and alignment with our brand values.
-                    </p>
-                  </div>
-                </div>
-                
-                {/* Step 2 */}
-                <div className="process-step relative flex flex-col md:flex-row items-start gap-6">
-                  {/* Left side - content (reversed order) */}
-                  <div className="pl-12 md:pl-0 md:w-1/2 md:text-right md:pr-8 order-2 md:order-1">
-                    <h3 className="text-xl font-bold mb-2">Evaluation & Discussion</h3>
-                    <p className="text-white/70">
-                      Our team will contact you to discuss your application, market potential, and answer any questions you may have about the partnership.
-                    </p>
-                  </div>
-                  {/* Right side - number */}
-                  <div className="flex items-center md:w-1/2 md:justify-start md:pl-8 order-1 md:order-2">
-                    <div className="relative">
-                      <div className="w-8 h-8 rounded-full bg-[#50C878] flex items-center justify-center z-10">
-                        <span className="font-bold">2</span>
-                      </div>
-                      {/* Line pointing left */}
-                      <div className="hidden md:block absolute right-8 top-1/2 h-0.5 w-8 bg-[#50C878] transform -translate-y-1/2"></div>
-                      {/* Vertical line below */}
-                      <div className="hidden md:block absolute left-4 top-4 w-0.5 h-[calc(100%+48px)] bg-[#50C878]/30"></div>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Step 3 */}
-                <div className="process-step relative flex flex-col md:flex-row items-start gap-6">
-                  {/* Left side - number */}
-                  <div className="flex items-center md:w-1/2 md:justify-end md:pr-8">
-                    <div className="relative">
-                      <div className="w-8 h-8 rounded-full bg-[#50C878] flex items-center justify-center z-10">
-                        <span className="font-bold">3</span>
-                      </div>
-                      {/* Line pointing right */}
-                      <div className="hidden md:block absolute left-8 top-1/2 h-0.5 w-8 bg-[#50C878] transform -translate-y-1/2"></div>
-                      {/* Vertical line below */}
-                      <div className="hidden md:block absolute left-4 top-4 w-0.5 h-[calc(100%+48px)] bg-[#50C878]/30"></div>
-                    </div>
-                  </div>
-                  {/* Right side - content */}
-                  <div className="pl-12 md:pl-0 md:w-1/2 md:text-left">
-                    <h3 className="text-xl font-bold mb-2">Agreement & Onboarding</h3>
-                    <p className="text-white/70">
-                      Once approved, we'll finalize the distribution agreement and begin the onboarding process, including product training and marketing support.
-                    </p>
-                  </div>
-                </div>
-                
-                {/* Step 4 */}
-                <div className="process-step relative flex flex-col md:flex-row items-start gap-6">
-                  {/* Left side - content (reversed order) */}
-                  <div className="pl-12 md:pl-0 md:w-1/2 md:text-right md:pr-8 order-2 md:order-1">
-                    <h3 className="text-xl font-bold mb-2">Launch & Growth</h3>
-                    <p className="text-white/70">
-                      Begin selling LIMI products in your market with our ongoing support, regular check-ins, and collaborative growth planning.
-                    </p>
-                  </div>
-                  {/* Right side - number */}
-                  <div className="flex items-center md:w-1/2 md:justify-start md:pl-8 order-1 md:order-2">
-                    <div className="relative">
-                      <div className="w-8 h-8 rounded-full bg-[#50C878] flex items-center justify-center z-10">
-                        <span className="font-bold">4</span>
-                      </div>
-                      {/* Line pointing left */}
-                      <div className="hidden md:block absolute right-8 top-1/2 h-0.5 w-8 bg-[#50C878] transform -translate-y-1/2"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-      
-      {/* Partner Testimonials Section */}
-      <section 
-        ref={partnersRef}
-        className="py-20 bg-[#F2F0E6]"
-      >
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold mb-4">What Our Partners Say</h2>
-            <p className="text-lg text-[#2B2D2F]/70 max-w-2xl mx-auto">
-              Hear from distributors who have grown their business with LIMI
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            <div className="bg-white p-8 rounded-lg shadow-md">
-              <div className="flex items-center mb-6">
-                <div className="w-16 h-16 rounded-full overflow-hidden mr-4">
-                  <Image
-                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1974&auto=format&fit=crop"
-                    alt="John Davis"
-                    width={64}
-                    height={64}
-                    className="object-cover"
-                  />
-                </div>
-                <div>
-                  <h3 className="text-lg font-bold">John Davis</h3>
-                  <p className="text-[#50C878]">Illuminate Tech, UK</p>
-                </div>
-              </div>
-              <p className="text-[#2B2D2F]/80 italic">
-                "Partnering with LIMI has transformed our business. Their innovative products and exceptional support have helped us grow our revenue by 40% in just one year. The training and marketing materials they provide are top-notch."
-              </p>
-            </div>
-            
-            <div className="bg-white p-8 rounded-lg shadow-md">
-              <div className="flex items-center mb-6">
-                <div className="w-16 h-16 rounded-full overflow-hidden mr-4">
-                  <Image
-                    src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?q=80&w=1974&auto=format&fit=crop"
-                    alt="Maria Rodriguez"
-                    width={64}
-                    height={64}
-                    className="object-cover"
-                  />
-                </div>
-                <div>
-                  <h3 className="text-lg font-bold">Maria Rodriguez</h3>
-                  <p className="text-[#50C878]">Smart Home Solutions, Spain</p>
-                </div>
-              </div>
-              <p className="text-[#2B2D2F]/80 italic">
-                "The exclusive territory rights and competitive margins make LIMI an ideal partner. Our customers love the quality and design of their products, and we appreciate the continuous innovation and new product releases."
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-      
       {/* Application Form Section */}
       <section id="application-form" className="py-20 bg-white">
         <div className="container mx-auto px-4">
@@ -373,8 +306,12 @@ export default function Collaborate() {
                 Fill out the form below to start your journey as a LIMI distribution partner
               </p>
             </div>
-            
-            <form className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {submitStatus.message && (
+                <div className={`p-4 rounded-md ${submitStatus.success ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                  {submitStatus.message}
+                </div>
+              )}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label htmlFor="companyName" className="block text-sm font-medium text-[#2B2D2F] mb-1">
@@ -383,6 +320,9 @@ export default function Collaborate() {
                   <input
                     type="text"
                     id="companyName"
+                    name="companyName"
+                    value={formData.companyName || ''}
+                    onChange={handleChange}
                     required
                     className="w-full px-4 py-3 bg-[#F2F0E6] rounded-md focus:outline-none focus:ring-2 focus:ring-[#50C878]"
                   />
@@ -395,6 +335,9 @@ export default function Collaborate() {
                   <input
                     type="url"
                     id="website"
+                    name="website"
+                    value={formData.website || ''}
+                    onChange={handleChange}
                     className="w-full px-4 py-3 bg-[#F2F0E6] rounded-md focus:outline-none focus:ring-2 focus:ring-[#50C878]"
                   />
                 </div>
@@ -408,6 +351,9 @@ export default function Collaborate() {
                   <input
                     type="text"
                     id="contactName"
+                    name="contactName"
+                    value={formData.contactName || ''}
+                    onChange={handleChange}
                     required
                     className="w-full px-4 py-3 bg-[#F2F0E6] rounded-md focus:outline-none focus:ring-2 focus:ring-[#50C878]"
                   />
@@ -420,6 +366,9 @@ export default function Collaborate() {
                   <input
                     type="text"
                     id="position"
+                    name="position"
+                    value={formData.position || ''}
+                    onChange={handleChange}
                     required
                     className="w-full px-4 py-3 bg-[#F2F0E6] rounded-md focus:outline-none focus:ring-2 focus:ring-[#50C878]"
                   />
@@ -434,6 +383,9 @@ export default function Collaborate() {
                   <input
                     type="email"
                     id="email"
+                    name="email"
+                    value={formData.email || ''}
+                    onChange={handleChange}
                     required
                     className="w-full px-4 py-3 bg-[#F2F0E6] rounded-md focus:outline-none focus:ring-2 focus:ring-[#50C878]"
                   />
@@ -446,6 +398,9 @@ export default function Collaborate() {
                   <input
                     type="tel"
                     id="phone"
+                    name="phone"
+                    value={formData.phone || ''}
+                    onChange={handleChange}
                     required
                     className="w-full px-4 py-3 bg-[#F2F0E6] rounded-md focus:outline-none focus:ring-2 focus:ring-[#50C878]"
                   />
@@ -459,6 +414,9 @@ export default function Collaborate() {
                 <input
                   type="text"
                   id="region"
+                  name="region"
+                  value={formData.region || ''}
+                  onChange={handleChange}
                   required
                   className="w-full px-4 py-3 bg-[#F2F0E6] rounded-md focus:outline-none focus:ring-2 focus:ring-[#50C878]"
                 />
@@ -470,6 +428,9 @@ export default function Collaborate() {
                 </label>
                 <select
                   id="experience"
+                  name="experience"
+                  value={formData.experience || ''}
+                  onChange={handleChange}
                   className="w-full px-4 py-3 bg-[#F2F0E6] rounded-md focus:outline-none focus:ring-2 focus:ring-[#50C878]"
                 >
                   <option value="">Select...</option>
@@ -487,7 +448,10 @@ export default function Collaborate() {
                 </label>
                 <textarea
                   id="message"
+                  name="message"
                   rows="4"
+                  value={formData.message || ''}
+                  onChange={handleChange}
                   required
                   className="w-full px-4 py-3 bg-[#F2F0E6] rounded-md focus:outline-none focus:ring-2 focus:ring-[#50C878]"
                 ></textarea>
@@ -496,28 +460,47 @@ export default function Collaborate() {
               <div className="flex items-start">
                 <input
                   type="checkbox"
-                  id="terms"
+                  id="privacyPolicy"
+                  name="privacyPolicy"
+                  checked={formData.privacyPolicy || false}
+                  onChange={handleChange}
                   required
                   className="mt-1 mr-2"
                 />
-                <label htmlFor="terms" className="text-sm text-[#2B2D2F]/70">
+                <label htmlFor="privacyPolicy" className="text-sm text-[#2B2D2F]/70">
                   I agree to the processing of my data as per LIMI's <Link href="/privacy-policy" className="text-[#50C878] hover:underline">Privacy Policy</Link>
                 </label>
               </div>
               
               <motion.button
                 type="submit"
-                className="w-full py-3 px-6 bg-[#50C878] text-white rounded-md font-medium hover:bg-[#3da861] transition-colors"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                disabled={isSubmitting}
+                className={`w-full py-3 px-6 bg-[#50C878] text-white rounded-md font-medium hover:bg-[#3da861] transition-colors ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
+                whileHover={!isSubmitting ? { scale: 1.02 } : {}}
+                whileTap={!isSubmitting ? { scale: 0.98 } : {}}
               >
-                Submit Application
+                {isSubmitting ? 'Submitting...' : 'Submit Application'}
               </motion.button>
               
               <p className="text-sm text-center text-[#2B2D2F]/70">
                 *Required fields
               </p>
             </form>
+          </div>
+        </div>
+      </section>
+      
+      {/* Partnership Process Section */}
+      <section 
+        ref={processRef}
+        className="py-20 bg-[#2B2D2F] text-white"
+      >
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold mb-4">Our Partnership Process</h2>
+            <p className="text-lg text-white/70 max-w-2xl mx-auto">
+              A straightforward journey to becoming a LIMI distributor
+            </p>
           </div>
         </div>
       </section>
