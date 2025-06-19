@@ -166,11 +166,11 @@ const ConfiguratorLayout = () => {
         sendMessageToPlayCanvas(`light_amount:${newAmount}`);
         
         // Send individual pendant messages with predefined designs
-        // product_2 = radial, product_3 = fina, product_5 = ripple
+        // product_2 = radial, product_3 = fina, product_2 = ripple
         sendMessageToPlayCanvas(`pendant_0:product_2`); // First pendant is radial
         
         if (newAmount > 1) {
-          sendMessageToPlayCanvas(`pendant_1:product_5`); // Second pendant is ripple
+          sendMessageToPlayCanvas(`pendant_1:product_2`); // Second pendant is ripple
         }
         
         if (newAmount > 2) {
@@ -205,7 +205,7 @@ const ConfiguratorLayout = () => {
           newConfig.pendants.forEach((pendant, index) => {
             const productId = pendant.design === 'bumble' ? 'product_1' : 
                            pendant.design === 'radial' ? 'product_2' : 
-                           pendant.design === 'fina' ? 'product_3' : 'product_5';
+                           pendant.design === 'fina' ? 'product_3' : 'product_2';
             
             sendMessageToPlayCanvas(`pendant_${index}:${productId}`);
           });
@@ -249,7 +249,7 @@ const ConfiguratorLayout = () => {
         const firstPendantDesign = updatedPendants[0].design;
         const productId = firstPendantDesign === 'bumble' ? 'product_1' : 
                         firstPendantDesign === 'radial' ? 'product_2' : 
-                        firstPendantDesign === 'fina' ? 'product_3' : 'product_5';
+                        firstPendantDesign === 'fina' ? 'product_3' : 'product_2';
         
         sendMessageToPlayCanvas(`pendant_design:${productId}`);
       } else {
@@ -257,7 +257,7 @@ const ConfiguratorLayout = () => {
         updatedPendants.forEach((pendant, index) => {
           const productId = pendant.design === 'bumble' ? 'product_1' : 
                           pendant.design === 'radial' ? 'product_2' : 
-                          pendant.design === 'fina' ? 'product_3' : 'product_5';
+                          pendant.design === 'fina' ? 'product_3' : 'product_2';
           
           sendMessageToPlayCanvas(`pendant_${index}:${productId}`);
         });
@@ -313,7 +313,7 @@ const ConfiguratorLayout = () => {
     setTimeout(() => {
       const productId = design === 'bumble' ? 'product_1' : 
                       design === 'radial' ? 'product_2' : 
-                      design === 'fina' ? 'product_3' : 'product_5';
+                      design === 'fina' ? 'product_3' : 'product_2';
       
       // Send messages for each selected pendant
       pendantIds.forEach(id => {
@@ -352,7 +352,7 @@ const ConfiguratorLayout = () => {
       const firstPendantDesign = updatedPendants[0].design;
       const productId = firstPendantDesign === 'bumble' ? 'product_1' : 
                       firstPendantDesign === 'radial' ? 'product_2' : 
-                      firstPendantDesign === 'fina' ? 'product_3' : 'product_5';
+                      firstPendantDesign === 'fina' ? 'product_3' : 'product_2';
       
       sendMessageToPlayCanvas(`pendant_design:${productId}`);
     } else {
@@ -360,7 +360,7 @@ const ConfiguratorLayout = () => {
       updatedPendants.forEach((pendant, index) => {
         const productId = pendant.design === 'bumble' ? 'product_1' : 
                         pendant.design === 'radial' ? 'product_2' : 
-                        pendant.design === 'fina' ? 'product_3' : 'product_5';
+                        pendant.design === 'fina' ? 'product_3' : 'product_2';
         
         sendMessageToPlayCanvas(`pendant_${index}:${productId}`);
       });
@@ -416,7 +416,7 @@ const handlePendantDesignChange = useCallback((pendantIds, design) => {
   setTimeout(() => {
     const productId = design === 'bumble' ? 'product_1' : 
                     design === 'radial' ? 'product_2' : 
-                    design === 'fina' ? 'product_3' : 'product_5';
+                    design === 'fina' ? 'product_3' : 'product_2';
     
     // Send messages for each selected pendant
     pendantIds.forEach(id => {
