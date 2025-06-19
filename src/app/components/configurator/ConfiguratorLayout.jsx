@@ -130,10 +130,13 @@ console.log(localStorage)
     let newPendants = [];
     
     if (type === 'wall') {
+      console.log("wall")
       newAmount = 1;
+      setConfig(prev => ({ ...prev, lightType: type, lightAmount: newAmount }));
       newPendants = generateRandomPendants(1);
     } else if (type === 'floor') {
       newAmount = 3;
+      setConfig(prev => ({ ...prev, lightType: type, lightAmount: newAmount }));
       newPendants = generateRandomPendants(3);
     } else if (type === 'ceiling') {
       // Restore last ceiling light amount when switching back to ceiling
@@ -144,7 +147,7 @@ console.log(localStorage)
       }
       newPendants = generateRandomPendants(newAmount);
     }
-    
+    console.log("new config",config)
     setConfig(prev => ({ 
       ...prev, 
       lightType: type,
@@ -449,7 +452,6 @@ console.log(localStorage)
         'vertex': 'product_8',
         'quantum': 'product_7',
         'fusion': 'product_9',
-        'aurora': 'product_10',
         'centaur': 'product_11',
         'apollo': 'product_12',
         'ico': 'product_13',
@@ -470,10 +472,17 @@ console.log(localStorage)
         : [0]; // Default to cable 0 if none selected
       
       // Send message for each selected cable
-      selectedCables.forEach(cableNo => {
-        sendMessageToPlayCanvas(`pendant_${cableNo}:${baseId}`);
-        console.log(`Sending system_${cableNo}:${baseId} to iframe`);
-      });
+      console.log("selected cable length",config)
+      console.log("lgiht type",config.lightType)
+      if(config.lightAmount=== 1 || config.lightType === 'wall'){
+        sendMessageToPlayCanvas(`pendant_design:${baseId}`);
+      }
+      else{
+        selectedCables.forEach(cableNo => {
+          sendMessageToPlayCanvas(`pendant_${cableNo}:${baseId}`);
+          console.log(`Sending system_${cableNo}:${baseId} to iframe`);
+        });
+      }
     }, 10);
   }, [config.selectedPendants]);
 
@@ -554,7 +563,6 @@ console.log(localStorage)
         const baseId = baseDesign === 'nexus' ? 'product_6' : 
                     baseDesign === 'vertex' ? 'product_8' : 
                     baseDesign === 'quantum' ? 'product_7' : 
-                    baseDesign === 'aurora' ? 'product_10' : 
                     baseDesign === 'centaur' ? 'product_11' : 
                     baseDesign === 'apollo' ? 'product_12' : 
                     baseDesign === 'ico' ? 'product_13' : 

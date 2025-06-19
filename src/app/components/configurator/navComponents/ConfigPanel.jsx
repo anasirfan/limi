@@ -191,7 +191,7 @@ export const ConfigPanel = ({
             { id: 'quantum', name: 'Quantum', baseNumber: '7', image: '/images/configOptions/universal/7.png' },
             { id: 'vertex', name: 'Vertex', baseNumber: '8', image: '/images/configOptions/universal/8.png' },
             { id: 'fusion', name: 'Fusion', baseNumber: '9', image: '/images/configOptions/universal/9.png' },
-            { id: 'aurora', name: 'Aurora', baseNumber: '10', image: '/images/configOptions/universal/10.png' },
+    
           ]
         };
         
