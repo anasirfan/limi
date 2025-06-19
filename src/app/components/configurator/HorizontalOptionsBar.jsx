@@ -615,7 +615,6 @@ const HorizontalOptionsBar = ({
                     { id: 'bumble', name: 'Bumble', image: '/images/configOptions/1.png' },
                     { id: 'radial', name: 'Radial', image: '/images/configOptions/2.png' },
                     { id: 'fina', name: 'Fina', image: '/images/configOptions/3.png' },
-                    { id: 'ripple', name: 'Ripple', image: '/images/configOptions/5.png' },
                   ].map((design) => (
                     <motion.div
                       key={design.id}

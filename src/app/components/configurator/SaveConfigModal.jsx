@@ -44,8 +44,7 @@ export const SaveConfigModal = ({
         const pendantMap = {
           'product_1': 'Bumble',
           'product_2': 'Radial',
-          'product_3': 'Fina',
-          'product_5': 'Ripple'
+          'product_3': 'Fina'
         };
         const pendantName = pendantMap[cable.pendant] || cable.pendant.replace('product_', '');
         summaryText += `Pendant (${pendantName})\n`;

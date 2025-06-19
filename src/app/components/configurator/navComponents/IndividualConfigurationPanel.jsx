@@ -27,21 +27,7 @@ export const IndividualConfigurationPanel = ({
   };
   
   // Helper function to map design names to their corresponding image numbers
-  const getDesignImageNumber = (designName) => {
-    const designMap = {
-      'bumble': '1.png',
-      'radial': '2.png',
-      'fina': '3.png',
-      'ripple': '5.png',
-      'nexus': 'product_1.png',
-      'vertex': 'product_2.png',
-      'quantum': 'product_3.png',
-      'fusion': 'product_4.png',
-    };
-    
-    return designMap[designName] || `${designName}.jpg`;
-  };
-  
+ 
   // Render system type selection
   const renderSystemTypeSelection = () => {
     return (
@@ -107,7 +93,6 @@ export const IndividualConfigurationPanel = ({
               { id: 'bumble', name: 'Bumble', image: '/images/configOptions/1.png' },
               { id: 'radial', name: 'Radial', image: '/images/configOptions/2.png' },
               { id: 'fina', name: 'Fina', image: '/images/configOptions/3.png' },
-              { id: 'ripple', name: 'Ripple', image: '/images/configOptions/5.png' },
             ].map((design) => (
               <motion.div
                 key={design.id}

@@ -83,21 +83,7 @@ export const ConfigPanel = ({
     }
   };
   
-  // Helper function to map design names to their corresponding image numbers
-  const getDesignImageNumber = (designName) => {
-    const designMap = {
-      'bumble': '1.png',
-      'radial': '2.png',
-      'fina': '3.png',
-      'ripple': '5.png',
-      'nexus': 'product_1.png',
-      'vertex': 'product_2.png',
-      'quantum': 'product_3.png',
-      'fusion': 'product_4.png',
-    };
-    
-    return designMap[designName] || `${designName}.jpg`;
-  };
+
 
   // Get panel configuration based on the current state
   const getPanelConfig = () => {
@@ -131,8 +117,8 @@ export const ConfigPanel = ({
       config.items = [
         { id: 'bumble', name: 'Bumble', image: '/images/configOptions/1.png' },
         { id: 'radial', name: 'Radial', image: '/images/configOptions/2.png' },
-        // { id: 'fina', name: 'Fina', image: '/images/configOptions/3.png' },
-        // { id: 'ripple', name: 'Ripple', image: '/images/configOptions/5.png' }
+        { id: 'fina', name: 'Fina', image: '/images/configOptions/3.png' },
+
       ];
       config.onItemSelect = (itemId) => {
         setCurrentDesign(itemId);
@@ -174,32 +160,32 @@ export const ConfigPanel = ({
         // Map of base IDs to names and image numbers based on available files
         const baseOptions = {
           'bar': [
-            { id: 'prism', name: 'Prism', baseNumber: '1' },
-            { id: 'helix', name: 'Helix', baseNumber: '2' },
-            { id: 'orbit', name: 'Orbit', baseNumber: '3' },
-            { id: 'zenith', name: 'Zenith', baseNumber: '4' },
-            { id: 'pulse', name: 'Pulse', baseNumber: '5' },
-            { id: 'vortex', name: 'Vortex', baseNumber: '6' },
-            { id: 'nexus', name: 'Nexus', baseNumber: '7' },
-            { id: 'quasar', name: 'Quasar', baseNumber: '8' },
-            { id: 'nova', name: 'Nova', baseNumber: '9' }
+            { id: 'prism', name: 'Prism', baseNumber: '1', image: '/images/configOptions/bar/1.png' },
+            { id: 'helix', name: 'Helix', baseNumber: '2', image: '/images/configOptions/bar/2.png' },
+            { id: 'orbit', name: 'Orbit', baseNumber: '3', image: '/images/configOptions/bar/3.png' },
+            { id: 'zenith', name: 'Zenith', baseNumber: '4', image: '/images/configOptions/bar/4.jpg' },
+            { id: 'pulse', name: 'Pulse', baseNumber: '5', image: '/images/configOptions/bar/5.jpg' },
+            { id: 'vortex', name: 'Vortex', baseNumber: '6', image: '/images/configOptions/bar/6.jpg' },
+            { id: 'nexus', name: 'Nexus', baseNumber: '7', image: '/images/configOptions/bar/7.jpg' },
+            { id: 'quasar', name: 'Quasar', baseNumber: '8', image: '/images/configOptions/bar/8.jpg' },
+            { id: 'nova', name: 'Nova', baseNumber: '9', image: '/images/configOptions/bar/9.jpg' }
           ],
           'universal': [
-            { id: 'atom', name: 'Atom', baseNumber: '1' },
-            { id: 'nebula', name: 'Nebula', baseNumber: '2' },
-            { id: 'cosmos', name: 'Cosmos', baseNumber: '3' },
-            { id: 'stellar', name: 'Stellar', baseNumber: '4' },
-            { id: 'eclipse', name: 'Eclipse', baseNumber: '5' },
-            { id: 'aurora', name: 'Aurora', baseNumber: '6' },
-            { id: 'solstice', name: 'Solstice', baseNumber: '7' },
-            { id: 'quantum', name: 'Quantum', baseNumber: '8' },
-            { id: 'vertex', name: 'Vertex', baseNumber: '9' },
-            { id: 'horizon', name: 'Horizon', baseNumber: '10' },
-            { id: 'zenith', name: 'Zenith', baseNumber: '11' },
-            { id: 'equinox', name: 'Equinox', baseNumber: '12' },
-            { id: 'meridian', name: 'Meridian', baseNumber: '13' },
-            { id: 'polaris', name: 'Polaris', baseNumber: '14' },
-            { id: 'celestial', name: 'Celestial', baseNumber: '15' }
+            { id: 'atom', name: 'Atom', baseNumber: '1'  , image: '/images/configOptions/universal/1.png' },
+            { id: 'nebula', name: 'Nebula', baseNumber: '2' , image: '/images/configOptions/universal/2.png' },
+            { id: 'cosmos', name: 'Cosmos', baseNumber: '3' , image: '/images/configOptions/universal/3.png' },
+            { id: 'stellar', name: 'Stellar', baseNumber: '4' , image: '/images/configOptions/universal/4.png' },
+            { id: 'eclipse', name: 'Eclipse', baseNumber: '5' , image: '/images/configOptions/universal/5.png' },
+            { id: 'aurora', name: 'Aurora', baseNumber: '6' , image: '' },
+            { id: 'solstice', name: 'Solstice', baseNumber: '7',image: '' },
+            { id: 'quantum', name: 'Quantum', baseNumber: '8',image: '' },
+            { id: 'vertex', name: 'Vertex', baseNumber: '9',image: '' },
+            { id: 'horizon', name: 'Horizon', baseNumber: '10',image: '' },
+            { id: 'zenith', name: 'Zenith', baseNumber: '11',image: '' },
+            { id: 'equinox', name: 'Equinox', baseNumber: '12',image: '' },
+            { id: 'meridian', name: 'Meridian', baseNumber: '13',image: '' },
+            { id: 'polaris', name: 'Polaris', baseNumber: '14',image: '' },
+     
           ]
         };
         
@@ -210,7 +196,7 @@ export const ConfigPanel = ({
         config.items = systemTypeBases.map(base => ({
           id: base.id,
           name: base.name,
-          image: `/images/configOptions/${configuringSystemType}/${base.baseNumber}.png`,
+          image: base.image,
           baseNumber: base.baseNumber // Store the base number for sending to PlayCanvas
         }));
         
@@ -302,7 +288,7 @@ export const ConfigPanel = ({
   };
 
   const panelConfig = getPanelConfig();
-  
+
   // Determine if we're in mobile view based on the className prop
   const isMobileView = className.includes('max-sm:static');
   
@@ -373,7 +359,7 @@ export const ConfigPanel = ({
                 <div className={`${isMobileView ? 'w-16 h-16' : 'w-16 h-16'} rounded-full overflow-hidden relative ${
                   panelConfig.selectedItem === item.id ? 'ring-2 ring-emerald-500' : ''
                 }`}>
-                  {parseInt(item.baseNumber) <= 5 ? (
+                  {item.image ? (
                     <Image
                       src={item.image}
                       alt={item.name}
