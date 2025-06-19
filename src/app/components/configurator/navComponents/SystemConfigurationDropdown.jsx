@@ -172,6 +172,16 @@ export const SystemConfigurationDropdown = ({ config, onSystemBaseDesignChange, 
                   { id: 'vertex', name: 'Vertex', image: '/images/configOptions/system/vertex.png' },
                   { id: 'quantum', name: 'Quantum', image: '/images/configOptions/system/quantum.png' },
                   { id: 'fusion', name: 'Fusion', image: '/images/configOptions/system/fusion.png' },
+                  { id: 'aurora', name: 'Aurora', image: '/images/configOptions/system/aurora.png' },
+                  { id: 'centaur', name: 'Centaur', image: '/images/configOptions/system/centaur.png' },
+                  { id: 'apollo', name: 'Apollo', image: '/images/configOptions/system/apollo.png' },
+                  { id: 'ico', name: 'Ico', image: '/images/configOptions/system/ico.png' },
+                  { id: 'orion', name: 'Orion', image: '/images/configOptions/system/orion.png' },
+                  { id: 'vega', name: 'Vega', image: '/images/configOptions/system/vega.png' },
+                  { id: 'atlas', name: 'Atlas', image: '/images/configOptions/system/atlas.png' },
+                  { id: 'nova', name: 'Nova', image: '/images/configOptions/system/nova.png' },
+                  { id: 'hera', name: 'Hera', image: '/images/configOptions/system/hera.png' },
+                  { id: 'zephyr', name: 'Zephyr', image: '/images/configOptions/system/zephyr.png' },
                 ].map((design) => (
                   <motion.div
                     key={design.id}

@@ -453,6 +453,12 @@ console.log(localStorage)
         'centaur': 'product_11',
         'apollo': 'product_12',
         'ico': 'product_13',
+        'orion': 'product_14',
+        'vega': 'product_15',
+        'atlas': 'product_16',
+        'nova': 'product_17',
+        'hera': 'product_18',
+        'zephyr': 'product_19',
       };
       
       const baseId = designMap[design] || 'product_6';
@@ -551,7 +557,13 @@ console.log(localStorage)
                     baseDesign === 'aurora' ? 'product_10' : 
                     baseDesign === 'centaur' ? 'product_11' : 
                     baseDesign === 'apollo' ? 'product_12' : 
-                    baseDesign === 'ico' ? 'product_13' : 'product_9';
+                    baseDesign === 'ico' ? 'product_13' : 
+                    baseDesign === 'orion' ? 'product_14' : 
+                    baseDesign === 'vega' ? 'product_15' : 
+                    baseDesign === 'atlas' ? 'product_16' : 
+                    baseDesign === 'nova' ? 'product_17' : 
+                    baseDesign === 'hera' ? 'product_18' : 
+                    baseDesign === 'zephyr' ? 'product_19' : 'product_9';
         
         configSummary.cables[index] = {
           system_type: systemType,

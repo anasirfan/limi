@@ -181,6 +181,7 @@ export const IndividualConfigurationPanel = ({
               { id: 'vertex', name: 'Vertex', image: '/images/configOptions/product_2.png' },
               { id: 'quantum', name: 'Quantum', image: '/images/configOptions/product_3.png' },
               { id: 'fusion', name: 'Fusion', image: '/images/configOptions/product_4.png' },
+              { id: 'aurora', name: 'Aurora', image: '/images/configOptions/product_5.png' },
             ].map((design) => (
               <motion.div
                 key={design.id}

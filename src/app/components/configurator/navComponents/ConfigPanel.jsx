@@ -172,19 +172,26 @@ export const ConfigPanel = ({
         // Map of base IDs to names and image numbers based on available files
         const baseOptions = {
           'bar': [
-          {id: 'centaur', name: 'Centaur', baseNumber: '11'},
-          {id: 'apollo', name: 'Apollo', baseNumber: '12'},
-          {id: 'ico', name: 'Ico', baseNumber: '13'},
+          {id: 'centaur', name: 'Centaur', baseNumber: '11', image: '/images/configOptions/bar/11.png'},
+          {id: 'apollo', name: 'Apollo', baseNumber: '12', image: '/images/configOptions/bar/12.png'},
+          {id: 'ico', name: 'Ico', baseNumber: '13', image: '/images/configOptions/bar/13.png'},
+          {id: 'orion', name: 'Orion', baseNumber: '14', image: '/images/configOptions/bar/14.jpg'},
+{id: 'vega', name: 'Vega', baseNumber: '15', image: '/images/configOptions/bar/15.jpg'},
+{id: 'atlas', name: 'Atlas', baseNumber: '16', image: '/images/configOptions/bar/16.jpg'},
+{id: 'nova', name: 'Nova', baseNumber: '17', image: '/images/configOptions/bar/17.jpg'},
+{id: 'hera', name: 'Hera', baseNumber: '18', image: '/images/configOptions/bar/18.jpg'},
+{id: 'zephyr', name: 'Zephyr', baseNumber: '19', image: '/images/configOptions/bar/19.jpg'},
+
           ],
           'ball': [
            
           ],
           'universal': [
-            { id: 'nexus', name: 'Nexus', baseNumber: '6' },
-            { id: 'quantum', name: 'Quantum', baseNumber: '7' },
-            { id: 'vertex', name: 'Vertex', baseNumber: '8' },
-            { id: 'fusion', name: 'Fusion', baseNumber: '9' },
-            { id: 'aurora', name: 'Aurora', baseNumber: '10' },
+            { id: 'nexus', name: 'Nexus', baseNumber: '6', image: '/images/configOptions/universal/6.png' },
+            { id: 'quantum', name: 'Quantum', baseNumber: '7', image: '/images/configOptions/universal/7.png' },
+            { id: 'vertex', name: 'Vertex', baseNumber: '8', image: '/images/configOptions/universal/8.png' },
+            { id: 'fusion', name: 'Fusion', baseNumber: '9', image: '/images/configOptions/universal/9.png' },
+            { id: 'aurora', name: 'Aurora', baseNumber: '10', image: '/images/configOptions/universal/10.png' },
           ]
         };
         
@@ -195,7 +202,7 @@ export const ConfigPanel = ({
         config.items = systemTypeBases.map(base => ({
           id: base.id,
           name: base.name,
-          image: `/images/configOptions/${configuringSystemType}/${base.baseNumber}.png`,
+          image: base.image,
           baseNumber: base.baseNumber // Store the base number for sending to PlayCanvas
         }));
         
