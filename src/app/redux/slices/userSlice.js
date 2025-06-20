@@ -80,32 +80,33 @@ export const loginUser = createAsyncThunk(
       }
       
       // Make API request
-      const response = await fetch('https://api1.limitless-lighting.co.uk/client/user/login', {
+      const response = await fetch('https://api.limitless-lighting.co.uk/client/verify_otp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           email: credentials.email,
-          password: credentials.password
+          password: credentials.password,
+          isWebsiteLogin: true
         }),
       });
-      
+       console.log( 'response : ', response)
       if (!response.ok) {
         const errorData = await response.json();
         return rejectWithValue(errorData.message || 'Login failed');
       }
       
       const data = await response.json();
-      
+      console.log( 'data Login : ', data);
       // Save token to localStorage with Bearer prefix for consistency
-      if (data.token) {
-        const token = data.token.startsWith('Bearer ') ? data.token : `${data.token}`;
+      if (data.data.token) {
+        const token = data.data.token.startsWith('Bearer ') ? data.data.token : `${data.data.token}`;
         localStorage.setItem('limiToken', token);
       }
       
       // Get user profile with token
-      const token = data.token.startsWith('Bearer ') ? data.token : `${data.token}`;
+      const token = data.data.token.startsWith('Bearer ') ? data.data.token : `${data.data.token}`;
       console.log("token : ",token);
       const profileResponse = await fetch('https://api1.limitless-lighting.co.uk/client/user/profile', {
         headers: {
@@ -134,6 +135,7 @@ export const loginUser = createAsyncThunk(
 export const signupUser = createAsyncThunk(
   'user/signup',
   async (userData, { rejectWithValue }) => {
+    const { name, email, password } = userData;
 
     console.log("in userSlice : ",userData);
     try {
@@ -143,15 +145,16 @@ export const signupUser = createAsyncThunk(
       }
       
       // Make API request
-      const response = await fetch('https://api1.limitless-lighting.co.uk/client/user/signup', {
+      const response = await fetch('https://api.limitless-lighting.co.uk/client/send_otp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          name: userData.name,
+          username: userData.name,
           email: userData.email,
-          password: userData.password
+          password: userData.password,
+          isWebsiteSignup: true
         }),
       });
       
@@ -164,7 +167,7 @@ export const signupUser = createAsyncThunk(
       console.log("data : ",data);
       
       // Auto login after successful signup
-      const loginResponse = await fetch('https://api1.limitless-lighting.co.uk/client/user/login', {
+      const loginResponse = await fetch('https://delays-enjoy-present-nc.trycloudflare.com/client/verify_otp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -187,7 +190,7 @@ export const signupUser = createAsyncThunk(
       }
       console.log("loginData : ",loginData);
       // Get user profile
-      const profileResponse = await fetch('https://api1.limitless-lighting.co.uk/client/user/profile', {
+      const profileResponse = await fetch('https://delays-enjoy-present-nc.trycloudflare.com/client/verify_otp', {
         headers: {
           'Authorization': `${loginData.token}`
         }
@@ -226,7 +229,7 @@ export const updateUserProfile = createAsyncThunk(
       token = token.startsWith('Bearer ') ? token : `Bearer ${token}`;
       
       // Make API request with full URL
-      const response = await fetch('https://api1.limitless-lighting.co.uk/client/user/profile', {
+      const response = await fetch('https://saturn-toys-wc-angle.trycloudflare.com/client/user/profile', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

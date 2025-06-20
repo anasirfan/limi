@@ -29,12 +29,6 @@ import AccountSettings from './dashboard/AccountSettings';
 import { mockConfigurations, mockOrders, mockFavorites, mockPromotions } from '../data/mockData';
 import { useSelector } from 'react-redux';
 
-const defaultUser = {
-  name: 'John Doe',
-  email: 'johndoe@example.com',
-  phone: '123-456-7890',
-  avatar: null,
-};
 
 
 
@@ -79,7 +73,7 @@ export default function CustomerDashboard({ onLogout }) {
     // { id: 'promotions', label: 'Promotions', icon: <FaTag /> },
     { id: 'account', label: 'Account Settings', icon: <FaUser /> },
   ];
-  console.log(user);  
+  console.log("user dashboard : ",user);  
 
 
   const handleUserUpdate = (updatedUser) => {
@@ -129,14 +123,14 @@ export default function CustomerDashboard({ onLogout }) {
             <div className="relative w-16 h-16 rounded-full overflow-hidden">
               <Image 
                 src={user?.user?.data?.profilePicture?.url || `https://ui-avatars.com/api/?name=${user?.user?.data?.name}&background=54BB74&color=fff`}
-                alt={user?.user?.data?.name}
+                alt={user?.user?.data?.username}
                 fill
                 className="object-cover"
               />
             </div>
             
             <div>
-              <h1 className="text-2xl font-bold text-white">Welcome, {user.user.data.name}</h1>
+              <h1 className="text-2xl font-bold text-white">Welcome, {user.user.data.username}</h1>
               <p className="text-gray-400">{user.user.data.email || user.user.data.phone}</p>
             </div>
           </div>

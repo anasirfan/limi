@@ -350,7 +350,7 @@ export default function PortalLogin({ onLogin }) {
       }
 
       // Get user profile
-      const profileResponse = await fetch("/client/user/profile", {
+      const profileResponse = await fetch("https://saturn-toys-wc-angle.trycloudflare.com/client/user/profile", {
         headers: {
           Authorization: `Bearer ${data.token}`,
         },

@@ -11,6 +11,8 @@ import Footer from '../components/Footer';
 import { FaHandshake, FaChartLine, FaGlobe, FaTools, FaUserTie, FaCheck } from 'react-icons/fa';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import AnalyticsInsights from '../components/AnalyticsInsights';
+import DistributorHub from '../components/DistributorHub';
 
 export default function Collaborate() {
   const heroRef = useRef(null);
@@ -182,12 +184,14 @@ export default function Collaborate() {
     <main className="min-h-screen bg-[#F2F0E6] text-[#2B2D2F]">
       <ToastContainer />
       <Header />
-      
+      <AnalyticsInsights />
+      <DistributorHub/>
       {/* Hero Section */}
       <section 
         ref={heroRef}
         className="pt-32 pb-20 relative overflow-hidden"
       >
+      
         <div className="absolute inset-0 z-0">
           <Image
             src="https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070&auto=format&fit=crop"
