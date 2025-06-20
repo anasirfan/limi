@@ -302,10 +302,10 @@ const Header = () => {
                   >
                     <div className={`${isScrolled ? 'w-6 h-6' : 'w-7 h-7'} rounded-full bg-emerald flex items-center justify-center overflow-hidden transition-all duration-300`}>
                      
-                      {userData?.user?.data?.profilePicture?.url ? (
+                      {user?.data?.profilePicture?.url ? (
                         <Image
-                          src={userData.user.data.profilePicture.url}
-                          alt={userData.user.data.name}
+                          src={user?.data?.profilePicture?.url}
+                          alt={user?.data?.username}
                           width={28}
                           height={28}
                           className="object-cover"
@@ -314,7 +314,7 @@ const Header = () => {
                         <FaUserCircle className="text-xl text-charleston-green" />
                       )}
                     </div>
-                    <span className={`${isScrolled ? 'hidden' : 'hidden sm:inline'} text-sm font-medium transition-all duration-300`}>{user?.data?.name || 'User'}</span>
+                    <span className={`${isScrolled ? 'hidden' : 'hidden sm:inline'} text-sm font-medium transition-all duration-300`}>{user?.data?.username || 'User'}</span>
                     <FaChevronDown className={`text-xs transition-transform duration-300 ${userDropdownOpen ? 'rotate-180' : ''}`} />
                   </button>
 
@@ -322,7 +322,7 @@ const Header = () => {
                   {isClient && userDropdownOpen && (
                     <div className="absolute right-0 mt-2 w-56 bg-charleston-green-dark border border-charleston-green-light rounded-lg shadow-xl py-2 z-50 backdrop-blur-md">
                       <div className="px-4 py-2 border-b border-charleston-green-light">
-                        <p className="text-sm font-medium text-emerald">{user?.data?.name || 'User'}</p>
+                        <p className="text-sm font-medium text-emerald">{user?.data?.username || 'User'}</p>
                         <p className="text-xs text-gray-400 truncate">{user?.data?.email || 'user@example.com'}</p>
                       </div>
 
