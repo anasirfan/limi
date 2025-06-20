@@ -347,7 +347,7 @@ console.log(user)
                        newPendants.design === 'fina' ? 'product_3' : 
                        newPendants.design === 'ico' ? 'product_4' : 
                        newPendants.design === 'piko' ? 'product_5' : 'product_2';
-      sendMessageToPlayCanvas(`cable_design:${productId}`);
+      sendMessageToPlayCanvas(`cable_0:${productId}`);
     }
     }, 0);
   };
