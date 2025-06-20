@@ -73,7 +73,7 @@ console.log(user)
     const productCount = 4; // Number of available pendant designs
     let pendants = [];
     for (let i = 0; i < amount; i++) {
-      const randomDesign = ['bumble', 'radial', 'fina'][Math.floor(Math.random() * 3)];
+      const randomDesign = ['bumble', 'radial', 'fina','ico', 'piko' ][Math.floor(Math.random() * 5)];
       pendants.push({
         id: i,
         design: randomDesign
@@ -142,7 +142,9 @@ console.log(user)
         initialPendants.forEach((pendant, index) => {
           const productId = pendant.design === 'bumble' ? 'product_1' : 
                         pendant.design === 'radial' ? 'product_2' : 
-                        pendant.design === 'fina' ? 'product_3' : 'product_2';
+                        pendant.design === 'fina' ? 'product_3' : 
+                        pendant.design === 'ico' ? 'product_4' : 
+                        pendant.design === 'piko' ? 'product_5' : 'product_2';
           
           sendMessageToPlayCanvas(`cable_${index}:${productId}`);
         });
@@ -160,7 +162,7 @@ console.log(user)
       
       if (config.lightAmount > config.pendants.length) {
         // Add new pendants
-        const designOptions = ['bumble', 'radial', 'fina'];
+        const designOptions = ['bumble', 'radial', 'fina', 'ico', 'piko'];
         
         for (let i = config.pendants.length; i < config.lightAmount; i++) {
           updatedPendants.push({
@@ -245,7 +247,9 @@ console.log(user)
       newPendants.forEach((pendant, index) => {
         const productId = pendant.design === 'bumble' ? 'product_1' : 
                        pendant.design === 'radial' ? 'product_2' : 
-                       pendant.design === 'fina' ? 'product_3' : 'product_2';
+                       pendant.design === 'fina' ? 'product_3' : 
+                       pendant.design === 'ico' ? 'product_4' : 
+                       pendant.design === 'piko' ? 'product_5' : 'product_2';
         
         sendMessageToPlayCanvas(`cable_${index}:${productId}`);
       });
@@ -331,14 +335,18 @@ console.log(user)
       newPendants.forEach((pendant, index) => {
         const productId = pendant.design === 'bumble' ? 'product_1' : 
                        pendant.design === 'radial' ? 'product_2' : 
-                       pendant.design === 'fina' ? 'product_3' : 'product_2';
+                       pendant.design === 'fina' ? 'product_3' : 
+                       pendant.design === 'ico' ? 'product_4' : 
+                       pendant.design === 'piko' ? 'product_5' : 'product_2';
         
         sendMessageToPlayCanvas(`cable_${index}:${productId}`);
       });
     } else {
       const productId = newPendants.design === 'bumble' ? 'product_1' : 
                        newPendants.design === 'radial' ? 'product_2' : 
-                       newPendants.design === 'fina' ? 'product_3' : 'product_2';
+                       newPendants.design === 'fina' ? 'product_3' : 
+                       newPendants.design === 'ico' ? 'product_4' : 
+                       newPendants.design === 'piko' ? 'product_5' : 'product_2';
       sendMessageToPlayCanvas(`cable_design:${productId}`);
     }
     }, 0);
@@ -452,7 +460,9 @@ console.log(user)
     setTimeout(() => {
       const productId = design === 'bumble' ? 'product_1' : 
                       design === 'radial' ? 'product_2' : 
-                      design === 'fina' ? 'product_3' : 'product_2';
+                      design === 'fina' ? 'product_3' : 
+                      design === 'ico' ? 'product_4' : 
+                      design === 'piko' ? 'product_5' : 'product_2';
       
       // Check if we have only 1 pendant or multiple pendants
       if (config.lightAmount === 1) {
@@ -725,12 +735,14 @@ console.log(user)
           product: baseId
         };
       } else if (pendant.design === 'bumble' || pendant.design === 'radial' || 
-          pendant.design === 'fina') {
+          pendant.design === 'fina' || pendant.design === 'ico' || pendant.design === 'piko') {
         // It's a pendant
         console.log(`Cable ${index} identified as pendant type: ${pendant.design}`);
         const productId = pendant.design === 'bumble' ? 'product_1' : 
                        pendant.design === 'radial' ? 'product_2' : 
-                       pendant.design === 'fina' ? 'product_3' : 'product_2';
+                       pendant.design === 'fina' ? 'product_3' : 
+                       pendant.design === 'ico' ? 'product_4' : 
+                       pendant.design === 'piko' ? 'product_5' : 'product_2';
         
         configSummary.cables[index] = {
           pendant: productId
@@ -860,7 +872,9 @@ console.log(user)
           const pendantNameMap = {
             'product_1': 'Bumble',
             'product_2': 'Radial',
-            'product_3': 'Fina'
+            'product_3': 'Fina',
+            'product_4': 'Ico',
+            'product_5': 'Piko'
           };
           
           const pendantName = pendantNameMap[cable.pendant] || 'Unknown';

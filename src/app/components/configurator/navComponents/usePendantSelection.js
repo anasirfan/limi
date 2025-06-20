@@ -10,6 +10,8 @@ export const usePendantSelection = (pendants, selectedPendants, setSelectedPenda
       'bumble': '1.png',
       'radial': '2.png',
       'fina': '3.png',
+      'ico': '4.png',
+      'piko': '5.png',
       // Add any other design mappings here
     };
     

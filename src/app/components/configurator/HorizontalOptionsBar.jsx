@@ -553,7 +553,7 @@ const HorizontalOptionsBar = ({
                         <div 
                           className="absolute inset-0 w-full h-full opacity-80"
                           style={{
-                            backgroundImage: `url(/images/configOptions/${pendant.design === 'bumble' ? '1' : pendant.design === 'radial' ? '2' : pendant.design === 'fina' ? '3' : '5'}.png)`,
+                            backgroundImage: `url(/images/configOptions/${pendant.design === 'bumble' ? '1' : pendant.design === 'radial' ? '2' : pendant.design === 'fina' ? '3' : pendant.design === 'ico' ? '4' : '5'}.png)`,
                             backgroundSize: "cover",
                             backgroundPosition: "center"
                           }}
@@ -615,6 +615,8 @@ const HorizontalOptionsBar = ({
                     { id: 'bumble', name: 'Bumble', image: '/images/configOptions/1.png' },
                     { id: 'radial', name: 'Radial', image: '/images/configOptions/2.png' },
                     { id: 'fina', name: 'Fina', image: '/images/configOptions/3.png' },
+                    { id: 'ico', name: 'Ico', image: '/images/configOptions/4.png' },
+                    { id: 'piko', name: 'Piko', image: '/images/configOptions/5.png' },
                   ].map((design) => (
                     <motion.div
                       key={design.id}
