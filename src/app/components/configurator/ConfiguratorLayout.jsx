@@ -486,6 +486,7 @@ console.log(user)
     // Update config state
     setConfig(prev => ({
       ...prev,
+      lightAmount: baseType === 'rectangular' ? 3 : 1,
       baseType
     }));
     
@@ -498,6 +499,9 @@ console.log(user)
       sendMessageToPlayCanvas(`cable_0:product_2`);
       sendMessageToPlayCanvas(`cable_1:product_2`);
       sendMessageToPlayCanvas(`cable_2:product_2`);
+    } else {
+      sendMessageToPlayCanvas(`light_amount:1`);
+      sendMessageToPlayCanvas(`cable_0:product_2`);
     }
     
     // Move to next step
