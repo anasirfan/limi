@@ -91,10 +91,10 @@ export const loginUser = createAsyncThunk(
           isWebsiteLogin: true
         }),
       });
-       console.log( 'response : ', response)
       if (!response.ok) {
         const errorData = await response.json();
-        return rejectWithValue(errorData.message || 'Login failed');
+        console.log("error login", errorData);
+        return rejectWithValue(errorData.error_message || 'Login failed');
       }
       
       const data = await response.json();
@@ -126,7 +126,7 @@ export const loginUser = createAsyncThunk(
       
       return userData;
     } catch (error) {
-      return rejectWithValue(error.message || 'Login failed');
+      return rejectWithValue(error.error_message || 'Login failed');
     }
   }
 );
@@ -160,54 +160,20 @@ export const signupUser = createAsyncThunk(
       
       if (!response.ok) {
         const errorData = await response.json();
-        return rejectWithValue(errorData.message || 'Signup failed');
+        return rejectWithValue(errorData.error_message || 'Signup failed');
       }
       
       const data = await response.json();
-      console.log("data : ",data);
+      console.log("Signup successful: ", data);
       
-      // Auto login after successful signup
-      const loginResponse = await fetch('https://delays-enjoy-present-nc.trycloudflare.com/client/verify_otp', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: userData.email,
-          password: userData.password
-        }),
-      });
-      
-      if (!loginResponse.ok) {
-        return rejectWithValue('Account created but login failed');
-      }
-      
-      const loginData = await loginResponse.json();
-      
-      // Save token to localStorage
-      if (loginData.token) {
-        localStorage.setItem('limiToken', loginData.token);
-      }
-      console.log("loginData : ",loginData);
-      // Get user profile
-      const profileResponse = await fetch('https://delays-enjoy-present-nc.trycloudflare.com/client/verify_otp', {
-        headers: {
-          'Authorization': `${loginData.token}`
-        }
-      });
-
-      if (!profileResponse.ok) {
-        return rejectWithValue('Account created but failed to fetch profile');
-      }
-
-      const newUser = await profileResponse.json();
-      console.log("newUser : ",newUser);
-      // Save to localStorage
-      saveUserToStorage(newUser);
-      
-      return newUser;
+      // Return success message and user email for redirection
+      return {
+        success: true,
+        message: 'Account created successfully! Please log in.',
+        email: userData.email
+      };
     } catch (error) {
-      return rejectWithValue(error.message || 'Signup failed');
+      return rejectWithValue(error.error_message || 'Signup failed');
     }
   }
 );
@@ -332,6 +298,11 @@ export const userSlice = createSlice({
     },
     addAddress(state, action) {
       if (state.user) {
+        // Initialize addresses array if it doesn't exist
+        if (!state.user.addresses) {
+          state.user.addresses = [];
+        }
+        
         const newAddress = {
           id: `addr-${Date.now()}`,
           default: state.user.addresses.length === 0, // First address is default

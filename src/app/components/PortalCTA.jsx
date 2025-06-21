@@ -8,7 +8,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { motion } from 'framer-motion';
 import { FaUserCircle, FaStar, FaQuoteLeft, FaQuoteRight, FaArrowRight, FaLock, FaHistory, FaHeart, FaShoppingCart, FaRegCreditCard } from 'react-icons/fa';
 
-const PortalCTA = ({onSignInClick}) => {
+const PortalCTA = ({ onSignInClick }) => {
   const sectionRef = useRef(null);
   const contentRef = useRef(null);
   const headingRef = useRef(null);
@@ -194,33 +194,33 @@ const PortalCTA = ({onSignInClick}) => {
           <div ref={buttonRef} className="flex flex-col sm:flex-row justify-center gap-4 mb-8">
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
             <button
-          onClick={(e) => {
-            e.preventDefault();
-            if (onSignInClick) {
-              onSignInClick();
-            }
-          }}
-          className="bg-emerald text-charleston-green-dark hover:bg-emerald/90 transition-colors px-6 py-3 rounded-md font-medium flex items-center justify-center gap-2"
-        >
-          Sign In
-          <FaArrowRight />
-        </button>
+            onClick={(e) => {
+              e.preventDefault();
+              if (onSignInClick) {
+                onSignInClick(false); // false indicates sign in
+              }
+            }}
+            className="bg-emerald text-charleston-green-dark hover:bg-emerald/90 transition-colors px-6 py-3 rounded-md font-medium flex items-center justify-center gap-2"
+          >
+            Sign In
+            <FaArrowRight />
+          </button>
             </motion.div>
             
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
 
               <button
-          onClick={(e) => {
-            e.preventDefault();
-            if (onSignInClick) {
-              onSignInClick();
-            }
-          }}
-          className="bg-emerald text-charleston-green-dark hover:bg-emerald/90 transition-colors px-6 py-3 rounded-md font-medium flex items-center justify-center gap-2"
-        >
-          Create Account
-          <FaArrowRight />
-        </button>
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (onSignInClick) {
+                    onSignInClick(true); // true indicates create account
+                  }
+                }}
+                className="bg-emerald text-charleston-green-dark hover:bg-emerald/90 transition-colors px-6 py-3 rounded-md font-medium flex items-center justify-center gap-2"
+              >
+                Create Account
+                <FaArrowRight />
+              </button>
             </motion.div>
           </div>
           

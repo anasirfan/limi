@@ -111,33 +111,45 @@ export default function AccountSettings({ user, onUserUpdate }) {
     setSaveError("");
 
     try {
-      // Prepare the update data
-      const updateData = {};
-      // updateData.email = formData.email
-      // updateData.phone = formData.phone
-      // updateData.username = formData.username
-      // Only include fields that have changed and are not the password mask
-      if (formData.email !== user?.data?.email) {
-        updateData.email = formData.email;
-      }
-      if (formData.phone !== user?.data?.phone) {
-        updateData.phone = formData.phone;
-      }
-      if (formData.username !== user?.data?.username) {
-        updateData.username = formData.username;
-      }
-      if (
-        formData.password &&
-        formData.password !== "••••••••••" &&
-        formData.password.length >= 6
-      ) {
+      // Prepare the update data according to the API spec
+      const updateData = {
+        username: formData.username,
+        phone: formData.phone,
+        email: formData.email,
+        emailNotification: user?.notifications?.email || false,
+        smsNotification: user?.notifications?.sms || false,
+        appNotification: user?.notifications?.app || false,
+      };
+
+      // Only include password if it's being changed
+      if (formData.password && formData.password !== "••••••••••") {
         updateData.password = formData.password;
       }
 
-      // If there's nothing to update, just exit edit mode
-      if (Object.keys(updateData).length === 0) {
-        setEditMode(false);
-        return;
+      // Include address if available
+      const defaultAddress = user?.addresses?.find(addr => addr.default) || user?.addresses?.[0];
+      if (defaultAddress) {
+        updateData.address = {
+          fullName: defaultAddress.name,
+          phone: defaultAddress.phone || formData.phone,
+          street: defaultAddress.street,
+          city: defaultAddress.city,
+          state: defaultAddress.state,
+          postalCode: defaultAddress.zip,
+          country: defaultAddress.country
+        };
+      }
+
+      // Include payment methods if available
+      const defaultPayment = user?.paymentMethods?.find(pm => pm.default) || user?.paymentMethods?.[0];
+      if (defaultPayment) {
+        updateData.paymentMethods = [{
+          cardType: defaultPayment.type,
+          cardHolder: defaultPayment.name,
+          cardNumber: defaultPayment.cardNumber,
+          expiryDate: defaultPayment.expiry,
+          cvv: defaultPayment.cvv
+        }];
       }
 
       // Get the token from localStorage
@@ -166,7 +178,6 @@ export default function AccountSettings({ user, onUserUpdate }) {
 
       // Fetch fresh user data after successful update
       const updatedUser = await fetchUserData();
-      console.log("updatedUser : ", updatedUser);
       if (!updatedUser) {
         throw new Error("Profile updated but failed to refresh user data");
       }

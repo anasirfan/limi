@@ -54,11 +54,18 @@ export default function PortalLogin({ onLogin }) {
       dispatch(clearAuthStatus());
     };
   }, [dispatch]);
-  const handleSignInClick = () => {
+  const handleSignInClick = (showSignupForm = false) => {
     if (loginSectionRef.current) {
       const yOffset = -80; // Adjust this value based on your header height
       const y = loginSectionRef.current.getBoundingClientRect().top + window.pageYOffset + yOffset;
       window.scrollTo({ top: y, behavior: 'smooth' });
+      
+      // If showSignupForm is true, show the signup form
+      if (showSignupForm) {
+        setShowSignup(true);
+      } else {
+        setShowSignup(false);
+      }
     }
   };
   // Update parent component when login is successful
@@ -73,7 +80,7 @@ export default function PortalLogin({ onLogin }) {
   // Handle email login
   const handleEmailLogin = (e) => {
     e.preventDefault();
-    dispatch(loginUser({ email, password }));
+    dispatch(loginUser({ email, password, isWebsiteLogin: true }));
   };
 
   // Handle forgot password
