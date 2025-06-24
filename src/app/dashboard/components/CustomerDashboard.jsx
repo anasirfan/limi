@@ -77,6 +77,67 @@ export default function CustomerDashboard({ token }) {
   const [mobileUserSortDirection, setMobileUserSortDirection] = useState('desc');
   const [mobileCurrentPage, setMobileCurrentPage] = useState(1);
   const [mobileUsersPerPage, setMobileUsersPerPage] = useState(10);
+  
+  // Registrations state
+  const [registrations, setRegistrations] = useState([]);
+  const [registrationsLoading, setRegistrationsLoading] = useState(false);
+  const [registrationsError, setRegistrationsError] = useState('');
+  const [searchRegistration, setSearchRegistration] = useState('');
+  const [registrationSortField, setRegistrationSortField] = useState('createdAt');
+  const [registrationSortDirection, setRegistrationSortDirection] = useState('desc');
+  const [registrationCurrentPage, setRegistrationCurrentPage] = useState(1);
+  const [registrationsPerPage, setRegistrationsPerPage] = useState(10);
+  
+  // Fetch community subscription registrations
+  const fetchRegistrations = async () => {
+    setRegistrationsLoading(true);
+    setRegistrationsError('');
+    
+    try {
+      const token = localStorage.getItem('limiToken');
+      if (!token) {
+        throw new Error('Authentication required');
+      }
+
+      const response = await fetch('https://api1.limitless-lighting.co.uk/client/user/community/subscriptions', {
+        method: 'GET',
+        headers: {
+          'Authorization': token,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Failed to fetch registrations');
+      }
+      
+      const data = await response.json();
+      
+      // Transform the data to match our expected format
+      const formattedData = Array.isArray(data) 
+        ? data 
+        : data && Array.isArray(data.data) 
+          ? data.data 
+          : [];
+      
+      // Ensure each item has the required fields
+      const processedData = formattedData.map(item => ({
+        email: item.email || 'N/A',
+        communityType: item.communityType || 'Unknown',
+        createdAt: item.createdAt || new Date().toISOString(),
+        ...item
+      }));
+      
+      setRegistrations(processedData);
+    } catch (error) {
+      console.error('Error fetching registrations:', error);
+      setRegistrationsError(error.message || 'Failed to load registrations');
+      setRegistrations([]);
+    } finally {
+      setRegistrationsLoading(false);
+    }
+  };
 
   // Fetch contact form queries
   console.log(distributorQueries)
@@ -162,12 +223,16 @@ export default function CustomerDashboard({ token }) {
     }
   };
 
-  // Load queries when tab is active
+  // Load data when tab is active
   useEffect(() => {
     if (activeTab === 'query') {
       fetchQueries();
     } else if (activeTab === 'distributorQuery') {
       fetchDistributorQueries();
+    } else if (activeTab === 'registrations') {
+      fetchRegistrations();
+    } else if (activeTab === 'mobile-users') {
+      fetchMobileUsers();
     }
   }, [activeTab]);
 
@@ -323,11 +388,11 @@ export default function CustomerDashboard({ token }) {
     }
   };
 
-  // Fetch mobile users data
+  // Fetch mobile users
   const fetchMobileUsers = async () => {
+    setMobileUsersLoading(true);
+    
     try {
-      setMobileUsersLoading(true);
-      
       let mobileUserData = [];
       let useRealData = false;
       
@@ -444,12 +509,14 @@ export default function CustomerDashboard({ token }) {
     }
   };
 
-  // Fetch visitor logs when tab changes or filters change
+  // Fetch data when tab changes or filters change
   useEffect(() => {
     if (activeTab === 'tracking') {
       fetchVisitorLogs();
     } else if (activeTab === 'mobile') {
       fetchMobileUsers();
+    } else if (activeTab === 'registrations') {
+      fetchRegistrations();
     }
   }, [activeTab, dateFilter, userTypeFilter, consentFilter, roleFilter, emailFilter, usernameFilter, regionFilter]);
 
@@ -635,13 +702,23 @@ export default function CustomerDashboard({ token }) {
     fetchCustomers();
   }, [token]);
 
-  // Handle sorting
+  // Handle sorting for customer table
   const handleSort = (field) => {
     if (sortField === field) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
       setSortField(field);
       setSortDirection('desc'); // Default to descending order for new sort field
+    }
+  };
+  
+  // Handle sorting for registrations table
+  const handleRegistrationSort = (field) => {
+    if (registrationSortField === field) {
+      setRegistrationSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
+    } else {
+      setRegistrationSortField(field);
+      setRegistrationSortDirection('desc');
     }
   };
 
@@ -981,6 +1058,13 @@ export default function CustomerDashboard({ token }) {
           <FaEnvelope className="mr-2" />
           Distributor Queries
         </button>
+        <button
+          onClick={() => setActiveTab('registrations')}
+          className={`px-4 py-2 rounded-md flex items-center ${activeTab === 'registrations' ? 'bg-[#54BB74] text-[#1e1e1e] font-medium' : 'bg-[#333333] text-white hover:bg-[#444444]'}`}
+        >
+          <FaUserPlus className="mr-2" />
+          Registrations
+        </button>
       </div>
 
       {activeTab === 'distributorQuery' && (
@@ -1110,6 +1194,190 @@ export default function CustomerDashboard({ token }) {
                   </tbody>
                 </table>
               </div>
+            </div>
+          )}
+        </div>
+      </div>
+      )}
+
+      {activeTab === 'registrations' && (
+      <div className="bg-[#1e1e1e] rounded-lg shadow-lg overflow-hidden border border-[#3a3a3a]">
+        {/* Header Section */}
+        <div className="px-6 py-5 bg-[#1e1e1e] border-b border-[#3a3a3a]">
+          <div className="flex flex-col space-y-4 md:space-y-0 md:flex-row md:items-center md:justify-between">
+            <div className="space-y-1">
+              <h2 className="text-3xl font-bold text-white">Community Subscriptions</h2>
+              <p className="text-[#a0a0a0] text-base">View and manage all community email subscriptions</p>
+            </div>
+            <div className="relative w-full md:w-96">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <FaSearch className="text-[#a0a0a0] h-4 w-4" />
+              </div>
+              <input
+                type="text"
+                placeholder="Search by email or community type..."
+                className="bg-[#292929] text-white pl-10 pr-4 py-3 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-[#54bb74] border border-[#3a3a3a] focus:border-[#54bb74] transition-colors text-base placeholder-gray-500"
+                value={searchRegistration}
+                onChange={(e) => setSearchRegistration(e.target.value)}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Content Section */}
+        <div className="p-0">
+          {registrationsLoading ? (
+            <div className="flex flex-col items-center justify-center min-h-[300px]">
+              <div className="w-16 h-16 border-t-4 border-[#93cfa2] border-solid rounded-full animate-spin mb-6"></div>
+              <p className="text-gray-300">Loading subscriptions...</p>
+            </div>
+          ) : registrationsError ? (
+            <div className="mx-6 my-4 bg-red-900/20 border border-red-700/30 text-red-200 px-4 py-3 rounded-md flex items-center">
+              <FaTimes className="mr-3 flex-shrink-0" />
+              <span className="text-base">{registrationsError}</span>
+            </div>
+          ) : registrations.length === 0 ? (
+            <div className="bg-[#292929] mx-6 my-4 p-10 rounded-lg text-center border border-[#3a3a3a]">
+              <FaInbox className="mx-auto text-4xl text-[#a0a0a0] mb-4" />
+              <h3 className="text-white font-semibold text-xl mb-2">No subscriptions found</h3>
+              <p className="text-[#a0a0a0] text-base">
+                {searchRegistration ? 'No results match your search.' : 'No community subscriptions have been made yet.'}
+              </p>
+            </div>
+          ) : (
+            <div className="overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full divide-y divide-[#3a3a3a]">
+                  <thead className="bg-[#292929]">
+                    <tr>
+                      <th 
+                        className="px-6 py-4 text-left text-lg font-bold text-gray-300 hover:text-white tracking-wider cursor-pointer"
+                        onClick={() => handleRegistrationSort('email')}
+                      >
+                        <div className="flex items-center">
+                          Email
+                          {registrationSortField === 'email' && (
+                            registrationSortDirection === 'asc' ? 
+                            <FaSortUp className="ml-1" /> : 
+                            <FaSortDown className="ml-1" />
+                          )}
+                        </div>
+                      </th>
+                      <th 
+                        className="px-6 py-4 text-left text-lg font-bold text-gray-300 hover:text-white tracking-wider cursor-pointer"
+                        onClick={() => handleRegistrationSort('communityType')}
+                      >
+                        <div className="flex items-center">
+                          Community Type
+                          {registrationSortField === 'communityType' && (
+                            registrationSortDirection === 'asc' ? 
+                            <FaSortUp className="ml-1" /> : 
+                            <FaSortDown className="ml-1" />
+                          )}
+                        </div>
+                      </th>
+                      <th 
+                        className="px-6 py-4 text-left text-lg font-bold text-gray-300 hover:text-white tracking-wider cursor-pointer"
+                        onClick={() => handleRegistrationSort('createdAt')}
+                      >
+                        <div className="flex items-center">
+                          Date Subscribed
+                          {registrationSortField === 'createdAt' && (
+                            registrationSortDirection === 'asc' ? 
+                            <FaSortUp className="ml-1" /> : 
+                            <FaSortDown className="ml-1" />
+                          )}
+                        </div>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-[#1e1e1e] divide-y divide-[#3a3a3a]">
+                    {registrations
+                      .filter(reg => {
+                        if (!searchRegistration) return true;
+                        const search = searchRegistration.toLowerCase();
+                        return (
+                          (reg.email?.toLowerCase().includes(search) || '') ||
+                          (reg.communityType?.toLowerCase().includes(search) || '')
+                        );
+                      })
+                      .sort((a, b) => {
+                        let valueA = a[registrationSortField];
+                        let valueB = b[registrationSortField];
+                        
+                        if (registrationSortField === 'createdAt') {
+                          valueA = new Date(valueA);
+                          valueB = new Date(valueB);
+                        } else {
+                          valueA = String(valueA).toLowerCase();
+                          valueB = String(valueB).toLowerCase();
+                        }
+                        
+                        if (valueA < valueB) {
+                          return registrationSortDirection === 'asc' ? -1 : 1;
+                        }
+                        if (valueA > valueB) {
+                          return registrationSortDirection === 'asc' ? 1 : -1;
+                        }
+                        return 0;
+                      })
+                      .slice(
+                        (registrationCurrentPage - 1) * registrationsPerPage,
+                        registrationCurrentPage * registrationsPerPage
+                      )
+                      .map((reg, index) => (
+                        <tr key={index} className="hover:bg-[#292929] transition-colors">
+                          <td className="px-6 py-4">
+                            <div className="text-white">{reg.email || 'N/A'}</div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#54bb74] bg-opacity-20 text-[#93cfa2]">
+                              {reg.communityType || 'N/A'}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-gray-400">
+                            {new Date(reg.createdAt).toLocaleDateString('en-US', {
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+              </div>
+              
+              {/* Pagination */}
+              {Math.ceil(registrations.length / registrationsPerPage) > 1 && (
+                <div className="px-6 py-4 bg-[#1e1e1e] border-t border-[#3a3a3a] flex items-center justify-between">
+                  <div className="text-sm text-gray-400">
+                    Showing <span className="font-medium">{(registrationCurrentPage - 1) * registrationsPerPage + 1}</span> to{' '}
+                    <span className="font-medium">
+                      {Math.min(registrationCurrentPage * registrationsPerPage, registrations.length)}
+                    </span>{' '}
+                    of <span className="font-medium">{registrations.length}</span> results
+                  </div>
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => setRegistrationCurrentPage(prev => Math.max(prev - 1, 1))}
+                      disabled={registrationCurrentPage === 1}
+                      className={`px-3 py-1 rounded-md ${registrationCurrentPage === 1 ? 'bg-[#333333] text-gray-600 cursor-not-allowed' : 'bg-[#333333] text-white hover:bg-[#444444]'}`}
+                    >
+                      Previous
+                    </button>
+                    <button
+                      onClick={() => setRegistrationCurrentPage(prev => prev + 1)}
+                      disabled={registrationCurrentPage * registrationsPerPage >= registrations.length}
+                      className={`px-3 py-1 rounded-md ${registrationCurrentPage * registrationsPerPage >= registrations.length ? 'bg-[#333333] text-gray-600 cursor-not-allowed' : 'bg-[#333333] text-white hover:bg-[#444444]'}`}
+                    >
+                      Next
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>

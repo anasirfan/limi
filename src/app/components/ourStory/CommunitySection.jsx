@@ -47,15 +47,35 @@ export default function CommunitySection() {
     setSelectedCommunity(name);
   };
   
-  const handleEmailSubmit = (e) => {
+  const handleEmailSubmit = async (e) => {
     e.preventDefault();
     if (!email || !email.includes('@')) return;
     
     setIsSubmitting(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      // Map community name to API format
+      const communityMap = {
+        'LIMI Club': 'LIMI_Club',
+        'The Luminaries': 'The_Luminaries',
+        'LIMI Collective': 'LIMI_Collective'
+      };
+      
+      const response = await fetch('https://api1.limitless-lighting.co.uk/client/user/community/subscribe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email,
+          communityType: communityMap[selectedCommunity] || 'LIMI_Club'
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error('Subscription failed');
+      }
+      
       setSubmitSuccess(true);
       setEmail('');
       
@@ -63,7 +83,13 @@ export default function CommunitySection() {
       setTimeout(() => {
         setSubmitSuccess(false);
       }, 5000);
-    }, 1500);
+      
+    } catch (error) {
+      console.error('Error subscribing:', error);
+      // You might want to show an error message to the user here
+    } finally {
+      setIsSubmitting(false);
+    }
   };
   
   return (
