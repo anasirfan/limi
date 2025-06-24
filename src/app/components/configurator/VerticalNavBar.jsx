@@ -372,6 +372,8 @@ const VerticalNavBar = ({
             selectedPendants={selectedPendants}
             onPendantDesignChange={onPendantDesignChange}
             onSystemBaseDesignChange={onSystemBaseDesignChange}
+            onShadeSelect={() => {}}
+            currentShade={null}
             onSelectConfigurationType={(type) => {
               // This matches the original handleConfigTypeSelection function
               setLocalConfiguringType(type);

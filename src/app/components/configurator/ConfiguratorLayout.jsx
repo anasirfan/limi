@@ -42,7 +42,8 @@ console.log(user)
     lightDesign: 'radial',
     cableColor: 'black',
     cableLength: '2mm',
-    systemConfigurations: {}
+    systemConfigurations: {},
+    shades: {} // Store shade selections for each pendant/system base
   });
   
   // Preview mode state
@@ -63,6 +64,7 @@ console.log(user)
   const [configuringType, setConfiguringType] = useState(null); // 'pendant' or 'system'
   const [configuringSystemType, setConfiguringSystemType] = useState(null); // 'bar', 'ball', 'universal'
   const [breadcrumbPath, setBreadcrumbPath] = useState([]);
+  const [currentShade, setCurrentShade] = useState(null); // Currently selected shade
 
   // Navigation state
   const [activeStep, setActiveStep] = useState('lightType');
@@ -541,6 +543,9 @@ console.log(user)
     // Update the system base design in the config
     setConfig(prev => ({ ...prev, systemBaseDesign: design }));
     
+    // Reset current shade when changing base design
+    setCurrentShade(null);
+    
     // Send message to PlayCanvas iframe
     setTimeout(() => {
       // Map design names to product IDs for the iframe based on system type
@@ -606,7 +611,83 @@ console.log(user)
       });
     }, 10);
   }, [config.selectedPendants, config.systemType, config.cableSystemTypes]);
-
+  
+  // Handle shade selection
+  const handleShadeSelect = useCallback((designId, shadeId, systemType) => {
+    console.log('handleShadeSelect called with:', designId, shadeId, systemType);
+    
+    // Update the current shade state
+    setCurrentShade(shadeId);
+    console.log('Setting currentShade to:', shadeId);
+    
+    // Get the selected cable number(s)
+    const selectedCables = config.selectedPendants && config.selectedPendants.length > 0 
+      ? config.selectedPendants 
+      : [0]; // Default to cable 0 if none selected
+    
+    console.log('Selected cables for shade update:', selectedCables);
+    
+    // Update shade selection in config
+    setConfig(prev => {
+      const updatedShades = { ...prev.shades };
+      
+      // Update shade for each selected cable
+      selectedCables.forEach(cableNo => {
+        const cableSystemType = prev.cableSystemTypes?.[cableNo] || prev.systemType || 'universal';
+        
+        // Create a unique key for this cable's shade
+        const shadeKey = `${cableNo}_${designId}`;
+        
+        // Store the shade selection
+        updatedShades[shadeKey] = {
+          designId,
+          shadeId,
+          systemType: cableSystemType
+        };
+        
+        console.log(`Updated shade for cable ${cableNo}, design ${designId} to ${shadeId}`);
+      });
+      
+      return { ...prev, shades: updatedShades };
+    });
+    
+    // DIRECT APPROACH: Send message to PlayCanvas iframe immediately
+    // Map system types to their corresponding numbers for the iframe message
+    const systemTypeMap = {
+      'bar': '1',
+      'ball': '2',
+      'universal': '3'
+    };
+    
+    // For each selected cable, send a message
+    selectedCables.forEach(cableNo => {
+      // Get the system type for this cable
+      const cableSystemType = config.cableSystemTypes?.[cableNo] || systemType || config.systemType || 'universal';
+      const systemTypeNumber = systemTypeMap[cableSystemType] || '3'; // Default to universal (3) if not found
+      
+      // Format: cable_0:system_3_shallowdome
+      const message = `cable_${cableNo}:system_${systemTypeNumber}_${shadeId}`;
+      console.log(`Sending shade selection message: ${message}`);
+      
+      // Send the message directly to the iframe
+      const iframe = document.getElementById('playcanvas-app');
+      if (iframe && iframe.contentWindow) {
+        console.log('Found iframe, sending message:', message);
+        iframe.contentWindow.postMessage(message, "*");
+      } else {
+        console.error('Could not find iframe with id "playcanvas-app"');
+      }
+    });
+    
+    // Also send a direct message with hardcoded values as a fallback
+    const fallbackMessage = `cable_0:system_3_${shadeId}`;
+    console.log(`Sending fallback shade message: ${fallbackMessage}`);
+    const iframe = document.getElementById('playcanvas-app');
+    if (iframe && iframe.contentWindow) {
+      iframe.contentWindow.postMessage(fallbackMessage, "*");
+    }
+  }, [config.selectedPendants, config.systemType, config.cableSystemTypes]);
+  
   // Helper function to send messages to PlayCanvas iframe
   const sendMessageToPlayCanvas = (message) => {
     const iframe = document.getElementById('playcanvas-app');
@@ -656,7 +737,8 @@ console.log(user)
       light_type: config.lightType,
       light_amount: config.lightAmount,
       base_color: config.baseColor,
-      cables: {}
+      cables: {},
+      shades: config.shades || {} // Include shade selections
     };
     
     // Only include base_type for ceiling lights
@@ -1151,26 +1233,26 @@ Base Design: ${baseName}
           />
           }
           
-          {/* Configuration Type Selector */}
-          <AnimatePresence>
-            {/* {showTypeSelector && selectedLocation !== null && (
-              <ConfigurationTypeSelector 
-                onSelectType={handleConfigTypeSelection}
-                onClose={() => setShowTypeSelector(false)}
-              />
-            )} */}
-          </AnimatePresence>
-          
-          {/* Horizontal Options Bar */}
-          {/* {!isLoading && !configuringType && 
-          <HorizontalOptionsBar 
-            config={config}
-            onLightTypeChange={handleLightTypeChange}
-            onBaseTypeChange={handleBaseTypeChange}
-            onLightAmountChange={handleLightAmountChange}
-            onSystemTypeChange={handleSystemTypeChange}
-          />
-          } */}
+          {/* Configuration panel for individual configuration */}
+          {/* {configuringType && (
+            <ConfigPanel
+              configuringType={configuringType}
+              configuringSystemType={configuringSystemType}
+              breadcrumbPath={breadcrumbPath}
+              onBreadcrumbNavigation={handleBreadcrumbNavigation}
+              onSystemTypeSelection={handleIndividualSystemTypeSelection}
+              selectedLocation={selectedLocation}
+              selectedPendants={config.selectedPendants}
+              onPendantDesignChange={handlePendantDesignChange}
+              onSystemBaseDesignChange={handleSystemBaseDesignChange}
+              onBaseColorChange={handleBaseColorChange}
+              onSelectConfigurationType={handleConfigTypeSelection}
+              onShadeSelect={handleShadeSelect}
+              currentShade={currentShade}
+              onClose={() => setConfiguringType(null)}
+              className="max-sm:static max-sm:w-full max-sm:max-w-full max-sm:rounded-none max-sm:border-none"
+            />
+          )} */}
         </>
       )}
       
