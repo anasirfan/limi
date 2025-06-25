@@ -8,14 +8,15 @@ import PlayCanvasViewer from "./PlayCanvasViewer";
 // Helper: Detect mobile using user agent and screen size
 function isMobileDevice() {
   if (typeof window === "undefined") return false;
-  
+
   const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-  const isMobileUA = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile/i.test(
-    userAgent.toLowerCase()
-  );
-  const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  const isMobileUA =
+    /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile/i.test(
+      userAgent.toLowerCase()
+    );
+  const hasTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
   const isSmallScreen = window.innerWidth <= 800;
-  
+
   return isMobileUA || hasTouch || isSmallScreen;
 }
 
@@ -145,6 +146,18 @@ export default function OnboardingSection() {
                 "*"
               );
             }
+            if (lightType === "wall") {
+              iframeRef.current.contentWindow.postMessage(
+                "light_amount:1",
+                "*"
+              );
+            }
+            if (lightType === "ceiling") {
+              iframeRef.current.contentWindow.postMessage(
+                "light_amount:1",
+                "*"
+              );
+            }
 
             if (lightType === "floor") {
               iframeRef.current.contentWindow.postMessage(
@@ -161,7 +174,7 @@ export default function OnboardingSection() {
               );
             } else {
               iframeRef.current.contentWindow.postMessage(
-                "cable_0:product_2",
+                "cable_0:product_1",
                 "*"
               );
             }
@@ -175,13 +188,11 @@ export default function OnboardingSection() {
             if (currentType === "ceiling") {
               if (vibeMessage === "coolLux") {
                 lightAmount = "1";
-              } else if (vibeMessage === "dreamGlow") {
-                lightAmount = "3";
               } else if (vibeMessage === "shadowHue") {
+                lightAmount = "3";
+              } else if (vibeMessage === "zenFlow") {
                 lightAmount = "6";
-              } else {
-                lightAmount = "24";
-              }
+              } 
               setLightAmount(lightAmount);
               iframeRef.current.contentWindow.postMessage(
                 "light_type:ceiling",
@@ -222,6 +233,7 @@ export default function OnboardingSection() {
                 "*"
               );
             }
+
           }
           break;
 
@@ -371,7 +383,7 @@ export default function OnboardingSection() {
   }, [isMobile, iframeLoaded, iframeKey]);
 
   // We'll use the embed URL for both mobile and desktop for maximum compatibility.
-  const playcanvasEmbedUrl = "https://playcanv.as/e/p/cW2W3Amn/";
+  const playcanvasEmbedUrl = "https://playcanv.as/e/p/7c2273a2/";
 
   return (
     <section className="bg-[#2B2D2F] text-white py-8 md:py-12">
@@ -412,13 +424,13 @@ export default function OnboardingSection() {
             className="relative rounded-2xl overflow-hidden shadow-2xl bg-[#1e2022] w-full order-1"
           >
             <div
-  className="aspect-square md:aspect-auto md:h-[500px]"
-  style={{
-    WebkitTransform: "translateZ(0)",
-    transform: "translateZ(0)",
-    willChange: "transform"
-  }}
->
+              className="aspect-square md:aspect-auto md:h-[500px]"
+              style={{
+                WebkitTransform: "translateZ(0)",
+                transform: "translateZ(0)",
+                willChange: "transform",
+              }}
+            >
               {/* Loading overlay */}
               {!iframeLoaded && (
                 <div
@@ -757,33 +769,37 @@ export default function OnboardingSection() {
 
               {/* 3D Viewer Iframe */}
               <iframe
-              key={iframeKey}
-              ref={iframeRef}
-              src={playcanvasEmbedUrl}
-              className="w-full h-full border-0 bg-transparent"
-              title="LIMI 3D Configurator"
-              allow="accelerometer; autoplay; camera; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              importance="high"
-              loading="eager"
-              sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-pointer-lock"
-              onLoad={() => {
-                // setIframeLoaded(true);
-                setIframeError(false);
-                // Set initial quality for desktop
-                if (!isMobile && iframeRef.current && iframeRef.current.contentWindow) {
-                  iframeRef.current.contentWindow.postMessage("highdis", "*");
-                }
-              }}
-              onError={() => {
-                setIframeError(true);
-                setIframeLoaded(false);
-              }}
-              style={{
-                minHeight: isMobile ? 320 : 500,
-                background: "transparent"
-              }}
-            ></iframe>
+                key={iframeKey}
+                ref={iframeRef}
+                src={playcanvasEmbedUrl}
+                className="w-full h-full border-0 bg-transparent"
+                title="LIMI 3D Configurator"
+                allow="accelerometer; autoplay; camera; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                importance="high"
+                loading="eager"
+                sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-pointer-lock"
+                onLoad={() => {
+                  // setIframeLoaded(true);
+                  setIframeError(false);
+                  // Set initial quality for desktop
+                  if (
+                    !isMobile &&
+                    iframeRef.current &&
+                    iframeRef.current.contentWindow
+                  ) {
+                    iframeRef.current.contentWindow.postMessage("highdis", "*");
+                  }
+                }}
+                onError={() => {
+                  setIframeError(true);
+                  setIframeLoaded(false);
+                }}
+                style={{
+                  minHeight: isMobile ? 320 : 500,
+                  background: "transparent",
+                }}
+              ></iframe>
 
               {/* Interaction hint */}
               <div className="absolute top-4 right-4 bg-black/60 text-white px-3 py-1 rounded-full text-xs flex items-center z-10 animate-pulse">
