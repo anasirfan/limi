@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
-import { FaChevronLeft, FaChevronRight, FaCheck, FaCubes, FaLightbulb, FaTimes } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight, FaCheck, FaCubes, FaLightbulb, FaTimes, FaChevronRight as FaArrow } from "react-icons/fa";
 import { Breadcrumb } from './Breadcrumb';
 import BaseColorPanel from './BaseColorPanel';
 
@@ -17,6 +17,8 @@ export const ConfigPanel = ({
   onSystemBaseDesignChange,
   onBaseColorChange,
   onSelectConfigurationType,
+  onShadeSelect,
+  currentShade,
   onClose,
   className = '' // Add className prop with default empty string
 }) => {
@@ -31,10 +33,32 @@ export const ConfigPanel = ({
 
   const [currentConfig, SetcurrentConfig] = useState(null);
   
+  // State for shade selection
+  const [showShades, setShowShades] = useState(false);
+  const [availableShades, setAvailableShades] = useState([]);
+  const [localSelectedShade, setLocalSelectedShade] = useState(currentShade);
+  
+  // Update local shade state when currentShade prop changes
+  useEffect(() => {
+    setLocalSelectedShade(currentShade);
+    console.log('currentShade prop updated:', currentShade);
+  }, [currentShade]);
+  
   // Update navigation state when configuringType or configuringSystemType changes
   useEffect(() => {
     updateNavigationState();
   }, [configuringType, configuringSystemType]);
+  
+  // Debug log for tracking props and state
+  useEffect(() => {
+    console.log('ConfigPanel props/state:', { 
+      configuringType, 
+      configuringSystemType,
+      currentDesign,
+      currentShade,
+      localSelectedShade
+    });
+  }, [configuringType, configuringSystemType, currentDesign, currentShade, localSelectedShade]);
   
   // Update navigation state based on current configuration
   const updateNavigationState = () => {
@@ -85,6 +109,59 @@ export const ConfigPanel = ({
   
 
 
+  // Check if the selected design has multiple shades
+  const checkForMultipleShades = (designId, systemType) => {
+    // Map of designs to their available shades
+    const shadeOptions = {
+      // Universal system shades
+      'universal': {
+        'atom': [
+          { id: 'shallowdome', name: 'Shallow Dome', color: '#2B2D2F' },
+          { id: 'deepdome', name: 'Deep Dome', color: '#50C878' },
+          { id: 'flatplate', name: 'Flat Plate', color: '#87CEAB' }
+        ],
+        'nebula': [
+          { id: 'cone', name: 'Cone', color: '#2B2D2F' },
+          { id: 'cylinder', name: 'Cylinder', color: '#50C878' }
+        ],
+        'cosmos': [
+          { id: 'sphere', name: 'Sphere', color: '#2B2D2F' },
+          { id: 'hemisphere', name: 'Hemisphere', color: '#50C878' },
+          { id: 'disc', name: 'Disc', color: '#87CEAB' },
+          { id: 'ring', name: 'Ring', color: '#F2F0E6' }
+        ],
+        'stellar': [
+          { id: 'pyramid', name: 'Pyramid', color: '#2B2D2F' },
+          { id: 'cube', name: 'Cube', color: '#50C878' },
+          { id: 'prism', name: 'Prism', color: '#87CEAB' }
+        ],
+        'eclipse': [
+          { id: 'oval', name: 'Oval', color: '#2B2D2F' },
+          { id: 'rectangle', name: 'Rectangle', color: '#50C878' }
+        ]
+      },
+      // Bar system shades
+      'bar': {
+        'prism': [
+          { id: 'standard', name: 'Standard', color: '#2B2D2F' },
+          { id: 'extended', name: 'Extended', color: '#50C878' }
+        ],
+        'helix': [
+          { id: 'single', name: 'Single', color: '#2B2D2F' },
+          { id: 'double', name: 'Double', color: '#50C878' },
+          { id: 'triple', name: 'Triple', color: '#87CEAB' }
+        ]
+      }
+    };
+    
+    // Check if this design has shade options
+    if (systemType && shadeOptions[systemType] && shadeOptions[systemType][designId]) {
+      return shadeOptions[systemType][designId];
+    }
+    
+    return null; // No shades available
+  };
+  
   // Get panel configuration based on the current state
   const getPanelConfig = () => {
     // Default configuration for the panel
@@ -202,9 +279,19 @@ export const ConfigPanel = ({
         }));
         
         config.onItemSelect = (itemId) => {
+          setCurrentDesign(itemId);
           // Find the selected base to get its baseNumber
           const selectedBase = config.items.find(item => item.id === itemId);
-          setCurrentDesign(itemId);
+          
+          // Check if this design has multiple shades
+          const shades = checkForMultipleShades(itemId, configuringSystemType);
+          if (shades && shades.length > 0) {
+            setAvailableShades(shades);
+            setShowShades(true);
+          } else {
+            setAvailableShades([]);
+            setShowShades(false);
+          }
           
           // Pass the design name to maintain backward compatibility
           onSystemBaseDesignChange(itemId);
@@ -293,14 +380,22 @@ export const ConfigPanel = ({
   // Determine if we're in mobile view based on the className prop
   const isMobileView = className.includes('max-sm:static');
   
+  // Handle shade selection
+  const handleShadeSelect = (shade) => {
+    if (onShadeSelect) {
+      onShadeSelect(currentDesign, shade.id, configuringSystemType);
+    }
+  };
+  
   return (
-    <motion.div 
-      className={`absolute bottom-4 left-[40%] -translate-x-1/2 bg-black/90 backdrop-blur-sm border border-gray-800 rounded-lg z-40 max-w-[280px] w-[20%] h-[15%] shadow-lg ${className}`}
-      initial={isMobileView ? { opacity: 1 } : { y: 30, opacity: 0 }}
-      animate={isMobileView ? { opacity: 1 } : { y: 0, opacity: 1 }}
-      exit={isMobileView ? { opacity: 0 } : { y: 30, opacity: 0 }}
-      transition={{ type: 'spring', damping: 25 }}
-    >
+    <div className="flex items-center">
+      <motion.div 
+        className={`absolute bottom-4 left-[40%] -translate-x-1/2 bg-black/90 backdrop-blur-sm border border-gray-800 rounded-lg z-40 max-w-[280px] w-[20%] h-[15%] shadow-lg ${className}`}
+        initial={isMobileView ? { opacity: 1 } : { y: 30, opacity: 0 }}
+        animate={isMobileView ? { opacity: 1 } : { y: 0, opacity: 1 }}
+        exit={isMobileView ? { opacity: 0 } : { y: 30, opacity: 0 }}
+        transition={{ type: 'spring', damping: 25 }}
+      >
       <div className="px-3 py-4 max-sm:px-0 max-sm:py-0">
       
           <div className="flex items-center justify-between mb-2">
@@ -398,6 +493,88 @@ export const ConfigPanel = ({
           )}
         </div>
       </div>
-    </motion.div>
+      </motion.div>
+      
+      {/* Arrow between boxes */}
+      {showShades && (
+        <div className="absolute bottom-[7%] left-[60.5%] z-50">
+          <div className="flex items-center justify-center rounded-full p-1">
+            <FaArrow className="text-[#2C3539]" size={26} />
+          </div>
+        </div>
+      )}
+      
+      {/* Shade selection panel */}
+      {showShades && (
+        <motion.div 
+          className={`absolute bottom-4 left-[63%] -translate-x-1/2 bg-black/90 backdrop-blur-sm border border-gray-800 rounded-lg z-50 max-w-[280px] w-[20%] h-[15%] shadow-lg pointer-events-auto ${className}`}
+          initial={{ x: -20, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          exit={{ x: -20, opacity: 0 }}
+          transition={{ type: 'spring', damping: 25 }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="px-3 py-4 max-sm:px-0 max-sm:py-0">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center">
+                <h3 className="text-xs font-medium text-white font-['Amenti']">
+                  {currentDesign && currentDesign.charAt(0).toUpperCase() + currentDesign.slice(1)} Shades
+                </h3>
+              </div>
+              <div className="text-xs text-emerald-500 font-medium">
+                {currentShade && `#${availableShades.findIndex(s => s.id === currentShade) + 1}`}
+              </div>
+            </div>
+            
+            {/* Shades carousel */}
+            <div className="relative">
+              <div className="flex gap-1 overflow-x-auto scrollbar-hide py-1 px-5 max-w-full">
+                {availableShades.map((shade, index) => (
+                  <div key={shade.id} className="flex flex-col items-center">
+                    <button
+                      type="button"
+                      className={`w-16 h-16 rounded-full overflow-hidden relative focus:outline-none ${localSelectedShade === shade.id ? 'ring-2 ring-emerald-500' : ''}`}
+                      onClick={() => {
+                        console.log('Shade button clicked:', shade.id);
+                        
+                        // Update local state immediately for UI feedback
+                        setLocalSelectedShade(shade.id);
+                        
+                        // Get the current design from the panel config
+                        const panelConfig = getPanelConfig();
+                        const designId = panelConfig?.selectedItem || currentDesign;
+                        
+                        console.log('Using design ID for shade:', designId);
+                        console.log('Using system type for shade:', configuringSystemType);
+                        
+                        // Call parent handler if available
+                        if (typeof onShadeSelect === 'function') {
+                          onShadeSelect(designId, shade.id, configuringSystemType);
+                        } else {
+                          console.error('onShadeSelect is not a function');
+                        }
+                      }}
+                    >
+                      <div 
+                        className="w-full h-full flex items-center justify-center" 
+                        style={{ backgroundColor: shade.color || '#2C3539', color: 'white' }}
+                      >
+                        <p className="text-lg font-bold">{index + 1}</p>
+                      </div>
+                      {localSelectedShade === shade.id && (
+                        <div className="absolute inset-0 bg-emerald-500/20 flex items-center justify-center">
+                          <FaCheck className="text-white text-[8px]" />
+                        </div>
+                      )}
+                    </button>
+                    <p className={`text-center ${isMobileView ? 'text-xs' : 'text-[10px]'} mt-0.5 text-gray-300 capitalize`}>{shade.name}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+    </div>
   );
 };

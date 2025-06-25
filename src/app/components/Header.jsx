@@ -305,7 +305,7 @@ const Header = () => {
                       {user?.data?.profilePicture?.url ? (
                         <Image
                           src={user?.data?.profilePicture?.url}
-                          alt={user?.data?.username}
+                          alt={user?.data?.username || 'User'}
                           width={28}
                           height={28}
                           className="object-cover"

@@ -209,6 +209,8 @@ export const PendantSelectionDropdown = ({
               onPendantDesignChange={onPendantDesignChange}
               onSystemBaseDesignChange={onSystemBaseDesignChange}
               onSelectConfigurationType={onSelectConfigurationType}
+              onShadeSelect={() => {}}
+              currentShade={null}
               onClose={onClose}
               className="max-sm:static max-sm:transform-none max-sm:w-full max-sm:h-auto max-sm:bg-transparent max-sm:shadow-none max-sm:border-0"
             />
