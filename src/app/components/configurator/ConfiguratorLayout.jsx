@@ -800,7 +800,7 @@ console.log(user)
       const isLastCableWithSystem = (index === config.pendants.length - 1) && config.systemType;
       
       // Get the system type for this specific cable or use the default
-      const cableSystemType = cableSystemTypes[index] || config.systemType || 'universal';
+      const cableSystemType = cableSystemTypes[index] || config.systemType || '';
       
       // Determine if this is a pendant or system
       if (isSelectedForSystem || isLastCableWithSystem) {
