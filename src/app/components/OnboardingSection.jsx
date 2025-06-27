@@ -248,7 +248,7 @@ export default function OnboardingSection() {
             } else if (aestheticMessage === "industrial") {
               pendantDesign = "product_3";
             } else if (aestheticMessage === "scandinavian") {
-              pendantDesign = "product_2";
+              pendantDesign = "product_4";
             }
             for (let i = 0; i < lightAmount; i++) {
               if (currentType === "wall") {
