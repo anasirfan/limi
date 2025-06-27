@@ -18,34 +18,25 @@ import {
 import { IndividualConfigurationPanel } from './navComponents/IndividualConfigurationPanel';
 import { ConfigPanel } from './navComponents/ConfigPanel';
 import BaseColorPanel from './navComponents/BaseColorPanel';
+
 const VerticalNavBar = ({ 
-  activeStep, 
-  setActiveStep, 
+  containerDimensions,
+  activeStep,
+  setActiveStep,
   config,
+  cables,
   onLightTypeChange,
   onBaseTypeChange,
   onBaseColorChange,
-  onConfigurationTypeChange,
   onLightAmountChange,
   onSystemTypeChange,
-  onPendantSelection,
-  onPendantDesignChange,
-  onSystemBaseDesignChange,
-  pendants,
-  selectedPendants,
-  setSelectedPendants,
-  onLocationSelection,
-  configuringType,
-  configuringSystemType,
-  breadcrumbPath,
-  onBreadcrumbNavigation,
-  onSystemTypeSelection,
-  containerDimensions
+  onPendantDesignChange
 }) => {
   // Define colors from LIMI brand palette
   const emerald = '#50C878';
   const charlestonGreen = '#2B2D2F';
   const textColor = '#FFFFFF';
+
   
   const [isMobile, setIsMobile] = useState(false);
 
@@ -88,9 +79,9 @@ const VerticalNavBar = ({
     if (localConfiguringType) {
       setLocalConfiguringType(null);
       // Also reset in parent component
-      if (onConfigurationTypeChange) {
-        onConfigurationTypeChange(null);
-      }
+      // if (onConfigurationTypeChange) {
+      //   onConfigurationTypeChange(null);
+      // }
     }
     
     // Always set this step as the active step
@@ -111,9 +102,9 @@ const VerticalNavBar = ({
     if (localConfiguringType) {
       setLocalConfiguringType(null);
       // Also reset in parent component
-      if (onConfigurationTypeChange) {
-        onConfigurationTypeChange(null);
-      }
+      // if (onConfigurationTypeChange) {
+      //   onConfigurationTypeChange(null);
+      // }
     }
     
     if (openDropdown === stepId) {
@@ -126,27 +117,29 @@ const VerticalNavBar = ({
   // Configuration type selector state
   const [showConfigurationTypeSelector, setShowConfigurationTypeSelector] = useState(false);
   
-  // Local state for configuration type (will be synced with parent component)
-  const [localConfiguringType, setLocalConfiguringType] = useState(configuringType);
-  
+  // Remove localConfiguringType and all legacy config type logic.
+  // Use config and cables as the single source of truth.
+  // If you need to track selection, use local state here or keep it in config.
+
   // Update local state when prop changes
   useEffect(() => {
     setLocalConfiguringType(configuringType);
   }, [configuringType]);
   
-  // Pendant selection functionality
-  const {
-    currentDesign,
-    setCurrentDesign,
-    carouselRef,
-    scrollCarousel,
-    togglePendantSelection,
-    selectAllPendants,
-    clearSelections,
-    applyDesignToSelected,
-    applyToAllPendants,
-    getDesignImageNumber
-  } = usePendantSelection(pendants, selectedPendants, setSelectedPendants, onPendantDesignChange);
+  // --- Unified cable selection state and handlers ---
+  // These should be managed in the parent (ConfiguratorLayout), but here is the interface:
+  // cables: array of all cables (pendants/systems)
+  // selectedCableIndexes: array of selected cable indexes
+  // onToggleCableSelection, onSelectAllCables, onClearCableSelections, onApplyDesignToSelected, onCableDesignChange: handlers
+  //
+  // Remove legacy pendant/selectedPendants usage entirely.
+  // All selection and config actions now use cables and selectedCableIndexes.
+  //
+  // The following props must be passed to this component:
+  // cables, selectedCableIndexes, onToggleCableSelection, onSelectAllCables, onClearCableSelections, onApplyDesignToSelected, onCableDesignChange
+  //
+  // Remove usePendantSelection and legacy pendant state.
+
   
   // Handle pendant location selection to show configuration type selector
   const handlePendantLocationClick = (locationIndex) => {
@@ -275,17 +268,6 @@ const VerticalNavBar = ({
                   />
                 )}
                 
-                {/* Configuration type dropdown removed */}
-                
-                {step?.id === 'systemType' && openDropdown === step?.id && (
-                  <SystemTypeDropdown 
-                    config={config}
-                    onSystemTypeChange={onSystemTypeChange}
-                    setActiveStep={setActiveStep}
-                    setOpenDropdown={setOpenDropdown}
-                  />
-                )}
-                
                 {step?.id === 'lightAmount' && openDropdown === step?.id && (
                   <LightAmountDropdown 
                     config={config}
@@ -296,125 +278,32 @@ const VerticalNavBar = ({
                 )}
                 
                 {step?.id === 'pendantSelection' && openDropdown === step?.id && (
-                  <PendantSelectionDropdown 
-                    pendants={pendants}
-                    selectedPendants={selectedPendants}
-                    currentDesign={currentDesign}
-                    setCurrentDesign={setCurrentDesign}
-                    carouselRef={carouselRef}
-                    scrollCarousel={scrollCarousel}
-                    togglePendantSelection={(locationIndex) => {
-                      handlePendantLocationClick(locationIndex);
-                    }}
-                    selectAllPendants={selectAllPendants}
-                    clearSelections={clearSelections}
-                    applyDesignToSelected={applyDesignToSelected}
-                    applyToAllPendants={applyToAllPendants}
-                    getDesignImageNumber={getDesignImageNumber}
-                    handleSaveConfig={handleSaveConfig}
-                    configuringType={localConfiguringType}
-                    configuringSystemType={configuringSystemType}
-                    breadcrumbPath={breadcrumbPath}
-                    onBreadcrumbNavigation={onBreadcrumbNavigation}
-                    onSystemTypeSelection={onSystemTypeSelection}
-                    selectedLocation={selectedPendants[0]}
-                    onPendantDesignChange={onPendantDesignChange}
-                    onSystemBaseDesignChange={onSystemBaseDesignChange}
-                    onSelectConfigurationType={(type) => {
-                      // This matches the original handleConfigTypeSelection function
-                      setLocalConfiguringType(type);
-             
-                      // if(type == 'pendant' || type == 'system'){
-                      //   setShowConfigurationTypeSelector(false);
-                      // }
-                      
-                      // Update the active step based on the configuration type
-                      if (type === 'pendant') {
-                        setActiveStep('pendantSelection');
-                      } else if (type === 'system') {
-                        setActiveStep('systemType');
-                      } 
-                      
-                      // Call the parent component's handler if it exists
-                      if (onConfigurationTypeChange) {
-                        onConfigurationTypeChange(type);
-                      }
-                    }}
-                    onClose={() => {
-                      setShowConfigurationTypeSelector(false);
-                      // Call parent handler to reset configuration type
-                      if (onConfigurationTypeChange) {
-                        onConfigurationTypeChange(null);
-                      }
-                    }}
-                    
-                  />
-                )}
-                
+  <PendantSelectionDropdown
+    cables={cables}
+    // If you need cable selection, manage it here or in config
+    onCableDesignChange={onPendantDesignChange}
+    onClose={() => setOpenDropdown(null)}
+  />
+)}
                 
               </NavButton>
-             
-            ))}
-          </motion.div>
-        </div>
+            
+          ))}
+        </motion.div>
+      </div>
+    )}
+    
+    {/* Configuration Panel */}
+    <AnimatePresence>
+      {(showConfigurationTypeSelector || localConfiguringType) && selectedCableIndexes.length > 0 && !isMobile && (
+        <ConfigPanel
+  cables={cables}
+  // If you need cable selection, manage it here or in config
+  onCableDesignChange={onPendantDesignChange}
+  onClose={() => setOpenDropdown(null)}
+/>
       )}
-      
-      {/* Configuration Panel */}
-      <AnimatePresence>
-        {(showConfigurationTypeSelector || localConfiguringType) && selectedPendants.length > 0 && !isMobile && (
-          <ConfigPanel
-            configuringType={localConfiguringType}
-            configuringSystemType={configuringSystemType}
-            breadcrumbPath={breadcrumbPath}
-            onBreadcrumbNavigation={onBreadcrumbNavigation}
-            onSystemTypeSelection={onSystemTypeSelection}
-            selectedLocation={selectedPendants[0]}
-            selectedPendants={selectedPendants}
-            onPendantDesignChange={onPendantDesignChange}
-            onSystemBaseDesignChange={onSystemBaseDesignChange}
-            onShadeSelect={() => {}}
-            currentShade={null}
-            onSelectConfigurationType={(type) => {
-              // This matches the original handleConfigTypeSelection function
-              setLocalConfiguringType(type);
-     
-              // if(type == 'pendant' || type == 'system'){
-              //   setShowConfigurationTypeSelector(false);
-              // }
-              
-              // Update the active step based on the configuration type
-              if (type === 'pendant') {
-                setActiveStep('pendantSelection');
-              } else if (type === 'system') {
-                setActiveStep('systemType');
-              } 
-              
-              // Call the parent component's handler if it exists
-              if (onConfigurationTypeChange) {
-                onConfigurationTypeChange(type);
-              }
-            }}
-            onClose={() => {
-              setShowConfigurationTypeSelector(false);
-              // Call parent handler to reset configuration type
-              if (onConfigurationTypeChange) {
-                onConfigurationTypeChange(null);
-              }
-            }}
-          />
-        )}
-      </AnimatePresence>
-      
-      {showSaveModal && (
-        <SaveConfigurationModal 
-          onClose={() => setShowSaveModal(false)}
-          config={config}
-          currentDesign={currentDesign}
-          isSaving={isSaving}
-          setShowSaveModal={setShowSaveModal}
-          saveConfigToSystem={saveConfigToSystem}
-        />
-      )}
+    </AnimatePresence>
     </>
   );
 };

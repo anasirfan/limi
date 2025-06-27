@@ -5,30 +5,14 @@ import { FaChevronLeft, FaChevronRight, FaCheck, FaShoppingCart, FaSave } from "
 import { ConfigPanel } from './ConfigPanel';
 
 export const PendantSelectionDropdown = ({ 
-  pendants, 
-  selectedPendants, 
-  currentDesign,
-  setCurrentDesign,
-  carouselRef,
-  scrollCarousel,
-  togglePendantSelection,
-  selectAllPendants,
-  clearSelections,
-  applyDesignToSelected,
-  applyToAllPendants,
-  getDesignImageNumber,
-  handleSaveConfig,
-  configuringType,
-  configuringSystemType,
-  breadcrumbPath,
-  onBreadcrumbNavigation,
-  onSystemTypeSelection,
-  selectedLocation,
-  onPendantDesignChange,
-  onSystemBaseDesignChange,
-  onSelectConfigurationType,
+  cables, 
+  selectedCableIndexes, 
+  onToggleCableSelection,
+  onSelectAllCables,
+  onClearCableSelections,
+  onApplyDesignToSelected,
+  onCableDesignChange,
   onClose
-
 }) => {
   // State to track active tab on mobile
   const [activeTab, setActiveTab] = useState('configure'); // 'configure' or 'design'
@@ -96,63 +80,52 @@ export const PendantSelectionDropdown = ({
       {/* Configure Pendants Tab Content */}
       {(!isMobile || activeTab === 'configure') && (
         <>
-          {/* Pendant selection controls */}
+          {/* Cable selection controls */}
           <div className="flex justify-between mb-3">
-            {selectedPendants.length > 0 && (
+            {selectedCableIndexes.length > 0 && (
               <>
                 <button 
-                  onClick={selectAllPendants}
+                  onClick={onSelectAllCables}
                   className="px-3 py-1 rounded-lg text-xs bg-gray-700 hover:bg-gray-600 text-white"
                 >
                   Select All
                 </button>
-                
                 <button 
-                  onClick={clearSelections}
+                  onClick={onClearCableSelections}
                   className="px-3 py-1 rounded-lg text-xs bg-gray-700 hover:bg-gray-600 text-white"
                 >
-                  Clear ({selectedPendants.length})
+                  Clear ({selectedCableIndexes.length})
                 </button>
               </>
             )}
           </div>
-          
-          {/* Pendant selector carousel */}
+          {/* Cable selector carousel */}
           <div className="relative mb-4">
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 z-10">
-              <button 
-                onClick={() => scrollCarousel('left')}
-                className="w-8 h-8 rounded-full bg-gray-800 text-white flex items-center justify-center hover:bg-gray-700 transition-colors"
-              >
-                <FaChevronLeft size={14} />
-              </button>
-            </div>
-            
+            {/* Carousel arrows can be implemented if needed */}
             <div 
-              ref={carouselRef}
               className="flex gap-3 overflow-x-auto scrollbar-hide py-2 px-8 max-w-full"
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
-              {pendants.map((pendant, index) => (
+              {cables.map((cable, index) => (
                 <motion.div 
                   key={index}
                   className="flex-shrink-0 cursor-pointer"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => togglePendantSelection(index)}
+                  onClick={() => onToggleCableSelection(index)}
                   style={{ userSelect: 'none' }}
                 >
                   <div 
-                    className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold transition-all overflow-hidden relative ${selectedPendants.includes(index) 
+                    className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold transition-all overflow-hidden relative ${selectedCableIndexes.includes(index) 
                       ? 'ring-2 ring-emerald-500 ring-offset-2 ring-offset-gray-800' 
                       : 'bg-gray-700 text-white hover:bg-gray-600'}`}
                   >
-                    {/* Show pendant design as background if it has one */}
-                    {pendant.design && (
+                    {/* Show cable design as background if it has one */}
+                    {cable.design && (
                       <div className="absolute inset-0 opacity-30">
                         <Image 
-                          src={`/images/configOptions/${getDesignImageNumber(pendant.design)}`}
-                          alt={pendant.design}
+                          src={`/images/configOptions/${cable.design}.png`}
+                          alt={cable.design}
                           fill
                           className="object-cover"
                         />
@@ -163,40 +136,13 @@ export const PendantSelectionDropdown = ({
                 </motion.div>
               ))}
             </div>
-            
-            <div className="absolute right-0 top-1/2 -translate-y-1/2 z-10">
-              <button 
-                onClick={() => scrollCarousel('right')}
-                className="w-8 h-8 rounded-full bg-gray-800 text-white flex items-center justify-center hover:bg-gray-700 transition-colors"
-              >
-                <FaChevronRight size={14} />
-              </button>
-            </div>
           </div>
-          
-          {/* Desktop - Design selection button */}
-          {/* {!isMobile && (
-            <div className="mt-4">
-              {selectedPendants.length > 0 && (
-                <button
-                  onClick={() => setActiveTab('design')}
-                  className="w-full py-2 px-4 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg flex items-center justify-center gap-2"
-                >
-                  <span>Select Design</span>
-                  <FaChevronRight size={12} />
-                </button>
-              )}
-            </div>
-          )} */}
         </>
       )}
       
       {/* Select Design Tab Content */}
       {(isMobile && activeTab === 'design') && (
         <div className="max-sm:w-full max-sm:h-auto max-sm:relative">
-          {/* <h3 className="text-base font-bold text-white mb-3 font-['Amenti']">Select Design</h3> */}
-          
-          {/* Wrap ConfigPanel in a div with mobile-specific styles */}
           <div className="max-sm:relative max-sm:w-full max-sm:h-auto max-sm:bg-transparent max-sm:border-0 max-sm:shadow-none">
             <ConfigPanel
               configuringType={configuringType}
@@ -205,10 +151,10 @@ export const PendantSelectionDropdown = ({
               onBreadcrumbNavigation={onBreadcrumbNavigation}
               onSystemTypeSelection={onSystemTypeSelection}
               selectedLocation={selectedLocation}
-              selectedPendants={selectedPendants}
-              onPendantDesignChange={onPendantDesignChange}
+              selectedCableIndexes={selectedCableIndexes}
+              onCableDesignChange={onCableDesignChange}
               onSystemBaseDesignChange={onSystemBaseDesignChange}
-              onSelectConfigurationType={onSelectConfigurationType}
+              onSelectConfigurationType={() => {}}
               onShadeSelect={() => {}}
               currentShade={null}
               onClose={onClose}

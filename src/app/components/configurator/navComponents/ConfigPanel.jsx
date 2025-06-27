@@ -6,21 +6,13 @@ import { Breadcrumb } from './Breadcrumb';
 import BaseColorPanel from './BaseColorPanel';
 
 export const ConfigPanel = ({
-  configuringType,
-  configuringSystemType,
-  breadcrumbPath,
-  onBreadcrumbNavigation,
-  onSystemTypeSelection,
-  selectedLocation,
-  selectedPendants,
-  onPendantDesignChange,
+  cables,
+  selectedCableIndexes,
+  onCableDesignChange,
   onSystemBaseDesignChange,
   onBaseColorChange,
-  onSelectConfigurationType,
-  onShadeSelect,
-  currentShade,
   onClose,
-  className = '' // Add className prop with default empty string
+  className = ''
 }) => {
   const [currentDesign, setCurrentDesign] = useState(null);
   
@@ -200,9 +192,9 @@ export const ConfigPanel = ({
       ];
       config.onItemSelect = (itemId) => {
         setCurrentDesign(itemId);
-        // Use all selected pendants if available, otherwise fall back to just the first one
-        const pendantsToUpdate = selectedPendants && selectedPendants.length > 0 ? selectedPendants : [selectedLocation];
-        onPendantDesignChange(pendantsToUpdate, itemId);
+        // Use all selected cables if available, otherwise fall back to just the first one
+        const cablesToUpdate = selectedCableIndexes && selectedCableIndexes.length > 0 ? selectedCableIndexes : [selectedLocation];
+        onCableDesignChange(cablesToUpdate, itemId);
       };
       config.selectedItem = currentDesign;
       config.breadcrumbItems = [
