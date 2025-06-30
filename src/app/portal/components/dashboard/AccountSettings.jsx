@@ -86,7 +86,7 @@ export default function AccountSettings({ user, onUserUpdate }) {
 
     try {
       const response = await fetch(
-        "https://api1.limitless-lighting.co.uk/client/user/profile",
+        "http://dev.api1.limitless-lighting.co.uk/client/user/profile",
         {
           headers: { Authorization: token },
         }
@@ -158,7 +158,7 @@ export default function AccountSettings({ user, onUserUpdate }) {
 
       // Make the API call to update profile
       const response = await fetch(
-        "https://api1.limitless-lighting.co.uk/client/user/profile",
+        "http://dev.api1.limitless-lighting.co.uk/client/user/profile",
         {
           method: "PUT",
           headers: {
@@ -349,7 +349,7 @@ export default function AccountSettings({ user, onUserUpdate }) {
       }
 
       const response = await fetch(
-        "https://api1.limitless-lighting.co.uk/client/user/profile/picture",
+        "http://dev.api1.limitless-lighting.co.uk/client/user/profile/picture",
         {
           method: "DELETE",
           headers: {
@@ -367,7 +367,7 @@ export default function AccountSettings({ user, onUserUpdate }) {
 
       // Get updated user data
       const profileResponse = await fetch(
-        "https://api1.limitless-lighting.co.uk/client/user/profile",
+        "http://dev.api1.limitless-lighting.co.uk/client/user/profile",
         {
           headers: { Authorization: token },
         }

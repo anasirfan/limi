@@ -41,6 +41,7 @@ export default function CommunitySection() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [error, setError] = useState('');
   const { colors, theme } = useTheme();
   
   const handleCommunitySelect = (name) => {
@@ -61,7 +62,7 @@ export default function CommunitySection() {
         'LIMI Collective': 'LIMI_Collective'
       };
       
-      const response = await fetch('https://api1.limitless-lighting.co.uk/client/user/community/subscribe', {
+      const response = await fetch('http://dev.api1.limitless-lighting.co.uk/client/user/community/subscribe', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -72,8 +73,15 @@ export default function CommunitySection() {
         })
       });
       
+      const data = await response.json();
+      
       if (!response.ok) {
-        throw new Error('Subscription failed');
+        if (response.status === 400 && data.error && data.error.includes('already registered')) {
+          setError('This email is already registered.');
+          setTimeout(() => setError(''), 5000);
+          return;
+        }
+        throw new Error(data.error || 'Subscription failed');
       }
       
       setSubmitSuccess(true);
@@ -86,7 +94,8 @@ export default function CommunitySection() {
       
     } catch (error) {
       console.error('Error subscribing:', error);
-      // You might want to show an error message to the user here
+      setError('This email is already registered');
+      setTimeout(() => setError(''), 5000);
     } finally {
       setIsSubmitting(false);
     }
@@ -215,6 +224,19 @@ export default function CommunitySection() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
+              {error && (
+                <motion.div 
+                  className="p-3 rounded-lg mb-4 text-sm bg-red-500/10 text-red-600 dark:text-red-400 flex items-center"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                  {error}
+                </motion.div>
+              )}
               <div className="flex flex-col sm:flex-row gap-3">
                 <div className="relative flex-grow">
                   <input

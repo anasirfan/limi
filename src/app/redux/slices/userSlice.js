@@ -79,8 +79,8 @@ export const loginUser = createAsyncThunk(
         return rejectWithValue('Please enter both email and password');
       }
       
-      // Make API request
-      const response = await fetch('https://api.limitless-lighting.co.uk/client/verify_otp', {
+      // Make API request 
+      const response = await fetch('http://dev.api.limitless-lighting.co.uk/client/verify_otp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -108,7 +108,7 @@ export const loginUser = createAsyncThunk(
       // Get user profile with token
       const token = data.data.token.startsWith('Bearer ') ? data.data.token : `${data.data.token}`;
       console.log("token : ",token);
-      const profileResponse = await fetch('https://api1.limitless-lighting.co.uk/client/user/profile', {
+      const profileResponse = await fetch('http://dev.api1.limitless-lighting.co.uk/client/user/profile', {
         headers: {
           'Authorization': token
         }
@@ -145,7 +145,7 @@ export const signupUser = createAsyncThunk(
       }
       
       // Make API request
-      const response = await fetch('https://api.limitless-lighting.co.uk/client/send_otp', {
+      const response = await fetch('http://dev.api.limitless-lighting.co.uk/client/send_otp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -195,7 +195,7 @@ export const updateUserProfile = createAsyncThunk(
       token = token.startsWith('Bearer ') ? token : `Bearer ${token}`;
       
       // Make API request with full URL
-      const response = await fetch('https://saturn-toys-wc-angle.trycloudflare.com/client/user/profile', {
+      const response = await fetch('http://dev.api1.limitless-lighting.co.uk/client/user/profile', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
