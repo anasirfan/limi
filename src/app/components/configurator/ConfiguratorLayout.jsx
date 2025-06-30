@@ -225,10 +225,13 @@ console.log(user)
     let newPendants = [];
     
     if (type === 'wall') {
+      console.log("wall")
       newAmount = 1;
+      setConfig(prev => ({ ...prev, lightType: type, lightAmount: newAmount }));
       newPendants = generateRandomPendants(1);
     } else if (type === 'floor') {
       newAmount = 3;
+      setConfig(prev => ({ ...prev, lightType: type, lightAmount: newAmount }));
       newPendants = generateRandomPendants(3);
     } else if (type === 'ceiling') {
       // Restore last ceiling light amount when switching back to ceiling
@@ -239,7 +242,7 @@ console.log(user)
       }
       newPendants = generateRandomPendants(newAmount);
     }
-    
+    console.log("new config",config)
     setConfig(prev => ({ 
       ...prev, 
       lightType: type,

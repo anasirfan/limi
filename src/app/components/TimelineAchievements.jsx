@@ -32,48 +32,49 @@ const timelineMilestones = [
     color: '#87CEAB', // Eton Blue
     image: 'https://images.unsplash.com/photo-1581091226033-d5c48150dbaa?q=80&w=800&h=600&auto=format&fit=crop'
   },
+  
   {
     id: 3,
-    year: '2021',
+    year: '2022',
+    title: 'First Showroom Success',
+    description: 'Launched pilot showroom. First-gen units sold out in weeks.',
+    icon: FiHome,
+    position: 'left',
+    color: '#50C878',  // Emerald
+    image: '/images/timeline/2022.jpg',
+    highlight: 'First-gen units sold out in weeks'
+  },
+  {
+    id: 4,
+    year: '2024',
+    title: 'Manufacturing Scaled',
+    description: 'Opened self-owned factory in Guzhen, China. 500m² showroom now active.',
+    icon: FiLayers,
+    position: 'right',
+    color: '#87CEAB', // Eton Blue
+    image: '/images/timeline/2023.jpg',
+    highlight: '500m² showroom'
+  },
+  {
+    id: 5,
+    year: 'Jan 2025',
     title: 'LIMI Founded',
-    description: 'Headquartered in London. Mission: Make lighting intelligent, accessible, elegant.',
+    description: 'Officially incorporated and headquartered in Glasgow, Scotland. Mission: Make lighting Modular, Intelligent and Effortless',
     icon: BsBuilding,
     position: 'left',
     color: '#50C878', // Emerald
     image: 'https://images.unsplash.com/photo-1464938050520-ef2270bb8ce8?q=80&w=800&h=600&auto=format&fit=crop'
   },
   {
-    id: 4,
-    year: '2022',
-    title: 'First Showroom Success',
-    description: 'Launched pilot showroom. First-gen units sold out in weeks.',
-    icon: FiHome,
-    position: 'right',
-    color: '#87CEAB', // Eton Blue
-    image: '/images/timeline/2022.jpg',
-    highlight: 'First-gen units sold out in weeks'
-  },
-  {
-    id: 5,
-    year: '2023',
-    title: 'Manufacturing Scaled',
-    description: 'Opened self-owned factory in Guzhen, China. 500m² showroom now active.',
-    icon: FiLayers,
-    position: 'left',
-    color: '#50C878', // Emerald
-    image: '/images/timeline/2023.jpg',
-    highlight: '500m² showroom'
-  },
-  {
     id: 6,
-    year: '2024',
+    year: 'Jan 2025',
     title: 'Global Tech Team',
-    description: 'Opened R&D software office in Pakistan. 24/7 product development begins.',
+    description: 'Opened R&D software office in Pakistan. 24/7 full-stack product development begins across UK, China, and Pakistan.',
     icon: FiGlobe,
     position: 'right',
     color: '#87CEAB', // Eton Blue
     image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=800&h=600&auto=format&fit=crop',
-    highlight: '24/7 product development'
+    highlight: '24/7 full-stack product development'
   },
   {
     id: 7,
