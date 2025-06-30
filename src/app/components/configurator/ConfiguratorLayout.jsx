@@ -499,8 +499,10 @@ console.log(user)
                       design === 'piko' ? 'product_5' : 'product_2';
       
       // Update each selected pendant in the cables state
+      console.log("updatedCables",updatedCables)
+      console.log("pendantIds",pendantIds)
       pendantIds.forEach(id => {
-        if (id >= 0 && id < updatedCables.length) {
+        if (id >= 0) {
           updatedCables[id] = {
             isSystem: false,
             design: design,
@@ -678,7 +680,7 @@ console.log(user)
           console.log(`Updating cable ${cableNo} base design to ${design} for system type ${cableSystemType} (${baseId})`);
           
           // Update this specific cable
-          if (cableNo >= 0 && cableNo < updatedCables.length) {
+          if (cableNo >= 0) {
             updatedCables[cableNo] = {
               isSystem: true,
               systemType: cableSystemType,
