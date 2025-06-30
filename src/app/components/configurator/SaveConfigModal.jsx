@@ -11,11 +11,9 @@ export const SaveConfigModal = ({
 }) => {
   const [configName, setConfigName] = useState('');
   const [thumbnail, setThumbnail] = useState('');
- console.log("in SaveConfigModal");
   if (!isOpen) return null;
 
   const handleSave = async () => {
-    console.log("in handleSave");
     if (!configName.trim()) return;
     onSave(configName,thumbnail);
     setConfigName('');
@@ -27,7 +25,13 @@ export const SaveConfigModal = ({
         let url = null;
         if (event.data) {
           if (typeof event.data === 'string') {
-            url = event.data;
+            // Check for the 'Screenshot uploaded to:' pattern
+            const match = event.data.match(/Screenshot uploaded to: (https?:\/\/[^\s]+)/);
+            if (match && match[1]) {
+              url = match[1];
+            } else if (/^https?:\/\//.test(event.data)) {
+              url = event.data;
+            }
           } else if (typeof event.data === 'object') {
             url = event.data.url || event.data.thumbnail || null;
           }
@@ -43,6 +47,7 @@ export const SaveConfigModal = ({
       if (iframe && iframe.contentWindow) {
         iframe.contentWindow.postMessage('savedataimage', '*');
       }
+
     });
   };
 
@@ -51,7 +56,6 @@ export const SaveConfigModal = ({
     if (isOpen) {
       getThumbnailFromIframe().then((url) => {
         setThumbnail(url);
-        console.log("thumbnail",url)
       });
     }
   }, [isOpen]);

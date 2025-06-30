@@ -55,7 +55,7 @@ export const useNavSteps = (config) => {
       id: 'baseColor', 
       icon: <FaPalette />, 
       label: 'Base Color',
-      tooltip: 'Select base color (black, gold, silver, midnight blue)',
+      tooltip: 'Select base color (black, silver)',
       isActive: config.lightType === 'ceiling' && Boolean(config.baseType), // Active after base type is selected
       isCompleted: Boolean(config.baseColor)
     },

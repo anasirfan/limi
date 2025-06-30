@@ -18,9 +18,9 @@ const BaseColorPanel = ({ onBaseColorChange, currentBaseColor }) => {
 
   const baseColors = [
     { id: 'black', name: 'Black', hexColor: '#000000' },
-    { id: 'gold', name: 'Gold', hexColor: '#D4AF37' },
+    // { id: 'gold', name: 'Gold', hexColor: '#D4AF37' },
     { id: 'silver', name: 'Silver', hexColor: '#C0C0C0' },
-    { id: 'midnight-blue', name: 'Midnight Blue', hexColor: '#191970' }
+    // { id: 'midnight-blue', name: 'Midnight Blue', hexColor: '#191970' }
   ];
 
   const styles = {
@@ -38,7 +38,7 @@ const BaseColorPanel = ({ onBaseColorChange, currentBaseColor }) => {
     },
     colorPalette: {
       display: 'flex',
-      justifyContent: 'space-around',
+      justifyContent: 'space-evenly',
       marginBottom: '10px'
     },
     colorOption: {
@@ -56,8 +56,9 @@ const BaseColorPanel = ({ onBaseColorChange, currentBaseColor }) => {
     },
     colorLabels: {
       display: 'flex',
-      justifyContent: 'space-around',
-      fontSize: '12px'
+      justifyContent: 'space-evenly',
+      fontSize: '12px',
+      padding: '0px 7px'
     },
     colorLabel: {
       textAlign: 'center',

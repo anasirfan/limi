@@ -176,7 +176,12 @@ console.log(user)
             id: i,
             design: designOptions[Math.floor(Math.random() * designOptions.length)],
           });
-          setCables(prev => [...prev, { isSystem: false, systemType: "", design: designOptions[Math.floor(Math.random() * designOptions.length)], designId: "product_" + i }]);
+          const productId = designOptions[Math.floor(Math.random() * designOptions.length)] === 'bumble' ? 'product_1' : 
+          designOptions[Math.floor(Math.random() * designOptions.length)] === 'radial' ? 'product_2' : 
+          designOptions[Math.floor(Math.random() * designOptions.length)] === 'fina' ? 'product_3' : 
+          designOptions[Math.floor(Math.random() * designOptions.length)] === 'ico' ? 'product_4' : 
+          designOptions[Math.floor(Math.random() * designOptions.length)] === 'piko' ? 'product_5' : 'product_2';
+          setCables(prev => [...prev, { isSystem: false, systemType: "", design: designOptions[Math.floor(Math.random() * designOptions.length)], designId: productId }]);
         }
       } else if (config.lightAmount < config.pendants.length) {
         // Remove excess pendants
@@ -243,7 +248,12 @@ console.log(user)
     }));
     setCables([]);
     newPendants.forEach((pendant, index) => {
-      setCables(prev => [...prev, { isSystem: false, systemType: "", design: pendant.design, designId: "product_" + index }]);
+      const productId = pendant.design === 'bumble' ? 'product_1' : 
+      pendant.design === 'radial' ? 'product_2' : 
+      pendant.design === 'fina' ? 'product_3' : 
+      pendant.design === 'ico' ? 'product_4' : 
+      pendant.design === 'piko' ? 'product_5' : 'product_2';
+      setCables(prev => [...prev, { isSystem: false, systemType: "", design: pendant.design, designId: productId }]);
     });
     
     // Send messages to iframe
@@ -338,7 +348,12 @@ console.log(user)
     }));
     setCables([]);
     newPendants.forEach((pendant, index) => {
-      setCables(prev => [...prev, { isSystem: false, systemType: "", design: pendant.design, designId: "product_" + index }]);
+      const productId = pendant.design === 'bumble' ? 'product_1' : 
+      pendant.design === 'radial' ? 'product_2' : 
+      pendant.design === 'fina' ? 'product_3' : 
+      pendant.design === 'ico' ? 'product_4' : 
+      pendant.design === 'piko' ? 'product_5' : 'product_2';
+      setCables(prev => [...prev, { isSystem: false, systemType: "", design: pendant.design, designId: productId }]);
     });
     // Send messages to iframe
     setTimeout(() => {
@@ -531,7 +546,7 @@ console.log(user)
     setConfig(prev => ({
       ...prev,
       lightAmount: baseType === 'rectangular' ? 3 : 1,
-      baseType
+      baseType:baseType
     }));
     
     // Send message to PlayCanvas iframe
@@ -540,8 +555,10 @@ console.log(user)
     if(baseType === 'rectangular') {
       sendMessageToPlayCanvas(`light_amount:3`);
 
-      sendMessageToPlayCanvas(`cable_0:product_2`);
-      sendMessageToPlayCanvas(`cable_1:product_2`);
+      sendMessageToPlayCanvas(`system:bar`);
+      sendMessageToPlayCanvas(`cable_0:system_base_2`);
+      sendMessageToPlayCanvas(`system:bar`);
+      sendMessageToPlayCanvas(`cable_1:system_base_2`);
       sendMessageToPlayCanvas(`cable_2:product_2`);
       setCables([
         { isSystem: false, systemType: "", design: "Radial", designId: "product_2" },
@@ -837,7 +854,7 @@ console.log("cables",cables)
   };
   
   // Handle final save after user enters configuration name
-  const handleFinalSave = async (configName) => {
+  const handleFinalSave = async (configName,thumbnail) => {
        console.log('configToSave:', configToSave);
     
     if (!configToSave) {
@@ -853,10 +870,10 @@ console.log("cables",cables)
     };
 
     const iframeMessagesArray = [];
-    iframeMessagesArray.push(`light_type:${configToSave.light_type}`);
-    iframeMessagesArray.push(`light_amount:${configToSave.light_amount}`);
-    if (configToSave.base_type) {
-      iframeMessagesArray.push(`base_type:${configToSave.base_type}`);
+    iframeMessagesArray.push(`light_type:${config.lightType}`);
+    iframeMessagesArray.push(`light_amount:${config.lightAmount}`);
+    if (config.baseType) {
+      iframeMessagesArray.push(`base_type:${config.baseType}`);
     }
 
     if (configToSave.cables && Array.isArray(configToSave.cables)) {
@@ -886,13 +903,13 @@ console.log("cables",cables)
     
     // Prepare UI-friendly config for display
     const uiConfig = {
-      light_type: configToSave.light_type.charAt(0).toUpperCase() + configToSave.light_type.slice(1),
-      light_amount: configToSave.light_amount,
+      light_type: config.lightType.charAt(0).toUpperCase() + config.lightType.slice(1),
+      light_amount: config.lightAmount,
       cables: {}
     };
     
-    if (configToSave.base_type) {
-      uiConfig.base_type = configToSave.base_type.charAt(0).toUpperCase() + configToSave.base_type.slice(1);
+    if (config.baseType) {
+      uiConfig.base_type = config.baseType.charAt(0).toUpperCase() + config.baseType.slice(1);
     }
     
     // Format cable information for UI display
@@ -916,7 +933,7 @@ console.log("cables",cables)
     const apiPayload = {
       name: configName,
       thumbnail: {
-        url:"",
+        url:thumbnail,
         public_id:""
       }, // Will be updated after screenshot upload
       config: uiConfig, // UI-friendly structured data for display
@@ -1051,6 +1068,7 @@ console.log("cables",cables)
       fetch(`https://api1.limitless-lighting.co.uk/admin/products/light-configs/${configId}`)
         .then(response => response.json())
         .then(data => {
+          console.log("load data from url",data)
           setConfigFromUrl(data);
           // Don't call handleLoadSpecificConfig yet - wait for app:ready1
           // Just keep the loading state active
