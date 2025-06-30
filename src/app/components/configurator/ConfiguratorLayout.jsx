@@ -43,8 +43,11 @@ console.log(user)
     cableColor: 'black',
     cableLength: '2mm',
     systemConfigurations: {},
-    shades: {} // Store shade selections for each pendant/system base
+    shades: {}, // Store shade selections for each pendant/system base
+
   });
+  const [cables, setCables] = useState([]);
+  
   
   // Preview mode state
   const [isPreviewMode, setIsPreviewMode] = useState(false);
@@ -148,6 +151,8 @@ console.log(user)
                         pendant.design === 'ico' ? 'product_4' : 
                         pendant.design === 'piko' ? 'product_5' : 'product_2';
           
+          setCables(prev => [...prev, { isSystem: false, systemType: "", design: pendant.design, designId: productId }]);
+          
           sendMessageToPlayCanvas(`cable_${index}:${productId}`);
         });
       }
@@ -171,6 +176,7 @@ console.log(user)
             id: i,
             design: designOptions[Math.floor(Math.random() * designOptions.length)],
           });
+          setCables(prev => [...prev, { isSystem: false, systemType: "", design: designOptions[Math.floor(Math.random() * designOptions.length)], designId: "product_" + i }]);
         }
       } else if (config.lightAmount < config.pendants.length) {
         // Remove excess pendants
@@ -235,6 +241,10 @@ console.log(user)
       lightAmount: newAmount,
       pendants: newPendants
     }));
+    setCables([]);
+    newPendants.forEach((pendant, index) => {
+      setCables(prev => [...prev, { isSystem: false, systemType: "", design: pendant.design, designId: "product_" + index }]);
+    });
     
     // Send messages to iframe
     setTimeout(() => {
@@ -326,7 +336,10 @@ console.log(user)
       pendants: newPendants,
       selectedPendants: filteredSelectedPendants // Update selectedPendants state
     }));
-    
+    setCables([]);
+    newPendants.forEach((pendant, index) => {
+      setCables(prev => [...prev, { isSystem: false, systemType: "", design: pendant.design, designId: "product_" + index }]);
+    });
     // Send messages to iframe
     setTimeout(() => {
       // Send light amount message
@@ -441,6 +454,8 @@ console.log(user)
   // Handle pendant design change
   const handlePendantDesignChange = useCallback((pendantIds, design) => {
     // First update the config state with the new design
+    console.log("pendantIds",pendantIds)
+    console.log("design",design)
     setConfig(prev => {
       const updatedPendants = [...prev.pendants];
       
@@ -456,6 +471,33 @@ console.log(user)
       
       return { ...prev, pendants: updatedPendants };
     });
+    
+    // Update cables state in a single operation
+    setCables(prev => {
+      const updatedCables = [...prev];
+      
+      // Map pendant design to product ID
+      const productId = design === 'bumble' ? 'product_1' : 
+                      design === 'radial' ? 'product_2' : 
+                      design === 'fina' ? 'product_3' : 
+                      design === 'ico' ? 'product_4' : 
+                      design === 'piko' ? 'product_5' : 'product_2';
+      
+      // Update each selected pendant in the cables state
+      pendantIds.forEach(id => {
+        if (id >= 0 && id < updatedCables.length) {
+          updatedCables[id] = {
+            isSystem: false,
+            design: design,
+            systemType: "",
+            designId: productId
+          };
+        }
+      });
+      
+      return updatedCables;
+    });
+    console.log("cables after pendant design",cables)
     
     // Then send messages to iframe in a separate operation
     // This ensures we don't have race conditions between state updates and messaging
@@ -501,9 +543,17 @@ console.log(user)
       sendMessageToPlayCanvas(`cable_0:product_2`);
       sendMessageToPlayCanvas(`cable_1:product_2`);
       sendMessageToPlayCanvas(`cable_2:product_2`);
+      setCables([
+        { isSystem: false, systemType: "", design: "Radial", designId: "product_2" },
+        { isSystem: false, systemType: "", design: "Radial", designId: "product_2" },
+        { isSystem: false, systemType: "", design: "Radial", designId: "product_2" },
+      ]);
     } else {
       sendMessageToPlayCanvas(`light_amount:1`);
       sendMessageToPlayCanvas(`cable_0:product_2`);
+      setCables([
+        { isSystem: false, systemType: "", design: "Radial", designId: "product_2" },
+      ]);
     }
     
     // Move to next step
@@ -542,7 +592,7 @@ console.log(user)
   const handleSystemBaseDesignChange = useCallback((design) => {
     // Update the system base design in the config
     setConfig(prev => ({ ...prev, systemBaseDesign: design }));
-    
+
     // Reset current shade when changing base design
     setCurrentShade(null);
     
@@ -587,8 +637,44 @@ console.log(user)
       const selectedCables = config.selectedPendants && config.selectedPendants.length > 0 
         ? config.selectedPendants 
         : [0]; // Default to cable 0 if none selected
+      console.log("selectedCables",selectedCables)
       
-      // Process each selected cable
+      // Update all cables in a single state update
+      setCables(prev => {
+        const updatedCables = [...prev];
+        
+        // Process each selected cable
+        selectedCables.forEach(cableNo => {
+          // Get the system type for this specific cable or use the default
+          console.log("cableNo",cableNo)
+          const cableSystemType = config.cableSystemTypes?.[cableNo] || config.systemType || 'universal';
+          console.log("cableSystemType",cableSystemType)
+          
+          // Get the base design map for this system type
+          const designMap = systemTypeBaseMap[cableSystemType] || systemTypeBaseMap.universal;
+          console.log("designMap",designMap)
+          
+          // Get the base ID for this design within the current system type
+          const baseId = designMap[design] || 'system_base_0';
+          console.log("baseId",baseId)
+          
+          console.log(`Updating cable ${cableNo} base design to ${design} for system type ${cableSystemType} (${baseId})`);
+          
+          // Update this specific cable
+          if (cableNo >= 0 && cableNo < updatedCables.length) {
+            updatedCables[cableNo] = {
+              isSystem: true,
+              systemType: cableSystemType,
+              design: design,
+              designId: baseId
+            };
+          }
+        });
+        
+        return updatedCables;
+      });
+      
+      // Send messages to iframe
       selectedCables.forEach(cableNo => {
         // Get the system type for this specific cable or use the default
         const cableSystemType = config.cableSystemTypes?.[cableNo] || config.systemType || 'universal';
@@ -599,8 +685,6 @@ console.log(user)
         // Get the base ID for this design within the current system type
         const baseId = designMap[design] || 'system_base_0';
         
-        console.log(`Updating cable ${cableNo} base design to ${design} for system type ${cableSystemType} (${baseId})`);
-        
         // Send system type message first for this cable
         sendMessageToPlayCanvas(`system:${cableSystemType}`);
         console.log(`Sending system:${cableSystemType} to iframe for cable ${cableNo}`);
@@ -610,8 +694,10 @@ console.log(user)
         console.log(`Sending cable_${cableNo}:${baseId} to iframe`);
       });
     }, 10);
+    
   }, [config.selectedPendants, config.systemType, config.cableSystemTypes]);
   
+
   // Handle shade selection
   const handleShadeSelect = useCallback((designId, shadeId, systemType) => {
     console.log('handleShadeSelect called with:', designId, shadeId, systemType);
@@ -695,10 +781,11 @@ console.log(user)
       iframe.contentWindow.postMessage(message, "*");
     }
   };
-
+console.log("cables",cables)
   // Save configuration function
-  const handleSaveConfig = (configParam) => {
+  const handleSaveConfig = (configParam,cablesParam) => {
     console.log("in handleSaveConfig");
+    console.log("Cables", cablesParam);
     // Log all configuration details
     console.log('Configuration Details:');
     console.log('Light Type:', configParam.lightType);
@@ -737,7 +824,7 @@ console.log(user)
       light_type: config.lightType,
       light_amount: config.lightAmount,
       base_color: config.baseColor,
-      cables: {},
+      cables: cables,
       shades: config.shades || {} // Include shade selections
     };
     
@@ -745,116 +832,6 @@ console.log(user)
     if (config.lightType === 'ceiling') {
       configSummary.base_type = config.baseType;
     }
-    
-    // Check if we have selected pendants that should be systems
-    const selectedPendants = config.selectedPendants || [];
-    
-    // Map system types to their base design options
-    const systemTypeBaseMap = {
-      'bar': {
-        'prism': 'system_base_1',
-        'helix': 'system_base_2',
-        'orbit': 'system_base_3',
-        'zenith': 'system_base_4',
-        'pulse': 'system_base_5',
-        'vortex': 'system_base_6',
-        'nexus': 'system_base_7',
-        'quasar': 'system_base_8',
-        'nova': 'system_base_9'
-      },
-      'universal': {
-        'atom': 'system_base_1',
-        'nebula': 'system_base_2',
-        'cosmos': 'system_base_3',
-        'stellar': 'system_base_4',
-        'eclipse': 'system_base_5',
-        'aurora': 'system_base_6',
-        'solstice': 'system_base_7',
-        'quantum': 'system_base_8',
-        'vertex': 'system_base_9',
-        'horizon': 'system_base_10',
-        'zenith': 'system_base_11',
-        'equinox': 'system_base_12',
-        'meridian': 'system_base_13',
-        'polaris': 'system_base_14',
-
-      }
-    };
-    
-    // Track cable system types for each cable
-    const cableSystemTypes = {};
-    
-    // First, check if any cables have specific system types assigned
-    if (config.cableSystemTypes) {
-      Object.assign(cableSystemTypes, config.cableSystemTypes);
-    }
-    
-    // Add individual cable configurations
-    config.pendants.forEach((pendant, index) => {
-      configSummary.cables[index] = {};
-      
-      // Check if this cable is selected for system configuration
-      const isSelectedForSystem = selectedPendants.includes(index);
-      
-      // Special case: if this is the last cable and we have a systemType, make it a system
-      const isLastCableWithSystem = (index === config.pendants.length - 1) && config.systemType;
-      
-      // Get the system type for this specific cable or use the default
-      const cableSystemType = cableSystemTypes[index] || config.systemType || 'universal';
-      
-      // Determine if this is a pendant or system
-      if (isSelectedForSystem || isLastCableWithSystem) {
-        // It's a system
-        console.log(`Cable ${index} identified as system type: ${cableSystemType}`);
-        const baseDesign = config.systemBaseDesign || 'fusion';
-        
-        // Get the base design map for this system type
-        const designMap = systemTypeBaseMap[cableSystemType] || systemTypeBaseMap.universal;
-        
-        // Get the base ID for this design within the current system type
-        const baseId = designMap[baseDesign] || 'system_base_0';
-        
-        console.log(`System cable ${index} using ${cableSystemType} system with ${baseDesign} design (${baseId})`);
-        
-        configSummary.cables[index] = {
-          system_type: cableSystemType,
-          product: baseId
-        };
-      } else if (pendant.design === 'bumble' || pendant.design === 'radial' || 
-          pendant.design === 'fina' || pendant.design === 'ico' || pendant.design === 'piko') {
-        // It's a pendant
-        console.log(`Cable ${index} identified as pendant type: ${pendant.design}`);
-        const productId = pendant.design === 'bumble' ? 'product_1' : 
-                       pendant.design === 'radial' ? 'product_2' : 
-                       pendant.design === 'fina' ? 'product_3' : 
-                       pendant.design === 'ico' ? 'product_4' : 
-                       pendant.design === 'piko' ? 'product_5' : 'product_2';
-        
-        configSummary.cables[index] = {
-          pendant: productId
-        };
-      } else {
-        // Default to system if design is not recognized
-        console.log(`Cable ${index} defaulting to system type (no recognized design)`);
-        
-        // Get the base design map for this specific cable's system type
-        const designMap = systemTypeBaseMap[cableSystemType] || systemTypeBaseMap.universal;
-        
-        // Get the base ID for this design within the current system type
-        // Use a valid default value based on the system type
-        const baseDesign = config.systemBaseDesign || 
-                          (cableSystemType === 'bar' ? 'prism' : 
-                           cableSystemType === 'universal' ? 'atom' : 'atom');
-        
-        // Get the base ID using the design map
-        const baseId = designMap[baseDesign] || 'system_base_1';
-        
-        configSummary.cables[index] = {
-          system_type: cableSystemType,
-          product: baseId
-        };
-      }
-    });
     
     return configSummary;
   };
@@ -874,59 +851,31 @@ console.log(user)
       name: configName,
       date: new Date().toISOString()
     };
-    
-    // Generate a random ID
-    const generateRandomId = () => {
-      return 'config_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-    };
 
-    // Collect all iframe messages in the sequence they would be sent to the iframe
     const iframeMessagesArray = [];
-
-    // Add light type message
     iframeMessagesArray.push(`light_type:${configToSave.light_type}`);
-
-    // Add light amount message
     iframeMessagesArray.push(`light_amount:${configToSave.light_amount}`);
-
-    // Add base type message if it exists
     if (configToSave.base_type) {
       iframeMessagesArray.push(`base_type:${configToSave.base_type}`);
     }
 
-    // Add all cable messages in the correct sequence
-    // For system cables, send system type message immediately before the cable message
-    if (configToSave.cables) {
-      // First add all pendant cables
-      Object.entries(configToSave.cables).forEach(([index, cable]) => {
-        if (cable.pendant) {
-          // It's a pendant cable - add it directly
-          iframeMessagesArray.push(`cable_${index}:${cable.pendant}`);
-          console.log(`Added pendant cable message: cable_${index}:${cable.pendant}`);
-        }
-      });
-      
-      // Then add all system cables with their system type immediately before
-      Object.entries(configToSave.cables).forEach(([index, cable]) => {
-        if (cable.product && cable.system_type) {
-          // It's a system cable - add system type immediately before cable
-          iframeMessagesArray.push(`system:${cable.system_type}`);
-          console.log(`Added system type message: system:${cable.system_type} for cable ${index}`);
-          
-          // Then add the cable message
-          iframeMessagesArray.push(`cable_${index}:${cable.product}`);
-          console.log(`Added system cable message: cable_${index}:${cable.product}`);
+    if (configToSave.cables && Array.isArray(configToSave.cables)) {
+      configToSave.cables.forEach((cable, i) => {
+        if (cable.isSystem) {
+          iframeMessagesArray.push(`system:${cable.systemType}`);
+          iframeMessagesArray.push(`cable_${i}:${cable.designId}`);
+        } else {
+          iframeMessagesArray.push(`cable_${i}:${cable.designId}`);
         }
       });
     }
     
-    // Add any additional parameters that might be needed
-    if (configToSave.base_color) {
-      iframeMessagesArray.push(`base_color:${configToSave.base_color}`);
+    if (config.baseColor) {
+      iframeMessagesArray.push(`base_color:${config.baseColor}`);
     }
     
-    if (configToSave.cable_color) {
-      iframeMessagesArray.push(`cable_color:${configToSave.cable_color}`);
+    if (config.cableColor) {
+      iframeMessagesArray.push(`cable_color:${config.cableColor}`);
     }
     
     if (configToSave.cable_length) {
@@ -942,49 +891,23 @@ console.log(user)
       cables: {}
     };
     
-    // Add base type if it exists
     if (configToSave.base_type) {
       uiConfig.base_type = configToSave.base_type.charAt(0).toUpperCase() + configToSave.base_type.slice(1);
     }
     
     // Format cable information for UI display
-    if (configToSave.cables) {
-      Object.entries(configToSave.cables).forEach(([index, cable]) => {
-        const cableNumber = parseInt(index) + 1;
-        
-        // For pendant type
-        if (cable.pendant) {
-          // Map product IDs to friendly names
-          const pendantNameMap = {
-            'product_1': 'Bumble',
-            'product_2': 'Radial',
-            'product_3': 'Fina',
-            'product_4': 'Ico',
-            'product_5': 'Piko'
-          };
-          
-          const pendantName = pendantNameMap[cable.pendant] || 'Unknown';
-          uiConfig.cables[index] = `Cable ${cableNumber}: ${pendantName}`;
-        }
-        // For system type
-        else if (cable.system_type && cable.product) {
-          // Map system base IDs to friendly names
-          const baseNameMap = {
-            'system_base_0': 'Nexus',
-            'system_base_1': 'Fusion',
-            'system_base_2': 'Aurora',
-            'system_base_4': 'Vertex',
-            'system_base_6': 'Quantum'
-          };
-          
-          const baseName = baseNameMap[cable.product] || 'Unknown';
-          const systemType = cable.system_type.charAt(0).toUpperCase() + cable.system_type.slice(1);
-          
-          // Format the system cable information as a string with proper formatting
-          uiConfig.cables[index] = `Cable ${cableNumber}: {
-System Type : ${systemType}
-Base Design: ${baseName}
-}`;
+    if (configToSave.cables && Array.isArray(configToSave.cables)) {
+      configToSave.cables.forEach((cable, index) => {
+        const cableNumber = index + 1;
+        if (cable.isSystem) {
+          // System cable
+          const systemType = cable.systemType ? cable.systemType.charAt(0).toUpperCase() + cable.systemType.slice(1) : 'Unknown';
+          const design = cable.design ? cable.design.charAt(0).toUpperCase() + cable.design.slice(1) : 'Unknown';
+          uiConfig.cables[index] = `Cable ${cableNumber}: {\n  System Type: ${systemType}\n  Base Design: ${design}\n}`;
+        } else {
+          // Pendant cable
+          const design = cable.design ? cable.design.charAt(0).toUpperCase() + cable.design.slice(1) : 'Unknown';
+          uiConfig.cables[index] = `Cable ${cableNumber}: ${design}`;
         }
       });
     }
@@ -1198,6 +1121,7 @@ Base Design: ${baseName}
         isPreviewMode={isPreviewMode}
         setIsPreviewMode={setIsPreviewMode}
         config={config}
+        cables={cables}
         onSaveConfig={handleSaveConfig}
         onLoadConfig={handleLoadConfig}
       />

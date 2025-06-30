@@ -6,6 +6,7 @@ export const PreviewControls = ({
   isPreviewMode, 
   setIsPreviewMode, 
   config,
+  cables,
   onSaveConfig,
   onLoadConfig
 }) => {
@@ -21,7 +22,7 @@ export const PreviewControls = ({
       
       <button 
         className="p-2 rounded-full bg-gray-800 text-gray-300 hover:opacity-90 transition-all"
-        onClick={() => onSaveConfig(config)}
+        onClick={() => onSaveConfig(config,cables)}
         title="Save Configuration"
       >
         <FaSave size={16} />

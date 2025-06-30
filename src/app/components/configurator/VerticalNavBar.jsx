@@ -22,6 +22,7 @@ const VerticalNavBar = ({
   activeStep, 
   setActiveStep, 
   config,
+  cables, // Add cables prop
   onLightTypeChange,
   onBaseTypeChange,
   onBaseColorChange,
@@ -51,7 +52,7 @@ const VerticalNavBar = ({
 
   
   // Effect to check screen size and update on resize
-  useEffect(() => {
+  useEffect(() => { 
     // Check if window is defined (client-side)
     if (typeof window !== 'undefined') {
       // Initial check
@@ -299,6 +300,7 @@ const VerticalNavBar = ({
                   <PendantSelectionDropdown 
                     pendants={pendants}
                     selectedPendants={selectedPendants}
+                    cables={cables} // Pass cables prop to child component
                     currentDesign={currentDesign}
                     setCurrentDesign={setCurrentDesign}
                     carouselRef={carouselRef}

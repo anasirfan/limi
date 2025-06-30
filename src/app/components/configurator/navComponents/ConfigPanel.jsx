@@ -13,6 +13,7 @@ export const ConfigPanel = ({
   onSystemTypeSelection,
   selectedLocation,
   selectedPendants,
+  cables, // Add cables prop
   onPendantDesignChange,
   onSystemBaseDesignChange,
   onBaseColorChange,

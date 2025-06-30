@@ -1,5 +1,5 @@
 "use client";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { FaTimes } from 'react-icons/fa';
 
@@ -10,21 +10,58 @@ export const SaveConfigModal = ({
   configSummary
 }) => {
   const [configName, setConfigName] = useState('');
+  const [thumbnail, setThumbnail] = useState('');
  console.log("in SaveConfigModal");
   if (!isOpen) return null;
 
-  const handleSave = () => {
+  const handleSave = async () => {
     console.log("in handleSave");
     if (!configName.trim()) return;
-    onSave(configName);
+    onSave(configName,thumbnail);
     setConfigName('');
   };
+
+  const getThumbnailFromIframe = () => {
+    return new Promise((resolve) => {
+      const handleMessage = (event) => {
+        let url = null;
+        if (event.data) {
+          if (typeof event.data === 'string') {
+            url = event.data;
+          } else if (typeof event.data === 'object') {
+            url = event.data.url || event.data.thumbnail || null;
+          }
+        }
+        if (url) {
+          window.removeEventListener('message', handleMessage);
+          resolve(url);
+        }
+      };
+      window.addEventListener('message', handleMessage);
+
+      const iframe = document.getElementById('playcanvas-app');
+      if (iframe && iframe.contentWindow) {
+        iframe.contentWindow.postMessage('savedataimage', '*');
+      }
+    });
+  };
+
+  // Request thumbnail when modal is opened
+  useEffect(() => {
+    if (isOpen) {
+      getThumbnailFromIframe().then((url) => {
+        setThumbnail(url);
+        console.log("thumbnail",url)
+      });
+    }
+  }, [isOpen]);
+
 
   // Format the config summary for display
   const formatConfigSummary = () => {
     console.log("in formatConfigSummary");
     const { light_type, base_type, light_amount, cables } = configSummary;
-    
+    console.log("cables",cables)
     let summaryText = `Light Type: ${light_type}\n`;
     if (light_type === 'ceiling') {
       summaryText += `Base Type: ${base_type}\n`;
@@ -32,36 +69,19 @@ export const SaveConfigModal = ({
     summaryText += `Light Amount: ${light_amount}\n\n`;
     
     summaryText += 'Cables:\n';
-    Object.keys(cables || {}).forEach(cableId => {
-      summaryText += `Cable ${parseInt(cableId) + 1}: `;
-      const cable = cables[cableId];
-      
-      if (typeof cable === 'string' && cable.includes('System Type')) {
-        // This is already a formatted string from ConfiguratorLayout
-        summaryText += `${cable.split('Cable ' + (parseInt(cableId) + 1) + ':')[1].trim()}\n`;
-      } else if (cable.pendant) {
-        // It's a pendant cable
-        const pendantMap = {
-          'product_1': 'Bumble',
-          'product_2': 'Radial',
-          'product_3': 'Fina',
-          'product_4': 'Ico',
-          'product_5': 'Piko'
-        };
-        const pendantName = pendantMap[cable.pendant] || cable.pendant.replace('product_', '');
-        summaryText += `Pendant (${pendantName})\n`;
-      } else if (cable.system_type) {
-        // It's a system cable
-        const baseMap = {
-          'system_base_0': 'Nexus/Quantum/Vertex',
-          'system_base_1': 'Fusion',
-          'system_base_2': 'Aurora'
-        };
-        const baseName = baseMap[cable.product] || cable.product.replace('system_base_', '');
-        const systemType = cable.system_type.charAt(0).toUpperCase() + cable.system_type.slice(1);
-        summaryText += `{\nSystem Type : ${systemType}\nBase Design: ${baseName}\n}\n`;
-      }
-    });
+    (cables || []).forEach((cable, idx) => {
+    summaryText += `Cable ${idx + 1}: `;
+    if (cable.isSystem) {
+      // System cable
+      const systemType = cable.systemType ? (cable.systemType.charAt(0).toUpperCase() + cable.systemType.slice(1)) : 'Unknown';
+      const design = cable.design ? cable.design.charAt(0).toUpperCase() + cable.design.slice(1).toLowerCase() : '';
+      summaryText += `System\n  Type: ${systemType}\n  Design: ${design}\n`;
+    } else {
+      // Pendant cable - use camel case to Title Case
+      const pendantName = cable.design ? cable.design.charAt(0).toUpperCase() + cable.design.slice(1).toLowerCase() : '';
+      summaryText += `Pendant\n  Design: ${pendantName}\n`;
+    }
+  });
     
     return summaryText;
   };
