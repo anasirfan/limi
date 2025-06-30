@@ -285,14 +285,14 @@ export const ConfigPanel = ({
           const selectedBase = config.items.find(item => item.id === itemId);
           
           // Check if this design has multiple shades
-          const shades = checkForMultipleShades(itemId, configuringSystemType);
-          if (shades && shades.length > 0) {
-            setAvailableShades(shades);
-            setShowShades(true);
-          } else {
-            setAvailableShades([]);
-            setShowShades(false);
-          }
+          // const shades = checkForMultipleShades(itemId, configuringSystemType);
+          // if (shades && shades.length > 0) {
+          //   setAvailableShades(shades);
+          //   setShowShades(true);
+          // } else {
+          //   setAvailableShades([]);
+          //   setShowShades(false);
+          // }
           
           // Pass the design name to maintain backward compatibility
           onSystemBaseDesignChange(itemId);
@@ -389,35 +389,52 @@ export const ConfigPanel = ({
   };
   
   return (
-    <div className="flex items-center">
+    <div className="flex justify-center items-center w-full">
       <motion.div 
-        className={`absolute bottom-4 left-[40%] -translate-x-1/2 bg-black/90 backdrop-blur-sm border border-gray-800 rounded-lg z-40 max-w-[280px] w-[20%] h-[15%] shadow-lg ${className}`}
-        initial={isMobileView ? { opacity: 1 } : { y: 30, opacity: 0 }}
-        animate={isMobileView ? { opacity: 1 } : { y: 0, opacity: 1 }}
-        exit={isMobileView ? { opacity: 0 } : { y: 30, opacity: 0 }}
-        transition={{ type: 'spring', damping: 25 }}
+        className={`fixed h-[150px] sm:absolute bottom-0 sm:bottom-1 -translate-x-1/2 bg-black/95 backdrop-blur-sm border border-gray-700 rounded-t-lg sm:rounded-lg z-40 w-full sm:max-w-[320px] md:max-w-[400px] lg:max-w-[480px] xl:max-w-[540px] sm:w-[80vw] md:w-[55vw] lg:w-[40vw] xl:w-[22.5vw] max-h-[60vh] sm:max-h-[30vh] shadow-lg overflow-hidden ${className}`}
+        initial={isMobileView ? { y: '100%', opacity: 0 } : { y: 30, opacity: 0 }}
+        animate={isMobileView ? { y: 0, opacity: 1 } : { y: 0, opacity: 1 }}
+        exit={isMobileView ? { y: '100%', opacity: 0 } : { y: 30, opacity: 0 }}
+        transition={{ type: 'spring', damping: 25, stiffness: 300 }}
       >
-      <div className="px-3 py-4 max-sm:px-0 max-sm:py-0">
+      <div className="px-2 sm:px-3 pt-2">
       
+          {/* Responsive header */}
           <div className="flex items-center justify-between mb-2">
             {panelConfig.showBreadcrumb ? (
               <>
-                <Breadcrumb path={panelConfig.breadcrumbItems} onNavigate={handleBreadcrumbNavigation} />
-                <h3 className="text-xs font-medium text-white font-['Amenti']">{panelConfig.title}</h3>
+                <div className="flex items-center w-full">
+                  <div className="flex-1 min-w-0">
+                    <Breadcrumb path={panelConfig.breadcrumbItems} onNavigate={handleBreadcrumbNavigation} />
+                  </div>
+                  <h3 className="ml-4 text-xs sm:text-sm font-medium text-white font-['Amenti'] truncate text-right">
+                    {panelConfig.title}
+                  </h3>
+                  {panelConfig.showCloseButton && (
+                    <button 
+                      onClick={onClose}
+                      className="w-6 h-6 rounded-full bg-gray-800 flex items-center justify-center hover:bg-gray-700 ml-2"
+                      aria-label="Close panel"
+                    >
+                      <FaTimes size={10} className="text-gray-300" />
+                    </button>
+                  )}
+                </div>
               </>
             ) : (
               <>
-                <div className="flex items-center">
-                  <h3 className="text-xs font-medium text-white font-['Amenti']">
+                <div className="flex-1">
+                  <h3 className="text-xs sm:text-sm font-medium text-white font-['Amenti'] truncate">
                     {panelConfig.showLocationLabel ? `Configure Cable${selectedPendants && selectedPendants.length > 1 ? 's' : ''} ${formatSelectedLocations(selectedPendants || selectedLocation)}` : panelConfig.title}
                   </h3>
                 </div>
                 {panelConfig.showCloseButton && (
                   <button 
                     onClick={onClose}
-                    className="w-5 h-5 rounded-full bg-gray-800 flex items-center justify-center hover:bg-gray-700 max-sm:hidden"
+                    className="w-6 h-6 rounded-full bg-gray-800 flex items-center justify-center hover:bg-gray-700 ml-2"
+                    aria-label="Close panel"
                   >
-                    <FaTimes size={8} className="text-gray-400" />
+                    <FaTimes size={10} className="text-gray-300" />
                   </button>
                 )}
               </>
@@ -428,67 +445,69 @@ export const ConfigPanel = ({
         
         
         {/* Items carousel */}
-        <div className="relative">
-          {panelConfig.items.length > 3 && (
+        <div className="relative w-full">
+          {panelConfig.items.length > (isMobileView ? 2 : 3) && (
             <div className="absolute left-0 top-1/2 -translate-y-1/2 z-10">
               <button 
                 onClick={() => scrollCarousel('left')}
-                className="w-5 h-5 rounded-full bg-gray-800 text-white flex items-center justify-center hover:bg-gray-700 transition-colors"
+                className="w-7 h-7 rounded-full bg-gray-800 text-white flex items-center justify-center hover:bg-gray-700 transition-colors shadow"
+                aria-label="Scroll left"
               >
-                <FaChevronLeft size={8} />
+                <FaChevronLeft size={12} />
               </button>
             </div>
           )}
-          
-          <div 
+          <div
             ref={carouselRef}
-            className={`flex gap-1 overflow-x-auto scrollbar-hide py-1 ${isMobileView ? 'px-2' : 'px-5'} max-w-full`}
+            className={`flex gap-2 sm:gap-3 overflow-x-auto scrollbar-hide py-2 px-1 sm:px-5 max-w-full`}
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
             {panelConfig.items.map((item) => (
               <motion.div
                 key={item.id}
-                className="flex-shrink-0 cursor-pointer px-2"
+                className="flex flex-col items-center flex-shrink-0 px-1 sm:px-2"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => panelConfig.onItemSelect(item.id)}
               >
-                <div className={`${isMobileView ? 'w-16 h-16' : 'w-16 h-16'} rounded-full overflow-hidden relative ${
-                  panelConfig.selectedItem === item.id ? 'ring-2 ring-emerald-500' : ''
-                }`}>
+                <div className={`relative ${isMobileView ? 'w-14 h-14' : 'w-16 h-16'} rounded-full overflow-hidden ${panelConfig.selectedItem === item.id ? 'ring-2 ring-emerald-500' : 'ring-1 ring-gray-600'}`}>
                   {item.image ? (
                     <Image
                       src={item.image}
                       alt={item.name}
-                      fill
-                      className="object-cover"
+                      width={isMobileView ? 56 : 64}
+                      height={isMobileView ? 56 : 64}
+                      className="object-cover w-full h-full"
+                      priority
                     />
                   ) : (
-                    <div 
-                      className="w-full h-full flex items-center justify-center" 
+                    <div
+                      className="w-full h-full flex items-center justify-center"
                       style={{ backgroundColor: '#2C3539', color: 'white' }}
                     >
-                      <p className="text-lg font-bold">{item.baseNumber}</p>
+                      <p className="text-base sm:text-lg font-bold">{item.baseNumber}</p>
                     </div>
                   )}
                   {panelConfig.selectedItem === item.id && (
                     <div className="absolute inset-0 bg-emerald-500/20 flex items-center justify-center">
-                      <FaCheck className="text-white text-[8px]" />
+                      <FaCheck className="text-white text-xs" />
                     </div>
                   )}
                 </div>
-                <p className={`text-center ${isMobileView ? 'text-xs' : 'text-[10px]'} mt-0.5 text-gray-300 capitalize`}>{item.name}</p>
+                <p className={`text-center text-xs sm:text-[13px] mt-1.5 text-gray-200 font-medium capitalize`}>
+                  {item.name}
+                </p>
               </motion.div>
             ))}
           </div>
-          
-          {panelConfig.items.length > 3 && (
+          {panelConfig.items.length > (isMobileView ? 2 : 3) && (
             <div className="absolute right-0 top-1/2 -translate-y-1/2 z-10">
               <button 
                 onClick={() => scrollCarousel('right')}
-                className="w-5 h-5 rounded-full bg-gray-800 text-white flex items-center justify-center hover:bg-gray-700 transition-colors"
+                className="w-7 h-7 rounded-full bg-gray-800 text-white flex items-center justify-center hover:bg-gray-700 transition-colors shadow"
+                aria-label="Scroll right"
               >
-                <FaChevronRight size={8} />
+                <FaChevronRight size={12} />
               </button>
             </div>
           )}
@@ -498,7 +517,7 @@ export const ConfigPanel = ({
       
       {/* Arrow between boxes */}
       {showShades && (
-        <div className="absolute bottom-[7%] left-[60.5%] z-50">
+        <div className="absolute bottom-[7%] left-1/2 sm:left-[60.5%] z-50">
           <div className="flex items-center justify-center rounded-full p-1">
             <FaArrow className="text-[#2C3539]" size={26} />
           </div>
@@ -506,16 +525,17 @@ export const ConfigPanel = ({
       )}
       
       {/* Shade selection panel */}
-      {showShades && (
-        <motion.div 
-          className={`absolute bottom-4 left-[63%] -translate-x-1/2 bg-black/90 backdrop-blur-sm border border-gray-800 rounded-lg z-50 max-w-[280px] w-[20%] h-[15%] shadow-lg pointer-events-auto ${className}`}
+      {
+      showShades && (
+        <motion.div
+          className={`fixed sm:absolute bottom-[72px] sm:bottom-4 left-1/2 sm:left-[63%] -translate-x-1/2 bg-black/90 backdrop-blur-sm border border-gray-800 rounded-t-lg sm:rounded-lg z-50 w-full max-w-[350px] sm:max-w-[280px] h-auto shadow-lg pointer-events-auto ${className}`}
           initial={{ x: -20, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           exit={{ x: -20, opacity: 0 }}
           transition={{ type: 'spring', damping: 25 }}
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="px-3 py-4 max-sm:px-0 max-sm:py-0">
+          <div className="px-3 py-3 sm:py-4">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center">
                 <h3 className="text-xs font-medium text-white font-['Amenti']">
@@ -529,46 +549,34 @@ export const ConfigPanel = ({
             
             {/* Shades carousel */}
             <div className="relative">
-              <div className="flex gap-1 overflow-x-auto scrollbar-hide py-1 px-5 max-w-full">
+              <div className="flex gap-2 overflow-x-auto scrollbar-hide py-1 px-1 sm:px-5 max-w-full">
                 {availableShades.map((shade, index) => (
                   <div key={shade.id} className="flex flex-col items-center">
                     <button
                       type="button"
-                      className={`w-16 h-16 rounded-full overflow-hidden relative focus:outline-none ${localSelectedShade === shade.id ? 'ring-2 ring-emerald-500' : ''}`}
+                      className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden relative focus:outline-none ${localSelectedShade === shade.id ? 'ring-2 ring-emerald-500' : ''}`}
                       onClick={() => {
-                        console.log('Shade button clicked:', shade.id);
-                        
-                        // Update local state immediately for UI feedback
                         setLocalSelectedShade(shade.id);
-                        
-                        // Get the current design from the panel config
                         const panelConfig = getPanelConfig();
                         const designId = panelConfig?.selectedItem || currentDesign;
-                        
-                        console.log('Using design ID for shade:', designId);
-                        console.log('Using system type for shade:', configuringSystemType);
-                        
-                        // Call parent handler if available
                         if (typeof onShadeSelect === 'function') {
                           onShadeSelect(designId, shade.id, configuringSystemType);
-                        } else {
-                          console.error('onShadeSelect is not a function');
                         }
                       }}
                     >
-                      <div 
-                        className="w-full h-full flex items-center justify-center" 
+                      <div
+                        className="w-full h-full flex items-center justify-center"
                         style={{ backgroundColor: shade.color || '#2C3539', color: 'white' }}
                       >
-                        <p className="text-lg font-bold">{index + 1}</p>
+                        <p className="text-base sm:text-lg font-bold">{index + 1}</p>
                       </div>
                       {localSelectedShade === shade.id && (
                         <div className="absolute inset-0 bg-emerald-500/20 flex items-center justify-center">
-                          <FaCheck className="text-white text-[8px]" />
+                          <FaCheck className="text-white text-xs" />
                         </div>
                       )}
                     </button>
-                    <p className={`text-center ${isMobileView ? 'text-xs' : 'text-[10px]'} mt-0.5 text-gray-300 capitalize`}>{shade.name}</p>
+                    <p className={`text-center text-xs sm:text-[10px] mt-0.5 text-gray-300 capitalize`}>{shade.name}</p>
                   </div>
                 ))}
               </div>

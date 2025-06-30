@@ -1,26 +1,22 @@
 "use client";
 import { FaCamera, FaSave } from "react-icons/fa";
 import { useState, useRef } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Image from "next/image";
 import {
   FaUser,
   FaEnvelope,
   FaMobileAlt,
-  FaLock,
   FaBell,
   FaHome,
   FaCreditCard,
-  FaCheck,
   FaEdit,
   FaTrash,
   FaPlus,
-  FaEye,
-  FaEyeSlash,
   FaShieldAlt,
 } from "react-icons/fa";
 import {
-  updatePersonalInfo,
   updateNotificationPreferences,
   addAddress,
   updateAddress,
@@ -76,6 +72,8 @@ export default function AccountSettings({ user, onUserUpdate }) {
   const [uploadingMedia, setUploadingMedia] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const [uploadError, setUploadError] = useState("");
+  // Track if profile picture was changed
+  const [profilePicChanged, setProfilePicChanged] = useState(false);
 
   // Handle form submission
   const [isSaving, setIsSaving] = useState(false);
@@ -88,7 +86,7 @@ export default function AccountSettings({ user, onUserUpdate }) {
 
     try {
       const response = await fetch(
-        "https://api1.limitless-lighting.co.uk/client/user/profile",
+        "http://dev.api1.limitless-lighting.co.uk/client/user/profile",
         {
           headers: { Authorization: token },
         }
@@ -160,7 +158,7 @@ export default function AccountSettings({ user, onUserUpdate }) {
 
       // Make the API call to update profile
       const response = await fetch(
-        "https://api1.limitless-lighting.co.uk/client/user/profile",
+        "http://dev.api1.limitless-lighting.co.uk/client/user/profile",
         {
           method: "PUT",
           headers: {
@@ -351,7 +349,7 @@ export default function AccountSettings({ user, onUserUpdate }) {
       }
 
       const response = await fetch(
-        "https://api1.limitless-lighting.co.uk/client/user/profile/picture",
+        "http://dev.api1.limitless-lighting.co.uk/client/user/profile/picture",
         {
           method: "DELETE",
           headers: {
@@ -369,7 +367,7 @@ export default function AccountSettings({ user, onUserUpdate }) {
 
       // Get updated user data
       const profileResponse = await fetch(
-        "https://api1.limitless-lighting.co.uk/client/user/profile",
+        "http://dev.api1.limitless-lighting.co.uk/client/user/profile",
         {
           headers: { Authorization: token },
         }
@@ -390,12 +388,25 @@ export default function AccountSettings({ user, onUserUpdate }) {
 
       // Show success message
       setUploadSuccess(true);
+      setProfilePicChanged((prev) => !prev); // Trigger profile reload
       setTimeout(() => setUploadSuccess(false), 3000);
     } catch (error) {
       console.error("Error removing profile picture:", error);
       setUploadError(error.message || "Failed to remove profile picture");
     }
   };
+
+  // Reload user data when profile picture changes
+  useEffect(() => {
+    const reload = async () => {
+      const updatedUser = await fetchUserData();
+      if (updatedUser && onUserUpdate) {
+        onUserUpdate(updatedUser);
+      }
+    };
+    if (profilePicChanged) reload();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profilePicChanged]);
 
   // Render profile tab
   const renderProfileTab = () => (
@@ -642,21 +653,34 @@ export default function AccountSettings({ user, onUserUpdate }) {
           <div className="flex flex-col sm:flex-row items-center gap-8">
             <div className="relative group">
               <div className="w-32 h-32 sm:w-36 sm:h-36 rounded-full overflow-hidden bg-gradient-to-br from-[#2a2a2a] to-[#1f1f1f] p-1">
-                <div className="relative w-full h-full rounded-full overflow-hidden ring-2 ring-[#333] group-hover:ring-[#54BB74] transition-all duration-300">
-                  {user?.data?.profilePicture?.url && (
+                <div className="relative w-full h-full rounded-full overflow-hidden ring-2 ring-[#333] group-hover:ring-[#54BB74] transition-all duration-300 bg-emerald flex items-center justify-center">
+                  {user?.data?.profilePicture?.url ? (
                     <Image
-                      src={user?.data?.profilePicture?.url || ""}
-                      alt={user?.data?.username}
+                      src={user?.data?.profilePicture?.url}
+                      alt={user?.data?.username || 'User'}
                       width={144}
                       height={144}
                       className="object-cover w-full h-full"
                       onError={(e) => {
                         e.target.onerror = null;
-                        e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                          user?.data?.username || "User"
-                        )}&background=54BB74&color=fff`;
+                        e.target.src = '';
                       }}
                     />
+                  ) : (
+                    <span className="text-4xl font-bold text-charleston-green">
+                      {(() => {
+                        const username = user?.data?.username || '';
+                        if (username) {
+                          const nameParts = username.trim().split(/\s+/);
+                          if (nameParts.length >= 2) {
+                            return `${nameParts[0].charAt(0)}${nameParts[nameParts.length - 1].charAt(0)}`.toUpperCase();
+                          } else if (nameParts[0]) {
+                            return nameParts[0].charAt(0).toUpperCase();
+                          }
+                        }
+                        return 'U';
+                      })()}
+                    </span>
                   )}
                   <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer">
                     <div className="bg-white/10 backdrop-blur-sm p-3 rounded-full">

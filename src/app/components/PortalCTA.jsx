@@ -191,7 +191,7 @@ const PortalCTA = ({ onSignInClick }) => {
             Access exclusive features, manage your lighting preferences, track orders, and customize your LIMI experience. Join our community of lighting enthusiasts today and unlock the full potential of your lighting system.
           </p>
           
-          <div ref={buttonRef} className="flex flex-col sm:flex-row justify-center gap-4 mb-8">
+          <div ref={buttonRef} className="flex flex-col sm:flex-row  items-center justify-center gap-4 mb-8">
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
             <button
             onClick={(e) => {

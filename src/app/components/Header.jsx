@@ -301,17 +301,29 @@ const Header = () => {
                     aria-label="User menu"
                   >
                     <div className={`${isScrolled ? 'w-6 h-6' : 'w-7 h-7'} rounded-full bg-emerald flex items-center justify-center overflow-hidden transition-all duration-300`}>
-                     
                       {user?.data?.profilePicture?.url ? (
                         <Image
                           src={user?.data?.profilePicture?.url}
                           alt={user?.data?.username || 'User'}
                           width={28}
                           height={28}
-                          className="object-cover"
+                          className="object-cover w-full h-full"
                         />
                       ) : (
-                        <FaUserCircle className="text-xl text-charleston-green" />
+                        <span className="text-xs font-bold text-charleston-green">
+                          {(() => {
+                            const username = user?.data?.username || '';
+                            if (username) {
+                              const nameParts = username.trim().split(/\s+/);
+                              if (nameParts.length >= 2) {
+                                return `${nameParts[0].charAt(0)}${nameParts[nameParts.length - 1].charAt(0)}`.toUpperCase();
+                              } else if (nameParts[0]) {
+                                return nameParts[0].charAt(0).toUpperCase();
+                              }
+                            }
+                            return 'U';
+                          })()}
+                        </span>
                       )}
                     </div>
                     <span className={`${isScrolled ? 'hidden' : 'hidden sm:inline'} text-sm font-medium transition-all duration-300`}>{user?.data?.username || 'User'}</span>
