@@ -59,10 +59,56 @@ export const ConfigPanel = ({
   const [availableShades, setAvailableShades] = useState([]);
   const [localSelectedShade, setLocalSelectedShade] = useState(currentShade);
   
+  // Shade selection handler
+  const handleShadeSelect = (shade, shadeIndex) => {
+    setLocalSelectedShade(shade.id);
+    const baseOptions = {
+      'bar': [
+        { id: 'prism', name: 'Prism', baseNumber: '1', image: '/images/configOptions/bar/1.png' },
+        { id: 'helix', name: 'Helix', baseNumber: '2', image: '/images/configOptions/bar/2.png' },
+        { id: 'orbit', name: 'Orbit', baseNumber: '3', image: '/images/configOptions/bar/3.png' },
+        { id: 'zenith', name: 'Zenith', baseNumber: '4', image: '/images/configOptions/bar/4.jpg' },
+        { id: 'pulse', name: 'Pulse', baseNumber: '5', image: '/images/configOptions/bar/5.jpg' },
+        { id: 'vortex', name: 'Vortex', baseNumber: '6', image: '/images/configOptions/bar/6.jpg' },
+        { id: 'nexus', name: 'Nexus', baseNumber: '7', image: '/images/configOptions/bar/7.jpg' },
+        { id: 'quasar', name: 'Quasar', baseNumber: '8', image: '/images/configOptions/bar/8.jpg' },
+        { id: 'nova', name: 'Nova', baseNumber: '9', image: '/images/configOptions/bar/9.jpg' }
+      ],
+      'universal': [
+        { id: 'atom', name: 'Atom', baseNumber: '1'  , image: '/images/configOptions/universal/1.png' },
+        { id: 'nebula', name: 'Nebula', baseNumber: '2' , image: '/images/configOptions/universal/2.png' },
+        { id: 'cosmos', name: 'Cosmos', baseNumber: '3' , image: '/images/configOptions/universal/3.png' },
+        { id: 'stellar', name: 'Stellar', baseNumber: '4' , image: '/images/configOptions/universal/4.png' },
+        { id: 'eclipse', name: 'Eclipse', baseNumber: '5' , image: '/images/configOptions/universal/5.png' },
+        { id: 'aurora', name: 'Aurora', baseNumber: '6' , image: '/images/configOptions/universal/6.png' },
+        { id: 'solstice', name: 'Solstice', baseNumber: '7',image: '/images/configOptions/universal/7.png' },
+        { id: 'quantum', name: 'Quantum', baseNumber: '8',image: '/images/configOptions/universal/8.png' },
+        { id: 'vertex', name: 'Vertex', baseNumber: '9',image: '/images/configOptions/universal/9.png' },
+        { id: 'horizon', name: 'Horizon', baseNumber: '10',image: '/images/configOptions/universal/10.png' },
+        { id: 'zenith', name: 'Zenith', baseNumber: '11',image: '/images/configOptions/universal/11.png' },
+        { id: 'equinox', name: 'Equinox', baseNumber: '12',image: '/images/configOptions/universal/12.png' },
+        { id: 'meridian', name: 'Meridian', baseNumber: '13',image: '/images/configOptions/universal/13.png' },
+        { id: 'polaris', name: 'Polaris', baseNumber: '14',image: '/images/configOptions/universal/14.png' },
+ 
+      ]
+    };
+    // Always use the canonical design id from baseOptions
+    let designId = currentDesign;
+    if (configuringSystemType && currentDesign) {
+      const baseList = baseOptions[configuringSystemType] || [];
+      const selectedBase = baseList.find(base => base.id === currentDesign);
+      if (selectedBase) {
+        designId = selectedBase.baseNumber; // or selectedBase.baseNumber if PlayCanvas expects a number
+      }
+    }
+    if (typeof onShadeSelect === 'function') {
+      onShadeSelect(designId, shade.id, configuringSystemType, shadeIndex);
+    }
+  };
+
   // Update local shade state when currentShade prop changes
   useEffect(() => {
     setLocalSelectedShade(currentShade);
-    console.log('currentShade prop updated:', currentShade);
   }, [currentShade]);
   
   // Update navigation state when configuringType or configuringSystemType changes
@@ -135,44 +181,44 @@ export const ConfigPanel = ({
     // Map of designs to their available shades
     const shadeOptions = {
       // Universal system shades
-      // 'universal': {
-      //   'atom': [
-      //     { id: 'shallowdome', name: 'Shallow Dome', color: '#2B2D2F' },
-      //     { id: 'deepdome', name: 'Deep Dome', color: '#50C878' },
-      //     { id: 'flatplate', name: 'Flat Plate', color: '#87CEAB' }
-      //   ],
-      //   'nebula': [
-      //     { id: 'cone', name: 'Cone', color: '#2B2D2F' },
-      //     { id: 'cylinder', name: 'Cylinder', color: '#50C878' }
-      //   ],
-      //   'cosmos': [
-      //     { id: 'sphere', name: 'Sphere', color: '#2B2D2F' },
-      //     { id: 'hemisphere', name: 'Hemisphere', color: '#50C878' },
-      //     { id: 'disc', name: 'Disc', color: '#87CEAB' },
-      //     { id: 'ring', name: 'Ring', color: '#F2F0E6' }
-      //   ],
-      //   'stellar': [
-      //     { id: 'pyramid', name: 'Pyramid', color: '#2B2D2F' },
-      //     { id: 'cube', name: 'Cube', color: '#50C878' },
-      //     { id: 'prism', name: 'Prism', color: '#87CEAB' }
-      //   ],
-      //   'eclipse': [
-      //     { id: 'oval', name: 'Oval', color: '#2B2D2F' },
-      //     { id: 'rectangle', name: 'Rectangle', color: '#50C878' }
-      //   ]
-      // },
-      // // Bar system shades
-      // 'bar': {
-      //   'prism': [
-      //     { id: 'standard', name: 'Standard', color: '#2B2D2F' },
-      //     { id: 'extended', name: 'Extended', color: '#50C878' }
-      //   ],
-      //   'helix': [
-      //     { id: 'single', name: 'Single', color: '#2B2D2F' },
-      //     { id: 'double', name: 'Double', color: '#50C878' },
-      //     { id: 'triple', name: 'Triple', color: '#87CEAB' }
-      //   ]
-      // }
+      'universal': {
+        'atom': [
+          { id: 'shallowdome', name: 'Shallow Dome', color: '#2B2D2F' },
+          { id: 'deepdome', name: 'Deep Dome', color: '#50C878' },
+          { id: 'flatplate', name: 'Flat Plate', color: '#87CEAB' }
+        ],
+        'nebula': [
+          { id: 'cone', name: 'Cone', color: '#2B2D2F' },
+          { id: 'cylinder', name: 'Cylinder', color: '#50C878' }
+        ],
+        'cosmos': [
+          { id: 'sphere', name: 'Sphere', color: '#2B2D2F' },
+          { id: 'hemisphere', name: 'Hemisphere', color: '#50C878' },
+          { id: 'disc', name: 'Disc', color: '#87CEAB' },
+          { id: 'ring', name: 'Ring', color: '#F2F0E6' }
+        ],
+        'stellar': [
+          { id: 'pyramid', name: 'Pyramid', color: '#2B2D2F' },
+          { id: 'cube', name: 'Cube', color: '#50C878' },
+          { id: 'prism', name: 'Prism', color: '#87CEAB' }
+        ],
+        'eclipse': [
+          { id: 'oval', name: 'Oval', color: '#2B2D2F' },
+          { id: 'rectangle', name: 'Rectangle', color: '#50C878' }
+        ]
+      },
+      // Bar system shades
+      'bar': {
+        'prism': [
+          { id: 'standard', name: 'Standard', color: '#2B2D2F' },
+          { id: 'extended', name: 'Extended', color: '#50C878' }
+        ],
+        'helix': [
+          { id: 'single', name: 'Single', color: '#2B2D2F' },
+          { id: 'double', name: 'Double', color: '#50C878' },
+          { id: 'triple', name: 'Triple', color: '#87CEAB' }
+        ]
+      }
     };
     
     // Check if this design has shade options
@@ -227,7 +273,7 @@ export const ConfigPanel = ({
         } else if (typeof selectedLocation === 'number') {
           cablesToUpdate = [selectedLocation];
         }
-        console.log('[CableSize] Clicked size:', size, 'Cables to update:', cablesToUpdate);
+       
         if (onCableSizeChange && cablesToUpdate.length > 0) onCableSizeChange(size, cablesToUpdate);
       };
       config.selectedItem = localSelectedCableSize;
@@ -333,14 +379,19 @@ export const ConfigPanel = ({
           const selectedBase = config.items.find(item => item.id === itemId);
           
           // Check if this design has multiple shades
-          // const shades = checkForMultipleShades(itemId, configuringSystemType);
-          // if (shades && shades.length > 0) {
-          //   setAvailableShades(shades);
-          //   setShowShades(true);
-          // } else {
-          //   setAvailableShades([]);
-          //   setShowShades(false);
-          // }
+          const shades = checkForMultipleShades(itemId, configuringSystemType);
+          if (shades && shades.length > 0) {
+            setAvailableShades(shades);
+            setShowShades(true);
+            setLocalSelectedShade(shades[0].id);
+            if (typeof onShadeSelect === 'function') {
+              onShadeSelect(itemId, shades[0].id, configuringSystemType, 0);
+            }
+          } else {
+            setAvailableShades([]);
+            setShowShades(false);
+            setLocalSelectedShade(null);
+          }
           
           // Pass the design name to maintain backward compatibility
           onSystemBaseDesignChange(itemId);
@@ -364,7 +415,6 @@ export const ConfigPanel = ({
     // Use the navigation state to determine where to go
     if (id === 'home') {
       // Reset to configuration type selection (first level)
-      console.log('Home clicked')
       onSelectConfigurationType(null);
       // Do NOT call onClose() as we want to keep the panel open
     } else if (id === 'system' && navState.level === 2) {
@@ -386,13 +436,7 @@ export const ConfigPanel = ({
       onBreadcrumbNavigation(id);
     }
     
-    // Log current navigation state for debugging
-    console.log('Navigation state after breadcrumb click:', {
-      id,
-      newLevel: id === 'home' ? 0 : id === 'system' ? 1 : navState.level,
-      configuringType: id === 'home' ? null : configuringType,
-      configuringSystemType: id === 'system' ? null : configuringSystemType
-    });
+    
   };
   
   // Get the current panel configuration
@@ -429,12 +473,7 @@ export const ConfigPanel = ({
   // Determine if we're in mobile view based on the className prop
   const isMobileView = className.includes('max-sm:static');
   
-  // Handle shade selection
-  const handleShadeSelect = (shade) => {
-    if (onShadeSelect) {
-      onShadeSelect(currentDesign, shade.id, configuringSystemType);
-    }
-  };
+
   
   return (
     <div className="flex justify-center items-center w-full">
@@ -619,20 +658,21 @@ export const ConfigPanel = ({
             
             {/* Shades carousel */}
             <div className="relative">
-              <div className="flex gap-2 overflow-x-auto scrollbar-hide py-1 px-1 sm:px-5 max-w-full">
+              <button
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-[#2B2D2F] text-white rounded-full p-1 shadow hover:bg-emerald-700 transition"
+                style={{ left: 0 }}
+                onClick={() => scrollCarousel('left')}
+                aria-label="Scroll left"
+              >
+                <FaChevronLeft size={16} />
+              </button>
+              <div className="flex gap-2 overflow-x-auto scrollbar-hide py-1 px-6 sm:px-10 max-w-full" ref={carouselRef}>
                 {availableShades.map((shade, index) => (
                   <div key={shade.id} className="flex flex-col items-center">
                     <button
                       type="button"
                       className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden relative focus:outline-none ${localSelectedShade === shade.id ? 'ring-2 ring-emerald-500' : ''}`}
-                      onClick={() => {
-                        setLocalSelectedShade(shade.id);
-                        const panelConfig = getPanelConfig();
-                        const designId = panelConfig?.selectedItem || currentDesign;
-                        if (typeof onShadeSelect === 'function') {
-                          onShadeSelect(designId, shade.id, configuringSystemType);
-                        }
-                      }}
+                      onClick={() => handleShadeSelect(shade, index)}
                     >
                       <div
                         className="w-full h-full flex items-center justify-center"
@@ -650,6 +690,14 @@ export const ConfigPanel = ({
                   </div>
                 ))}
               </div>
+              <button
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-[#2B2D2F] text-white rounded-full p-1 shadow hover:bg-emerald-700 transition"
+                style={{ right: 0 }}
+                onClick={() => scrollCarousel('right')}
+                aria-label="Scroll right"
+              >
+                <FaChevronRight size={16} />
+              </button>
             </div>
           </div>
         </motion.div>

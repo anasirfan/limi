@@ -6,7 +6,7 @@ export const usePendantSelection = (pendants, selectedPendants, setSelectedPenda
   
   // Helper function to map design names to their corresponding image numbers
   const getDesignImageNumber = (designName) => {
-    console.log("designName",designName);
+   
     const designMap = {
       'bumble': '1.png',
       'radial': '2.png',

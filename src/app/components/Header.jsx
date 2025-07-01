@@ -37,7 +37,7 @@ const Header = () => {
   const favorites = isClient ? favoritesData : { items: [] };
 
   const { isLoggedIn, user } = userData || { isLoggedIn: false, user: null };
-  console.log("data",userData)
+  
   // Get current path to determine which navigation to show
   const pathname = usePathname();
   const isHomePage = pathname === '/';

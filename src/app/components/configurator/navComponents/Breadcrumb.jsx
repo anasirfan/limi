@@ -5,7 +5,7 @@ export const Breadcrumb = ({
   path = [], 
   onNavigate 
 }) => {
-  console.log(path);
+
   return (
     <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide">
       {/* Always show home button first */}

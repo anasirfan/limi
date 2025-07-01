@@ -41,8 +41,10 @@ const VerticalNavBar = ({
   configuringSystemType,
   breadcrumbPath,
   onBreadcrumbNavigation,
+  
   onSystemTypeSelection,
-  containerDimensions
+  containerDimensions,
+  onShadeSelect // Add onShadeSelect prop
 }) => {
   // Define colors from LIMI brand palette
   const emerald = '#50C878';
@@ -377,7 +379,7 @@ const VerticalNavBar = ({
             onCableSizeChange={onCableSizeChange}
             onPendantDesignChange={onPendantDesignChange}
             onSystemBaseDesignChange={onSystemBaseDesignChange}
-            onShadeSelect={() => {}}
+            onShadeSelect={onShadeSelect}
             currentShade={null}
             onSelectConfigurationType={(type) => {
               // This matches the original handleConfigTypeSelection function

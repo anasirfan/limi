@@ -27,7 +27,7 @@ const ConfiguratorLayout = () => {
   const [isLoadingFromUrl, setIsLoadingFromUrl] = useState(false);
   const [configFromUrl, setConfigFromUrl] = useState(null);
   const [hasConfigIdParam, setHasConfigIdParam] = useState(false);
-console.log(user)
+
   // Main configuration state
   const [config, setConfig] = useState({
     lightType: 'ceiling',
@@ -63,7 +63,26 @@ const handleCableSizeChange = (size, selectedCables) => {
   });
 };
   
-  
+// Handler for shade selection
+const handleShadeSelect = (designId, shadeId, systemType, shadeIndex) => {
+  setCables(prev => {
+    const updated = [...prev];
+    (config.selectedPendants || []).forEach(idx => {
+      if (updated[idx]) {
+        updated[idx] = {
+          ...updated[idx],
+          design: `${designId} (${shadeId})`,
+          designId: `system_base_${designId}_${shadeIndex + 1}`
+        };
+      }
+    });
+    return updated;
+  });
+  (config.selectedPendants || []).forEach(idx => {
+    sendMessageToPlayCanvas(`cable_${idx}:system_base_${designId}_${shadeIndex + 1}`);
+  });
+};
+
   // Preview mode state
   const [isPreviewMode, setIsPreviewMode] = useState(false);
   
@@ -211,13 +230,13 @@ const handleCableSizeChange = (size, selectedCables) => {
   useEffect(() => {
     const handleMessage = (event) => {
       if (event.data === 'app:ready1') {
-        console.log('PlayCanvas app is ready');
+        
         setIsLoading(false);
         playCanvasReadyRef.current = true;
         
         // If we have a configuration from URL, load it now
         if (configFromUrl) {
-          console.log('Loading configuration from URL now that PlayCanvas is ready');
+          
           handleLoadSpecificConfig(configFromUrl);
           setIsLoadingFromUrl(false);
         }
@@ -240,7 +259,6 @@ const handleCableSizeChange = (size, selectedCables) => {
     let newPendants = [];
     
     if (type === 'wall') {
-      console.log("wall")
       newAmount = 1;
       setConfig(prev => ({ ...prev, lightType: type, lightAmount: newAmount }));
       newPendants = generateRandomPendants(1);
@@ -257,7 +275,7 @@ const handleCableSizeChange = (size, selectedCables) => {
       }
       newPendants = generateRandomPendants(newAmount);
     }
-    console.log("new config",config)
+
     setConfig(prev => ({ 
       ...prev, 
       lightType: type,
@@ -418,7 +436,7 @@ const handleCableSizeChange = (size, selectedCables) => {
       // Update system type for each selected cable
       selectedCables.forEach(cableNo => {
         cableSystemTypes[cableNo] = system;
-        console.log(`Setting cable ${cableNo} system type to ${system}`);
+        
       });
       
       return {
@@ -431,7 +449,7 @@ const handleCableSizeChange = (size, selectedCables) => {
     setTimeout(() => {
       // Send system type message to iframe
       sendMessageToPlayCanvas(`system:${system}`);
-      console.log(`Sending system:${system} to iframe`);
+      
       setShowTypeSelector(false);
     }, 10);
   }
@@ -487,8 +505,8 @@ const handleCableSizeChange = (size, selectedCables) => {
   // Handle pendant design change
   const handlePendantDesignChange = useCallback((pendantIds, design) => {
     // First update the config state with the new design
-    console.log("pendantIds",pendantIds)
-    console.log("design",design)
+    
+    
     setConfig(prev => {
       const updatedPendants = [...prev.pendants];
       
@@ -517,8 +535,8 @@ const handleCableSizeChange = (size, selectedCables) => {
                       design === 'piko' ? 'product_5' : 'product_2';
       
       // Update each selected pendant in the cables state
-      console.log("updatedCables",updatedCables)
-      console.log("pendantIds",pendantIds)
+      
+      
       pendantIds.forEach(id => {
         if (id >= 0) {
           updatedCables[id] = {
@@ -532,7 +550,7 @@ const handleCableSizeChange = (size, selectedCables) => {
       
       return updatedCables;
     });
-    console.log("cables after pendant design",cables)
+    
     
     // Then send messages to iframe in a separate operation
     // This ensures we don't have race conditions between state updates and messaging
@@ -546,12 +564,12 @@ const handleCableSizeChange = (size, selectedCables) => {
       // Check if we have only 1 pendant or multiple pendants
       if (config.lightAmount === 1) {
         // For single pendant, send a global pendant design message
-        console.log(`Updating single pendant to design ${design} (${productId})`);
+        
         sendMessageToPlayCanvas(`cable_0:${productId}`);
       } else {
         // For multiple pendants, send individual pendant messages
         pendantIds.forEach(id => {
-          console.log(`Updating pendant ${id} to design ${design} (${productId})`);
+          
           sendMessageToPlayCanvas(`cable_${id}:${productId}`);
         });
       }
@@ -560,7 +578,7 @@ const handleCableSizeChange = (size, selectedCables) => {
 
   // Handle base type change
   const handleBaseTypeChange = useCallback((baseType) => {
-    console.log(`Changing base type to: ${baseType}`);
+    
     
     // Update config state
     setConfig(prev => ({
@@ -599,7 +617,7 @@ const handleCableSizeChange = (size, selectedCables) => {
   
   // Handle base color change
   const handleBaseColorChange = useCallback((baseColor) => {
-    console.log(`Changing base color to: ${baseColor}`);
+    
     
     // Update config state
     setConfig(prev => ({
@@ -616,7 +634,7 @@ const handleCableSizeChange = (size, selectedCables) => {
   
   // Handle pendant selection
   const handlePendantSelection = useCallback((pendantIds) => {
-    console.log('Selected pendants:', pendantIds);
+    
     
     // Update config state with selected pendants
     setConfig(prev => ({
@@ -674,7 +692,7 @@ const handleCableSizeChange = (size, selectedCables) => {
       const selectedCables = config.selectedPendants && config.selectedPendants.length > 0 
         ? config.selectedPendants 
         : [0]; // Default to cable 0 if none selected
-      console.log("selectedCables",selectedCables)
+      
       
       // Update all cables in a single state update
       setCables(prev => {
@@ -683,19 +701,19 @@ const handleCableSizeChange = (size, selectedCables) => {
         // Process each selected cable
         selectedCables.forEach(cableNo => {
           // Get the system type for this specific cable or use the default
-          console.log("cableNo",cableNo)
+          
           const cableSystemType = config.cableSystemTypes?.[cableNo] || config.systemType || 'universal';
-          console.log("cableSystemType",cableSystemType)
+          
           
           // Get the base design map for this system type
           const designMap = systemTypeBaseMap[cableSystemType] || systemTypeBaseMap.universal;
-          console.log("designMap",designMap)
+          
           
           // Get the base ID for this design within the current system type
           const baseId = designMap[design] || 'system_base_0';
-          console.log("baseId",baseId)
           
-          console.log(`Updating cable ${cableNo} base design to ${design} for system type ${cableSystemType} (${baseId})`);
+          
+          
           
           // Update this specific cable
           if (cableNo >= 0) {
@@ -724,11 +742,11 @@ const handleCableSizeChange = (size, selectedCables) => {
         
         // Send system type message first for this cable
         sendMessageToPlayCanvas(`system:${cableSystemType}`);
-        console.log(`Sending system:${cableSystemType} to iframe for cable ${cableNo}`);
+        
         
         // Then send the cable base design message
         sendMessageToPlayCanvas(`cable_${cableNo}:${baseId}`);
-        console.log(`Sending cable_${cableNo}:${baseId} to iframe`);
+        
       });
     }, 10);
     
@@ -736,80 +754,7 @@ const handleCableSizeChange = (size, selectedCables) => {
   
 
   // Handle shade selection
-  const handleShadeSelect = useCallback((designId, shadeId, systemType) => {
-    console.log('handleShadeSelect called with:', designId, shadeId, systemType);
-    
-    // Update the current shade state
-    setCurrentShade(shadeId);
-    console.log('Setting currentShade to:', shadeId);
-    
-    // Get the selected cable number(s)
-    const selectedCables = config.selectedPendants && config.selectedPendants.length > 0 
-      ? config.selectedPendants 
-      : [0]; // Default to cable 0 if none selected
-    
-    console.log('Selected cables for shade update:', selectedCables);
-    
-    // Update shade selection in config
-    setConfig(prev => {
-      const updatedShades = { ...prev.shades };
-      
-      // Update shade for each selected cable
-      selectedCables.forEach(cableNo => {
-        const cableSystemType = prev.cableSystemTypes?.[cableNo] || prev.systemType || 'universal';
-        
-        // Create a unique key for this cable's shade
-        const shadeKey = `${cableNo}_${designId}`;
-        
-        // Store the shade selection
-        updatedShades[shadeKey] = {
-          designId,
-          shadeId,
-          systemType: cableSystemType
-        };
-        
-        console.log(`Updated shade for cable ${cableNo}, design ${designId} to ${shadeId}`);
-      });
-      
-      return { ...prev, shades: updatedShades };
-    });
-    
-    // DIRECT APPROACH: Send message to PlayCanvas iframe immediately
-    // Map system types to their corresponding numbers for the iframe message
-    const systemTypeMap = {
-      'bar': '1',
-      'ball': '2',
-      'universal': '3'
-    };
-    
-    // For each selected cable, send a message
-    selectedCables.forEach(cableNo => {
-      // Get the system type for this cable
-      const cableSystemType = config.cableSystemTypes?.[cableNo] || systemType || config.systemType || 'universal';
-      const systemTypeNumber = systemTypeMap[cableSystemType] || '3'; // Default to universal (3) if not found
-      
-      // Format: cable_0:system_3_shallowdome
-      const message = `cable_${cableNo}:system_${systemTypeNumber}_${shadeId}`;
-      console.log(`Sending shade selection message: ${message}`);
-      
-      // Send the message directly to the iframe
-      const iframe = document.getElementById('playcanvas-app');
-      if (iframe && iframe.contentWindow) {
-        console.log('Found iframe, sending message:', message);
-        iframe.contentWindow.postMessage(message, "*");
-      } else {
-        console.error('Could not find iframe with id "playcanvas-app"');
-      }
-    });
-    
-    // Also send a direct message with hardcoded values as a fallback
-    const fallbackMessage = `cable_0:system_3_${shadeId}`;
-    console.log(`Sending fallback shade message: ${fallbackMessage}`);
-    const iframe = document.getElementById('playcanvas-app');
-    if (iframe && iframe.contentWindow) {
-      iframe.contentWindow.postMessage(fallbackMessage, "*");
-    }
-  }, [config.selectedPendants, config.systemType, config.cableSystemTypes]);
+
   
   // Helper function to send messages to PlayCanvas iframe
   const sendMessageToPlayCanvas = (message) => {
@@ -818,22 +763,22 @@ const handleCableSizeChange = (size, selectedCables) => {
       iframe.contentWindow.postMessage(message, "*");
     }
   };
-console.log("cables",cables)
+
   // Save configuration function
   const handleSaveConfig = (configParam,cablesParam) => {
-    console.log("in handleSaveConfig");
-    console.log("Cables", cablesParam);
+    
+    
     // Log all configuration details
-    console.log('Configuration Details:');
-    console.log('Light Type:', configParam.lightType);
-    console.log('Base Type:', configParam.baseType);
-    console.log('Light Amount:', configParam.lightAmount);
-    console.log('System Type:', configParam.systemType);
-    console.log('System Base Design:', configParam.systemBaseDesign);
-    console.log('Selected Pendants:', configParam.selectedPendants);
-    console.log('All Pendants:', configParam.pendants);
-    console.log('Cable Color:', configParam.cableColor);
-    console.log('Cable Length:', configParam.cableLength);
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     // Check if user is logged in
     if (!isLoggedIn) {
@@ -847,7 +792,7 @@ console.log("cables",cables)
     
     // User is logged in, prepare config and show save modal
     const configSummary = prepareConfigForSave();
-    console.log('Config Summary for Save:', configSummary);
+    
     setConfigToSave(configSummary);
     setIsSaveModalOpen(true);
   };
@@ -855,7 +800,7 @@ console.log("cables",cables)
   // Prepare configuration for saving
   const prepareConfigForSave = () => {
     // Create a summary of the current configuration
-    console.log('Preparing config for save, config state:', config);
+    
 
     const configSummary = {
       light_type: config.lightType,
@@ -875,7 +820,7 @@ console.log("cables",cables)
   
   // Handle final save after user enters configuration name
   const handleFinalSave = async (configName,thumbnail) => {
-       console.log('configToSave:', configToSave);
+       
     
     if (!configToSave) {
       console.error('configToSave is null or undefined');
@@ -919,7 +864,7 @@ console.log("cables",cables)
       iframeMessagesArray.push(`cable_length:${configToSave.cable_length}`);
     }
     
-    console.log('Iframe messages array:', iframeMessagesArray);
+    
     
     // Prepare UI-friendly config for display
     const uiConfig = {
@@ -962,7 +907,7 @@ console.log("cables",cables)
 
     };
     
-    console.log('API payload to send:', apiPayload);
+    
     
     try {
       // Get dashboardToken from localStorage
@@ -973,7 +918,7 @@ console.log("cables",cables)
       
      
       // Log the API payload for debugging
-      console.log('Final API payload:', JSON.stringify(apiPayload, null, 2));
+      
       
       // Send data to backend API
       const response = await fetch('https://api1.limitless-lighting.co.uk/admin/products/light-configs', {
@@ -986,18 +931,18 @@ console.log("cables",cables)
       });
       
       // Log the response status
-      console.log('API response status:', response.status);
+      
       
       if (!response.ok) {
         throw new Error(`API error: ${response.status}`);
       }
       
       const data = await response.json();
-      console.log('API response:', data);
+      
       
       // Save configuration to Redux store
       dispatch(saveConfiguration(finalConfig));
-      console.log('saveConfiguration action dispatched');
+      
       
       // Close modal and show success toast
       setIsSaveModalOpen(false);
@@ -1011,7 +956,7 @@ console.log("cables",cables)
   
   // Load configuration function
   const handleLoadConfig = () => {
-    console.log('Opening load configuration modal');
+    
     
     // Check if user is logged in
     if (!isLoggedIn) {
@@ -1029,7 +974,7 @@ console.log("cables",cables)
   
   // Handle loading a specific configuration
   const handleLoadSpecificConfig = (configData) => {
-    console.log('Loading specific configuration:', configData);
+    
     
     if (!configData || !configData.iframe || !Array.isArray(configData.iframe)) {
       toast.error('Invalid configuration data');
@@ -1040,7 +985,7 @@ console.log("cables",cables)
     const sendMessagesInSequence = async (messages) => {
       for (let i = 0; i < messages.length; i++) {
         const message = messages[i];
-        console.log(`Sending iframe message ${i+1}/${messages.length}: ${message}`);
+        
         sendMessageToPlayCanvas(message);
         
         // Wait a short time between messages to ensure proper sequence
@@ -1088,7 +1033,7 @@ console.log("cables",cables)
       fetch(`https://api1.limitless-lighting.co.uk/admin/products/light-configs/${configId}`)
         .then(response => response.json())
         .then(data => {
-          console.log("load data from url",data)
+          
           setConfigFromUrl(data);
           // Don't call handleLoadSpecificConfig yet - wait for app:ready1
           // Just keep the loading state active
@@ -1193,6 +1138,7 @@ console.log("cables",cables)
             onBreadcrumbNavigation={handleBreadcrumbNavigation}
             onSystemTypeSelection={handleIndividualSystemTypeSelection}
             onCableSizeChange={handleCableSizeChange}
+            onShadeSelect={handleShadeSelect}
           />
           }
           

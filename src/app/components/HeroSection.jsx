@@ -138,7 +138,7 @@ function HeroSection() {
       // Add event listeners for video
       videoRef.current.addEventListener('loadeddata', () => {
         setVideoReady(true);
-        console.log('Video loaded successfully');
+  
       });
       
       videoRef.current.addEventListener('error', (e) => {
@@ -175,10 +175,10 @@ function HeroSection() {
             if (playPromise !== undefined) {
               playPromise
                 .then(() => {
-                  console.log('Video playback started successfully');
+                  
                 })
                 .catch(error => {
-                  console.error('Video autoplay was prevented:', error);
+                  
                   
                   // Add a click event listener to the section to play on user interaction
                   if (sectionRef.current) {
@@ -291,7 +291,7 @@ function HeroSection() {
         return [];
       }
       
-      console.log(`Successfully created ${chars.length} character spans for ${className}`);
+      
       return chars;
     };
     
@@ -304,14 +304,14 @@ function HeroSection() {
         return;
       }
       
-      console.log('Preparing text elements for animation');
+      
       // Create character spans for animations
       taglineCharsRef.current = createCharacterSpans(taglineRef.current, 'tagline-char');
       subheadingCharsRef.current = createCharacterSpans(subheadingRef.current, 'subheading-char');
       
       // Verify both elements have characters
       if (taglineCharsRef.current.length > 0 && subheadingCharsRef.current.length > 0) {
-        console.log('Text elements ready for animation');
+        
         setTextElementsReady(true);
       } else {
         console.warn('Text elements not properly created, retrying...');
@@ -334,7 +334,7 @@ function HeroSection() {
   useEffect(() => {
     if (!textElementsReady || typeof window === 'undefined') return;
     
-    console.log('Text elements are ready, preparing animations');
+    
     const taglineChars = taglineCharsRef.current;
     const subheadingChars = subheadingCharsRef.current;
     
@@ -344,7 +344,7 @@ function HeroSection() {
       return;
     }
     
-    console.log(`Ready to animate ${taglineChars.length} tagline chars and ${subheadingChars.length} subheading chars`);
+    
     
     // Set initial states only when text elements are ready
     if (scrollCueRef.current) {
@@ -370,7 +370,7 @@ function HeroSection() {
 
     // Listen for splash screen completion event
     const handleSplashComplete = () => {
-      console.log('Splash screen complete, starting animations');
+      
       startAnimations();
     };
 
@@ -380,13 +380,13 @@ function HeroSection() {
     // If splash screen is already complete or doesn't exist, start animations after a delay
     if (!document.querySelector('.splash-screen') || 
         document.querySelector('.splash-screen.completed')) {
-      console.log('No splash screen detected, starting animations with delay');
+      
       setTimeout(startAnimations, 500);
     }
     
     // Main animation function
     function startAnimations() {
-      console.log('Starting text animations');
+      
       // Main animation timeline
       const mainTl = gsap.timeline();
       
@@ -476,7 +476,7 @@ function HeroSection() {
 
     // Clean up function
     return () => {
-      console.log('Cleaning up text animations');
+      
       
       // Remove event listener for splash screen completion
       window.removeEventListener('splashComplete', handleSplashComplete);

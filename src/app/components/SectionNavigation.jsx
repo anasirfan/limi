@@ -90,11 +90,11 @@ export default function SectionNavigation() {
       if (element) {
         // Special handling for How It Works section
         if (id === 'how-it-works') {
-          console.log('How It Works section found');
+            
           // Find the specific HowItWorks component
           const howItWorksElement = document.querySelector('#products');
           if (howItWorksElement) {
-            console.log('How It Works component found');
+            
             window.scrollTo({
               top: howItWorksElement.offsetTop + 1800,
               behavior: 'smooth'

@@ -50,7 +50,7 @@ export const SystemConfigurationDropdown = ({ config, onSystemBaseDesignChange, 
   // Apply design to selected systems
   const applyDesignToSelected = (design) => {
     if (selectedSystems.length === 0) return;
-    console.log(`Applying design ${design} to selected systems for system type ${config.systemType}`);
+  
     onSystemBaseDesignChange(design);
     // Keep the design selector open after selection
   };
