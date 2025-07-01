@@ -87,7 +87,7 @@ export const SaveConfigModal = ({
     }
   });
     
-    return summaryText;
+    return summaryText ;
   };
 
   return (
