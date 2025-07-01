@@ -46,7 +46,7 @@ const ConfiguratorLayout = () => {
     shades: {}, // Store shade selections for each pendant/system base
 
   });
-  const [cables, setCables] = useState([]);
+  const [cables, setCables] = useState([{isSystem:false,systemType:"",design:"Radial",designId:"product_2",size:"2mm"}]);
 
   console.log(config)
 // Handler for cable size change
@@ -170,7 +170,7 @@ const handleShadeSelect = (designId, shadeId, systemType, shadeIndex) => {
       
       setLastCeilingLightAmount(config.lightAmount);
       setLastRoundBaseLightAmount(config.lightAmount);
-      
+      console.log("playCanvasReadyRef",playCanvasReadyRef)
       // Send initial messages to PlayCanvas if no configId in URL
       if (playCanvasReadyRef.current) {
         // Send default configuration messages
@@ -187,7 +187,7 @@ const handleShadeSelect = (designId, shadeId, systemType, shadeIndex) => {
                         pendant.design === 'piko' ? 'product_5' : 'product_2';
           
           setCables(prev => [...prev, { isSystem: false, systemType: "", design: pendant.design, designId: productId }]);
-          
+          console.log("cables",cables)
           sendMessageToPlayCanvas(`cable_${index}:${productId}`);
         });
       }

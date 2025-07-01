@@ -162,7 +162,7 @@ export const PendantSelectionDropdown = ({
                     <span className="relative z-10">{index + 1}</span>
                   </div>
                 </motion.div>
-              )) : (pendant.map((pendant, index) => (
+              )) : (pendants.map((pendant, index) => (
                 <motion.div 
                   key={index}
                   className="flex-shrink-0 cursor-pointer"
