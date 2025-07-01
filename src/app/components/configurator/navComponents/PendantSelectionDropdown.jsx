@@ -17,6 +17,7 @@ export const PendantSelectionDropdown = ({
   applyDesignToSelected,
   applyToAllPendants,
   getDesignImageNumber,
+  getPendantDesignImageNumber,
   handleSaveConfig,
   configuringType,
   configuringSystemType,
@@ -180,7 +181,7 @@ export const PendantSelectionDropdown = ({
                     {pendant.design && (
                       <div className="absolute inset-0 opacity-30">
                         <Image 
-                          src={`/images/configOptions/${getDesignImageNumber(pendant.design)}`}
+                          src={`/images/configOptions/${getPendantDesignImageNumber(pendant.design)}`}
                           alt={pendant.design}
                           fill
                           className="object-cover"

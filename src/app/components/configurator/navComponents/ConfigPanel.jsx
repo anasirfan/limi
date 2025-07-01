@@ -160,21 +160,29 @@ export const ConfigPanel = ({
     setNavState(newState);
   };
   const carouselRef = useRef(null);
+  // Separate ref for shade carousel
+  const shadeCarouselRef = useRef(null);
   
   const getCurrentConfig = () => {
     const config = getPanelConfig();
     SetcurrentConfig(config);
   };
   
-  // Carousel scroll functionality
+  // Carousel scroll functionality for main design slider
   const scrollCarousel = (direction) => {
     if (carouselRef.current) {
       const scrollAmount = direction === 'left' ? -200 : 200;
       carouselRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
   };
-  
 
+  // Carousel scroll functionality for shade slider (separate)
+  const scrollShadeCarousel = (direction) => {
+    if (shadeCarouselRef.current) {
+      const scrollAmount = direction === 'left' ? -200 : 200;
+      shadeCarouselRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
 
   // Check if the selected design has multiple shades
   const checkForMultipleShades = (designId, systemType) => {
@@ -661,12 +669,12 @@ export const ConfigPanel = ({
               <button
                 className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-[#2B2D2F] text-white rounded-full p-1 shadow hover:bg-emerald-700 transition"
                 style={{ left: 0 }}
-                onClick={() => scrollCarousel('left')}
+                onClick={() => scrollShadeCarousel('left')}
                 aria-label="Scroll left"
               >
                 <FaChevronLeft size={16} />
               </button>
-              <div className="flex gap-2 overflow-x-auto scrollbar-hide py-1 px-6 sm:px-10 max-w-full" ref={carouselRef}>
+              <div className="flex gap-2 overflow-x-auto scrollbar-hide py-1 px-6 sm:px-10 max-w-full" ref={shadeCarouselRef}>
                 {availableShades.map((shade, index) => (
                   <div key={shade.id} className="flex flex-col items-center">
                     <button
@@ -693,7 +701,7 @@ export const ConfigPanel = ({
               <button
                 className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-[#2B2D2F] text-white rounded-full p-1 shadow hover:bg-emerald-700 transition"
                 style={{ right: 0 }}
-                onClick={() => scrollCarousel('right')}
+                onClick={() => scrollShadeCarousel('right')}
                 aria-label="Scroll right"
               >
                 <FaChevronRight size={16} />

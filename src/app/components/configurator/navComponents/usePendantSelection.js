@@ -5,7 +5,18 @@ export const usePendantSelection = (pendants, selectedPendants, setSelectedPenda
   const carouselRef = useRef(null);
   
   // Helper function to map design names to their corresponding image numbers
+  const getPendantDesignImageNumber = (designName) => {
+      const designMap = {
+        'bumble': '1.png',
+        'radial': '2.png',
+        'fina': '3.png',
+        'ico': '4.png',
+        'piko': '5.png',
+      }
+      return designMap[designName];
+  }
   const getDesignImageNumber = (designName, SystemType) => {
+    console.log(designName, SystemType);
     const designMap = {
       'pendant': {
         'bumble': '1.png',
@@ -44,12 +55,12 @@ export const usePendantSelection = (pendants, selectedPendants, setSelectedPenda
     };
   
     // If SystemType is a system type and the design exists in its map
-    if (SystemType && designMap[SystemType] && designMap[SystemType][designName]) {
-      return `${SystemType}/${designMap[SystemType][designName]}`;
+    if (SystemType && designMap[SystemType] && designMap[SystemType][designName.toLowerCase()]) {
+      return `${SystemType}/${designMap[SystemType][designName.toLowerCase()]}`;
     }
     // Otherwise, treat as pendant (or fallback)
-    if (designMap['pendant'][designName]) {
-      return designMap['pendant'][designName];
+    if (designMap['pendant'][designName.toLowerCase()]) {
+      return designMap['pendant'][designName.toLowerCase()];
     }
     // Fallback
     return `${designName}.jpg`;

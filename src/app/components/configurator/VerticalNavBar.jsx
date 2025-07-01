@@ -9,6 +9,7 @@ import {
   LightAmountDropdown,
   SystemTypeDropdown,
   PendantSelectionDropdown,
+  
   SystemConfigurationDropdown,
   SaveConfigurationModal,
   useNavSteps,
@@ -149,7 +150,8 @@ const VerticalNavBar = ({
     clearSelections,
     applyDesignToSelected,
     applyToAllPendants,
-    getDesignImageNumber
+    getDesignImageNumber,
+    getPendantDesignImageNumber
   } = usePendantSelection(pendants, selectedPendants, setSelectedPendants, onPendantDesignChange);
   
   // Handle pendant location selection to show configuration type selector
@@ -307,6 +309,7 @@ const VerticalNavBar = ({
                     currentDesign={currentDesign}
                     setCurrentDesign={setCurrentDesign}
                     carouselRef={carouselRef}
+                    getPendantDesignImageNumber={getPendantDesignImageNumber}
                     scrollCarousel={scrollCarousel}
                     togglePendantSelection={(locationIndex) => {
                       handlePendantLocationClick(locationIndex);

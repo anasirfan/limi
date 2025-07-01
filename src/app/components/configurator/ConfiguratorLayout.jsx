@@ -825,11 +825,11 @@ const handleShadeSelect = (designId, shadeId, systemType, shadeIndex) => {
 
     const iframeMessagesArray = [];
     iframeMessagesArray.push(`light_type:${config.lightType}`);
-    iframeMessagesArray.push(`light_amount:${config.lightAmount}`);
+
     if (config.baseType) {
       iframeMessagesArray.push(`base_type:${config.baseType}`);
     }
-
+    iframeMessagesArray.push(`light_amount:${config.lightAmount}`);
     if (configToSave.cables && Array.isArray(configToSave.cables)) {
       configToSave.cables.forEach((cable, i) => {
         if (cable.isSystem) {
