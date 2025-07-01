@@ -24,6 +24,16 @@ export const ConfigPanel = ({
   onClose,
   className = '' // Add className prop with default empty string
 }) => {
+  // Clear shade state when entering pendant mode (defensive, avoids render loop)
+  // Only runs when configuringType changes
+  useEffect(() => {
+    if (configuringType === 'pendant') {
+      setShowShades(false);
+      setAvailableShades([]);
+      setLocalSelectedShade(null);
+    }
+  }, [configuringType]);
+
   const [currentDesign, setCurrentDesign] = useState(null);
   // Internal state for selected cable size (for immediate UI feedback)
   const [localSelectedCableSize, setLocalSelectedCableSize] = useState(1);
@@ -189,48 +199,49 @@ export const ConfigPanel = ({
     // Map of designs to their available shades
     const shadeOptions = {
       // Universal system shades
-      'universal': {
-        'atom': [
-          { id: 'shallowdome', name: 'Shallow Dome', color: '#2B2D2F' },
-          { id: 'deepdome', name: 'Deep Dome', color: '#50C878' },
-          { id: 'flatplate', name: 'Flat Plate', color: '#87CEAB' }
-        ],
-        'nebula': [
-          { id: 'cone', name: 'Cone', color: '#2B2D2F' },
-          { id: 'cylinder', name: 'Cylinder', color: '#50C878' }
-        ],
-        'cosmos': [
-          { id: 'sphere', name: 'Sphere', color: '#2B2D2F' },
-          { id: 'hemisphere', name: 'Hemisphere', color: '#50C878' },
-          { id: 'disc', name: 'Disc', color: '#87CEAB' },
-          { id: 'ring', name: 'Ring', color: '#F2F0E6' }
-        ],
-        'stellar': [
-          { id: 'pyramid', name: 'Pyramid', color: '#2B2D2F' },
-          { id: 'cube', name: 'Cube', color: '#50C878' },
-          { id: 'prism', name: 'Prism', color: '#87CEAB' }
-        ],
-        'eclipse': [
-          { id: 'oval', name: 'Oval', color: '#2B2D2F' },
-          { id: 'rectangle', name: 'Rectangle', color: '#50C878' }
-        ]
-      },
-      // Bar system shades
-      'bar': {
-        'prism': [
-          { id: 'standard', name: 'Standard', color: '#2B2D2F' },
-          { id: 'extended', name: 'Extended', color: '#50C878' }
-        ],
-        'helix': [
-          { id: 'single', name: 'Single', color: '#2B2D2F' },
-          { id: 'double', name: 'Double', color: '#50C878' },
-          { id: 'triple', name: 'Triple', color: '#87CEAB' }
-        ]
-      }
+      // 'universal': {
+      //   'atom': [
+      //     { id: 'shallowdome', name: 'Shallow Dome', color: '#2B2D2F' },
+      //     { id: 'deepdome', name: 'Deep Dome', color: '#50C878' },
+      //     { id: 'flatplate', name: 'Flat Plate', color: '#87CEAB' }
+      //   ],
+      //   'nebula': [
+      //     { id: 'cone', name: 'Cone', color: '#2B2D2F' },
+      //     { id: 'cylinder', name: 'Cylinder', color: '#50C878' }
+      //   ],
+      //   'cosmos': [
+      //     { id: 'sphere', name: 'Sphere', color: '#2B2D2F' },
+      //     { id: 'hemisphere', name: 'Hemisphere', color: '#50C878' },
+      //     { id: 'disc', name: 'Disc', color: '#87CEAB' },
+      //     { id: 'ring', name: 'Ring', color: '#F2F0E6' }
+      //   ],
+      //   'stellar': [
+      //     { id: 'pyramid', name: 'Pyramid', color: '#2B2D2F' },
+      //     { id: 'cube', name: 'Cube', color: '#50C878' },
+      //     { id: 'prism', name: 'Prism', color: '#87CEAB' }
+      //   ],
+      //   'eclipse': [
+      //     { id: 'oval', name: 'Oval', color: '#2B2D2F' },
+      //     { id: 'rectangle', name: 'Rectangle', color: '#50C878' }
+      //   ]
+      // },
+      // // Bar system shades
+      // 'bar': {
+      //   'prism': [
+      //     { id: 'standard', name: 'Standard', color: '#2B2D2F' },
+      //     { id: 'extended', name: 'Extended', color: '#50C878' }
+      //   ],
+      //   'helix': [
+      //     { id: 'single', name: 'Single', color: '#2B2D2F' },
+      //     { id: 'double', name: 'Double', color: '#50C878' },
+      //     { id: 'triple', name: 'Triple', color: '#87CEAB' }
+      //   ]
+      // }
     };
     
     // Check if this design has shade options
     if (systemType && shadeOptions[systemType] && shadeOptions[systemType][designId]) {
+
       return shadeOptions[systemType][designId];
     }
     
@@ -255,7 +266,7 @@ export const ConfigPanel = ({
       config.items = [
         { id: 'pendant', name: 'Pendant', image: '/images/configOptions/pendant.png' },
         { id: 'system', name: 'System', image: '/images/configOptions/system.png' },
-        { id: 'cableSize', name: 'Cable Size', image: '/images/configOptions/cable_size.png' }
+        // { id: 'cableSize', name: 'Cable Size', image: '/images/configOptions/cable_size.png' }
       ];
       config.onItemSelect = onSelectConfigurationType;
       config.selectedItem = null;
@@ -306,6 +317,10 @@ export const ConfigPanel = ({
         // Use all selected pendants if available, otherwise fall back to just the first one
         const pendantsToUpdate = selectedPendants && selectedPendants.length > 0 ? selectedPendants : [selectedLocation];
         onPendantDesignChange(pendantsToUpdate, itemId);
+        // Always hide and clear shade panel for pendants
+        setShowShades(false);
+        setAvailableShades([]);
+        setLocalSelectedShade(null);
       };
       config.selectedItem = currentDesign;
       config.breadcrumbItems = [
@@ -633,7 +648,7 @@ export const ConfigPanel = ({
       </motion.div>
       
       {/* Arrow between boxes */}
-      {showShades && (
+      {configuringType === 'system' && showShades && (
         <div className="absolute bottom-[7%] left-1/2 sm:left-[60.5%] z-50">
           <div className="flex items-center justify-center rounded-full p-1">
             <FaArrow className="text-[#2C3539]" size={26} />
@@ -642,8 +657,7 @@ export const ConfigPanel = ({
       )}
       
       {/* Shade selection panel */}
-      {
-      showShades && (
+      {configuringType === 'system' && showShades && (
         <motion.div
           className={`fixed sm:absolute bottom-[72px] sm:bottom-4 left-1/2 sm:left-[63%] -translate-x-1/2 bg-black/90 backdrop-blur-sm border border-gray-800 rounded-t-lg sm:rounded-lg z-50 w-full max-w-[350px] sm:max-w-[280px] h-auto shadow-lg pointer-events-auto ${className}`}
           initial={{ x: -20, opacity: 0 }}
@@ -663,7 +677,6 @@ export const ConfigPanel = ({
                 {currentShade && `#${availableShades.findIndex(s => s.id === currentShade) + 1}`}
               </div>
             </div>
-            
             {/* Shades carousel */}
             <div className="relative">
               <button
