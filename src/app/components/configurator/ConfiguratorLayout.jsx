@@ -57,7 +57,10 @@ const handleCableSizeChange = (size, selectedCables) => {
     });
     return updated;
   });
-  sendMessageToPlayCanvas(`cable_size:${size}`);
+  // Send a message for each selected cable
+  (selectedCables || []).forEach(idx => {
+    sendMessageToPlayCanvas(`cable_${idx}:size_${size}`);
+  });
 };
   
   
