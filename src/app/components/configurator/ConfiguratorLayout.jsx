@@ -46,8 +46,9 @@ const ConfiguratorLayout = () => {
     shades: {}, // Store shade selections for each pendant/system base
 
   });
-  const [cables, setCables] = useState([]);
+  const [cables, setCables] = useState([{isSystem:false,systemType:"",design:"Radial",designId:"product_2",size:"2mm"}]);
 
+  console.log(config)
 // Handler for cable size change
 const handleCableSizeChange = (size, selectedCables) => {
   setCables(prev => {
@@ -169,7 +170,7 @@ const handleShadeSelect = (designId, shadeId, systemType, shadeIndex) => {
       
       setLastCeilingLightAmount(config.lightAmount);
       setLastRoundBaseLightAmount(config.lightAmount);
-      
+      console.log("playCanvasReadyRef",playCanvasReadyRef)
       // Send initial messages to PlayCanvas if no configId in URL
       if (playCanvasReadyRef.current) {
         // Send default configuration messages
@@ -186,7 +187,7 @@ const handleShadeSelect = (designId, shadeId, systemType, shadeIndex) => {
                         pendant.design === 'piko' ? 'product_5' : 'product_2';
           
           setCables(prev => [...prev, { isSystem: false, systemType: "", design: pendant.design, designId: productId }]);
-          
+          console.log("cables",cables)
           sendMessageToPlayCanvas(`cable_${index}:${productId}`);
         });
       }
@@ -196,35 +197,35 @@ const handleShadeSelect = (designId, shadeId, systemType, shadeIndex) => {
 
 
   // Update pendants when light amount changes
-  useEffect(() => {
-    // Only update if we already have pendants initialized
-    if (config.pendants.length > 0) {
-      let updatedPendants = [...config.pendants];
+  // useEffect(() => {
+  //   // Only update if we already have pendants initialized
+  //   if (config.pendants.length > 0) {
+  //     let updatedPendants = [...config.pendants];
       
-      if (config.lightAmount > config.pendants.length) {
-        // Add new pendants
-        const designOptions = ['bumble', 'radial', 'fina', 'ico', 'piko'];
+  //     if (config.lightAmount > config.pendants.length) {
+  //       // Add new pendants
+  //       const designOptions = ['bumble', 'radial', 'fina', 'ico', 'piko'];
         
-        for (let i = config.pendants.length; i < config.lightAmount; i++) {
-          updatedPendants.push({
-            id: i,
-            design: designOptions[Math.floor(Math.random() * designOptions.length)],
-          });
-          const productId = designOptions[Math.floor(Math.random() * designOptions.length)] === 'bumble' ? 'product_1' : 
-          designOptions[Math.floor(Math.random() * designOptions.length)] === 'radial' ? 'product_2' : 
-          designOptions[Math.floor(Math.random() * designOptions.length)] === 'fina' ? 'product_3' : 
-          designOptions[Math.floor(Math.random() * designOptions.length)] === 'ico' ? 'product_4' : 
-          designOptions[Math.floor(Math.random() * designOptions.length)] === 'piko' ? 'product_5' : 'product_2';
-          setCables(prev => [...prev, { isSystem: false, systemType: "", design: designOptions[Math.floor(Math.random() * designOptions.length)], designId: productId }]);
-        }
-      } else if (config.lightAmount < config.pendants.length) {
-        // Remove excess pendants
-        updatedPendants = updatedPendants.slice(0, config.lightAmount);
-      }
+  //       for (let i = config.pendants.length; i < config.lightAmount; i++) {
+  //         updatedPendants.push({
+  //           id: i,
+  //           design: designOptions[Math.floor(Math.random() * designOptions.length)],
+  //         });
+  //         const productId = designOptions[Math.floor(Math.random() * designOptions.length)] === 'bumble' ? 'product_1' : 
+  //         designOptions[Math.floor(Math.random() * designOptions.length)] === 'radial' ? 'product_2' : 
+  //         designOptions[Math.floor(Math.random() * designOptions.length)] === 'fina' ? 'product_3' : 
+  //         designOptions[Math.floor(Math.random() * designOptions.length)] === 'ico' ? 'product_4' : 
+  //         designOptions[Math.floor(Math.random() * designOptions.length)] === 'piko' ? 'product_5' : 'product_2';
+  //         setCables(prev => [...prev, { isSystem: false, systemType: "", design: designOptions[Math.floor(Math.random() * designOptions.length)], designId: productId }]);
+  //       }
+  //     } else if (config.lightAmount < config.pendants.length) {
+  //       // Remove excess pendants
+  //       updatedPendants = updatedPendants.slice(0, config.lightAmount);
+  //     }
       
-      setConfig(prev => ({ ...prev, pendants: updatedPendants }));
-    }
-  }, [config.lightAmount]);
+  //     setConfig(prev => ({ ...prev, pendants: updatedPendants }));
+  //   }
+  // }, [config.lightAmount]);
 
   // Listen for app:ready1 message from PlayCanvas iframe
   useEffect(() => {
@@ -599,8 +600,8 @@ const handleShadeSelect = (designId, shadeId, systemType, shadeIndex) => {
       sendMessageToPlayCanvas(`cable_1:system_base_2`);
       sendMessageToPlayCanvas(`cable_2:product_2`);
       setCables([
-        { isSystem: false, systemType: "", design: "Radial", designId: "product_2" },
-        { isSystem: false, systemType: "", design: "Radial", designId: "product_2" },
+        { isSystem: true, systemType: "bar", design: "Helix", designId: "product_2" },
+        { isSystem: true, systemType: "bar", design: "Helix", designId: "product_2" },
         { isSystem: false, systemType: "", design: "Radial", designId: "product_2" },
       ]);
     } else {
@@ -768,18 +769,6 @@ const handleShadeSelect = (designId, shadeId, systemType, shadeIndex) => {
   const handleSaveConfig = (configParam,cablesParam) => {
     
     
-    // Log all configuration details
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     // Check if user is logged in
     if (!isLoggedIn) {
       toast.info('Please log in to save your configuration');
@@ -836,11 +825,11 @@ const handleShadeSelect = (designId, shadeId, systemType, shadeIndex) => {
 
     const iframeMessagesArray = [];
     iframeMessagesArray.push(`light_type:${config.lightType}`);
-    iframeMessagesArray.push(`light_amount:${config.lightAmount}`);
+
     if (config.baseType) {
       iframeMessagesArray.push(`base_type:${config.baseType}`);
     }
-
+    iframeMessagesArray.push(`light_amount:${config.lightAmount}`);
     if (configToSave.cables && Array.isArray(configToSave.cables)) {
       configToSave.cables.forEach((cable, i) => {
         if (cable.isSystem) {
@@ -870,7 +859,8 @@ const handleShadeSelect = (designId, shadeId, systemType, shadeIndex) => {
     const uiConfig = {
       light_type: config.lightType.charAt(0).toUpperCase() + config.lightType.slice(1),
       light_amount: config.lightAmount,
-      cables: {}
+      cables: {},
+      cableConfig: cables,
     };
     
     if (config.baseType) {
@@ -902,12 +892,13 @@ const handleShadeSelect = (designId, shadeId, systemType, shadeIndex) => {
         public_id:""
       }, // Will be updated after screenshot upload
       config: uiConfig, // UI-friendly structured data for display
+      
       user_id: user?.data?._id || "", // Get user_id from Redux store
       iframe: iframeMessagesArray, // Raw messages from iframe in sequence
 
     };
     
-    
+    console.log("apiPayload",apiPayload)
     
     try {
       // Get dashboardToken from localStorage
@@ -997,7 +988,7 @@ const handleShadeSelect = (designId, shadeId, systemType, shadeIndex) => {
     
     // Start sending messages
     sendMessagesInSequence(configData.iframe);
-    
+    console.log("configData",configData)
     // Update local config state based on loaded configuration
     const lightType = configData.config.light_type.toLowerCase();
     const baseType = configData.config.base_type?.toLowerCase() || 'round';
@@ -1013,6 +1004,7 @@ const handleShadeSelect = (designId, shadeId, systemType, shadeIndex) => {
       baseColor,
       // We don't need to update pendants or other details as they will be handled by the iframe messages
     }));
+    setCables(configData.config.cableConfig);
   };
   
   // Container ref for PlayCanvas viewer
@@ -1037,6 +1029,7 @@ const handleShadeSelect = (designId, shadeId, systemType, shadeIndex) => {
           setConfigFromUrl(data);
           // Don't call handleLoadSpecificConfig yet - wait for app:ready1
           // Just keep the loading state active
+     
         })
         .catch(error => {
           console.error('Error loading configuration from URL:', error);
@@ -1119,6 +1112,7 @@ const handleShadeSelect = (designId, shadeId, systemType, shadeIndex) => {
             activeStep={activeStep} 
             setActiveStep={setActiveStep} 
             config={config}
+            cables={cables}
             onLightTypeChange={handleLightTypeChange}
             onBaseTypeChange={handleBaseTypeChange}
             onBaseColorChange={handleBaseColorChange}

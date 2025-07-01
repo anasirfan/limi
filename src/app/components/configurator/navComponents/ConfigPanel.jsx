@@ -24,6 +24,16 @@ export const ConfigPanel = ({
   onClose,
   className = '' // Add className prop with default empty string
 }) => {
+  // Clear shade state when entering pendant mode (defensive, avoids render loop)
+  // Only runs when configuringType changes
+  useEffect(() => {
+    if (configuringType === 'pendant') {
+      setShowShades(false);
+      setAvailableShades([]);
+      setLocalSelectedShade(null);
+    }
+  }, [configuringType]);
+
   const [currentDesign, setCurrentDesign] = useState(null);
   // Internal state for selected cable size (for immediate UI feedback)
   const [localSelectedCableSize, setLocalSelectedCableSize] = useState(1);
@@ -160,21 +170,29 @@ export const ConfigPanel = ({
     setNavState(newState);
   };
   const carouselRef = useRef(null);
+  // Separate ref for shade carousel
+  const shadeCarouselRef = useRef(null);
   
   const getCurrentConfig = () => {
     const config = getPanelConfig();
     SetcurrentConfig(config);
   };
   
-  // Carousel scroll functionality
+  // Carousel scroll functionality for main design slider
   const scrollCarousel = (direction) => {
     if (carouselRef.current) {
       const scrollAmount = direction === 'left' ? -200 : 200;
       carouselRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
   };
-  
 
+  // Carousel scroll functionality for shade slider (separate)
+  const scrollShadeCarousel = (direction) => {
+    if (shadeCarouselRef.current) {
+      const scrollAmount = direction === 'left' ? -200 : 200;
+      shadeCarouselRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
 
   // Check if the selected design has multiple shades
   const checkForMultipleShades = (designId, systemType) => {
@@ -223,6 +241,7 @@ export const ConfigPanel = ({
     
     // Check if this design has shade options
     if (systemType && shadeOptions[systemType] && shadeOptions[systemType][designId]) {
+
       return shadeOptions[systemType][designId];
     }
     
@@ -298,6 +317,10 @@ export const ConfigPanel = ({
         // Use all selected pendants if available, otherwise fall back to just the first one
         const pendantsToUpdate = selectedPendants && selectedPendants.length > 0 ? selectedPendants : [selectedLocation];
         onPendantDesignChange(pendantsToUpdate, itemId);
+        // Always hide and clear shade panel for pendants
+        setShowShades(false);
+        setAvailableShades([]);
+        setLocalSelectedShade(null);
       };
       config.selectedItem = currentDesign;
       config.breadcrumbItems = [
@@ -625,7 +648,7 @@ export const ConfigPanel = ({
       </motion.div>
       
       {/* Arrow between boxes */}
-      {showShades && (
+      {configuringType === 'system' && showShades && (
         <div className="absolute bottom-[7%] left-1/2 sm:left-[60.5%] z-50">
           <div className="flex items-center justify-center rounded-full p-1">
             <FaArrow className="text-[#2C3539]" size={26} />
@@ -634,8 +657,7 @@ export const ConfigPanel = ({
       )}
       
       {/* Shade selection panel */}
-      {
-      showShades && (
+      {configuringType === 'system' && showShades && (
         <motion.div
           className={`fixed sm:absolute bottom-[72px] sm:bottom-4 left-1/2 sm:left-[63%] -translate-x-1/2 bg-black/90 backdrop-blur-sm border border-gray-800 rounded-t-lg sm:rounded-lg z-50 w-full max-w-[350px] sm:max-w-[280px] h-auto shadow-lg pointer-events-auto ${className}`}
           initial={{ x: -20, opacity: 0 }}
@@ -655,18 +677,17 @@ export const ConfigPanel = ({
                 {currentShade && `#${availableShades.findIndex(s => s.id === currentShade) + 1}`}
               </div>
             </div>
-            
             {/* Shades carousel */}
             <div className="relative">
               <button
                 className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-[#2B2D2F] text-white rounded-full p-1 shadow hover:bg-emerald-700 transition"
                 style={{ left: 0 }}
-                onClick={() => scrollCarousel('left')}
+                onClick={() => scrollShadeCarousel('left')}
                 aria-label="Scroll left"
               >
                 <FaChevronLeft size={16} />
               </button>
-              <div className="flex gap-2 overflow-x-auto scrollbar-hide py-1 px-6 sm:px-10 max-w-full" ref={carouselRef}>
+              <div className="flex gap-2 overflow-x-auto scrollbar-hide py-1 px-6 sm:px-10 max-w-full" ref={shadeCarouselRef}>
                 {availableShades.map((shade, index) => (
                   <div key={shade.id} className="flex flex-col items-center">
                     <button
@@ -693,7 +714,7 @@ export const ConfigPanel = ({
               <button
                 className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-[#2B2D2F] text-white rounded-full p-1 shadow hover:bg-emerald-700 transition"
                 style={{ right: 0 }}
-                onClick={() => scrollCarousel('right')}
+                onClick={() => scrollShadeCarousel('right')}
                 aria-label="Scroll right"
               >
                 <FaChevronRight size={16} />
