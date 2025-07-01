@@ -62,7 +62,7 @@ export default function CommunitySection() {
         'LIMI Collective': 'LIMI_Collective'
       };
       
-      const response = await fetch('http://dev.api1.limitless-lighting.co.uk/client/user/community/subscribe', {
+      const response = await fetch('https://dev.api1.limitless-lighting.co.uk/client/user/community/subscribe', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
