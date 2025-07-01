@@ -484,7 +484,7 @@ export const ConfigPanel = ({
         exit={isMobileView ? { y: '100%', opacity: 0 } : { y: 30, opacity: 0 }}
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
       >
-      <div className="px-2 sm:px-3 pt-2">
+      <div className="px-2 sm:px-2 pt-2">
       
           {/* Responsive header */}
           <div className="flex items-center justify-between mb-2">
