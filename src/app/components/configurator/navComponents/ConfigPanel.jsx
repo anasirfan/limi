@@ -492,7 +492,28 @@ export const ConfigPanel = ({
 
         
         
-        {/* Items carousel */}
+        {/* Items carousel or cable size segmented control */}
+        {configuringType === 'cableSize' ? (
+          <div className="flex flex-col gap-2 w-full">
+            <label className="text-sm font-semibold text-gray-400 mb-1">Length</label>
+            <div className="flex w-full bg-[#2B2D2F] rounded-full p-1 justify-between">
+              {[1, 2, 3, 4, 5, 6].map(size => (
+                <button
+                  key={size}
+                  onClick={() => panelConfig.onItemSelect(size)}
+                  className={`flex-1 py-2 rounded-full font-semibold transition text-sm
+                    ${panelConfig.selectedItem === size
+                      ? 'bg-[#50C878] text-[#F6F6F6] shadow' // charleston green bg, light text
+                      : 'bg-transparent text-[#50C878] hover:bg-[#E3F9EF]'} // charleston green text, emerald-tinted hover
+                  `}
+                  style={{ margin: '0 2px' }}
+                >
+                  {size}mm
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : (
         <div className="relative w-full">
           {panelConfig.items.length > (isMobileView ? 2 : 3) && (
             <div className="absolute left-0 top-1/2 -translate-y-1/2 z-10">
@@ -560,6 +581,7 @@ export const ConfigPanel = ({
             </div>
           )}
         </div>
+      )}
       </div>
       </motion.div>
       
