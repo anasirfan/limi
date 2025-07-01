@@ -47,6 +47,18 @@ console.log(user)
 
   });
   const [cables, setCables] = useState([]);
+
+// Handler for cable size change
+const handleCableSizeChange = (size, selectedCables) => {
+  setCables(prev => {
+    const updated = [...prev];
+    (selectedCables || []).forEach(idx => {
+      if (updated[idx]) updated[idx] = { ...updated[idx], size };
+    });
+    return updated;
+  });
+  sendMessageToPlayCanvas(`cable_size:${size}`);
+};
   
   
   // Preview mode state
@@ -1177,6 +1189,7 @@ console.log("cables",cables)
             breadcrumbPath={breadcrumbPath}
             onBreadcrumbNavigation={handleBreadcrumbNavigation}
             onSystemTypeSelection={handleIndividualSystemTypeSelection}
+            onCableSizeChange={handleCableSizeChange}
           />
           }
           

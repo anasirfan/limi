@@ -13,7 +13,7 @@ import {
   SaveConfigurationModal,
   useNavSteps,
   useNavDropdown,
-  usePendantSelection
+  usePendantSelection,
 } from './navComponents';
 import { IndividualConfigurationPanel } from './navComponents/IndividualConfigurationPanel';
 import { ConfigPanel } from './navComponents/ConfigPanel';
@@ -23,6 +23,7 @@ const VerticalNavBar = ({
   setActiveStep, 
   config,
   cables, // Add cables prop
+  onCableSizeChange, // Add cable size change handler
   onLightTypeChange,
   onBaseTypeChange,
   onBaseColorChange,
@@ -372,6 +373,8 @@ const VerticalNavBar = ({
             onSystemTypeSelection={onSystemTypeSelection}
             selectedLocation={selectedPendants[0]}
             selectedPendants={selectedPendants}
+            cables={cables}
+            onCableSizeChange={onCableSizeChange}
             onPendantDesignChange={onPendantDesignChange}
             onSystemBaseDesignChange={onSystemBaseDesignChange}
             onShadeSelect={() => {}}

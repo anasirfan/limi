@@ -20,10 +20,30 @@ export const ConfigPanel = ({
   onSelectConfigurationType,
   onShadeSelect,
   currentShade,
+  onCableSizeChange, // NEW PROP
   onClose,
   className = '' // Add className prop with default empty string
 }) => {
   const [currentDesign, setCurrentDesign] = useState(null);
+  // Internal state for selected cable size (for immediate UI feedback)
+  const [localSelectedCableSize, setLocalSelectedCableSize] = useState(1);
+
+  // Sync localSelectedCableSize with props when relevant data changes
+  useEffect(() => {
+    if (configuringType === 'cableSize') {
+      let selectedCableSize = 1;
+      if (selectedPendants && selectedPendants.length > 0 && cables && cables.length > 0) {
+        const idx = selectedPendants[0];
+        if (typeof idx === 'number' && cables[idx] && cables[idx].size) {
+          selectedCableSize = cables[idx].size;
+        }
+      } else if (typeof selectedLocation === 'number' && cables && cables[selectedLocation] && cables[selectedLocation].size) {
+        selectedCableSize = cables[selectedLocation].size;
+      }
+      setLocalSelectedCableSize(selectedCableSize);
+    }
+  }, [configuringType, selectedPendants, selectedLocation, cables]);
+
   
   // Track navigation state for breadcrumb
   const [navState, setNavState] = useState({
@@ -180,13 +200,41 @@ export const ConfigPanel = ({
       config.showBreadcrumb = false;
       config.items = [
         { id: 'pendant', name: 'Pendant', image: '/images/configOptions/pendant.png' },
-        { id: 'system', name: 'System', image: '/images/configOptions/system.png' }
+        { id: 'system', name: 'System', image: '/images/configOptions/system.png' },
+        { id: 'cableSize', name: 'Cable Size', image: '/images/configOptions/cable_size.png' }
       ];
       config.onItemSelect = onSelectConfigurationType;
       config.selectedItem = null;
       config.useIcon = true;
       config.showCloseButton = true;
       config.showLocationLabel = true;
+    }
+    // Cable Size selection panel
+    else if (configuringType === 'cableSize') {
+      config.title = "Cable Size";
+      config.showBreadcrumb = true;
+      // Use localSelectedCableSize for immediate UI feedback
+      config.items = [1, 2, 3, 4, 5, 6].map(size => ({
+        id: size,
+        name: `${size} mm`,
+        image: `/images/configOptions/cable_size_${size}.png`
+      }));
+      config.onItemSelect = (size) => {
+        setLocalSelectedCableSize(size); // Update UI immediately
+        let cablesToUpdate = [];
+        if (selectedPendants && selectedPendants.length > 0) {
+          cablesToUpdate = selectedPendants.filter(idx => typeof idx === 'number');
+        } else if (typeof selectedLocation === 'number') {
+          cablesToUpdate = [selectedLocation];
+        }
+        console.log('[CableSize] Clicked size:', size, 'Cables to update:', cablesToUpdate);
+        if (onCableSizeChange && cablesToUpdate.length > 0) onCableSizeChange(size, cablesToUpdate);
+      };
+      config.selectedItem = localSelectedCableSize;
+      config.breadcrumbItems = [
+        { id: 'home', name: 'icon-home' },
+        { id: 'cableSize', name: 'Cable Size' }
+      ];
     }
     // Pendant Design Selection
     else if (configuringType === 'pendant') {
