@@ -1,9 +1,10 @@
 import { motion } from 'framer-motion';
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
-import { FaChevronLeft, FaChevronRight, FaCheck, FaCubes, FaLightbulb, FaTimes, FaChevronRight as FaArrow } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight, FaCheck, FaTimes } from 'react-icons/fa';
 import { Breadcrumb } from './Breadcrumb';
 import BaseColorPanel from './BaseColorPanel';
+import { FaArrow } from 'react-icons/fa';
 
 export const ConfigPanel = ({
   configuringType,
@@ -647,77 +648,90 @@ export const ConfigPanel = ({
       </div>
       </motion.div>
       
-      {/* Arrow between boxes */}
-      {configuringType === 'system' && showShades && (
-        <div className="absolute bottom-[7%] left-1/2 sm:left-[60.5%] z-50">
-          <div className="flex items-center justify-center rounded-full p-1">
-            <FaArrow className="text-[#2C3539]" size={26} />
-          </div>
-        </div>
-      )}
+   
       
       {/* Shade selection panel */}
       {configuringType === 'system' && showShades && (
         <motion.div
-          className={`fixed sm:absolute bottom-[72px] sm:bottom-4 left-1/2 sm:left-[63%] -translate-x-1/2 bg-black/90 backdrop-blur-sm border border-gray-800 rounded-t-lg sm:rounded-lg z-50 w-full max-w-[350px] sm:max-w-[280px] h-auto shadow-lg pointer-events-auto ${className}`}
-          initial={{ x: -20, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          exit={{ x: -20, opacity: 0 }}
-          transition={{ type: 'spring', damping: 25 }}
+          className="sm:absolute sm:bottom-[15%] absolute w-[300px] bg-black/95 backdrop-blur-md border border-gray-700/50 rounded-t-2xl sm:rounded-xl z-50 shadow-2xl pointer-events-auto transition-all duration-300"
+          initial={{ y: '100%', opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: '100%', opacity: 0 }}
+          transition={{ type: 'spring', damping: 25, stiffness: 200 }}
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="px-3 py-3 sm:py-4">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center">
-                <h3 className="text-xs font-medium text-white font-['Amenti']">
-                  {currentDesign && currentDesign.charAt(0).toUpperCase() + currentDesign.slice(1)} Shades
-                </h3>
-              </div>
-              <div className="text-xs text-emerald-500 font-medium">
-                {currentShade && `#${availableShades.findIndex(s => s.id === currentShade) + 1}`}
-              </div>
-            </div>
-            {/* Shades carousel */}
-            <div className="relative">
+          <div className="">
+            <div className="flex items-center justify-end">
               <button
-                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-[#2B2D2F] text-white rounded-full p-1 shadow hover:bg-emerald-700 transition"
-                style={{ left: 0 }}
-                onClick={() => scrollShadeCarousel('left')}
-                aria-label="Scroll left"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowShades(false);
+                }}
+                className="p-1.5 rounded-full hover:bg-gray-700/80 text-gray-300 hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-400/50"
+                aria-label="Close shade selector"
               >
-                <FaChevronLeft size={16} />
+                <FaTimes className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
-              <div className="flex gap-2 overflow-x-auto scrollbar-hide py-1 px-6 sm:px-10 max-w-full" ref={shadeCarouselRef}>
-                {availableShades.map((shade, index) => (
-                  <div key={shade.id} className="flex flex-col items-center">
-                    <button
-                      type="button"
-                      className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden relative focus:outline-none ${localSelectedShade === shade.id ? 'ring-2 ring-emerald-500' : ''}`}
-                      onClick={() => handleShadeSelect(shade, index)}
-                    >
-                      <div
-                        className="w-full h-full flex items-center justify-center"
-                        style={{ backgroundColor: shade.color || '#2C3539', color: 'white' }}
-                      >
-                        <p className="text-base sm:text-lg font-bold">{index + 1}</p>
-                      </div>
-                      {localSelectedShade === shade.id && (
-                        <div className="absolute inset-0 bg-emerald-500/20 flex items-center justify-center">
-                          <FaCheck className="text-white text-xs" />
-                        </div>
-                      )}
-                    </button>
-                    <p className={`text-center text-xs sm:text-[10px] mt-0.5 text-gray-300 capitalize`}>{shade.name}</p>
-                  </div>
-                ))}
-              </div>
+            </div>
+            
+            {/* Shades carousel */}
+            <div className="relative flex items-center justify-between gap-2">
               <button
-                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-[#2B2D2F] text-white rounded-full p-1 shadow hover:bg-emerald-700 transition"
-                style={{ right: 0 }}
-                onClick={() => scrollShadeCarousel('right')}
-                aria-label="Scroll right"
+                className="hidden sm:flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-gray-800/80 hover:bg-emerald-600 text-white rounded-full p-2 shadow-lg transition-all duration-200 transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-opacity-50"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  scrollShadeCarousel('left');
+                }}
+                aria-label="Previous shade"
               >
-                <FaChevronRight size={16} />
+                <FaChevronLeft className="w-3 h-3 sm:w-4 sm:h-4" />
+              </button>
+              
+              <div 
+                className="flex-1 overflow-x-auto scrollbar-hide px-4 sm:px-0"
+                ref={shadeCarouselRef}
+              >
+                <div className="flex gap-3 sm:gap-2 w-max mx-auto py-2">
+                  {availableShades.map((shade, index) => (
+                    <div key={shade.id} className="flex flex-col items-center flex-shrink-0">
+                      <button
+                        type="button"
+                        className={`w-11 h-11 sm:w-12 sm:h-12 rounded-full overflow-hidden relative focus:outline-none transition-transform duration-200 hover:scale-105 active:scale-95 ${localSelectedShade === shade.id ? 'ring-3 ring-emerald-400 shadow-lg' : 'ring-1 ring-gray-600 hover:ring-2 hover:ring-emerald-400/50'}`}
+                        onClick={() => handleShadeSelect(shade, index)}
+                        aria-label={`Select shade ${shade.name}`}
+                      >
+                        <div
+                          className="w-full h-full flex items-center justify-center transition-all duration-200 hover:brightness-110"
+                          style={{ 
+                            backgroundColor: shade.color || '#2C3539',
+                            color: 'rgba(255, 255, 255, 0.9)'
+                          }}
+                        >
+                          <p className="text-base sm:text-lg font-bold drop-shadow-md">{index + 1}</p>
+                        </div>
+                        {localSelectedShade === shade.id && (
+                          <div className="absolute inset-0 bg-emerald-500/20 flex items-center justify-center">
+                            <FaCheck className="text-white text-xs sm:text-sm" />
+                          </div>
+                        )}
+                      </button>
+                      <p className="text-center text-xs sm:text-sm font-medium mt-2 text-gray-300 capitalize tracking-wide">
+                        {shade.name}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              <button
+                className="hidden sm:flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-gray-800/80 hover:bg-emerald-600 text-white rounded-full p-2 shadow-lg transition-all duration-200 transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-opacity-50"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  scrollShadeCarousel('right');
+                }}
+                aria-label="Next shade"
+              >
+                <FaChevronRight className="w-3 h-3 sm:w-4 sm:h-4" />
               </button>
             </div>
           </div>

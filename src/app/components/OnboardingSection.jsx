@@ -47,6 +47,11 @@ export default function OnboardingSection() {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
+  //random funtion for pendants
+  const getRandomProduct = () => {
+    const products = ['product_1', 'product_2', 'product_3', 'product_4', 'product_5'];
+    return products[Math.floor(Math.random() * products.length)];
+  };
   // Handle iframe messages
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -205,13 +210,13 @@ export default function OnboardingSection() {
               for (let i = 0; i < lightAmount; i++) {
                 if (lightAmount === "1") {
                   iframeRef.current.contentWindow.postMessage(
-                    `cable_0:product_2`,
+                    `cable_0:${getRandomProduct()}`,
                     "*"
                   );
                   break;
                 }
                 iframeRef.current.contentWindow.postMessage(
-                  `cable_${i}:product_2`,
+                  `cable_${i}:${getRandomProduct()}`,
                   "*"
                 );
               }
@@ -223,7 +228,7 @@ export default function OnboardingSection() {
               );
               for (let i = 0; i < 3; i++) {
                 iframeRef.current.contentWindow.postMessage(
-                  `cable_${i}:product_2`,
+                  `cable_${i}:${getRandomProduct()}`,
                   "*"
                 );
               }
@@ -257,18 +262,18 @@ export default function OnboardingSection() {
                   "*"
                 );
                 iframeRef.current.contentWindow.postMessage(
-                  `cable_0:${pendantDesign}`,
+                  `cable_0:${getRandomProduct()}`,
                   "*"
                 );
                 break;
               } else if (currentType === "floor") {
                 iframeRef.current.contentWindow.postMessage(
-                  `cable_${i}:${pendantDesign}`,
+                  `cable_${i}:${getRandomProduct()}`,
                   "*"
                 );
               } else {
                 iframeRef.current.contentWindow.postMessage(
-                  `cable_${i}:${pendantDesign}`,
+                  `cable_${i}:${getRandomProduct()}`,
                   "*"
                 );
               }
