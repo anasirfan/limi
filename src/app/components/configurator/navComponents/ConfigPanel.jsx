@@ -114,6 +114,7 @@ export const ConfigPanel = ({
     }
     if (typeof onShadeSelect === 'function') {
       onShadeSelect(designId, shade.id, configuringSystemType, shadeIndex);
+      
     }
   };
 
@@ -389,44 +390,99 @@ export const ConfigPanel = ({
         // Get the appropriate bases for the selected system type
         const systemTypeBases = baseOptions[configuringSystemType] || [];
         
-        // Create items with images from the type-specific folder
-        config.items = systemTypeBases.map(base => ({
-          id: base.id,
-          name: base.name,
-          image: base.image,
-          baseNumber: base.baseNumber // Store the base number for sending to PlayCanvas
-        }));
-        
-        config.onItemSelect = (itemId) => {
-          setCurrentDesign(itemId);
-          // Find the selected base to get its baseNumber
-          const selectedBase = config.items.find(item => item.id === itemId);
-          
-          // Check if this design has multiple shades
-          const shades = checkForMultipleShades(itemId, configuringSystemType);
+        // Create items with images from the type-specific folder, and attach shades if available
+        config.items = systemTypeBases.map(base => {
+          const shades = checkForMultipleShades(base.id, configuringSystemType);
+          return {
+            id: base.id,
+            name: base.name,
+            image: base.image,
+            baseNumber: base.baseNumber,
+            shades: shades || null
+          };
+        });
+
+        // If a base is selected and it has shades, show those as the next options (inside the same panel)
+        if (currentDesign) {
+          const selectedBase = config.items.find(item => item.id === currentDesign);
+          const shades = selectedBase && selectedBase.shades;
+
           if (shades && shades.length > 0) {
-            setAvailableShades(shades);
-            setShowShades(true);
-            setLocalSelectedShade(shades[0].id);
-            if (typeof onShadeSelect === 'function') {
-              onShadeSelect(itemId, shades[0].id, configuringSystemType, 0);
-            }
+            // Replace items with shades for this step
+            config.items = shades.map((shade, idx) => ({
+              ...shade,
+              id: shade.id,
+              name: shade.name,
+              color: shade.color,
+              index: idx
+            }));
+            config.onItemSelect = (shadeId) => {
+              setLocalSelectedShade(shadeId);
+              if (typeof onShadeSelect === 'function') {
+                onShadeSelect(selectedBase.baseNumber, shadeId, configuringSystemType, config.items.findIndex(s => s.id === shadeId));
+                console.log('Shade selected:', { designId: selectedBase.baseNumber, shadeId, systemType: configuringSystemType, shadeIndex: config.items.findIndex(s => s.id === shadeId) });
+              }
+            };
+            config.selectedItem = localSelectedShade;
+            config.breadcrumbItems = [
+              { id: 'home', name: 'icon-home' },
+              { id: 'system', name: 'System' },
+              { id: configuringSystemType, name: `${configuringSystemType.charAt(0).toUpperCase() + configuringSystemType.slice(1)} System` },
+              { id: 'shades', name: 'Shades' }
+            ];
+            config.title = 'Shades';
           } else {
-            setAvailableShades([]);
-            setShowShades(false);
-            setLocalSelectedShade(null);
+            // Show base options
+            config.onItemSelect = (itemId) => {
+              setCurrentDesign(itemId);
+              const selectedBase = config.items.find(item => item.id === itemId);
+              const shades = selectedBase && selectedBase.shades;
+              if (shades && shades.length > 0) {
+                setAvailableShades(shades);
+                setLocalSelectedShade(shades[0].id);
+                if (typeof onShadeSelect === 'function') {
+                  onShadeSelect(itemId, shades[0].id, configuringSystemType, 0);
+                }
+              } else {
+                setAvailableShades([]);
+                setLocalSelectedShade(null);
+              }
+              onSystemBaseDesignChange(itemId);
+            };
+            config.selectedItem = currentDesign;
+            config.breadcrumbItems = [
+              { id: 'home', name: 'icon-home' },
+              { id: 'system', name: 'System' },
+              { id: configuringSystemType, name: `${configuringSystemType.charAt(0).toUpperCase() + configuringSystemType.slice(1)} System` }
+            ];
+            config.title = `${configuringSystemType.charAt(0).toUpperCase() + configuringSystemType.slice(1)} System`;
           }
-          
-          // Pass the design name to maintain backward compatibility
-          onSystemBaseDesignChange(itemId);
-        };
-        
-        config.selectedItem = currentDesign;
-        config.breadcrumbItems = [
-          { id: 'home', name: 'icon-home' },
-          { id: 'system', name: 'System' },
-          { id: configuringSystemType, name: `${configuringSystemType.charAt(0).toUpperCase() + configuringSystemType.slice(1)} System` }
-        ];
+        } else {
+          // Show base options
+          config.onItemSelect = (itemId) => {
+            setCurrentDesign(itemId);
+            const selectedBase = config.items.find(item => item.id === itemId);
+            const shades = selectedBase && selectedBase.shades;
+            if (shades && shades.length > 0) {
+              setAvailableShades(shades);
+              setLocalSelectedShade(shades[0].id);
+              if (typeof onShadeSelect === 'function') {
+                onShadeSelect(itemId, shades[0].id, configuringSystemType, 0);
+              }
+            } else {
+              setAvailableShades([]);
+              setLocalSelectedShade(null);
+            }
+            onSystemBaseDesignChange(itemId);
+          };
+          config.selectedItem = currentDesign;
+          config.breadcrumbItems = [
+            { id: 'home', name: 'icon-home' },
+            { id: 'system', name: 'System' },
+            { id: configuringSystemType, name: `${configuringSystemType.charAt(0).toUpperCase() + configuringSystemType.slice(1)} System` }
+          ];
+          config.title = `${configuringSystemType.charAt(0).toUpperCase() + configuringSystemType.slice(1)} System`;
+        }
       }
     }
 
@@ -455,13 +511,23 @@ export const ConfigPanel = ({
       if (configuringType !== 'pendant') {
         onSelectConfigurationType('pendant');
       }
+    } else if (
+      configuringType === 'system' &&
+      (id === 'universal' || id === 'bar' || id === 'ball')
+    ) {
+      // If we click on a system base (e.g., Universal System, Bar System) breadcrumb,
+      // reset to show base options for that system
+      setCurrentDesign(null);
+      setAvailableShades([]);
+      setLocalSelectedShade(null);
+      // Optionally update navigation state if needed
+      // (the panelConfig will update accordingly)
     } else {
       // Pass through to the parent handler
       onBreadcrumbNavigation(id);
     }
-    
-    
   };
+
   
   // Get the current panel configuration
   const formatSelectedLocations = (locations) => {
@@ -650,93 +716,7 @@ export const ConfigPanel = ({
       
    
       
-      {/* Shade selection panel */}
-      {configuringType === 'system' && showShades && (
-        <motion.div
-          className="sm:absolute sm:bottom-[15%] absolute w-[300px] bg-black/95 backdrop-blur-md border border-gray-700/50 rounded-t-2xl sm:rounded-xl z-50 shadow-2xl pointer-events-auto transition-all duration-300"
-          initial={{ y: '100%', opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: '100%', opacity: 0 }}
-          transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="">
-            <div className="flex items-center justify-end">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowShades(false);
-                }}
-                className="p-1.5 rounded-full hover:bg-gray-700/80 text-gray-300 hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-400/50"
-                aria-label="Close shade selector"
-              >
-                <FaTimes className="w-4 h-4 sm:w-5 sm:h-5" />
-              </button>
-            </div>
-            
-            {/* Shades carousel */}
-            <div className="relative flex items-center justify-between gap-2">
-              <button
-                className="hidden sm:flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-gray-800/80 hover:bg-emerald-600 text-white rounded-full p-2 shadow-lg transition-all duration-200 transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-opacity-50"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  scrollShadeCarousel('left');
-                }}
-                aria-label="Previous shade"
-              >
-                <FaChevronLeft className="w-3 h-3 sm:w-4 sm:h-4" />
-              </button>
-              
-              <div 
-                className="flex-1 overflow-x-auto scrollbar-hide px-4 sm:px-0"
-                ref={shadeCarouselRef}
-              >
-                <div className="flex gap-3 sm:gap-2 w-max mx-auto py-2">
-                  {availableShades.map((shade, index) => (
-                    <div key={shade.id} className="flex flex-col items-center flex-shrink-0">
-                      <button
-                        type="button"
-                        className={`w-11 h-11 sm:w-12 sm:h-12 rounded-full overflow-hidden relative focus:outline-none transition-transform duration-200 hover:scale-105 active:scale-95 ${localSelectedShade === shade.id ? 'ring-3 ring-emerald-400 shadow-lg' : 'ring-1 ring-gray-600 hover:ring-2 hover:ring-emerald-400/50'}`}
-                        onClick={() => handleShadeSelect(shade, index)}
-                        aria-label={`Select shade ${shade.name}`}
-                      >
-                        <div
-                          className="w-full h-full flex items-center justify-center transition-all duration-200 hover:brightness-110"
-                          style={{ 
-                            backgroundColor: shade.color || '#2C3539',
-                            color: 'rgba(255, 255, 255, 0.9)'
-                          }}
-                        >
-                          <p className="text-base sm:text-lg font-bold drop-shadow-md">{index + 1}</p>
-                        </div>
-                        {localSelectedShade === shade.id && (
-                          <div className="absolute inset-0 bg-emerald-500/20 flex items-center justify-center">
-                            <FaCheck className="text-white text-xs sm:text-sm" />
-                          </div>
-                        )}
-                      </button>
-                      <p className="text-center text-xs sm:text-sm font-medium mt-2 text-gray-300 capitalize tracking-wide">
-                        {shade.name}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              
-              <button
-                className="hidden sm:flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-gray-800/80 hover:bg-emerald-600 text-white rounded-full p-2 shadow-lg transition-all duration-200 transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-opacity-50"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  scrollShadeCarousel('right');
-                }}
-                aria-label="Next shade"
-              >
-                <FaChevronRight className="w-3 h-3 sm:w-4 sm:h-4" />
-              </button>
-            </div>
-          </div>
-        </motion.div>
-      )}
+
     </div>
   );
 };
