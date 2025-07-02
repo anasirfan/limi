@@ -838,6 +838,7 @@ const handleShadeSelect = (designId, shadeId, systemType, shadeIndex) => {
         } else {
           iframeMessagesArray.push(`cable_${i}:${cable.designId}`);
         }
+        iframeMessagesArray.push(`cable_${i}:size_${cable.size}`);
       });
     }
     
