@@ -201,44 +201,44 @@ export const ConfigPanel = ({
     // Map of designs to their available shades
     const shadeOptions = {
       // Universal system shades
-      'universal': {
-        'atom': [
-          { id: 'shallowdome', name: 'Shallow Dome', color: '#2B2D2F' },
-          { id: 'deepdome', name: 'Deep Dome', color: '#50C878' },
-          { id: 'flatplate', name: 'Flat Plate', color: '#87CEAB' }
-        ],
-        'nebula': [
-          { id: 'cone', name: 'Cone', color: '#2B2D2F' },
-          { id: 'cylinder', name: 'Cylinder', color: '#50C878' }
-        ],
-        'cosmos': [
-          { id: 'sphere', name: 'Sphere', color: '#2B2D2F' },
-          { id: 'hemisphere', name: 'Hemisphere', color: '#50C878' },
-          { id: 'disc', name: 'Disc', color: '#87CEAB' },
-          { id: 'ring', name: 'Ring', color: '#F2F0E6' }
-        ],
-        'stellar': [
-          { id: 'pyramid', name: 'Pyramid', color: '#2B2D2F' },
-          { id: 'cube', name: 'Cube', color: '#50C878' },
-          { id: 'prism', name: 'Prism', color: '#87CEAB' }
-        ],
-        'eclipse': [
-          { id: 'oval', name: 'Oval', color: '#2B2D2F' },
-          { id: 'rectangle', name: 'Rectangle', color: '#50C878' }
-        ]
-      },
-      // Bar system shades
-      'bar': {
-        'prism': [
-          { id: 'standard', name: 'Standard', color: '#2B2D2F' },
-          { id: 'extended', name: 'Extended', color: '#50C878' }
-        ],
-        'helix': [
-          { id: 'single', name: 'Single', color: '#2B2D2F' },
-          { id: 'double', name: 'Double', color: '#50C878' },
-          { id: 'triple', name: 'Triple', color: '#87CEAB' }
-        ]
-      }
+      // 'universal': {
+      //   'atom': [
+      //     { id: 'shallowdome', name: 'Shallow Dome', color: '#2B2D2F' },
+      //     { id: 'deepdome', name: 'Deep Dome', color: '#50C878' },
+      //     { id: 'flatplate', name: 'Flat Plate', color: '#87CEAB' }
+      //   ],
+      //   'nebula': [
+      //     { id: 'cone', name: 'Cone', color: '#2B2D2F' },
+      //     { id: 'cylinder', name: 'Cylinder', color: '#50C878' }
+      //   ],
+      //   'cosmos': [
+      //     { id: 'sphere', name: 'Sphere', color: '#2B2D2F' },
+      //     { id: 'hemisphere', name: 'Hemisphere', color: '#50C878' },
+      //     { id: 'disc', name: 'Disc', color: '#87CEAB' },
+      //     { id: 'ring', name: 'Ring', color: '#F2F0E6' }
+      //   ],
+      //   'stellar': [
+      //     { id: 'pyramid', name: 'Pyramid', color: '#2B2D2F' },
+      //     { id: 'cube', name: 'Cube', color: '#50C878' },
+      //     { id: 'prism', name: 'Prism', color: '#87CEAB' }
+      //   ],
+      //   'eclipse': [
+      //     { id: 'oval', name: 'Oval', color: '#2B2D2F' },
+      //     { id: 'rectangle', name: 'Rectangle', color: '#50C878' }
+      //   ]
+      // },
+      // // Bar system shades
+      // 'bar': {
+      //   'prism': [
+      //     { id: 'standard', name: 'Standard', color: '#2B2D2F' },
+      //     { id: 'extended', name: 'Extended', color: '#50C878' }
+      //   ],
+      //   'helix': [
+      //     { id: 'single', name: 'Single', color: '#2B2D2F' },
+      //     { id: 'double', name: 'Double', color: '#50C878' },
+      //     { id: 'triple', name: 'Triple', color: '#87CEAB' }
+      //   ]
+      // }
     };
     
     // Check if this design has shade options
