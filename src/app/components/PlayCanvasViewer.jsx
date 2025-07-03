@@ -8,6 +8,7 @@ const PlayCanvasViewer = ({
   isDarkMode,
   className = '',
   loadcanvas
+  
 }) => {
   const iframeRef = useRef(null);
   const [isLoading, setIsLoading] = useState(true);
