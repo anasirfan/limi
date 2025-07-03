@@ -16,6 +16,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { saveConfiguration } from '../../../app/redux/slices/userSlice.js';
 import { useRouter, useSearchParams } from 'next/navigation';
 import ConfigurationSummary from '../lightConfigurator/ConfigurationSummary';
+import { fetchUserByToken } from '../../../app/redux/slices/userSlice.js';
 
 const ConfiguratorLayout = () => {
   const router = useRouter();
@@ -1015,10 +1016,19 @@ const handleShadeSelect = (designId, shadeId, systemType, shadeIndex) => {
   const playCanvasReadyRef = useRef(false);
   
 
+
+
   // Check for configId in URL parameters on initial load
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
+    const urlToken = urlParams.get('token');
+
+    if (urlToken) {
+      dispatch(fetchUserByToken(urlToken));
+    }
+
     const configId = urlParams.get('configId');
+     
     if (configId) {
       setHasConfigIdParam(true);
       setIsLoadingFromUrl(true);

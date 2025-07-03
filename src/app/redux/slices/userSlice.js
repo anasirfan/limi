@@ -132,6 +132,40 @@ export const loginUser = createAsyncThunk(
   }
 );
 
+//Login through token 
+export const fetchUserByToken = createAsyncThunk(
+  'user/fetchUserByToken',
+  async (token, { rejectWithValue }) => {
+    try {
+      if (!token) {
+        return rejectWithValue('Token is required');
+      }
+
+      // Use token to fetch user profile
+      const profileResponse = await fetch('https://dev.api1.limitless-lighting.co.uk/client/user/profile', {
+        headers: {
+          'Authorization': token.startsWith('Bearer ') ? token : `${token}`
+        }
+      });
+
+      if (!profileResponse.ok) {
+        return rejectWithValue('Failed to fetch user profile');
+      }
+
+      const userData = await profileResponse.json();
+      console.log("userData (by token): ", userData);
+
+      // Save to localStorage
+      saveUserToStorage(userData);
+
+      return userData;
+    } catch (error) {
+      return rejectWithValue(error.error_message || 'Failed to fetch user by token');
+    }
+  }
+);
+
+
 // Real API signup thunk
 export const signupUser = createAsyncThunk(
   'user/signup',
@@ -461,6 +495,10 @@ export const userSlice = createSlice({
       .addCase(loginUser.rejected, (state, action) => {
         state.loginStatus = 'failed';
         state.error = action.payload || 'Login failed';
+      })
+      .addCase(fetchUserByToken.fulfilled, (state, action) => {
+        state.user = action.payload; // or whatever your user data shape is
+        state.isLoggedIn = true;
       })
       
       // Signup cases
