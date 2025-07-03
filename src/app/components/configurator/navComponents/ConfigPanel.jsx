@@ -617,10 +617,6 @@ export const ConfigPanel = ({
               </>
             )}
           </div>
- 
-
-        
-        
         {/* Items carousel or cable size segmented control */}
         {configuringType === 'cableSize' ? (
           <div className="flex flex-col gap-2 w-full">
@@ -713,10 +709,6 @@ export const ConfigPanel = ({
       )}
       </div>
       </motion.div>
-      
-   
-      
-
     </div>
   );
 };
