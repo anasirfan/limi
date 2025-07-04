@@ -68,6 +68,7 @@ export default function SavedConfigurations() {
       setIsLoading(false);
     }
   };
+  console.log("configurations",configurations);
   
   // Delete configuration
   const deleteConfiguration = async (configId) => {
@@ -144,7 +145,6 @@ export default function SavedConfigurations() {
   const toggleSortOrder = () => {
     setSortOrder(sortOrder === "asc" ? "desc" : "asc");
   };
-
   // View configuration details
   const viewConfigDetails = (config) => {
     setSelectedConfig(config);
@@ -282,10 +282,13 @@ export default function SavedConfigurations() {
               <div className="p-4">
                 <h3 className="text-lg font-semibold text-white mb-1">
                   {config.name || 'Unnamed Configuration'}
+
                 </h3>
 
                 <div className="text-sm text-gray-400 mb-2">
                   <p>Light Type: {config.config?.light_type || 'N/A'}</p>
+                  <p>Base Color: {config.config?.cable_color || 'N/A'}</p>
+                  <p>Cables Length: {config.config?.cable_length || 'N/A'}</p>
                   <p>Light Amount: {config.config?.light_amount || 'N/A'}</p>
                   {config.config?.base_type && <p>Base Type: {config.config.base_type}</p>}
                 </div>
@@ -406,6 +409,21 @@ export default function SavedConfigurations() {
                         <div className="text-sm font-medium text-gray-400">Light Amount</div>
                       </div>
                       <div className="text-lg font-semibold text-white">{selectedConfig.config?.light_amount || 'N/A'}</div>
+                      
+                    </div>
+                    <div className="bg-[#292929] p-4 rounded-xl border border-[#333] hover:border-[#54BB74] transition-all duration-300">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-2 h-2 rounded-full bg-[#54BB74]"></div>
+                        <div className="text-sm font-medium text-gray-400">Base Color</div>
+                      </div>
+                      <div className="text-lg font-semibold text-white">{selectedConfig.config?.cable_color || 'N/A'}</div>
+                    </div>
+                    <div className="bg-[#292929] p-4 rounded-xl border border-[#333] hover:border-[#54BB74] transition-all duration-300">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-2 h-2 rounded-full bg-[#54BB74]"></div>
+                        <div className="text-sm font-medium text-gray-400">Cable Length</div>
+                      </div>
+                      <div className="text-lg font-semibold text-white">{selectedConfig.config?.cable_length || 'N/A'}</div>
                     </div>
                     
                     {selectedConfig.config?.base_type && (
