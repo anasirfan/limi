@@ -37,7 +37,6 @@ const PlayCanvasViewer = ({
     const handleMessage = (event) => {
       // Check if the message is from our iframe
       if (event.data === 'app:ready1') {
-        console.log('PlayCanvas app is ready');
         setAppReady(true);
         setIsLoading(false);
         
@@ -57,7 +56,6 @@ const PlayCanvasViewer = ({
     // This is especially important for mobile browsers
     // const readyTimeout = setTimeout(() => {
     //   if (!appReady) {
-    //     console.log('PlayCanvas ready timeout - forcing ready state');
     //     setAppReady(true);
     //     setIsLoading(false);
     //     sendDefaultSelections();
@@ -91,12 +89,10 @@ const PlayCanvasViewer = ({
     const handleIframeLoad = () => {
       try {
         if (iframeRef.current && iframeRef.current.contentWindow) {
-          console.log('PlayCanvas iframe loaded');
           
           // For desktop browsers, set quality
           if (!isMobile) {
             iframeRef.current.contentWindow.postMessage("highdis", "*");
-            console.log('Set quality to high for desktop');
           }
           
           // For mobile browsers, we handle this differently with script injection
@@ -104,7 +100,6 @@ const PlayCanvasViewer = ({
           // if (isMobile) {
           //   setTimeout(() => {
           //     if (isLoading) {
-          //       console.log('Mobile iframe loaded - setting ready state after timeout');
           //       setAppReady(true);
           //       setIsLoading(false);
           //       // We don't call sendDefaultSelections() here as it's handled in the script injection
@@ -214,7 +209,6 @@ const PlayCanvasViewer = ({
       const script = doc.createElement('script');
       script.src = 'https://code.playcanvas.com/playcanvas-stable.min.js';
       script.onload = () => {
-        console.log('PlayCanvas engine loaded via script injection');
         
         // Create a script to initialize the PlayCanvas application
         const initScript = doc.createElement('script');
@@ -242,7 +236,6 @@ const PlayCanvasViewer = ({
             
             // Listen for messages from parent
             window.addEventListener('message', function(event) {
-              console.log('Message received in PlayCanvas:', event.data);
               // Handle messages here
             });
           });

@@ -63,15 +63,15 @@ export const SaveConfigModal = ({
 
   // Format the config summary for display
   const formatConfigSummary = () => {
-    console.log("in formatConfigSummary");
-    const { light_type, base_type, light_amount, cables } = configSummary;
-    console.log("cables",cables)
+    const { light_type, base_type, light_amount, cables, base_color} = configSummary;
+    console.log("cables size",configSummary);
     let summaryText = `Light Type: ${light_type}\n`;
     if (light_type === 'ceiling') {
       summaryText += `Base Type: ${base_type}\n`;
     }
-    summaryText += `Light Amount: ${light_amount}\n\n`;
-    
+    summaryText += `Light Amount: ${light_amount}\n`;
+    summaryText += `Base Color: ${base_color}\n\n`;
+
     summaryText += 'Cables:\n';
     (cables || []).forEach((cable, idx) => {
     summaryText += `Cable ${idx + 1}: `;
@@ -79,11 +79,13 @@ export const SaveConfigModal = ({
       // System cable
       const systemType = cable.systemType ? (cable.systemType.charAt(0).toUpperCase() + cable.systemType.slice(1)) : 'Unknown';
       const design = cable.design ? cable.design.charAt(0).toUpperCase() + cable.design.slice(1).toLowerCase() : '';
-      summaryText += `System\n  Type: ${systemType}\n  Design: ${design}\n`;
+      summaryText += `System\n  Type: ${systemType}\n  Design: ${design}\n  ${cable.size ? `Cable Size: ${cable.size}` : ""} \n`  
+
     } else {
       // Pendant cable - use camel case to Title Case
       const pendantName = cable.design ? cable.design.charAt(0).toUpperCase() + cable.design.slice(1).toLowerCase() : '';
-      summaryText += `Pendant\n  Design: ${pendantName}\n`;
+      summaryText += `Pendant\n  Design: ${pendantName}\n  ${cable.size ? `Cable Size: ${cable.size}` : ""}\n` 
+   
     }
   });
     

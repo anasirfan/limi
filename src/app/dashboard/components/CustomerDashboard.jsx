@@ -140,7 +140,6 @@ export default function CustomerDashboard({ token }) {
   };
 
   // Fetch contact form queries
-  console.log(distributorQueries)
   const fetchQueries = async () => {
     setIsLoadingQueries(true);
     setQueryError('');
@@ -208,7 +207,6 @@ export default function CustomerDashboard({ token }) {
       }
 
       const data = await response.json();
-      console.log("distributorQueries",data)
       if (data.data && Array.isArray(data.data)) {
         setDistributorQueries(data.data);
       } else {
@@ -419,7 +417,6 @@ export default function CustomerDashboard({ token }) {
       
       // If API call failed or returned invalid data, use mock data
       if (!useRealData) {
-        console.log('Using mock mobile user data');
         // Mock data that matches the expected structure
         mobileUserData = [
           {
@@ -674,13 +671,11 @@ export default function CustomerDashboard({ token }) {
             }
           }
         } catch (error) {
-          // console.log('Error fetching customer data:', error);
           // Will fall back to mock data
         }
         
         // If API call failed or returned invalid data, use mock data
         if (!useRealData) {
-          // console.log('Using mock data instead.');
           setCustomers(mockCustomers);
           
           // Extract unique company names and staff names for filters

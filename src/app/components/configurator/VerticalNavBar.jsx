@@ -42,6 +42,7 @@ const VerticalNavBar = ({
   configuringSystemType,
   breadcrumbPath,
   onBreadcrumbNavigation,
+
   
   onSystemTypeSelection,
   containerDimensions,
@@ -309,6 +310,7 @@ const VerticalNavBar = ({
                     currentDesign={currentDesign}
                     setCurrentDesign={setCurrentDesign}
                     carouselRef={carouselRef}
+                    onCableSizeChange={onCableSizeChange}
                     getPendantDesignImageNumber={getPendantDesignImageNumber}
                     scrollCarousel={scrollCarousel}
                     togglePendantSelection={(locationIndex) => {

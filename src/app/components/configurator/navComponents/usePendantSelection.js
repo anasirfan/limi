@@ -16,7 +16,6 @@ export const usePendantSelection = (pendants, selectedPendants, setSelectedPenda
       return designMap[designName];
   }
   const getDesignImageNumber = (designName, SystemType) => {
-    console.log(designName, SystemType);
     const designMap = {
       'pendant': {
         'bumble': '1.png',

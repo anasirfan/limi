@@ -20,8 +20,11 @@ import { loginUser, clearAuthStatus } from "../../redux/slices/userSlice";
 import SignupForm from "./SignupForm";
 import PortalCTA from "../../components/PortalCTA";
 import { useRef } from "react";
+import { fetchUserByToken } from '../../../app/redux/slices/userSlice.js';
+
 
 export default function PortalLogin({ onLogin }) {
+  const [isFetchingByToken, setIsFetchingByToken] = useState(false);
   const [loginMethod, setLoginMethod] = useState("email"); // 'email' or 'otp'
   const [showSignup, setShowSignup] = useState(false);
   const [email, setEmail] = useState("");
@@ -43,10 +46,22 @@ export default function PortalLogin({ onLogin }) {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [resetStatus, setResetStatus] = useState({ type: "", message: "" });
 
-  const dispatch = useDispatch();
+  const dispatch =  useDispatch();
   const { loginStatus, error, isLoggedIn, user } = useSelector(
     (state) => state?.user || {}
   );
+
+  // Auto-login via token in URL
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlToken = urlParams.get('token');
+    if (urlToken) {
+      setIsFetchingByToken(true);
+      dispatch(fetchUserByToken(urlToken)).finally(() => {
+        setIsFetchingByToken(false);
+      });
+    }
+  }, [dispatch]);
 
   // Clear auth status when component unmounts
   useEffect(() => {
@@ -388,6 +403,14 @@ export default function PortalLogin({ onLogin }) {
       onLogin(demoUser);
     }
   };
+
+  if (isFetchingByToken) {
+    return (
+      <div className="flex justify-center items-center min-h-[300px]">
+        <span className="text-emerald">Logging you in...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="">

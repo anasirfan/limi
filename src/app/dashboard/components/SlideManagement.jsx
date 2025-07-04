@@ -56,7 +56,6 @@ export default function SlideManagement({ customer }) {
     type: "success", // 'success' or 'error'
   });
 
-  console.log("slides", slides);
 
   // Generate a unique ID for slides
   const generateUniqueId = (prefix = "slide") => {
@@ -88,7 +87,6 @@ export default function SlideManagement({ customer }) {
 
         // Load slides into Redux store
         const slidesToLoad = data.data[data.data.length - 1].slides || [];
-        console.log("slidesToLoad", slidesToLoad);
         // For now, we'll update the first slide and add the rest
         if (slidesToLoad.length > 0) {
           // First ensure all slides have unique IDs
@@ -104,7 +102,6 @@ export default function SlideManagement({ customer }) {
             }
             return slide;
           });
-          console.log("processedSlides", processedSlides);
           localStorage.setItem(
             `slides_${profileId}`,
             JSON.stringify(processedSlides)
@@ -136,7 +133,6 @@ export default function SlideManagement({ customer }) {
       // If API fetch fails or returns no slides, try localStorage
       const storageKey = `slides_${profileId}`;
       const savedSlides = localStorage.getItem(storageKey);
-      console.log("savedSlides", savedSlides);
       if (savedSlides) {
         const parsedSlides = JSON.parse(savedSlides);
         if (parsedSlides && parsedSlides.length > 0) {
@@ -460,28 +456,22 @@ export default function SlideManagement({ customer }) {
       }
 
       const data = await response.json();
-      console.log("Checking for existing slideshows:", data);
 
       // Handle different API response structures
       if (data && data.success && data.data && data.data.length > 0) {
         // Standard API response with data array
-        console.log("Found existing slideshow with ID:", data.data[0]._id);
         return { exists: true, id: data.data[0]._id || null };
       } else if (data && data._id) {
         // Direct object response
-        console.log("Found existing slideshow with ID:", data._id);
         return { exists: true, id: data._id };
       } else if (data && Array.isArray(data) && data.length > 0) {
         // Direct array response
-        console.log("Found existing slideshow with ID:", data[0]._id);
         return { exists: true, id: data[0]._id || null };
       } else if (data && data.slides && data.slides.length > 0) {
         // Object with slides array
-        console.log("Found existing slideshow with ID:", data._id);
         return { exists: true, id: data._id || null };
       }
 
-      console.log("No existing slideshow found for customer:", profileId);
       return { exists: false, id: null };
     } catch (error) {
       console.error("Error checking existing slideshow:", error);
@@ -519,7 +509,6 @@ export default function SlideManagement({ customer }) {
         throw new Error("No slides available to save");
       }
 
-      console.log("Processing slides before save:", slides);
 
       const processedSlides = slides
         .map((slide, index) => {
@@ -547,7 +536,6 @@ export default function SlideManagement({ customer }) {
             },
           };
 
-          console.log(`Processed slide ${index}:`, processedSlide);
           return processedSlide;
         })
         .filter(Boolean); // Remove any null entries
@@ -557,10 +545,8 @@ export default function SlideManagement({ customer }) {
         throw new Error("No valid slides to save");
       }
 
-      console.log("Final processed slides:", processedSlides);
 
       // Update Redux state
-      console.log("Updating slides in Redux state:", processedSlides);
       dispatch(updateSlide(processedSlides));
 
       // Prepare data for API
@@ -574,10 +560,6 @@ export default function SlideManagement({ customer }) {
       };
 
       // Check if slideshow already exists
-      console.log(
-        "Checking if slideshow exists for customer:",
-        customer.profileId
-      );
       // const { exists, id } = await checkExistingSlideshow(customer.profileId);
 
       // Save to API - use PUT if exists, POST if new
@@ -590,13 +572,9 @@ export default function SlideManagement({ customer }) {
       //   url = `https://api1.limitless-lighting.co.uk/admin/slide/slideshows/${id}`;
       //   method = 'POST';
       //   operationType = 'updated';
-      //   console.log(`Slideshow exists with ID ${id}, using PUT method to update`);
       // } else {
-      //   console.log('No existing slideshow found, using POST method to create new one');
       // }
 
-      console.log(`Making ${method} request to ${url}`);
-      console.log(slideshowData);
       const response = await fetch(url, {
         method: method,
         headers: {
@@ -605,8 +583,6 @@ export default function SlideManagement({ customer }) {
         },
         body: JSON.stringify(slideshowData),
       });
-
-      console.log(response);
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -617,11 +593,9 @@ export default function SlideManagement({ customer }) {
       }
 
       const data = await response.json();
-      console.log(`Slideshow ${operationType} successfully:`, data);
 
       // If this was a new slideshow (POST), update the local state with the new ID
       if (method === "POST" && data && data._id) {
-        console.log(`New slideshow created with ID: ${data._id}`);
         setCustomerSlides(data);
       }
 
