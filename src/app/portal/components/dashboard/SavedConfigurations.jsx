@@ -441,81 +441,113 @@ export default function SavedConfigurations() {
                         <h3 className="text-lg font-semibold text-white">Configuration Specifications</h3>
                       </div>
                     </div>
-                    <div className="p-5">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {[
-                          { label: 'Light Type', value: selectedConfig.config?.light_type, icon: 'light-bulb' },
-                          { label: 'Base Color', value: selectedConfig.config?.cable_color, icon: 'palette' },
-                          { label: 'Light Amount', value: selectedConfig.config?.light_amount, icon: 'bolt' },
-                          { label: 'Base Type', value: selectedConfig.config?.base_type, icon: 'cube' },
-                          { label: 'Cable Length', value: selectedConfig.config?.cable_length, icon: 'ruler' }
-                        ].map((item, index) => (
-                          item.value && (
-                            <div key={index} className="bg-[#1e1e1e] p-4 rounded-lg border border-gray-800 hover:border-[#54BB74]/30 transition-colors duration-200">
-                              <div className="flex items-center mb-2">
-                                <div className="p-1.5 bg-[#54BB74]/10 rounded-md mr-2">
-        
-                                </div>
-                                <div className="text-sm font-medium text-gray-400">{item.label}</div>
-                              </div>
-                              <div className="text-white font-semibold text-lg">{item.value}</div>
-                            </div>
-                          )
-                        ))}
+                    <div className="p-3">
+                      <div className="space-y-1.5 text-sm">
+                        {selectedConfig.config?.light_type && (
+                          <div className="flex justify-between py-1">
+                            <span className="text-gray-400">Light Type</span>
+                            <span className="text-white">{selectedConfig.config.light_type}</span>
+                          </div>
+                        )}
+                        {selectedConfig.config?.cable_color && (
+                          <div className="flex justify-between py-1">
+                            <span className="text-gray-400">Base Color</span>
+                            <span className="text-white">{selectedConfig.config.cable_color}</span>
+                          </div>
+                        )}
+                        {selectedConfig.config?.light_amount && (
+                          <div className="flex justify-between py-1">
+                            <span className="text-gray-400">Light Amount</span>
+                            <span className="text-white">{selectedConfig.config.light_amount}</span>
+                          </div>
+                        )}
+                        {selectedConfig.config?.base_type && (
+                          <div className="flex justify-between py-1">
+                            <span className="text-gray-400">Base Type</span>
+                            <span className="text-white">{selectedConfig.config.base_type}</span>
+                          </div>
+                        )}
+                        {selectedConfig.config?.cable_length && (
+                          <div className="flex justify-between py-1">
+                            <span className="text-gray-400">Cable Length</span>
+                            <span className="text-white">{selectedConfig.config.cable_length}</span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
 
-                  {/* Cables Section - Horizontal Scroll */}
+                  {/* Cables Section - Accordion */}
                   {selectedConfig.config?.cables && Object.keys(selectedConfig.config.cables).length > 0 && (
                     <div className="bg-gradient-to-br from-[#1a1a1a] to-[#141414] rounded-xl border border-gray-800 overflow-hidden shadow-lg">
                       <div className="p-5 bg-gradient-to-r from-[#1a1a1a] to-[#1e1e1e] border-b border-gray-800">
                         <div className="flex items-center justify-between">
-                          <div className="flex items-center">
-                            <h3 className="text-lg font-semibold text-white">Cable Configuration</h3>
-                          </div>
+                          <h3 className="text-lg font-semibold text-white">Cable Configuration</h3>
                           <div className="text-sm text-gray-400">
                             {Object.keys(selectedConfig.config.cables).length} cables
                           </div>
                         </div>
                       </div>
-                      <div className="p-5">
-                        <div className="flex space-x-4 pb-2 -mx-1 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900">
-                          {Object.entries(selectedConfig.config.cables).map(([key, value]) => {
-                            const designMatch = value.match(/design_name: ([^\n]+)/);
-                            const lengthMatch = value.match(/length: ([^\n]+)/);
-                            const typeMatch = value.match(/type: ([^\n]+)/);
-                            
-                            return (
-                              <div key={key} className="flex-none w-64 bg-[#1e1e1e] p-4 rounded-lg border border-gray-800 hover:border-blue-500/30 transition-colors duration-200">
-                                <div className="flex items-center justify-between mb-3">
-                                  <h4 className="font-semibold text-white text-sm truncate flex-1" title={designMatch ? designMatch[1].trim() : `Cable ${parseInt(key) + 1}`}>
-                                    <span className="w-2 h-2 rounded-full bg-blue-500 inline-block mr-2"></span>
-                                    {designMatch ? designMatch[1].trim() : `Cable ${parseInt(key) + 1}`}
-                                  </h4>
-                                  {typeMatch && (
-                                    <span className="flex-shrink-0 ml-2 px-2 py-0.5 text-xs font-medium rounded-full bg-blue-900/30 text-blue-400 border border-blue-800/50">
-                                      {typeMatch[1].trim()}
+                      <div className="p-4 space-y-2">
+                        {Object.entries(selectedConfig.config.cables).map(([key, value]) => {
+                          // Parse cable data into a more usable format
+                          const cableData = value.split('\n').reduce((acc, line) => {
+                            const [k, v] = line.split(':').map(s => s.trim());
+                            if (k && v) acc[k] = v;
+                            return acc;
+                          }, {});
+
+                          const cableNumber = parseInt(key) + 1;
+                          const designName = cableData.design_name || `Cable ${cableNumber}`;
+                          const cableType = cableData.type;
+                          const cableLength = cableData.length;
+                          
+                          // Get all other properties except the ones we're already displaying
+                          const additionalDetails = Object.entries(cableData)
+                            .filter(([k]) => !['design_name', 'type', 'length'].includes(k))
+                            .map(([k, v]) => ({ key: k, value: v }));
+
+                          return (
+                            <details key={key} className="group">
+                              <summary className="flex items-center justify-between p-3 bg-[#1e1e1e] rounded-lg border border-gray-800 cursor-pointer hover:bg-[#252525] transition-colors duration-200">
+                                <div className="flex items-center">
+                                  <span className="w-2 h-2 rounded-full bg-blue-500 mr-3"></span>
+                                  <span className="font-medium text-white">{designName}</span>
+                                  {cableType && (
+                                    <span className="ml-2 px-2 py-0.5 text-xs font-medium rounded-full bg-blue-900/30 text-blue-400 border border-blue-800/50">
+                                      {cableType}
                                     </span>
                                   )}
                                 </div>
-                                
+                                <svg className="w-4 h-4 text-gray-400 transform transition-transform duration-200 group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                </svg>
+                              </summary>
+                              <div className="mt-1 p-3 bg-[#252525] rounded-b-lg border border-t-0 border-gray-800">
                                 <div className="space-y-2">
-                                  {lengthMatch && (
-                                    <div className="bg-[#252525] p-2 rounded-lg">
-                                      <div className="text-xs text-gray-400">Length</div>
-                                      <div className="text-white font-medium text-sm">{lengthMatch[1].trim()}</div>
+                                  {cableLength && (
+                                    <div className="flex justify-between text-sm py-1">
+                                      <span className="text-gray-400">Length:</span>
+                                      <span className="text-white">{cableLength}</span>
                                     </div>
                                   )}
-                                  
-                                  <div className="bg-[#252525] p-2 rounded-lg">
-                                    <div className="text-xs text-gray-400">Status</div>
-                                  </div>
+                                  {additionalDetails.length > 0 && (
+                                    <div className="pt-2 border-t border-gray-700">
+                                      <div className="space-y-2">
+                                        {additionalDetails.map(({ key, value }, idx) => (
+                                          <div key={idx} className="flex justify-between text-sm py-1">
+                                            <span className="text-gray-400">{key.replace(/_/g, ' ')}:</span>
+                                            <span className="text-white">{value}</span>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
                                 </div>
                               </div>
-                            );
-                          })}
-                        </div>
+                            </details>
+                          );
+                        })}
                       </div>
                     </div>
                   )}
