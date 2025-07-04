@@ -54,8 +54,6 @@ export default function CustomerDashboard({ onLogout }) {
     // Default fallback
     return 'U';
   };
-  
-  console.log("user : ", user);
 
   // Fetch user data when component mounts
   useEffect(() => {
@@ -94,7 +92,6 @@ export default function CustomerDashboard({ onLogout }) {
     // { id: 'promotions', label: 'Promotions', icon: <FaTag /> },
     { id: "account", label: "Account Settings", icon: <FaUser /> },
   ];
-  console.log("user dashboard : ", user);
 
   const handleUserUpdate = (updatedUser) => {
     // Update the Redux store with the new user data

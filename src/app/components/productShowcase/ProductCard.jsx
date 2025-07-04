@@ -54,7 +54,6 @@ const ProductCard = ({ product, className = '', isMobile = false }) => {
   };
   
   const imageSrc = isMobile ? product.mobileImage : product.image || getUnsplashImage();
-  console.log(imageSrc);
 
   return (
     <div 

@@ -25,7 +25,6 @@ const currentSlide = hasSlides ? safeSlides[currentIndex] : null;
 
 
 
-console.log("slides",slides);
 // Minimum swipe distance (in px)
 const minSwipeDistance = 50;
 

@@ -37,7 +37,6 @@ export const LoadConfigModal = ({
   const fetchUserConfigurations = async () => {
     setIsLoading(true);
     setError(null);
-    console.log(userId)
     try {
       const response = await fetch('https://api1.limitless-lighting.co.uk/admin/products/users/light-configs', {
         method: 'POST',
@@ -53,7 +52,6 @@ export const LoadConfigModal = ({
       
       const data = await response.json();
       setConfigurations(data);
-      console.log('Fetched configurations:', data);
     } catch (err) {
       console.error('Error fetching configurations:', err);
       setError('Failed to load configurations. Please try again.');
@@ -71,7 +69,6 @@ export const LoadConfigModal = ({
       }
       
       const configData = await response.json();
-      console.log('Selected configuration details:', configData);
       
       // Pass the configuration to the parent component for loading
       onLoad(configData);

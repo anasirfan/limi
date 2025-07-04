@@ -257,13 +257,6 @@ export const ConfigPanel = ({
 
   // Debug log for tracking props and state
   useEffect(() => {
-    console.log("ConfigPanel props/state:", {
-      configuringType,
-      configuringSystemType,
-      currentDesign,
-      currentShade,
-      localSelectedShade,
-    });
   }, [
     configuringType,
     configuringSystemType,
@@ -440,12 +433,7 @@ export const ConfigPanel = ({
       config.onItemSelect = (size) => {
         setLocalSelectedCableSize(size); // Update UI immediately
         let cablesToUpdate = [];
-        console.log(
-          "selectedPendants:",
-          selectedPendants,
-          "selectedLocation:",
-          selectedLocation
-        );
+        
         if (selectedPendants && selectedPendants.length > 0) {
           cablesToUpdate = selectedPendants.filter(
             (idx) => typeof idx === "number"
@@ -453,11 +441,7 @@ export const ConfigPanel = ({
         } else if (typeof selectedLocation === "number") {
           cablesToUpdate = [selectedLocation];
         }
-        console.log('onCableSizeChange:', onCableSizeChange);
-        console.log('cableToUpdate:', cablesToUpdate);
-        console.log("cablesToUpdate:", cablesToUpdate);
         if (cablesToUpdate.length > 0) {
-          console.log("Calling onCableSizeChange", size, cablesToUpdate);
           onCableSizeChange(size, cablesToUpdate);
         }
 
@@ -715,12 +699,6 @@ export const ConfigPanel = ({
                   configuringSystemType,
                   config.items.findIndex((s) => s.id === shadeId)
                 );
-                console.log("Shade selected:", {
-                  designId: selectedBase.baseNumber,
-                  shadeId,
-                  systemType: configuringSystemType,
-                  shadeIndex: config.items.findIndex((s) => s.id === shadeId),
-                });
               }
             };
             config.selectedItem = localSelectedShade;
@@ -970,7 +948,6 @@ export const ConfigPanel = ({
                   <button
                     key={size}
                     onClick={() => {
-                      console.log("Cable size button clicked", size);
                       panelConfig.onItemSelect(size);
                     }}
                     className={`flex-1 py-2 rounded-full font-semibold transition text-sm

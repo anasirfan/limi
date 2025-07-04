@@ -63,9 +63,7 @@ export const SaveConfigModal = ({
 
   // Format the config summary for display
   const formatConfigSummary = () => {
-    console.log("in formatConfigSummary");
     const { light_type, base_type, light_amount, cables } = configSummary;
-    console.log("cables",cables)
     let summaryText = `Light Type: ${light_type}\n`;
     if (light_type === 'ceiling') {
       summaryText += `Base Type: ${base_type}\n`;

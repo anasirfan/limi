@@ -93,12 +93,10 @@ export const loginUser = createAsyncThunk(
       });
       if (!response.ok) {
         const errorData = await response.json();
-        console.log("error login", errorData);
         return rejectWithValue(errorData.error_message || 'Login failed');
       }
       
       const data = await response.json();
-      console.log( 'data Login : ', data);
       // Save token to localStorage with Bearer prefix for consistency
       if (data.data.token) {
         const token = data.data.token.startsWith('Bearer ') ? data.data.token : `${data.data.token}`;
@@ -107,7 +105,6 @@ export const loginUser = createAsyncThunk(
       
       // Get user profile with token
       const token = data.data.token.startsWith('Bearer ') ? data.data.token : `${data.data.token}`;
-      console.log("token : ",token);
       const profileResponse = await fetch('https://dev.api1.limitless-lighting.co.uk/client/user/profile', {
         headers: {
           'Authorization': token
@@ -119,7 +116,6 @@ export const loginUser = createAsyncThunk(
       }
       
       const userData = await profileResponse.json();
-      console.log("userData : ",userData);
       
       // Save to localStorage
       saveUserToStorage(userData);
@@ -152,7 +148,6 @@ export const fetchUserByToken = createAsyncThunk(
       }
 
       const userData = await profileResponse.json();
-      console.log("userData (by token): ", userData);
 
       // Save to localStorage
       saveUserToStorage(userData);
@@ -171,7 +166,6 @@ export const signupUser = createAsyncThunk(
   async (userData, { rejectWithValue }) => {
     const { name, email, password } = userData;
 
-    console.log("in userSlice : ",userData);
     try {
       // Validation
       if (!userData.email || !userData.password || !userData.name) {
@@ -198,7 +192,6 @@ export const signupUser = createAsyncThunk(
       }
       
       const data = await response.json();
-      console.log("Signup successful: ", data);
       
       // Return success message and user email for redirection
       return {

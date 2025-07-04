@@ -61,7 +61,6 @@ export default function SavedConfigurations() {
       
       const data = await response.json();
       setConfigurations(data);
-      console.log('Fetched configurations:', data);
     } catch (error) {
       console.error('Error fetching configurations:', error);
       toast.error('Failed to load configurations');

@@ -130,7 +130,6 @@ export default function InteractiveConfigurator() {
                 pointerEvents: 'auto'
               }}
               onClick={(e) => {
-                console.log('Link clicked');
                 e.stopPropagation();
               }}
             >

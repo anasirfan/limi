@@ -49,10 +49,8 @@ const ConfiguratorLayout = () => {
   });
   const [cables, setCables] = useState([{isSystem:false,systemType:"",design:"Radial",designId:"product_2",size:"2mm"}]);
 
-  console.log(config)
 // Handler for cable size change
 const handleCableSizeChange = (size, selectedCables) => {
-  console.log("handle cable change")
   setCables(prev => {
     const updated = [...prev];
     (selectedCables || []).forEach(idx => {
@@ -172,7 +170,6 @@ const handleShadeSelect = (designId, shadeId, systemType, shadeIndex) => {
       
       setLastCeilingLightAmount(config.lightAmount);
       setLastRoundBaseLightAmount(config.lightAmount);
-      console.log("playCanvasReadyRef",playCanvasReadyRef)
       // Send initial messages to PlayCanvas if no configId in URL
       if (playCanvasReadyRef.current) {
         // Send default configuration messages
@@ -189,7 +186,6 @@ const handleShadeSelect = (designId, shadeId, systemType, shadeIndex) => {
                         pendant.design === 'piko' ? 'product_5' : 'product_2';
           
           setCables(prev => [...prev, { isSystem: false, systemType: "", design: pendant.design, designId: productId }]);
-          console.log("cables",cables)
           sendMessageToPlayCanvas(`cable_${index}:${productId}`);
         });
       }
@@ -901,7 +897,7 @@ const handleShadeSelect = (designId, shadeId, systemType, shadeIndex) => {
 
     };
     
-    console.log("apiPayload",apiPayload)
+    
     
     try {
       // Get dashboardToken from localStorage
@@ -991,7 +987,7 @@ const handleShadeSelect = (designId, shadeId, systemType, shadeIndex) => {
     
     // Start sending messages
     sendMessagesInSequence(configData.iframe);
-    console.log("configData",configData)
+    
     // Update local config state based on loaded configuration
     const lightType = configData.config.light_type.toLowerCase();
     const baseType = configData.config.base_type?.toLowerCase() || 'round';
