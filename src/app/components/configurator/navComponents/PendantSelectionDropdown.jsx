@@ -9,6 +9,7 @@ export const PendantSelectionDropdown = ({
   selectedPendants, 
   currentDesign,
   setCurrentDesign,
+  onCableSizeChange,
   carouselRef,
   scrollCarousel,
   togglePendantSelection,
@@ -57,6 +58,10 @@ export const PendantSelectionDropdown = ({
       };
     }
   }, []);
+  
+  const handleCableSizeChange = (size, selectedCables) => {
+    onCableSizeChange(size, selectedCables);
+  };
   
   return (
     <div className="p-4" onClick={(e) => e.stopPropagation()} onTouchStart={(e) => e.stopPropagation()}>
@@ -240,6 +245,7 @@ export const PendantSelectionDropdown = ({
               onSystemBaseDesignChange={onSystemBaseDesignChange}
               onSelectConfigurationType={onSelectConfigurationType}
               onShadeSelect={() => {}}
+              onCableSizeChange={handleCableSizeChange}
               currentShade={null}
               onClose={onClose}
               className="max-sm:static max-sm:transform-none max-sm:w-full max-sm:h-auto max-sm:bg-transparent max-sm:shadow-none max-sm:border-0"

@@ -52,6 +52,7 @@ const ConfiguratorLayout = () => {
   console.log(config)
 // Handler for cable size change
 const handleCableSizeChange = (size, selectedCables) => {
+  console.log("handle cable change")
   setCables(prev => {
     const updated = [...prev];
     (selectedCables || []).forEach(idx => {

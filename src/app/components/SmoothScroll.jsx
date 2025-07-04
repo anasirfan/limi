@@ -2,6 +2,23 @@
 
 import { useEffect } from 'react';
 import Lenis from '@studio-freight/lenis';
+// --- Lenis VirtualScroll patch to fix onTouchEnd crash ---
+try {
+  const proto = Object.getPrototypeOf(new Lenis().virtualScroll);
+  if (proto && proto.onTouchEnd) {
+    proto.onTouchEnd = function(t) {
+      const lastDelta = this.lastDelta || { x: 0, y: 0 };
+      this.emitter.emit("scroll", {
+        deltaX: lastDelta.x,
+        deltaY: lastDelta.y,
+        event: t
+      });
+    };
+  }
+} catch (e) {
+  // Ignore errors in patching, fallback to original
+}
+// --- End patch ---
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { usePathname } from 'next/navigation';
