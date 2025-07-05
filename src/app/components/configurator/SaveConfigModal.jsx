@@ -7,16 +7,28 @@ export const SaveConfigModal = ({
   isOpen, 
   onClose, 
   onSave,
-  configSummary
+  configSummary,
 }) => {
   const [configName, setConfigName] = useState('');
   const [thumbnail, setThumbnail] = useState('');
+  const [modalId, setModalId] = useState(null); // <-- New state
+
   if (!isOpen) return null;
 
   const handleSave = async () => {
-    if (!configName.trim()) return;
-    onSave(configName,thumbnail);
-    setConfigName('');
+      if (!configName.trim()) return;
+  
+      // First, save data modal and get modal id
+    
+  
+      // Call your final save config handler with the modal id
+     
+  
+      // Continue with your existing save logic as needed
+      onSave(configName, thumbnail, modalId);
+  
+      setConfigName('');
+
   };
 
   const getThumbnailFromIframe = () => {
@@ -50,13 +62,42 @@ export const SaveConfigModal = ({
 
     });
   };
-
+  const saveDataModal = () => {
+    return new Promise((resolve) => {
+      const handleMessage = (event) => {
+        // Expecting { type: "SAVE_MODAL_RESPONSE", modalId: "..." }
+        if (
+          event.data &&
+          typeof event.data === 'object' &&
+          event.data.type === 'SAVE_MODAL_RESPONSE' &&
+          event.data.modalId
+        ) {
+          window.removeEventListener('message', handleMessage);
+          resolve(event.data.modalId);
+        }
+      };
+      window.addEventListener('message', handleMessage);
+  
+      const iframe = document.getElementById('playcanvas-app');
+      if (iframe && iframe.contentWindow) {
+        iframe.contentWindow.postMessage('savedatmodal', '*'); // send as string
+      }
+    });
+  };
   // Request thumbnail when modal is opened
   useEffect(() => {
     if (isOpen) {
       getThumbnailFromIframe().then((url) => {
         setThumbnail(url);
       });
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (isOpen) {
+     saveDataModal().then((modalId) => {
+       setModalId(modalId);
+     });
     }
   }, [isOpen]);
 
