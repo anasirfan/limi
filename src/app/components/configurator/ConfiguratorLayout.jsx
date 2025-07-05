@@ -683,6 +683,21 @@ const handleShadeSelect = (designId, shadeId, systemType, shadeIndex) => {
           'equinox': 'system_base_12',
           'meridian': 'system_base_13',
           'polaris': 'system_base_14',
+          'pulsar': 'system_base_15',
+          'quasar': 'system_base_16',
+          'supernova': 'system_base_17',
+          'galaxy': 'system_base_18',
+          'comet': 'system_base_19',
+          'meteor': 'system_base_20',
+          'asteroid': 'system_base_21',
+          'celestial': 'system_base_22',
+          'orbital': 'system_base_23',
+          'lunar': 'system_base_24',
+          'solar': 'system_base_25',
+          'nova': 'system_base_26',
+          'photon': 'system_base_27',
+          'gravity': 'system_base_28',
+          'spectrum': 'system_base_29',
 
         }
       };
