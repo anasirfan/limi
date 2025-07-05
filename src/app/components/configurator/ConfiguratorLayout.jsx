@@ -858,7 +858,6 @@ const handleShadeSelect = (designId, shadeId, systemType, shadeIndex) => {
     const uiConfig = {
       light_type: config.lightType.charAt(0).toUpperCase() + config.lightType.slice(1),
       light_amount: config.lightAmount,
-      cable_length: config.cableLength,
       cable_color: config.baseColor,
       cables: {},
       cableConfig: cables,

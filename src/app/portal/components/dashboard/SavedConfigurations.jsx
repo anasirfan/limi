@@ -63,6 +63,7 @@ export default function SavedConfigurations() {
 
       const data = await response.json();
       setConfigurations(data);
+      console.log("configurations", configurations);
     } catch (error) {
       console.error("Error fetching configurations:", error);
       toast.error("Failed to load configurations");
@@ -294,21 +295,18 @@ export default function SavedConfigurations() {
               </div>
 
               <div className="p-4 ">
-               <div className="flex items-center justify-between">
-               <h3 className="text-lg font-semibold text-white mb-1">
-                  {config.name || "Unnamed Configuration"}
-                </h3>
-                <span>{formatDate(config.createdAt)}</span>
-
-               </div>
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold text-white mb-1">
+                    {config.name || "Unnamed Configuration"}
+                  </h3>
+                  <span>{formatDate(config.createdAt)}</span>
+                </div>
                 <div className="flex justify-between items-center text-sm text-gray-400 mb-4">
-                  <div>
-                  </div>
+                  <div></div>
                 </div>
 
                 <div className="flex flex-wrap gap-2">
                   <button
-                  
                     onClick={() => viewConfigDetails(config)}
                     className="flex-1 flex items-center justify-center gap-1 bg-[#54BB74] text-white px-3 py-2 rounded hover:bg-[#48a064] transition-colors"
                   >
@@ -317,13 +315,15 @@ export default function SavedConfigurations() {
                   </button>
 
                   <button
-                  id="open_id"
+                    id="open_id"
                     onClick={() => viewInConfigurator(config._id)}
                     className="flex-1 flex items-center justify-center gap-1 bg-[#292929] border border-[#54BB74] text-[#54BB74] px-3 py-2 rounded hover:bg-[#54BB74] hover:text-white transition-colors"
                   >
                     <FaEdit />
-                  
-                    <span id={config._id} className="text-sm">Open</span>
+
+                    <span id={config._id} className="text-sm">
+                      Open
+                    </span>
                   </button>
 
                   <button
@@ -357,16 +357,30 @@ export default function SavedConfigurations() {
             {/* Header with close button */}
             <div className="border-b border-gray-800 p-4 flex justify-between items-center bg-gradient-to-r from-[#1e1e1e] to-[#1a1a1a]">
               <div>
-                <h2 className="text-xl font-bold text-white">Configuration Details</h2>
-                <p className="text-sm text-gray-400">View and manage your lighting configuration</p>
+                <h2 className="text-xl font-bold text-white">
+                  Configuration Details
+                </h2>
+                <p className="text-sm text-gray-400">
+                  View and manage your lighting configuration
+                </p>
               </div>
               <button
                 onClick={closeConfigDetails}
                 className="p-2 rounded-lg hover:bg-gray-800 transition-colors duration-200 text-gray-400 hover:text-white"
                 aria-label="Close"
               >
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </button>
             </div>
@@ -380,23 +394,35 @@ export default function SavedConfigurations() {
                       <Image
                         src={
                           selectedConfig.thumbnail?.url ||
-                          `/images/homepage-products/${Math.floor(Math.random() * 7) + 1}-mobile.jpg`
+                          `/images/homepage-products/${
+                            Math.floor(Math.random() * 7) + 1
+                          }-mobile.jpg`
                         }
                         alt={selectedConfig.name || "Configuration"}
                         fill
-                        style={{ objectFit: 'center' }}
+                        style={{ objectFit: "center" }}
                         className="hover:scale-105 transition-transform duration-300"
                         priority
                       />
                     </div>
-                    
+
                     <div className="mb-6">
                       <h1 className="text-2xl font-bold text-white mb-1 truncate">
                         {selectedConfig.name || "Unnamed Configuration"}
                       </h1>
                       <div className="flex items-center text-sm text-gray-400">
-                        <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        <svg
+                          className="w-4 h-4 mr-1.5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                          />
                         </svg>
                         Created: {formatDate(selectedConfig.createdAt)}
                       </div>
@@ -410,7 +436,7 @@ export default function SavedConfigurations() {
                         <FaEdit className="h-4 w-4 transition-transform group-hover:scale-110" />
                         <span>Open in Configurator</span>
                       </button>
-                      
+
                       <button
                         onClick={() => deleteConfiguration(selectedConfig._id)}
                         disabled={isDeleting}
@@ -438,7 +464,9 @@ export default function SavedConfigurations() {
                   <div className="bg-gradient-to-br from-[#1a1a1a] to-[#141414] rounded-xl border border-gray-800 overflow-hidden shadow-lg">
                     <div className="p-5 bg-gradient-to-r from-[#1a1a1a] to-[#1e1e1e] border-b border-gray-800">
                       <div className="flex items-center">
-                        <h3 className="text-lg font-semibold text-white">Configuration Specifications</h3>
+                        <h3 className="text-lg font-semibold text-white">
+                          Configuration Specifications
+                        </h3>
                       </div>
                     </div>
                     <div className="p-3">
@@ -446,31 +474,33 @@ export default function SavedConfigurations() {
                         {selectedConfig.config?.light_type && (
                           <div className="flex justify-between py-1">
                             <span className="text-gray-400">Light Type</span>
-                            <span className="text-white">{selectedConfig.config.light_type}</span>
+                            <span className="text-white">
+                              {selectedConfig.config.light_type}
+                            </span>
                           </div>
                         )}
                         {selectedConfig.config?.cable_color && (
                           <div className="flex justify-between py-1">
                             <span className="text-gray-400">Base Color</span>
-                            <span className="text-white">{selectedConfig.config.cable_color}</span>
+                            <span className="text-white">
+                              {selectedConfig.config.cable_color}
+                            </span>
                           </div>
                         )}
                         {selectedConfig.config?.light_amount && (
                           <div className="flex justify-between py-1">
                             <span className="text-gray-400">Light Amount</span>
-                            <span className="text-white">{selectedConfig.config.light_amount}</span>
+                            <span className="text-white">
+                              {selectedConfig.config.light_amount}
+                            </span>
                           </div>
                         )}
                         {selectedConfig.config?.base_type && (
                           <div className="flex justify-between py-1">
                             <span className="text-gray-400">Base Type</span>
-                            <span className="text-white">{selectedConfig.config.base_type}</span>
-                          </div>
-                        )}
-                        {selectedConfig.config?.cable_length && (
-                          <div className="flex justify-between py-1">
-                            <span className="text-gray-400">Cable Length</span>
-                            <span className="text-white">{selectedConfig.config.cable_length}</span>
+                            <span className="text-white">
+                              {selectedConfig.config.base_type}
+                            </span>
                           </div>
                         )}
                       </div>
@@ -478,79 +508,136 @@ export default function SavedConfigurations() {
                   </div>
 
                   {/* Cables Section - Accordion */}
-                  {selectedConfig.config?.cables && Object.keys(selectedConfig.config.cables).length > 0 && (
-                    <div className="bg-gradient-to-br from-[#1a1a1a] to-[#141414] rounded-xl border border-gray-800 overflow-hidden shadow-lg">
-                      <div className="p-5 bg-gradient-to-r from-[#1a1a1a] to-[#1e1e1e] border-b border-gray-800">
-                        <div className="flex items-center justify-between">
-                          <h3 className="text-lg font-semibold text-white">Cable Configuration</h3>
-                          <div className="text-sm text-gray-400">
-                            {Object.keys(selectedConfig.config.cables).length} cables
+                  {selectedConfig.config?.cables &&
+                    Object.keys(selectedConfig.config.cables).length > 0 && (
+                      <div className="bg-gradient-to-br from-[#1a1a1a] to-[#141414] rounded-xl border border-gray-800 overflow-hidden shadow-lg">
+                        <div className="p-5 bg-gradient-to-r from-[#1a1a1a] to-[#1e1e1e] border-b border-gray-800">
+                          <div className="flex items-center justify-between">
+                            <h3 className="text-lg font-semibold text-white">
+                              Cable Configuration
+                            </h3>
+                            <div className="text-sm text-gray-400">
+                              {Object.keys(selectedConfig.config.cables).length}{" "}
+                              cables
+                            </div>
                           </div>
                         </div>
-                      </div>
-                      <div className="p-4 space-y-2">
-                        {Object.entries(selectedConfig.config.cables).map(([key, value]) => {
-                          // Parse cable data into a more usable format
-                          const cableData = value.split('\n').reduce((acc, line) => {
-                            const [k, v] = line.split(':').map(s => s.trim());
-                            if (k && v) acc[k] = v;
-                            return acc;
-                          }, {});
+                        <div className="p-4 space-y-2">
+                          {Object.entries(selectedConfig.config.cables).map(
+                            ([key, value]) => {
+                              // Parse cable data into a more usable format
+                              const cableData = value
+                                .split("\n")
+                                .reduce((acc, line) => {
+                                  const [k, v] = line
+                                    .split(":")
+                                    .map((s) => s.trim());
+                                  if (k && v) acc[k] = v;
+                                  return acc;
+                                }, {});
 
-                          const cableNumber = parseInt(key) + 1;
-                          const designName = cableData.design_name || `Cable ${cableNumber}`;
-                          const cableType = cableData.type;
-                          const cableLength = cableData.length;
-                          
-                          // Get all other properties except the ones we're already displaying
-                          const additionalDetails = Object.entries(cableData)
-                            .filter(([k]) => !['design_name', 'type', 'length'].includes(k))
-                            .map(([k, v]) => ({ key: k, value: v }));
+                              const cableNumber = parseInt(key) + 1;
+                              const designName =
+                                cableData.design_name || `Cable ${cableNumber}`;
+                              const cableType = cableData.type;
+                              let cableSize =
+                                selectedConfig.config?.cableConfig[
+                                  cableNumber - 1
+                                ]?.size;
+                              if (
+                                typeof cableSize === "string" &&
+                                cableSize.trim().toLowerCase().endsWith("mm")
+                              ) {
+                                cableSize = cableSize
+                                  .replace(/mm$/i, "")
+                                  .trim();
+                              }
 
-                          return (
-                            <details key={key} className="group">
-                              <summary className="flex items-center justify-between p-3 bg-[#1e1e1e] rounded-lg border border-gray-800 cursor-pointer hover:bg-[#252525] transition-colors duration-200">
-                                <div className="flex items-center">
-                                  <span className="w-2 h-2 rounded-full bg-blue-500 mr-3"></span>
-                                  <span className="font-medium text-white">{designName}</span>
-                                  {cableType && (
-                                    <span className="ml-2 px-2 py-0.5 text-xs font-medium rounded-full bg-blue-900/30 text-blue-400 border border-blue-800/50">
-                                      {cableType}
-                                    </span>
-                                  )}
-                                </div>
-                                <svg className="w-4 h-4 text-gray-400 transform transition-transform duration-200 group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                </svg>
-                              </summary>
-                              <div className="mt-1 p-3 bg-[#252525] rounded-b-lg border border-t-0 border-gray-800">
-                                <div className="space-y-2">
-                                  {cableLength && (
-                                    <div className="flex justify-between text-sm py-1">
-                                      <span className="text-gray-400">Length:</span>
-                                      <span className="text-white">{cableLength}</span>
+                              // Get all other properties except the ones we're already displaying
+                              const additionalDetails = Object.entries(
+                                cableData
+                              )
+                                .filter(
+                                  ([k]) =>
+                                    !["design_name", "type", "size"].includes(k)
+                                )
+                                .map(([k, v]) => ({ key: k, value: v }));
+
+                              return (
+                                <details key={key} className="group">
+                                  <summary className="flex items-center justify-between p-3 bg-[#1e1e1e] rounded-lg border border-gray-800 cursor-pointer hover:bg-[#252525] transition-colors duration-200">
+                                    <div className="flex items-center">
+                                      <span className="w-2 h-2 rounded-full bg-blue-500 mr-3"></span>
+                                      <span className="font-medium text-white">
+                                        {designName}
+                                      </span>
+                                      {cableSize && (
+                                        <span className="ml-2 px-2 py-0.5 text-xs font-medium rounded-full bg-green-900/30 text-green-400 border border-green-800/50">
+                                          Size: {cableSize} mm
+                                        </span>
+                                      )}
+                                      {cableType && (
+                                        <span className="ml-2 px-2 py-0.5 text-xs font-medium rounded-full bg-blue-900/30 text-blue-400 border border-blue-800/50">
+                                          {cableType}
+                                        </span>
+                                      )}
                                     </div>
-                                  )}
-                                  {additionalDetails.length > 0 && (
-                                    <div className="pt-2 border-t border-gray-700">
-                                      <div className="space-y-2">
-                                        {additionalDetails.map(({ key, value }, idx) => (
-                                          <div key={idx} className="flex justify-between text-sm py-1">
-                                            <span className="text-gray-400">{key.replace(/_/g, ' ')}:</span>
-                                            <span className="text-white">{value}</span>
+                                    <svg
+                                      className="w-4 h-4 text-gray-400 transform transition-transform duration-200 group-open:rotate-180"
+                                      fill="none"
+                                      viewBox="0 0 24 24"
+                                      stroke="currentColor"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M19 9l-7 7-7-7"
+                                      />
+                                    </svg>
+                                  </summary>
+                                  <div className="mt-1 p-3 bg-[#252525] rounded-b-lg border border-t-0 border-gray-800">
+                                    <div className="space-y-2">
+                                      {cableSize && (
+                                        <div className="flex justify-between text-sm py-1">
+                                          <span className="text-gray-400">
+                                            Size:
+                                          </span>
+                                          <span className="text-white">
+                                            {cableSize} mm
+                                          </span>
+                                        </div>
+                                      )}
+                                      {additionalDetails.length > 0 && (
+                                        <div className="pt-2 border-t border-gray-700">
+                                          <div className="space-y-2">
+                                            {additionalDetails.map(
+                                              ({ key, value }, idx) => (
+                                                <div
+                                                  key={idx}
+                                                  className="flex justify-between text-sm py-1"
+                                                >
+                                                  <span className="text-gray-400">
+                                                    {key.replace(/_/g, " ")}:
+                                                  </span>
+                                                  <span className="text-white">
+                                                    {value}
+                                                  </span>
+                                                </div>
+                                              )
+                                            )}
                                           </div>
-                                        ))}
-                                      </div>
+                                        </div>
+                                      )}
                                     </div>
-                                  )}
-                                </div>
-                              </div>
-                            </details>
-                          );
-                        })}
+                                  </div>
+                                </details>
+                              );
+                            }
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
                 </div>
               </div>
             </div>
