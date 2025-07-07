@@ -282,7 +282,7 @@ export default function AccountSettings({ user, onUserUpdate }) {
 
       // Upload profile picture using PUT method
       const response = await fetch(
-        "https://api1.limitless-lighting.co.uk/client/user/profile/picture",
+        "https://dev.api1.limitless-lighting.co.uk/client/user/profile/picture",
         {
           method: "PUT",
           body: formData,

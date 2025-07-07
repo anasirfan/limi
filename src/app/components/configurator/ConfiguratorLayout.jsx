@@ -912,7 +912,7 @@ const handleShadeSelect = (designId, shadeId, systemType, shadeIndex) => {
       
       
       // Send data to backend API
-      const response = await fetch('https://api1.limitless-lighting.co.uk/admin/products/light-configs', {
+      const response = await fetch('https://dev.api1.limitless-lighting.co.uk/admin/products/light-configs', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

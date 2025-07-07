@@ -71,7 +71,7 @@ export default function SlideManagement({ customer }) {
     setLoading(true);
     try {
       const response = await fetch(
-        `https://api1.limitless-lighting.co.uk/admin/slide/customers/${profileId}/slideshows`
+        `https://dev.api1.limitless-lighting.co.uk/admin/slide/customers/${profileId}/slideshows`
       );
 
       if (!response.ok) {
@@ -440,7 +440,7 @@ export default function SlideManagement({ customer }) {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `https://api1.limitless-lighting.co.uk/admin/slide/customers/${profileId}/slideshows`,
+        `https://dev.api1.limitless-lighting.co.uk/admin/slide/customers/${profileId}/slideshows`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -564,7 +564,7 @@ export default function SlideManagement({ customer }) {
 
       // Save to API - use PUT if exists, POST if new
       const token = localStorage.getItem("token");
-      let url = "https://api1.limitless-lighting.co.uk/admin/slide/slideshows";
+      let url = "https://dev.api1.limitless-lighting.co.uk/admin/slide/slideshows";
       let method = "POST";
       let operationType = "created";
 

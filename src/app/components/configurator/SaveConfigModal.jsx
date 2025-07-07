@@ -17,16 +17,7 @@ export const SaveConfigModal = ({
 
   const handleSave = async () => {
       if (!configName.trim()) return;
-  
-      // First, save data modal and get modal id
-    
-  
-      // Call your final save config handler with the modal id
-     
-  
-      // Continue with your existing save logic as needed
       onSave(configName, thumbnail, modalId);
-  
       setConfigName('');
 
   };
@@ -63,15 +54,20 @@ export const SaveConfigModal = ({
     });
   };
   const saveDataModal = () => {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        window.removeEventListener('message', handleMessage);
+        reject(new Error('Timeout: No response from iframe'));
+      }, 10000); // 10 seconds
+  
       const handleMessage = (event) => {
-        // Expecting { type: "SAVE_MODAL_RESPONSE", modalId: "..." }
         if (
           event.data &&
           typeof event.data === 'object' &&
           event.data.type === 'SAVE_MODAL_RESPONSE' &&
           event.data.modalId
         ) {
+          clearTimeout(timeout);
           window.removeEventListener('message', handleMessage);
           resolve(event.data.modalId);
         }
@@ -80,7 +76,11 @@ export const SaveConfigModal = ({
   
       const iframe = document.getElementById('playcanvas-app');
       if (iframe && iframe.contentWindow) {
-        iframe.contentWindow.postMessage('savedatmodal', '*'); // send as string
+        iframe.contentWindow.postMessage('savedatmodal', '*');
+      } else {
+        clearTimeout(timeout);
+        window.removeEventListener('message', handleMessage);
+        reject(new Error('Iframe not found'));
       }
     });
   };
