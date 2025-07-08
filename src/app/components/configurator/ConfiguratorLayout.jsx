@@ -41,12 +41,14 @@ const ConfiguratorLayout = () => {
     pendants: [],
     selectedPendants: [],
     lightDesign: 'radial',
+    hotspot:'off',
     cableColor: 'black',
     cableLength: '2mm',
     systemConfigurations: {},
     shades: {}, // Store shade selections for each pendant/system base
 
   });
+  console.log("config",config);
   const [cables, setCables] = useState([{isSystem:false,systemType:"",design:"Radial",designId:"product_2",size:"2mm"}]);
 
 // Handler for cable size change

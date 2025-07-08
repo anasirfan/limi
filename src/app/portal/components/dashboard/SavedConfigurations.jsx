@@ -329,7 +329,7 @@ export default function SavedConfigurations() {
               transition={{ duration: 0.3 }}
               className="bg-[#292929] rounded-lg overflow-hidden"
             >
-              <div className="flex items-center justify-center py-2 h-48 bg-[#292929] border-b border-gray-200">
+              <div className="flex items-center h-[200px] w-full justify-center py-2 bg-[#292929] border-b border-gray-200">
                 <Image
                   src={
                     config.thumbnail?.url ||
@@ -340,12 +340,8 @@ export default function SavedConfigurations() {
                   alt={config.name || "Configuration"}
                   width={200}
                   height={200}
-                  style={{
-                    maxWidth: "100%",
-                    maxHeight: "100%",
-                    objectFit: "contain",
-                  }}
-                  className="rounded shadow"
+                  quality={100}
+                   className="w-full h-full object-cover"
                   priority
                 />
               </div>
@@ -456,7 +452,7 @@ export default function SavedConfigurations() {
                         }
                         alt={selectedConfig.name || "Configuration"}
                         fill
-                        style={{ objectFit: "center" }}
+                        style={{ objectFit: "contain" }}
                         className="hover:scale-105 transition-transform duration-300"
                         priority
                       />
