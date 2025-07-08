@@ -22,6 +22,62 @@ import {
   FaSpinner,
 } from "react-icons/fa";
 
+const CableItem = ({ designName, cableType, cableSize, additionalDetails }) => (
+  <details className="group">
+    <summary className="flex items-center justify-between p-3 bg-[#1e1e1e] rounded-lg border border-gray-800 cursor-pointer hover:bg-[#252525] transition-colors duration-200">
+      <div className="flex items-center">
+        <span className="w-2 h-2 rounded-full bg-blue-500 mr-3"></span>
+        <span className="font-medium text-white">{designName}</span>
+        {cableSize && (
+          <span className="ml-2 px-2 py-0.5 text-xs font-medium rounded-full bg-green-900/30 text-green-400 border border-green-800/50">
+            Size: {cableSize} mm
+          </span>
+        )}
+        {cableType && (
+          <span className="ml-2 px-2 py-0.5 text-xs font-medium rounded-full bg-blue-900/30 text-blue-400 border border-blue-800/50">
+            {cableType}
+          </span>
+        )}
+      </div>
+      <svg
+        className="w-4 h-4 text-gray-400 transform transition-transform duration-200 group-open:rotate-180"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M19 9l-7 7-7-7"
+        />
+      </svg>
+    </summary>
+    <div className="mt-1 p-3 bg-[#252525] rounded-b-lg border border-t-0 border-gray-800">
+      <div className="space-y-2">
+        {cableSize && (
+          <div className="flex justify-between text-sm py-1">
+            <span className="text-gray-400">Size:</span>
+            <span className="text-white">{cableSize} mm</span>
+          </div>
+        )}
+        {additionalDetails.length > 0 && (
+          <div className="pt-2 border-t border-gray-700">
+            <div className="space-y-2">
+              {additionalDetails.map(({ key, value }, idx) => (
+                <div key={idx} className="flex justify-between text-sm py-1">
+                  <span className="text-gray-400">{key.replace(/_/g, " ")}:</span>
+                  <span className="text-white">{value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  </details>
+);
+
 export default function SavedConfigurations() {
   const router = useRouter();
   const { user } = useSelector((state) => state.user);
@@ -47,7 +103,7 @@ export default function SavedConfigurations() {
     setIsLoading(true);
     try {
       const response = await fetch(
-        "https://api1.limitless-lighting.co.uk/admin/products/users/light-configs",
+        "https://dev.api1.limitless-lighting.co.uk/admin/products/users/light-configs",
         {
           method: "POST",
           headers: {
@@ -79,7 +135,7 @@ export default function SavedConfigurations() {
       setIsDeleting(true);
       try {
         const response = await fetch(
-          `https://api1.limitless-lighting.co.uk/admin/products/light-configs/${configId}`,
+          `https://dev.api1.limitless-lighting.co.uk/admin/products/light-configs/${configId}`,
           {
             method: "DELETE",
           }
@@ -522,119 +578,83 @@ export default function SavedConfigurations() {
                             </div>
                           </div>
                         </div>
-                        <div className="p-4 space-y-2">
-                          {Object.entries(selectedConfig.config.cables).map(
-                            ([key, value]) => {
-                              // Parse cable data into a more usable format
-                              const cableData = value
-                                .split("\n")
-                                .reduce((acc, line) => {
-                                  const [k, v] = line
-                                    .split(":")
-                                    .map((s) => s.trim());
-                                  if (k && v) acc[k] = v;
-                                  return acc;
-                                }, {});
+                        <div className="p-4">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              {Object.entries(selectedConfig.config.cables)
+                                .filter(([key]) => parseInt(key) < 3)
+                                .map(([key, value]) => {
+                                  const cableData = value
+                                    .split("\n")
+                                    .reduce((acc, line) => {
+                                      const [k, v] = line
+                                        .split(":")
+                                        .map((s) => s.trim());
+                                      if (k && v) acc[k] = v;
+                                      return acc;
+                                    }, {});
 
-                              const cableNumber = parseInt(key) + 1;
-                              const designName =
-                                cableData.design_name || `Cable ${cableNumber}`;
-                              const cableType = cableData.type;
-                              let cableSize =
-                                selectedConfig.config?.cableConfig[
-                                  cableNumber - 1
-                                ]?.size;
-                              if (
-                                typeof cableSize === "string" &&
-                                cableSize.trim().toLowerCase().endsWith("mm")
-                              ) {
-                                cableSize = cableSize
-                                  .replace(/mm$/i, "")
-                                  .trim();
-                              }
+                                  const cableNumber = parseInt(key) + 1;
+                                  const designName = cableData.design_name || `Cable ${cableNumber}`;
+                                  const cableType = cableData.type;
+                                  let cableSize = selectedConfig.config?.cableConfig[cableNumber - 1]?.size;
+                                  if (typeof cableSize === "string" && cableSize.trim().toLowerCase().endsWith("mm")) {
+                                    cableSize = cableSize.replace(/mm$/i, "").trim();
+                                  }
 
-                              // Get all other properties except the ones we're already displaying
-                              const additionalDetails = Object.entries(
-                                cableData
-                              )
-                                .filter(
-                                  ([k]) =>
-                                    !["design_name", "type", "size"].includes(k)
-                                )
-                                .map(([k, v]) => ({ key: k, value: v }));
+                                  const additionalDetails = Object.entries(cableData)
+                                    .filter(([k]) => !["design_name", "type", "size"].includes(k))
+                                    .map(([k, v]) => ({ key: k, value: v }));
 
-                              return (
-                                <details key={key} className="group">
-                                  <summary className="flex items-center justify-between p-3 bg-[#1e1e1e] rounded-lg border border-gray-800 cursor-pointer hover:bg-[#252525] transition-colors duration-200">
-                                    <div className="flex items-center">
-                                      <span className="w-2 h-2 rounded-full bg-blue-500 mr-3"></span>
-                                      <span className="font-medium text-white">
-                                        {designName}
-                                      </span>
-                                      {cableSize && (
-                                        <span className="ml-2 px-2 py-0.5 text-xs font-medium rounded-full bg-green-900/30 text-green-400 border border-green-800/50">
-                                          Size: {cableSize} mm
-                                        </span>
-                                      )}
-                                      {cableType && (
-                                        <span className="ml-2 px-2 py-0.5 text-xs font-medium rounded-full bg-blue-900/30 text-blue-400 border border-blue-800/50">
-                                          {cableType}
-                                        </span>
-                                      )}
-                                    </div>
-                                    <svg
-                                      className="w-4 h-4 text-gray-400 transform transition-transform duration-200 group-open:rotate-180"
-                                      fill="none"
-                                      viewBox="0 0 24 24"
-                                      stroke="currentColor"
-                                    >
-                                      <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M19 9l-7 7-7-7"
-                                      />
-                                    </svg>
-                                  </summary>
-                                  <div className="mt-1 p-3 bg-[#252525] rounded-b-lg border border-t-0 border-gray-800">
-                                    <div className="space-y-2">
-                                      {cableSize && (
-                                        <div className="flex justify-between text-sm py-1">
-                                          <span className="text-gray-400">
-                                            Size:
-                                          </span>
-                                          <span className="text-white">
-                                            {cableSize} mm
-                                          </span>
-                                        </div>
-                                      )}
-                                      {additionalDetails.length > 0 && (
-                                        <div className="pt-2 border-t border-gray-700">
-                                          <div className="space-y-2">
-                                            {additionalDetails.map(
-                                              ({ key, value }, idx) => (
-                                                <div
-                                                  key={idx}
-                                                  className="flex justify-between text-sm py-1"
-                                                >
-                                                  <span className="text-gray-400">
-                                                    {key.replace(/_/g, " ")}:
-                                                  </span>
-                                                  <span className="text-white">
-                                                    {value}
-                                                  </span>
-                                                </div>
-                                              )
-                                            )}
-                                          </div>
-                                        </div>
-                                      )}
-                                    </div>
-                                  </div>
-                                </details>
-                              );
-                            }
-                          )}
+                                  return (
+                                    <CableItem 
+                                      key={key}
+                                      designName={designName}
+                                      cableType={cableType}
+                                      cableSize={cableSize}
+                                      additionalDetails={additionalDetails}
+                                    />
+                                  );
+                                })}
+                            </div>
+                            <div className="space-y-2">
+                              {Object.entries(selectedConfig.config.cables)
+                                .filter(([key]) => parseInt(key) >= 3)
+                                .map(([key, value]) => {
+                                  const cableData = value
+                                    .split("\n")
+                                    .reduce((acc, line) => {
+                                      const [k, v] = line
+                                        .split(":")
+                                        .map((s) => s.trim());
+                                      if (k && v) acc[k] = v;
+                                      return acc;
+                                    }, {});
+
+                                  const cableNumber = parseInt(key) + 1;
+                                  const designName = cableData.design_name || `Cable ${cableNumber}`;
+                                  const cableType = cableData.type;
+                                  let cableSize = selectedConfig.config?.cableConfig[cableNumber - 1]?.size;
+                                  if (typeof cableSize === "string" && cableSize.trim().toLowerCase().endsWith("mm")) {
+                                    cableSize = cableSize.replace(/mm$/i, "").trim();
+                                  }
+
+                                  const additionalDetails = Object.entries(cableData)
+                                    .filter(([k]) => !["design_name", "type", "size"].includes(k))
+                                    .map(([k, v]) => ({ key: k, value: v }));
+
+                                  return (
+                                    <CableItem 
+                                      key={key}
+                                      designName={designName}
+                                      cableType={cableType}
+                                      cableSize={cableSize}
+                                      additionalDetails={additionalDetails}
+                                    />
+                                  );
+                                })}
+                            </div>
+                          </div>
                         </div>
                       </div>
                     )}

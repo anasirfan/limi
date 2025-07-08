@@ -63,7 +63,7 @@ const DuplicateSlideModal = ({ isOpen, onClose, onDuplicate }) => {
     
     try {
       const token = localStorage.getItem('token') || localStorage.getItem('dashboardToken');
-      const response = await fetch(`https://api1.limitless-lighting.co.uk/admin/slide/customers/${customerId}/slideshows`, {
+      const response = await fetch(`https://dev.api1.limitless-lighting.co.uk/admin/slide/customers/${customerId}/slideshows`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
