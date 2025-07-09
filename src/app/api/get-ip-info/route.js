@@ -15,7 +15,7 @@ export async function GET(request) {
                      request.headers.get('x-real-ip') || 
                      'Unknown';
     
-    console.log('Client IP from headers:', clientIp);
+
     
     // Create an object to store combined data from multiple sources
     let combinedData = {
@@ -35,11 +35,9 @@ export async function GET(request) {
       
       if (response.ok) {
         const data = await response.json();
-        console.log('Primary API (ipapi.co) response for client IP:', data);
         combinedData = { ...combinedData, ...data, sources: [...combinedData.sources, 'ipapi.co'] };
       }
     } catch (error) {
-      console.error('Primary IP API failed:', error);
     }
     
     // Also try ipinfo.io for validation
@@ -49,9 +47,7 @@ export async function GET(request) {
       });
       
       if (response.ok) {
-        const data = await response.json();
-        console.log('Secondary API (ipinfo.io) response:', data);
-        
+        const data = await response.json();        
         // If we don't have data from the primary source, use this data
         if (combinedData.sources.length === 0) {
           combinedData = { 

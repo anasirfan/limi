@@ -507,7 +507,7 @@ export default function HowItWorks() {
   // Responsive header margin: no gap on mobile, margin on desktop
   const headerClass =
     "text-center sm:pb-2 pb-0 px-4 relative z-20 text-black" +
-    (isMobile ? "" : " mt-10");
+    (isMobile ? "" : "");
 
   return (
     <section
@@ -554,7 +554,7 @@ export default function HowItWorks() {
 
       {/* Section header */}
       <div className={headerClass}>
-        <h2 className="text-4xl md:text-5xl font-bold">
+        <h2 className="text-4xl mt-10  md:text-5xl font-bold">
           How <span className="text-[#50C878]">It</span> Works
         </h2>
       </div>

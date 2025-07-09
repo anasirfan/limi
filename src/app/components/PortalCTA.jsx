@@ -8,7 +8,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { motion } from 'framer-motion';
 import { FaUserCircle, FaStar, FaQuoteLeft, FaQuoteRight, FaArrowRight, FaLock, FaHistory, FaHeart, FaShoppingCart, FaRegCreditCard } from 'react-icons/fa';
 
-const PortalCTA = () => {
+const PortalCTA = ({ onSignInClick }) => {
   const sectionRef = useRef(null);
   const contentRef = useRef(null);
   const headingRef = useRef(null);
@@ -159,7 +159,7 @@ const PortalCTA = () => {
   return (
     <section 
       ref={sectionRef}
-      className="relative py-24 overflow-hidden"
+      className="relative py-20 bg-white  overflow-hidden w-full"
     >
       {/* Background with gradient overlay */}
       <div className="absolute inset-0 bg-[#2B2D2F]">
@@ -191,21 +191,36 @@ const PortalCTA = () => {
             Access exclusive features, manage your lighting preferences, track orders, and customize your LIMI experience. Join our community of lighting enthusiasts today and unlock the full potential of your lighting system.
           </p>
           
-          <div ref={buttonRef} className="flex flex-col sm:flex-row justify-center gap-4 mb-8">
+          <div ref={buttonRef} className="flex flex-col sm:flex-row  items-center justify-center gap-4 mb-8">
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
-              <Link href="/login">
-                <span className="inline-block w-full sm:w-auto px-8 py-4 bg-[#50C878] hover:bg-[#3da861] text-white font-medium rounded-md transition-colors duration-300 text-center">
-                  Sign In
-                </span>
-              </Link>
+            <button
+            onClick={(e) => {
+              e.preventDefault();
+              if (onSignInClick) {
+                onSignInClick(false); // false indicates sign in
+              }
+            }}
+            className="bg-emerald text-charleston-green-dark hover:bg-emerald/90 transition-colors px-6 py-3 rounded-md font-medium flex items-center justify-center gap-2"
+          >
+            Sign In
+            <FaArrowRight />
+          </button>
             </motion.div>
             
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
-              <Link href="/signup">
-                <span className="inline-block w-full sm:w-auto px-8 py-4 bg-transparent hover:bg-[#1e2022] text-white border border-[#50C878] font-medium rounded-md transition-colors duration-300 text-center">
-                  Create Account
-                </span>
-              </Link>
+
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (onSignInClick) {
+                    onSignInClick(true); // true indicates create account
+                  }
+                }}
+                className="bg-emerald text-charleston-green-dark hover:bg-emerald/90 transition-colors px-6 py-3 rounded-md font-medium flex items-center justify-center gap-2"
+              >
+                Create Account
+                <FaArrowRight />
+              </button>
             </motion.div>
           </div>
           
@@ -236,12 +251,11 @@ const PortalCTA = () => {
         </div>
         
         {/* Testimonials */}
-        <div 
+        {/* <div 
           ref={testimonialsRef}
           className="max-w-4xl mx-auto bg-[#1e2022] rounded-xl overflow-hidden shadow-2xl"
         >
           <div className="grid grid-cols-1 md:grid-cols-12">
-            {/* Testimonial content */}
             <div className="md:col-span-8 p-8 md:p-10">
               <div className="mb-6">
                 <FaQuoteLeft className="text-[#50C878] opacity-30 text-4xl" />
@@ -305,7 +319,6 @@ const PortalCTA = () => {
               </div>
             </div>
             
-            {/* Call to action */}
             <div className="md:col-span-4 bg-[#3a3d42] p-8 flex flex-col justify-center">
               <h3 className="text-xl font-bold text-white mb-4">Join Our Community</h3>
               <p className="text-gray-300 text-sm mb-6">Create your account today and experience the full benefits of the LIMI Customer Portal.</p>
@@ -322,7 +335,7 @@ const PortalCTA = () => {
               </Link>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </section>
   );

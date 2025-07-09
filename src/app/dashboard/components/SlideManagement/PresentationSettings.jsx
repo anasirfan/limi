@@ -13,13 +13,7 @@ const PresentationSettings = ({ presentationSettings, setPresentationSettings, c
     <div className="bg-[#292929] p-4 rounded-lg mb-6">
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-xl font-bold text-white">Presentation Settings</h3>
-        <button
-          onClick={() => setShowAddCustomerModal(true)}
-          className="bg-[#54BB74] text-[#1e1e1e] px-3 py-1 rounded-md hover:bg-[#93cfa2] transition-colors flex items-center text-sm"
-        >
-          <FaUserPlus className="mr-1" />
-          Add Customer
-        </button>
+       
       </div>
       
       {customer ? (

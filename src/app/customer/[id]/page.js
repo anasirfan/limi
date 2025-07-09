@@ -199,12 +199,11 @@ export default function CustomerProfile() {
       }
       
       const result = await response.json();
-      console.log('Presentation API response:', result);
+ 
       
       // Check for different response structures
       if (result && result.data && result.data.length > 0) {
         // API returns data in an array
-        console.log(result.data[result.data.length - 1])
         return result.data[result.data.length - 1];
       } else if (result && result.slides && result.slides.length > 0) {
         // API returns data directly
@@ -256,9 +255,7 @@ export default function CustomerProfile() {
             // Fetch presentation data for test customers too
             const profileId = customerId; // For test customers, use the ID as profileId
             const presentationData = await fetchPresentationData(profileId);
-            console.log("pr data : ",presentationData)
             setPresentationData(presentationData);
-            console.log("presentationData", presentationData.slides)
             setLoading(false);
           }, 1000);
           return;
@@ -307,9 +304,7 @@ export default function CustomerProfile() {
           
           // Now fetch presentation data
           const presentationData = await fetchPresentationData(data.profileId);
-          console.log("pr dataaa : ", presentationData)
           setPresentationData(presentationData);
-          console.log("presentationData", presentationData.slides)
           setLoading(false);
         } catch (apiError) {
           console.warn('API fetch failed, using fallback data:', apiError);

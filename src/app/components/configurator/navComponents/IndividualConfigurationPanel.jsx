@@ -27,21 +27,7 @@ export const IndividualConfigurationPanel = ({
   };
   
   // Helper function to map design names to their corresponding image numbers
-  const getDesignImageNumber = (designName) => {
-    const designMap = {
-      'bumble': '1.png',
-      'radial': '2.png',
-      'fina': '3.png',
-      'ripple': '5.png',
-      'nexus': 'product_1.png',
-      'vertex': 'product_2.png',
-      'quantum': 'product_3.png',
-      'fusion': 'product_4.png',
-    };
-    
-    return designMap[designName] || `${designName}.jpg`;
-  };
-  
+ 
   // Render system type selection
   const renderSystemTypeSelection = () => {
     return (
@@ -107,7 +93,8 @@ export const IndividualConfigurationPanel = ({
               { id: 'bumble', name: 'Bumble', image: '/images/configOptions/1.png' },
               { id: 'radial', name: 'Radial', image: '/images/configOptions/2.png' },
               { id: 'fina', name: 'Fina', image: '/images/configOptions/3.png' },
-              { id: 'ripple', name: 'Ripple', image: '/images/configOptions/5.png' },
+              { id: 'ico', name: 'Ico', image: '/images/configOptions/4.png' },
+              { id: 'piko', name: 'Piko', image: '/images/configOptions/5.png' },
             ].map((design) => (
               <motion.div
                 key={design.id}
@@ -182,6 +169,7 @@ export const IndividualConfigurationPanel = ({
               { id: 'vertex', name: 'Vertex', image: '/images/configOptions/product_2.png' },
               { id: 'quantum', name: 'Quantum', image: '/images/configOptions/product_3.png' },
               { id: 'fusion', name: 'Fusion', image: '/images/configOptions/product_4.png' },
+              { id: 'aurora', name: 'Aurora', image: '/images/configOptions/product_5.png' },
             ].map((design) => (
               <motion.div
                 key={design.id}

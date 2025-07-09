@@ -108,20 +108,48 @@ export default function ContactUs() {
   };
 
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate form submission with a delay
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setFormSuccess(true);
+    try {
+      // Get the token from localStorage
+      const token = localStorage.getItem('limiToken');
+      
+      if (!token) {
+        throw new Error('Please log in to send a message');
+      }
+      
+      const response = await fetch('https://dev.api1.limitless-lighting.co.uk/client/user/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          subject: formData.subject,
+          message: formData.message
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to send message');
+      }
+
+      const data = await response.json();
+      
+      // Reset form on success
       setFormData({
         name: '',
         email: '',
         subject: '',
         message: '',
       });
+      
+      setFormSuccess(true);
       
       toast.success('Your message has been sent successfully!', {
         position: "bottom-right",
@@ -132,11 +160,26 @@ export default function ContactUs() {
         draggable: true,
       });
       
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      toast.error(error.message || 'Failed to send message. Please try again.', {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    } finally {
+      setIsSubmitting(false);
+      
       // Reset success state after 5 seconds
-      setTimeout(() => {
-        setFormSuccess(false);
-      }, 5000);
-    }, 1500);
+      if (formSuccess) {
+        setTimeout(() => {
+          setFormSuccess(false);
+        }, 5000);
+      }
+    }
   };
 
   return (

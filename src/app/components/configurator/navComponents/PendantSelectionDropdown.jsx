@@ -17,6 +17,7 @@ export const PendantSelectionDropdown = ({
   applyDesignToSelected,
   applyToAllPendants,
   getDesignImageNumber,
+  getPendantDesignImageNumber,
   handleSaveConfig,
   configuringType,
   configuringSystemType,
@@ -27,7 +28,8 @@ export const PendantSelectionDropdown = ({
   onPendantDesignChange,
   onSystemBaseDesignChange,
   onSelectConfigurationType,
-  onClose
+  onClose,
+  cables
 
 }) => {
   // State to track active tab on mobile
@@ -133,7 +135,7 @@ export const PendantSelectionDropdown = ({
               className="flex gap-3 overflow-x-auto scrollbar-hide py-2 px-8 max-w-full"
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
-              {pendants.map((pendant, index) => (
+              {cables && cables.length > 0 ? cables.map((pendant, index) => (
                 <motion.div 
                   key={index}
                   className="flex-shrink-0 cursor-pointer"
@@ -151,7 +153,7 @@ export const PendantSelectionDropdown = ({
                     {pendant.design && (
                       <div className="absolute inset-0 opacity-30">
                         <Image 
-                          src={`/images/configOptions/${getDesignImageNumber(pendant.design)}`}
+                          src={`/images/configOptions/${getDesignImageNumber(pendant.design , pendant.systemType)}`}
                           alt={pendant.design}
                           fill
                           className="object-cover"
@@ -161,7 +163,35 @@ export const PendantSelectionDropdown = ({
                     <span className="relative z-10">{index + 1}</span>
                   </div>
                 </motion.div>
-              ))}
+              )) : (pendants.map((pendant, index) => (
+                <motion.div 
+                  key={index}
+                  className="flex-shrink-0 cursor-pointer"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => togglePendantSelection(index)}
+                  style={{ userSelect: 'none' }}
+                >
+                  <div 
+                    className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold transition-all overflow-hidden relative ${selectedPendants.includes(index) 
+                      ? 'ring-2 ring-emerald-500 ring-offset-2 ring-offset-gray-800' 
+                      : 'bg-gray-700 text-white hover:bg-gray-600'}`}
+                  >
+                    {/* Show pendant design as background if it has one */}
+                    {pendant.design && (
+                      <div className="absolute inset-0 opacity-30">
+                        <Image 
+                          src={`/images/configOptions/${getPendantDesignImageNumber(pendant.design)}`}
+                          alt={pendant.design}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                    )}
+                    <span className="relative z-10">{index + 1}</span>
+                  </div>
+                </motion.div>
+              )))}
             </div>
             
             <div className="absolute right-0 top-1/2 -translate-y-1/2 z-10">
@@ -209,6 +239,8 @@ export const PendantSelectionDropdown = ({
               onPendantDesignChange={onPendantDesignChange}
               onSystemBaseDesignChange={onSystemBaseDesignChange}
               onSelectConfigurationType={onSelectConfigurationType}
+              onShadeSelect={() => {}}
+              currentShade={null}
               onClose={onClose}
               className="max-sm:static max-sm:transform-none max-sm:w-full max-sm:h-auto max-sm:bg-transparent max-sm:shadow-none max-sm:border-0"
             />

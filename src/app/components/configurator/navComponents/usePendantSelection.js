@@ -5,16 +5,65 @@ export const usePendantSelection = (pendants, selectedPendants, setSelectedPenda
   const carouselRef = useRef(null);
   
   // Helper function to map design names to their corresponding image numbers
-  const getDesignImageNumber = (designName) => {
+  const getPendantDesignImageNumber = (designName) => {
+      const designMap = {
+        'bumble': '1.png',
+        'radial': '2.png',
+        'fina': '3.png',
+        'ico': '4.png',
+        'piko': '5.png',
+      }
+      return designMap[designName];
+  }
+  const getDesignImageNumber = (designName, SystemType) => {
+    console.log(designName, SystemType);
     const designMap = {
-      'bumble': '1.png',
-      'radial': '2.png',
-      'fina': '3.png',
-      'ripple': '5.png',
-      // Add any other design mappings here
+      'pendant': {
+        'bumble': '1.png',
+        'radial': '2.png',
+        'fina': '3.png',
+        'ico': '4.png',
+        'piko': '5.png',
+      },
+      'bar': {
+        'prism': '1.png',
+        'helix': '2.png',
+        'orbit': '3.png',
+        'zenith': '4.png',
+        'pulse': '5.png',
+        'vortex': '6.png',
+        'nexus': '7.png',
+        'quasar': '8.png',
+        'nova': '9.png'
+      },
+      'universal': {
+        'atom': '1.png',
+        'nebula': '2.png',
+        'cosmos': '3.png',
+        'stellar': '4.png',
+        'eclipse': '5.png',
+        'aurora': '6.png',
+        'solstice': '7.png',
+        'quantum': '8.png',
+        'vertex': '9.png',
+        'horizon': '10.png',
+        'zenith': '11.png',
+        'equinox': '12.png',
+        'meridian': '13.png',
+        'polaris': '14.png',
+      }
     };
-    
-    return designMap[designName] || `${designName}.jpg`; // Fallback to the design name if not found
+  
+    // If SystemType is a system type and the design exists in its map
+    if (SystemType && designMap[SystemType] && designMap[SystemType][designName.toLowerCase()]) {
+      return `${SystemType}/${designMap[SystemType][designName.toLowerCase()]}`;
+    }
+    // Otherwise, treat as pendant (or fallback)
+    if (designMap['pendant'][designName.toLowerCase()]) {
+      return designMap['pendant'][designName.toLowerCase()];
+    }
+    // Fallback
+    return `${designName}.jpg`;
   };
   
   // Toggle pendant selection

@@ -1,5 +1,5 @@
 "use client";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { FaTimes } from 'react-icons/fa';
 
@@ -10,21 +10,62 @@ export const SaveConfigModal = ({
   configSummary
 }) => {
   const [configName, setConfigName] = useState('');
- console.log("in SaveConfigModal");
+  const [thumbnail, setThumbnail] = useState('');
   if (!isOpen) return null;
 
-  const handleSave = () => {
-    console.log("in handleSave");
+  const handleSave = async () => {
     if (!configName.trim()) return;
-    onSave(configName);
+    onSave(configName,thumbnail);
     setConfigName('');
   };
+
+  const getThumbnailFromIframe = () => {
+    return new Promise((resolve) => {
+      const handleMessage = (event) => {
+        let url = null;
+        if (event.data) {
+          if (typeof event.data === 'string') {
+            // Check for the 'Screenshot uploaded to:' pattern
+            const match = event.data.match(/Screenshot uploaded to: (https?:\/\/[^\s]+)/);
+            if (match && match[1]) {
+              url = match[1];
+            } else if (/^https?:\/\//.test(event.data)) {
+              url = event.data;
+            }
+          } else if (typeof event.data === 'object') {
+            url = event.data.url || event.data.thumbnail || null;
+          }
+        }
+        if (url) {
+          window.removeEventListener('message', handleMessage);
+          resolve(url);
+        }
+      };
+      window.addEventListener('message', handleMessage);
+
+      const iframe = document.getElementById('playcanvas-app');
+      if (iframe && iframe.contentWindow) {
+        iframe.contentWindow.postMessage('savedataimage', '*');
+      }
+
+    });
+  };
+
+  // Request thumbnail when modal is opened
+  useEffect(() => {
+    if (isOpen) {
+      getThumbnailFromIframe().then((url) => {
+        setThumbnail(url);
+      });
+    }
+  }, [isOpen]);
+
 
   // Format the config summary for display
   const formatConfigSummary = () => {
     console.log("in formatConfigSummary");
     const { light_type, base_type, light_amount, cables } = configSummary;
-    
+    console.log("cables",cables)
     let summaryText = `Light Type: ${light_type}\n`;
     if (light_type === 'ceiling') {
       summaryText += `Base Type: ${base_type}\n`;
@@ -32,18 +73,21 @@ export const SaveConfigModal = ({
     summaryText += `Light Amount: ${light_amount}\n\n`;
     
     summaryText += 'Cables:\n';
-    Object.keys(cables || {}).forEach(cableId => {
-      summaryText += `Cable ${parseInt(cableId) + 1}: `;
-      const cable = cables[cableId];
-      
-      if (cable.pendant) {
-        summaryText += `Pendant (${cable.pendant.replace('product_', '')})\n`;
-      } else if (cable.system) {
-        summaryText += `System ${cable.system_type} with Base ${cable.product.replace('product_', '')}\n`;
-      }
-    });
+    (cables || []).forEach((cable, idx) => {
+    summaryText += `Cable ${idx + 1}: `;
+    if (cable.isSystem) {
+      // System cable
+      const systemType = cable.systemType ? (cable.systemType.charAt(0).toUpperCase() + cable.systemType.slice(1)) : 'Unknown';
+      const design = cable.design ? cable.design.charAt(0).toUpperCase() + cable.design.slice(1).toLowerCase() : '';
+      summaryText += `System\n  Type: ${systemType}\n  Design: ${design}\n`;
+    } else {
+      // Pendant cable - use camel case to Title Case
+      const pendantName = cable.design ? cable.design.charAt(0).toUpperCase() + cable.design.slice(1).toLowerCase() : '';
+      summaryText += `Pendant\n  Design: ${pendantName}\n`;
+    }
+  });
     
-    return summaryText;
+    return summaryText ;
   };
 
   return (

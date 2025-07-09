@@ -4,7 +4,8 @@ import {
   FaRegLightbulb, 
   FaObjectGroup, 
   FaList, 
-  FaCubes 
+  FaCubes,
+  FaPalette 
 } from "react-icons/fa";
 
 export const useNavSteps = (config) => {
@@ -49,6 +50,14 @@ export const useNavSteps = (config) => {
       tooltip: 'Select base type (round, rectangular)',
       isActive: config.lightType === 'ceiling', // Only active for ceiling lights
       isCompleted: Boolean(config.baseType)
+    },
+    { 
+      id: 'baseColor', 
+      icon: <FaPalette />, 
+      label: 'Base Color',
+      tooltip: 'Select base color (black, silver)',
+      isActive: config.lightType === 'ceiling' && Boolean(config.baseType), // Active after base type is selected
+      isCompleted: Boolean(config.baseColor)
     },
     { 
       id: 'lightAmount', 

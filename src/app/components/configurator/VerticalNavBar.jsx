@@ -1,4 +1,4 @@
-"use client";
+  "use client";
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useRef, useEffect } from 'react';
 import {
@@ -9,20 +9,25 @@ import {
   LightAmountDropdown,
   SystemTypeDropdown,
   PendantSelectionDropdown,
+  
   SystemConfigurationDropdown,
   SaveConfigurationModal,
   useNavSteps,
   useNavDropdown,
-  usePendantSelection
+  usePendantSelection,
 } from './navComponents';
 import { IndividualConfigurationPanel } from './navComponents/IndividualConfigurationPanel';
 import { ConfigPanel } from './navComponents/ConfigPanel';
+import BaseColorPanel from './navComponents/BaseColorPanel';
 const VerticalNavBar = ({ 
   activeStep, 
   setActiveStep, 
   config,
+  cables, // Add cables prop
+  onCableSizeChange, // Add cable size change handler
   onLightTypeChange,
   onBaseTypeChange,
+  onBaseColorChange,
   onConfigurationTypeChange,
   onLightAmountChange,
   onSystemTypeChange,
@@ -37,8 +42,10 @@ const VerticalNavBar = ({
   configuringSystemType,
   breadcrumbPath,
   onBreadcrumbNavigation,
+  
   onSystemTypeSelection,
-  containerDimensions
+  containerDimensions,
+  onShadeSelect // Add onShadeSelect prop
 }) => {
   // Define colors from LIMI brand palette
   const emerald = '#50C878';
@@ -49,7 +56,7 @@ const VerticalNavBar = ({
 
   
   // Effect to check screen size and update on resize
-  useEffect(() => {
+  useEffect(() => { 
     // Check if window is defined (client-side)
     if (typeof window !== 'undefined') {
       // Initial check
@@ -143,7 +150,8 @@ const VerticalNavBar = ({
     clearSelections,
     applyDesignToSelected,
     applyToAllPendants,
-    getDesignImageNumber
+    getDesignImageNumber,
+    getPendantDesignImageNumber
   } = usePendantSelection(pendants, selectedPendants, setSelectedPendants, onPendantDesignChange);
   
   // Handle pendant location selection to show configuration type selector
@@ -266,6 +274,13 @@ const VerticalNavBar = ({
                   />
                 )}
                 
+                {step?.id === 'baseColor' && openDropdown === step?.id && (
+                  <BaseColorPanel 
+                    currentBaseColor={config.baseColor}
+                    onBaseColorChange={onBaseColorChange}
+                  />
+                )}
+                
                 {/* Configuration type dropdown removed */}
                 
                 {step?.id === 'systemType' && openDropdown === step?.id && (
@@ -290,9 +305,11 @@ const VerticalNavBar = ({
                   <PendantSelectionDropdown 
                     pendants={pendants}
                     selectedPendants={selectedPendants}
+                    cables={cables} // Pass cables prop to child component
                     currentDesign={currentDesign}
                     setCurrentDesign={setCurrentDesign}
                     carouselRef={carouselRef}
+                    getPendantDesignImageNumber={getPendantDesignImageNumber}
                     scrollCarousel={scrollCarousel}
                     togglePendantSelection={(locationIndex) => {
                       handlePendantLocationClick(locationIndex);
@@ -342,15 +359,7 @@ const VerticalNavBar = ({
                   />
                 )}
                 
-                {step?.id === 'systemConfiguration' && openDropdown === step?.id && (
-                  <SystemConfigurationDropdown 
-                    config={config}
-                    onSystemBaseDesignChange={onSystemBaseDesignChange}
-                    setActiveStep={setActiveStep}
-                    setOpenDropdown={setOpenDropdown}
-                    handleSaveConfig={handleSaveConfig}
-                  />
-                )}
+                
               </NavButton>
              
             ))}
@@ -369,8 +378,12 @@ const VerticalNavBar = ({
             onSystemTypeSelection={onSystemTypeSelection}
             selectedLocation={selectedPendants[0]}
             selectedPendants={selectedPendants}
+            cables={cables}
+            onCableSizeChange={onCableSizeChange}
             onPendantDesignChange={onPendantDesignChange}
             onSystemBaseDesignChange={onSystemBaseDesignChange}
+            onShadeSelect={onShadeSelect}
+            currentShade={null}
             onSelectConfigurationType={(type) => {
               // This matches the original handleConfigTypeSelection function
               setLocalConfiguringType(type);

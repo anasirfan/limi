@@ -8,14 +8,15 @@ import PlayCanvasViewer from "./PlayCanvasViewer";
 // Helper: Detect mobile using user agent and screen size
 function isMobileDevice() {
   if (typeof window === "undefined") return false;
-  
+
   const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-  const isMobileUA = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile/i.test(
-    userAgent.toLowerCase()
-  );
-  const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  const isMobileUA =
+    /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile/i.test(
+      userAgent.toLowerCase()
+    );
+  const hasTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
   const isSmallScreen = window.innerWidth <= 800;
-  
+
   return isMobileUA || hasTouch || isSmallScreen;
 }
 
@@ -46,6 +47,11 @@ export default function OnboardingSection() {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
+  //random funtion for pendants
+  const getRandomProduct = () => {
+    const products = ['product_1', 'product_2', 'product_3', 'product_4', 'product_5'];
+    return products[Math.floor(Math.random() * products.length)];
+  };
   // Handle iframe messages
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -62,7 +68,7 @@ export default function OnboardingSection() {
           ) {
             iframeRef.current.contentWindow.postMessage("homepage", "*");
             iframeRef.current.contentWindow.postMessage(
-              "pendant_design:product_2",
+              "cable_0:product_2",
               "*"
             );
             setHomepageMessageSent(true);
@@ -92,7 +98,7 @@ export default function OnboardingSection() {
     //         try {
     //           iframeRef.current.contentWindow.postMessage("homepage", "*");
     //           iframeRef.current.contentWindow.postMessage(
-    //             "pendant_design:product_2",
+    //             "cable_0:product_2",
     //             "*"
     //           );
     //           setHomepageMessageSent(true);
@@ -145,23 +151,35 @@ export default function OnboardingSection() {
                 "*"
               );
             }
+            if (lightType === "wall") {
+              iframeRef.current.contentWindow.postMessage(
+                "light_amount:1",
+                "*"
+              );
+            }
+            if (lightType === "ceiling") {
+              iframeRef.current.contentWindow.postMessage(
+                "light_amount:1",
+                "*"
+              );
+            }
 
             if (lightType === "floor") {
               iframeRef.current.contentWindow.postMessage(
-                "pendant_0:product_2",
+                "cable_0:product_2",
                 "*"
               );
               iframeRef.current.contentWindow.postMessage(
-                "pendant_1:product_2",
+                "cable_1:product_2",
                 "*"
               );
               iframeRef.current.contentWindow.postMessage(
-                "pendant_2:product_2",
+                "cable_2:product_2",
                 "*"
               );
             } else {
               iframeRef.current.contentWindow.postMessage(
-                "pendant_design:product_2",
+                "cable_0:product_1",
                 "*"
               );
             }
@@ -175,13 +193,11 @@ export default function OnboardingSection() {
             if (currentType === "ceiling") {
               if (vibeMessage === "coolLux") {
                 lightAmount = "1";
-              } else if (vibeMessage === "dreamGlow") {
-                lightAmount = "3";
               } else if (vibeMessage === "shadowHue") {
+                lightAmount = "3";
+              } else if (vibeMessage === "zenFlow") {
                 lightAmount = "6";
-              } else {
-                lightAmount = "24";
-              }
+              } 
               setLightAmount(lightAmount);
               iframeRef.current.contentWindow.postMessage(
                 "light_type:ceiling",
@@ -194,13 +210,13 @@ export default function OnboardingSection() {
               for (let i = 0; i < lightAmount; i++) {
                 if (lightAmount === "1") {
                   iframeRef.current.contentWindow.postMessage(
-                    `pendant_design:product_2`,
+                    `cable_0:${getRandomProduct()}`,
                     "*"
                   );
                   break;
                 }
                 iframeRef.current.contentWindow.postMessage(
-                  `pendant_${i}:product_2`,
+                  `cable_${i}:${getRandomProduct()}`,
                   "*"
                 );
               }
@@ -212,7 +228,7 @@ export default function OnboardingSection() {
               );
               for (let i = 0; i < 3; i++) {
                 iframeRef.current.contentWindow.postMessage(
-                  `pendant_${i}:product_2`,
+                  `cable_${i}:${getRandomProduct()}`,
                   "*"
                 );
               }
@@ -222,6 +238,7 @@ export default function OnboardingSection() {
                 "*"
               );
             }
+
           }
           break;
 
@@ -236,7 +253,7 @@ export default function OnboardingSection() {
             } else if (aestheticMessage === "industrial") {
               pendantDesign = "product_3";
             } else if (aestheticMessage === "scandinavian") {
-              pendantDesign = "product_5";
+              pendantDesign = "product_4";
             }
             for (let i = 0; i < lightAmount; i++) {
               if (currentType === "wall") {
@@ -245,18 +262,18 @@ export default function OnboardingSection() {
                   "*"
                 );
                 iframeRef.current.contentWindow.postMessage(
-                  `pendant_design:${pendantDesign}`,
+                  `cable_0:${getRandomProduct()}`,
                   "*"
                 );
                 break;
               } else if (currentType === "floor") {
                 iframeRef.current.contentWindow.postMessage(
-                  `pendant_${i}:${pendantDesign}`,
+                  `cable_${i}:${getRandomProduct()}`,
                   "*"
                 );
               } else {
                 iframeRef.current.contentWindow.postMessage(
-                  `pendant_${i}:${pendantDesign}`,
+                  `cable_${i}:${getRandomProduct()}`,
                   "*"
                 );
               }
@@ -412,13 +429,13 @@ export default function OnboardingSection() {
             className="relative rounded-2xl overflow-hidden shadow-2xl bg-[#1e2022] w-full order-1"
           >
             <div
-  className="aspect-square md:aspect-auto md:h-[500px]"
-  style={{
-    WebkitTransform: "translateZ(0)",
-    transform: "translateZ(0)",
-    willChange: "transform"
-  }}
->
+              className="aspect-square md:aspect-auto md:h-[500px]"
+              style={{
+                WebkitTransform: "translateZ(0)",
+                transform: "translateZ(0)",
+                willChange: "transform",
+              }}
+            >
               {/* Loading overlay */}
               {!iframeLoaded && (
                 <div
@@ -569,7 +586,7 @@ export default function OnboardingSection() {
                                   "*"
                                 );
                                 iframeRef.current.contentWindow.postMessage(
-                                  "pendant_design:product_2",
+                                  "cable_0:product_2",
                                   "*"
                                 );
                                 setHomepageMessageSent(true);
@@ -722,7 +739,7 @@ export default function OnboardingSection() {
                               "*"
                             );
                             iframeRef.current.contentWindow.postMessage(
-                              "pendant_design:product_2",
+                              "cable_0:product_2",
                               "*"
                             );
                             setHomepageMessageSent(true);
@@ -757,33 +774,37 @@ export default function OnboardingSection() {
 
               {/* 3D Viewer Iframe */}
               <iframe
-              key={iframeKey}
-              ref={iframeRef}
-              src={playcanvasEmbedUrl}
-              className="w-full h-full border-0 bg-transparent"
-              title="LIMI 3D Configurator"
-              allow="accelerometer; autoplay; camera; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              importance="high"
-              loading="eager"
-              sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-pointer-lock"
-              onLoad={() => {
-                // setIframeLoaded(true);
-                setIframeError(false);
-                // Set initial quality for desktop
-                if (!isMobile && iframeRef.current && iframeRef.current.contentWindow) {
-                  iframeRef.current.contentWindow.postMessage("highdis", "*");
-                }
-              }}
-              onError={() => {
-                setIframeError(true);
-                setIframeLoaded(false);
-              }}
-              style={{
-                minHeight: isMobile ? 320 : 500,
-                background: "transparent"
-              }}
-            ></iframe>
+                key={iframeKey}
+                ref={iframeRef}
+                src={playcanvasEmbedUrl}
+                className="w-full h-full border-0 bg-transparent"
+                title="LIMI 3D Configurator"
+                allow="accelerometer; autoplay; camera; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                importance="high"
+                loading="eager"
+                sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-pointer-lock"
+                onLoad={() => {
+                  // setIframeLoaded(true);
+                  setIframeError(false);
+                  // Set initial quality for desktop
+                  if (
+                    !isMobile &&
+                    iframeRef.current &&
+                    iframeRef.current.contentWindow
+                  ) {
+                    iframeRef.current.contentWindow.postMessage("highdis", "*");
+                  }
+                }}
+                onError={() => {
+                  setIframeError(true);
+                  setIframeLoaded(false);
+                }}
+                style={{
+                  minHeight: isMobile ? 320 : 500,
+                  background: "transparent",
+                }}
+              ></iframe>
 
               {/* Interaction hint */}
               <div className="absolute top-4 right-4 bg-black/60 text-white px-3 py-1 rounded-full text-xs flex items-center z-10 animate-pulse">

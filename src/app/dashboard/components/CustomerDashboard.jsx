@@ -2,11 +2,12 @@
 
 import React, { useState, useEffect, Fragment } from 'react';
 import Image from 'next/image';
-import { FaSort, FaSortUp, FaSortDown, FaSearch, FaEye, FaTimes, FaFilter, FaChartLine, FaGlobe, FaClock, FaDesktop, FaTabletAlt, FaMobileAlt, FaUsers, FaBoxOpen, FaShoppingCart, FaBox, FaSlideshare, FaUserPlus, FaTrash } from 'react-icons/fa';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
+import { FaSort, FaInbox, FaSpinner, FaEnvelope, FaSortUp, FaSortDown, FaSearch, FaEye, FaTimes, FaFilter, FaGlobe, FaClock, FaDesktop, FaTabletAlt, FaMobileAlt, FaUsers, FaBoxOpen, FaShoppingCart, FaBox, FaSlideshare, FaUserPlus, FaTrash } from 'react-icons/fa';
+import { BarChart,FaTimesCircle, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
 import ProductManagement from './ProductManagement';
 import SlideManagement from './SlideManagement';
 import AddCustomerModal from './SlideManagement/AddCustomerModal';
+import DistributorDetailsModal from './DistributorDetailsModal';
 
 export default function CustomerDashboard({ token }) {
   const [customers, setCustomers] = useState([]);
@@ -23,6 +24,32 @@ export default function CustomerDashboard({ token }) {
   const [staffNames, setStaffNames] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
   const [activeTab, setActiveTab] = useState('customers');
+  const [queries, setQueries] = useState([]);
+  const [isLoadingQueries, setIsLoadingQueries] = useState(false);
+  const [queryError, setQueryError] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [distributorQueries, setDistributorQueries] = useState([]);
+  const [isLoadingDistributorQueries, setIsLoadingDistributorQueries] = useState(false);
+  const [distributorQueryError, setDistributorQueryError] = useState('');
+  const [searchDistributorQuery, setSearchDistributorQuery] = useState('');
+  const [selectedDistributor, setSelectedDistributor] = useState(null);
+  const [isDistributorModalOpen, setIsDistributorModalOpen] = useState(false);
+  const [notes, setNotes] = useState('');
+  const [selectedMessage, setSelectedMessage] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [truncatedMessages, setTruncatedMessages] = useState({});
+
+  const checkTruncation = (elementId, message) => {
+    if (!message) return false;
+    const element = document.getElementById(elementId);
+    if (!element) return false;
+    return element.scrollWidth > element.clientWidth || element.scrollHeight > element.clientHeight;
+  };
+
+  const handleViewMessage = (message, id) => {
+    setSelectedMessage(message);
+    setIsModalOpen(true);
+  };
   const [visitorLogs, setVisitorLogs] = useState([]);
   const [customerSessions, setCustomerSessions] = useState([]);
   const [visitorLogsLoading, setVisitorLogsLoading] = useState(false);
@@ -50,6 +77,176 @@ export default function CustomerDashboard({ token }) {
   const [mobileUserSortDirection, setMobileUserSortDirection] = useState('desc');
   const [mobileCurrentPage, setMobileCurrentPage] = useState(1);
   const [mobileUsersPerPage, setMobileUsersPerPage] = useState(10);
+  
+  // Registrations state
+  const [registrations, setRegistrations] = useState([]);
+  const [registrationsLoading, setRegistrationsLoading] = useState(false);
+  const [registrationsError, setRegistrationsError] = useState('');
+  const [searchRegistration, setSearchRegistration] = useState('');
+  const [registrationSortField, setRegistrationSortField] = useState('createdAt');
+  const [registrationSortDirection, setRegistrationSortDirection] = useState('desc');
+  const [registrationCurrentPage, setRegistrationCurrentPage] = useState(1);
+  const [registrationsPerPage, setRegistrationsPerPage] = useState(10);
+  
+  // Fetch community subscription registrations
+  const fetchRegistrations = async () => {
+    setRegistrationsLoading(true);
+    setRegistrationsError('');
+    
+    try {
+      const token = localStorage.getItem('limiToken');
+      if (!token) {
+        throw new Error('Authentication required');
+      }
+
+      const response = await fetch('https://dev.api1.limitless-lighting.co.uk/client/user/community/subscriptions', {
+        method: 'GET',
+        headers: {
+          'Authorization': token,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Failed to fetch registrations');
+      }
+      
+      const data = await response.json();
+      
+      // Transform the data to match our expected format
+      const formattedData = Array.isArray(data) 
+        ? data 
+        : data && Array.isArray(data.data) 
+          ? data.data 
+          : [];
+      
+      // Ensure each item has the required fields
+      const processedData = formattedData.map(item => ({
+        email: item.email || 'N/A',
+        communityType: item.communityType || 'Unknown',
+        createdAt: item.createdAt || new Date().toISOString(),
+        ...item
+      }));
+      
+      setRegistrations(processedData);
+    } catch (error) {
+      console.error('Error fetching registrations:', error);
+      setRegistrationsError(error.message || 'Failed to load registrations');
+      setRegistrations([]);
+    } finally {
+      setRegistrationsLoading(false);
+    }
+  };
+
+  // Fetch contact form queries
+  console.log(distributorQueries)
+  const fetchQueries = async () => {
+    setIsLoadingQueries(true);
+    setQueryError('');
+    try {
+      const token = localStorage.getItem('limiToken');
+      const response = await fetch('https://dev.api1.limitless-lighting.co.uk/client/user/contact-messages', {
+        method: 'GET',
+        headers: { 
+          'Authorization': token,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      // First check if the response is JSON
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        console.error('Non-JSON response:', text);
+        throw new Error('Server returned non-JSON response');
+      }
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to fetch queries');
+      }
+      
+      // Handle different possible response formats
+      if (Array.isArray(data)) {
+        setQueries(data);
+      } else if (data && Array.isArray(data.data)) {
+        setQueries(data.data);
+      } else {
+        console.warn('Unexpected response format:', data);
+        setQueries([]);
+      }
+    } catch (error) {
+      console.error('Error fetching queries:', error);
+      setQueryError(error.message || 'Failed to load queries');
+    } finally {
+      setIsLoadingQueries(false);
+    }
+  };
+
+  // Fetch distributor queries
+  const fetchDistributorQueries = async () => {
+    setIsLoadingDistributorQueries(true);
+    setDistributorQueryError('');
+    
+    try {
+      const token = localStorage.getItem('limiToken');
+      if (!token) {
+        throw new Error('Please log in to view distributor queries');
+      }
+      const response = await fetch('https://dev.api1.limitless-lighting.co.uk/client/user/distributor/contact', {
+        method: 'GET',
+        headers: {
+          'Authorization': token,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch distributor queries');
+      }
+
+      const data = await response.json();
+      console.log("distributorQueries",data)
+      if (data.data && Array.isArray(data.data)) {
+        setDistributorQueries(data.data);
+      } else {
+        console.warn('Unexpected response format for distributor queries:', data);
+        setDistributorQueries([]);
+      }
+    } catch (error) {
+      console.error('Error fetching distributor queries:', error);
+      setDistributorQueryError(error.message || 'Failed to load distributor queries');
+    } finally {
+      setIsLoadingDistributorQueries(false);
+    }
+  };
+
+  // Load data when tab is active
+  useEffect(() => {
+    if (activeTab === 'query') {
+      fetchQueries();
+    } else if (activeTab === 'distributorQuery') {
+      fetchDistributorQueries();
+    } else if (activeTab === 'registrations') {
+      fetchRegistrations();
+    } else if (activeTab === 'mobile-users') {
+      fetchMobileUsers();
+    }
+  }, [activeTab]);
+
+  // Filter queries based on search term
+  const filteredQueries = queries.filter(query => {
+    if (!searchQuery) return true;
+    const searchLower = searchQuery.toLowerCase();
+    return (
+      (query.name?.toLowerCase().includes(searchLower)) ||
+      (query.email?.toLowerCase().includes(searchLower)) ||
+      (query.subject?.toLowerCase().includes(searchLower)) ||
+      (query.message?.toLowerCase().includes(searchLower))
+    );
+  });
 
   // Format time in minutes and seconds
   const formatTime = (seconds) => {
@@ -191,11 +388,11 @@ export default function CustomerDashboard({ token }) {
     }
   };
 
-  // Fetch mobile users data
+  // Fetch mobile users
   const fetchMobileUsers = async () => {
+    setMobileUsersLoading(true);
+    
     try {
-      setMobileUsersLoading(true);
-      
       let mobileUserData = [];
       let useRealData = false;
       
@@ -312,12 +509,14 @@ export default function CustomerDashboard({ token }) {
     }
   };
 
-  // Fetch visitor logs when tab changes or filters change
+  // Fetch data when tab changes or filters change
   useEffect(() => {
     if (activeTab === 'tracking') {
       fetchVisitorLogs();
     } else if (activeTab === 'mobile') {
       fetchMobileUsers();
+    } else if (activeTab === 'registrations') {
+      fetchRegistrations();
     }
   }, [activeTab, dateFilter, userTypeFilter, consentFilter, roleFilter, emailFilter, usernameFilter, regionFilter]);
 
@@ -503,7 +702,7 @@ export default function CustomerDashboard({ token }) {
     fetchCustomers();
   }, [token]);
 
-  // Handle sorting
+  // Handle sorting for customer table
   const handleSort = (field) => {
     if (sortField === field) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
@@ -512,13 +711,23 @@ export default function CustomerDashboard({ token }) {
       setSortDirection('desc'); // Default to descending order for new sort field
     }
   };
+  
+  // Handle sorting for registrations table
+  const handleRegistrationSort = (field) => {
+    if (registrationSortField === field) {
+      setRegistrationSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
+    } else {
+      setRegistrationSortField(field);
+      setRegistrationSortDirection('desc');
+    }
+  };
 
   // Get sort icon
   const getSortIcon = (field) => {
-    if (sortField !== field) return <FaSort className="ml-1 text-gray-400" />;
+    if (sortField !== field) return <FaSort className="ml-1 text-[#54BB74]" />;
     return sortDirection === 'asc' ? 
-      <FaSortUp className="ml-1 text-[#93cfa2]" /> : 
-      <FaSortDown className="ml-1 text-[#93cfa2]" />;
+      <FaSortUp className="ml-1 text-[#54BB74]" /> : 
+      <FaSortDown className="ml-1 text-[#54BB74]" />;
   };
   
   // Handle sorting for mobile users
@@ -796,13 +1005,13 @@ export default function CustomerDashboard({ token }) {
           Customers
         </button>
         
-        <button
+        {/* <button
           onClick={() => setActiveTab('analytics')}
           className={`px-4 py-2 rounded-md flex items-center ${activeTab === 'analytics' ? 'bg-[#54BB74] text-[#1e1e1e] font-medium' : 'bg-[#333333] text-white hover:bg-[#444444]'}`}
         >
           <FaChartLine className="mr-2" />
           Analytics
-        </button>
+        </button> */}
         
         <button
           onClick={() => setActiveTab('tracking')}
@@ -835,7 +1044,533 @@ export default function CustomerDashboard({ token }) {
           <FaSlideshare className="mr-2" />
           Slideshow
         </button>
+        <button
+          onClick={() => setActiveTab('query')}
+          className={`px-4 py-2 rounded-md flex items-center ${activeTab === 'query' ? 'bg-[#54BB74] text-[#1e1e1e] font-medium' : 'bg-[#333333] text-white hover:bg-[#444444]'}`}
+        >
+          <FaEnvelope className="mr-2" />
+          Contact Queries
+        </button>
+        <button
+          onClick={() => setActiveTab('distributorQuery')}
+          className={`px-4 py-2 rounded-md flex items-center ${activeTab === 'distributorQuery' ? 'bg-[#54BB74] text-[#1e1e1e] font-medium' : 'bg-[#333333] text-white hover:bg-[#444444]'}`}
+        >
+          <FaEnvelope className="mr-2" />
+          Distributor Queries
+        </button>
+        <button
+          onClick={() => setActiveTab('registrations')}
+          className={`px-4 py-2 rounded-md flex items-center ${activeTab === 'registrations' ? 'bg-[#54BB74] text-[#1e1e1e] font-medium' : 'bg-[#333333] text-white hover:bg-[#444444]'}`}
+        >
+          <FaUserPlus className="mr-2" />
+          Registrations
+        </button>
       </div>
+
+      {activeTab === 'distributorQuery' && (
+      <div className="bg-[#1e1e1e] rounded-lg shadow-lg overflow-hidden border border-[#3a3a3a]">
+        {/* Header Section */}
+        <div className="px-6 py-5 bg-[#1e1e1e] border-b border-[#3a3a3a]">
+          <div className="flex flex-col space-y-4 md:space-y-0 md:flex-row md:items-center md:justify-between">
+            <div className="space-y-1">
+              <h2 className="text-3xl font-bold text-white">Distributor Applications</h2>
+            </div>
+            <div className="relative w-full md:w-96">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <FaSearch className="text-[#a0a0a0] h-4 w-4" />
+              </div>
+              <input
+                type="text"
+                placeholder="Search by company, contact name, or email..."
+                className="bg-[#292929] text-white pl-10 pr-4 py-3 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-[#54bb74] border border-[#3a3a3a] focus:border-[#54bb74] transition-colors text-base placeholder-gray-500"
+                value={searchDistributorQuery}
+                onChange={(e) => setSearchDistributorQuery(e.target.value)}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Content Section */}
+        <div className="p-0">
+          {isLoadingDistributorQueries ? (
+            <div className="flex flex-col items-center justify-center min-h-[300px]">
+              <div className="w-16 h-16 border-t-4 border-[#93cfa2] border-solid rounded-full animate-spin mb-6"></div>
+              <p className="text-gray-300">Loading distributor applications...</p>
+            </div>
+          ) : distributorQueryError ? (
+            <div className="mx-6 my-4 bg-red-900/20 border border-red-700/30 text-red-200 px-4 py-3 rounded-md flex items-center">
+              <FaTimes className="mr-3 flex-shrink-0" />
+              <span className="text-base">{distributorQueryError}</span>
+            </div>
+          ) : distributorQueries.length === 0 ? (
+            <div className="bg-[#292929] mx-6 my-4 p-10 rounded-lg text-center border border-[#3a3a3a]">
+              <FaInbox className="mx-auto text-4xl text-[#a0a0a0] mb-4" />
+              <h3 className="text-white font-semibold text-xl mb-2">No applications found</h3>
+              <p className="text-[#a0a0a0] text-base">
+                {searchDistributorQuery ? 'No results match your search.' : 'No distributor applications have been received yet.'}
+              </p>
+            </div>
+          ) : (
+            <div className="overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full divide-y divide-[#3a3a3a]">
+                  <thead className="bg-[#292929]">
+                    <tr>
+                      <th className="px-6 py-4 text-left text-lg font-bold text-gray-300 hover:text-white tracking-wider">
+                        Company Details
+                      </th>
+                      <th className="px-6 py-4 text-left text-lg font-bold text-gray-300 hover:text-white tracking-wider">
+                        Contact Information
+                      </th>
+                      <th className="px-6 py-4 text-left text-lg font-bold text-gray-300 hover:text-white tracking-wider">
+                        Location & Experience
+                      </th>
+                      <th className="px-6 py-4 text-left text-lg font-bold text-gray-300 hover:text-white tracking-wider">
+       
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-[#1e1e1e] divide-y divide-[#3a3a3a]">
+                    {distributorQueries
+                      .filter(query => {
+                        if (!searchDistributorQuery) return true;
+                        const search = searchDistributorQuery.toLowerCase();
+                        return (
+                          (query.company?.toLowerCase().includes(search) || '') ||
+                          (query.name?.toLowerCase().includes(search) || '') ||
+                          (query.contactName?.toLowerCase().includes(search) || '') ||
+                          (query.email?.toLowerCase().includes(search) || '')
+                        );
+                      })
+                      .map((query, index) => (
+                        <tr key={index} className="hover:bg-[#292929] transition-colors cursor-pointer">
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-2">
+                              <span className="font-semibold text-white">{query.company || 'N/A'}</span>
+                              {query.website && (
+                                <a 
+                                  href={query.website.startsWith('http') ? query.website : `https://${query.website}`}
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="text-[#54bb74] hover:underline text-xs"
+                                  onClick={e => e.stopPropagation()}
+                                >
+                                  ({query.website.replace(/^https?:\/\//, '')})
+                                </a>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div>
+                              <span className="block text-white">{query.name || query.contactName || 'N/A'}</span>
+                              <span className="block text-xs text-gray-400">{query.title || ''}</span>
+                              <a href={`mailto:${query.email}`} className="text-[#54bb74] hover:underline text-xs block" onClick={e => e.stopPropagation()}>{query.email || 'N/A'}</a>
+                              {query.phoneNumber && (
+                                <a href={`tel:${query.phoneNumber}`} className="text-[#54bb74] hover:underline text-xs block" onClick={e => e.stopPropagation()}>{query.phoneNumber}</a>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div>
+                              <span className="block text-white">{query.country || 'N/A'}</span>
+                              <span className="block text-xs text-gray-400">{query.experience || 'N/A'}</span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 text-right">
+                            <button
+                              onClick={e => {
+                                e.stopPropagation();
+                                setSelectedDistributor(query);
+                                setNotes(query.notes || '');
+                                setIsDistributorModalOpen(true);
+                              }}
+                              className="px-3 py-1.5 bg-[#54bb74] hover:bg-[#3da05e] text-white rounded-md text-xs font-medium transition-colors"
+                            >
+                              View Details
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+      )}
+
+      {activeTab === 'registrations' && (
+      <div className="bg-[#1e1e1e] rounded-lg shadow-lg overflow-hidden border border-[#3a3a3a]">
+        {/* Header Section */}
+        <div className="px-6 py-5 bg-[#1e1e1e] border-b border-[#3a3a3a]">
+          <div className="flex flex-col space-y-4 md:space-y-0 md:flex-row md:items-center md:justify-between">
+            <div className="space-y-1">
+              <h2 className="text-3xl font-bold text-white">Community Subscriptions</h2>
+              <p className="text-[#a0a0a0] text-base">View and manage all community email subscriptions</p>
+            </div>
+            <div className="relative w-full md:w-96">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <FaSearch className="text-[#a0a0a0] h-4 w-4" />
+              </div>
+              <input
+                type="text"
+                placeholder="Search by email or community type..."
+                className="bg-[#292929] text-white pl-10 pr-4 py-3 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-[#54bb74] border border-[#3a3a3a] focus:border-[#54bb74] transition-colors text-base placeholder-gray-500"
+                value={searchRegistration}
+                onChange={(e) => setSearchRegistration(e.target.value)}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Content Section */}
+        <div className="p-0">
+          {registrationsLoading ? (
+            <div className="flex flex-col items-center justify-center min-h-[300px]">
+              <div className="w-16 h-16 border-t-4 border-[#93cfa2] border-solid rounded-full animate-spin mb-6"></div>
+              <p className="text-gray-300">Loading subscriptions...</p>
+            </div>
+          ) : registrationsError ? (
+            <div className="mx-6 my-4 bg-red-900/20 border border-red-700/30 text-red-200 px-4 py-3 rounded-md flex items-center">
+              <FaTimes className="mr-3 flex-shrink-0" />
+              <span className="text-base">{registrationsError}</span>
+            </div>
+          ) : registrations.length === 0 ? (
+            <div className="bg-[#292929] mx-6 my-4 p-10 rounded-lg text-center border border-[#3a3a3a]">
+              <FaInbox className="mx-auto text-4xl text-[#a0a0a0] mb-4" />
+              <h3 className="text-white font-semibold text-xl mb-2">No subscriptions found</h3>
+              <p className="text-[#a0a0a0] text-base">
+                {searchRegistration ? 'No results match your search.' : 'No community subscriptions have been made yet.'}
+              </p>
+            </div>
+          ) : (
+            <div className="overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full divide-y divide-[#3a3a3a]">
+                  <thead className="bg-[#292929]">
+                    <tr>
+                      <th 
+                        className="px-6 py-4 text-left text-lg font-bold text-gray-300 hover:text-white tracking-wider cursor-pointer"
+                        onClick={() => handleRegistrationSort('email')}
+                      >
+                        <div className="flex items-center">
+                          Email
+                          {registrationSortField === 'email' && (
+                            registrationSortDirection === 'asc' ? 
+                            <FaSortUp className="ml-1" /> : 
+                            <FaSortDown className="ml-1" />
+                          )}
+                        </div>
+                      </th>
+                      <th 
+                        className="px-6 py-4 text-left text-lg font-bold text-gray-300 hover:text-white tracking-wider cursor-pointer"
+                        onClick={() => handleRegistrationSort('communityType')}
+                      >
+                        <div className="flex items-center">
+                          Community Type
+                          {registrationSortField === 'communityType' && (
+                            registrationSortDirection === 'asc' ? 
+                            <FaSortUp className="ml-1" /> : 
+                            <FaSortDown className="ml-1" />
+                          )}
+                        </div>
+                      </th>
+                      <th 
+                        className="px-6 py-4 text-left text-lg font-bold text-gray-300 hover:text-white tracking-wider cursor-pointer"
+                        onClick={() => handleRegistrationSort('createdAt')}
+                      >
+                        <div className="flex items-center">
+                          Date Subscribed
+                          {registrationSortField === 'createdAt' && (
+                            registrationSortDirection === 'asc' ? 
+                            <FaSortUp className="ml-1" /> : 
+                            <FaSortDown className="ml-1" />
+                          )}
+                        </div>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-[#1e1e1e] divide-y divide-[#3a3a3a]">
+                    {registrations
+                      .filter(reg => {
+                        if (!searchRegistration) return true;
+                        const search = searchRegistration.toLowerCase();
+                        return (
+                          (reg.email?.toLowerCase().includes(search) || '') ||
+                          (reg.communityType?.toLowerCase().includes(search) || '')
+                        );
+                      })
+                      .sort((a, b) => {
+                        let valueA = a[registrationSortField];
+                        let valueB = b[registrationSortField];
+                        
+                        if (registrationSortField === 'createdAt') {
+                          valueA = new Date(valueA);
+                          valueB = new Date(valueB);
+                        } else {
+                          valueA = String(valueA).toLowerCase();
+                          valueB = String(valueB).toLowerCase();
+                        }
+                        
+                        if (valueA < valueB) {
+                          return registrationSortDirection === 'asc' ? -1 : 1;
+                        }
+                        if (valueA > valueB) {
+                          return registrationSortDirection === 'asc' ? 1 : -1;
+                        }
+                        return 0;
+                      })
+                      .slice(
+                        (registrationCurrentPage - 1) * registrationsPerPage,
+                        registrationCurrentPage * registrationsPerPage
+                      )
+                      .map((reg, index) => (
+                        <tr key={index} className="hover:bg-[#292929] transition-colors">
+                          <td className="px-6 py-4">
+                            <div className="text-white">{reg.email || 'N/A'}</div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#54bb74] bg-opacity-20 text-[#93cfa2]">
+                              {reg.communityType || 'N/A'}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-gray-400">
+                            {new Date(reg.createdAt).toLocaleDateString('en-US', {
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+              </div>
+              
+              {/* Pagination */}
+              {Math.ceil(registrations.length / registrationsPerPage) > 1 && (
+                <div className="px-6 py-4 bg-[#1e1e1e] border-t border-[#3a3a3a] flex items-center justify-between">
+                  <div className="text-sm text-gray-400">
+                    Showing <span className="font-medium">{(registrationCurrentPage - 1) * registrationsPerPage + 1}</span> to{' '}
+                    <span className="font-medium">
+                      {Math.min(registrationCurrentPage * registrationsPerPage, registrations.length)}
+                    </span>{' '}
+                    of <span className="font-medium">{registrations.length}</span> results
+                  </div>
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => setRegistrationCurrentPage(prev => Math.max(prev - 1, 1))}
+                      disabled={registrationCurrentPage === 1}
+                      className={`px-3 py-1 rounded-md ${registrationCurrentPage === 1 ? 'bg-[#333333] text-gray-600 cursor-not-allowed' : 'bg-[#333333] text-white hover:bg-[#444444]'}`}
+                    >
+                      Previous
+                    </button>
+                    <button
+                      onClick={() => setRegistrationCurrentPage(prev => prev + 1)}
+                      disabled={registrationCurrentPage * registrationsPerPage >= registrations.length}
+                      className={`px-3 py-1 rounded-md ${registrationCurrentPage * registrationsPerPage >= registrations.length ? 'bg-[#333333] text-gray-600 cursor-not-allowed' : 'bg-[#333333] text-white hover:bg-[#444444]'}`}
+                    >
+                      Next
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+      )}
+
+      {activeTab === 'query' && (
+      <div className="bg-[#1e1e1e] rounded-lg shadow-lg overflow-hidden border border-[#3a3a3a]">
+        {/* Header Section */}
+        <div className="px-6 py-5 bg-[#1e1e1e] border-b border-[#3a3a3a]">
+          <div className="flex flex-col space-y-4 md:space-y-0 md:flex-row md:items-center md:justify-between">
+            <div className="space-y-1">
+              <h2 className="text-3xl font-bold text-white">Contact Form Submissions</h2>
+              {/* <p className="text-[#a0a0a0] text-base">View and manage all contact form submissions</p> */}
+            </div>
+            <div className="relative w-full md:w-96">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <FaSearch className="text-[#a0a0a0] h-4 w-4" />
+              </div>
+              <input
+                type="text"
+                placeholder="Search by name, email, or message..."
+                className="bg-[#292929] text-white pl-10 pr-4 py-3 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-[#54bb74] border border-[#3a3a3a] focus:border-[#54bb74] transition-colors text-base placeholder-gray-500"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Content Section */}
+        <div className="p-0">
+          {isLoadingQueries ? (
+            <div className="flex flex-col items-center justify-center min-h-[300px]">
+              <div className="w-16 h-16 border-t-4 border-[#93cfa2] border-solid rounded-full animate-spin mb-6"></div>
+              <p className="text-gray-300">Loading contact queries...</p>
+            </div>
+          ) : queryError ? (
+            <div className="mx-6 my-4 bg-red-900/20 border border-red-700/30 text-red-200 px-4 py-3 rounded-md flex items-center">
+              <FaTimesCircle className="mr-3 flex-shrink-0" />
+              <span className="text-base">{queryError}</span>
+            </div>
+          ) : filteredQueries.length === 0 ? (
+            <div className="bg-[#292929] mx-6 my-4 p-10 rounded-lg text-center border border-[#3a3a3a]">
+              <FaInbox className="mx-auto text-4xl text-[#a0a0a0] mb-4" />
+              <h3 className="text-white font-semibold text-xl mb-2">No queries found</h3>
+              <p className="text-[#a0a0a0] text-base">
+                {searchQuery ? 'No results match your search. Try different keywords.' : 'No contact form submissions have been received yet.'}
+              </p>
+            </div>
+          ) : (
+            <div className="overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-[#3a3a3a]">
+                  <thead className="bg-[#292929]">
+                    <tr>
+                      <th className="px-6 py-4 text-left text-lg font-bold text-gray-300 hover:text-white  tracking-wider cursor-pointer">
+                        <div className="flex items-center space-x-1">
+                          <span>Name</span>
+                          <FaSort className="text-gray-500 text-xs" />
+                        </div>
+                      </th>
+                      <th className="px-6 py-4 text-left text-lg  font-bold text-gray-300 hover:text-white  tracking-wider cursor-pointer">
+                        <div className="flex items-center space-x-1">
+                          <span>Email</span>
+                          <FaSort className="text-gray-500 text-xs" />
+                        </div>
+                      </th>
+                      <th className="px-6 py-4 text-left text-lg font-bold text-gray-300 hover:text-white  tracking-wider cursor-pointer">
+                        <div className="flex items-center space-x-1">
+                          <span>Subject</span>
+                          <FaSort className="text-gray-500 text-xs" />
+                        </div>
+                      </th>
+                      <th className="px-6 py-4 text-left text-lg font-bold text-gray-300 hover:text-white  tracking-wider cursor-pointer">
+                        <div className="flex items-center space-x-1">
+                          <span>Message</span>
+                          <FaSort className="text-gray-500 text-xs" />
+                        </div>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-[#1e1e1e] divide-y divide-[#3a3a3a]">
+                    {filteredQueries.map((query, index) => (
+                      <tr 
+                        key={index} 
+                        className={`${index % 2 === 0 ? 'bg-[#1e1e1e]' : 'bg-[#252525]'} hover:bg-[#2d2d2d] transition-colors duration-200`}
+                      >
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-base text-[#93cfa2] font-medium">{query.name || 'N/A'}</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-base text-gray-400 group">
+                            <a 
+                              href={`mailto:${query.email}`} 
+                              className="hover:text-[#93cfa2] transition-colors"
+                              title="Click to email"
+                            >
+                              {query.email || 'N/A'}
+                            </a>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-base text-gray-400">{query.subject || 'No Subject'}</div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center">
+                            <div 
+                              id={`message-${index}`}
+                              className="text-base text-gray-400 max-w-xs truncate"
+                              ref={(el) => {
+                                if (el && query.message) {
+                                  const isTruncated = el.scrollWidth > el.clientWidth || el.scrollHeight > el.clientHeight;
+                                  if (isTruncated !== truncatedMessages[`message-${index}`]) {
+                                    setTruncatedMessages(prev => ({
+                                      ...prev,
+                                      [`message-${index}`]: isTruncated
+                                    }));
+                                  }
+                                }
+                              }}
+                            >
+                              {query.message || 'No message content'}
+                            </div>
+                            {truncatedMessages[`message-${index}`] && (
+                              <button 
+                                onClick={() => handleViewMessage(query.message, `message-${index}`)}
+                                className=" text-[#54BB74] hover:text-[#48a064] focus:outline-none transition-colors"
+                                title="View full message"
+                              >
+                             <span>view more</span>
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              
+              {/* Pagination - Add this if you implement pagination later */}
+              {/* <div className="bg-[#2d2d2d] px-6 py-3 flex items-center justify-between border-t border-[#3a3a3a]">
+                <div className="text-sm text-[#a0a0a0]">
+                  Showing <span className="font-medium">1</span> to <span className="font-medium">10</span> of{' '}
+                  <span className="font-medium">{filteredQueries.length}</span> results
+                </div>
+                <div className="flex space-x-2">
+                  <button className="px-3 py-1 rounded-md bg-[#3a3a3a] text-[#a0a0a0] hover:bg-[#4a4a4a] disabled:opacity-50" disabled={true}>
+                    Previous
+                  </button>
+                  <button className="px-3 py-1 rounded-md bg-[#54bb74] text-white hover:bg-[#4aaa64] disabled:opacity-50" disabled={filteredQueries.length <= 10}>
+                    Next
+                  </button>
+                </div>
+              </div> */}
+            </div>
+          )}
+        </div>
+      </div>
+    )}
+
+      {/* Message Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+          <div 
+            className="bg-[#1e1e1e] rounded-lg max-w-2xl w-full max-h-[80vh] flex flex-col border border-[#3a3a3a] animate-fadeIn"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-6 border-b border-[#3a3a3a] flex justify-between items-center">
+              <h3 className="text-xl font-bold text-white">Full Message</h3>
+              <button 
+                onClick={() => setIsModalOpen(false)}
+                className="text-gray-400 hover:text-white focus:outline-none"
+                aria-label="Close"
+              >
+                <FaTimes className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="p-6 overflow-y-auto flex-grow">
+              <p className="text-gray-300 whitespace-pre-wrap">{selectedMessage || 'No message content'}</p>
+            </div>
+            <div className="p-4 border-t border-[#3a3a3a] flex justify-end">
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="px-4 py-2 bg-[#54BB74] text-[#1e1e1e] rounded-md hover:bg-[#48a064] transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {activeTab === 'tracking' && (
         <div className="space-y-6">
@@ -1431,7 +2166,7 @@ export default function CustomerDashboard({ token }) {
         </div>
       )}
       
-      {activeTab === 'products' && (
+      {activeTab === 'productManagement' && (
         <ProductManagement token={token} />
       )}
       
@@ -1467,7 +2202,7 @@ export default function CustomerDashboard({ token }) {
           ) : (
             <div className="bg-[#1e1e1e] p-6 rounded-lg">
               <div className="flex flex-col items-center justify-center py-8">
-                <p className="text-gray-300 mb-6">Please select a customer to manage their slideshow or add a new customer</p>
+                <p className="text-gray-300 mb-6"> Please select a customer to manage their slideshow or add a new customer</p>
                 <button
                   onClick={() => setShowAddCustomerModal(true)}
                   className="bg-[#54BB74] text-[#1e1e1e] px-6 py-3 rounded-md hover:bg-[#93cfa2] transition-colors flex items-center font-medium"
@@ -1505,9 +2240,17 @@ export default function CustomerDashboard({ token }) {
         <div className="mb-6 bg-[#1e1e1e] p-4 rounded-lg">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="relative flex-grow">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <FaSearch className="text-gray-500" />
+
+            <div className="flex flex-col space-y-4 md:space-y-0 md:flex-row md:items-center md:justify-between">
+            <div className="space-y-1">
+              <h2 className="text-3xl font-bold text-white">Customers</h2>
+              {/* <p className="text-[#a0a0a0] text-base">View and manage all contact form submissions</p> */}
             </div>
+            <div className="relative w-full md:w-96">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <FaSearch className="text-[#a0a0a0] h-4 w-4" />
+              </div>
+             
             <input
               type="text"
               value={searchTerm}
@@ -1515,6 +2258,8 @@ export default function CustomerDashboard({ token }) {
               placeholder="Search customers..."
               className="bg-[#292929] text-white w-full pl-10 pr-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#54bb74]"
             />
+            </div>
+          </div>
           </div>
           
           <div className="flex items-center gap-2">
@@ -1601,7 +2346,7 @@ export default function CustomerDashboard({ token }) {
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full bg-[#1e1e1e] rounded-lg overflow-hidden">
-            <thead className="bg-[#292929]">
+            <thead className="bg-[#292929] ">
               <tr>
                 <th className="px-4 py-3 text-left">
                   <button 
@@ -2310,6 +3055,16 @@ export default function CustomerDashboard({ token }) {
         <div className="mt-6">
           <ProductManagement />
         </div>
+      )}
+      
+      {/* Distributor Details Modal */}
+      {isDistributorModalOpen && selectedDistributor && (
+        <DistributorDetailsModal
+          distributor={selectedDistributor}
+          notes={notes}
+          setNotes={setNotes}
+          onClose={() => setIsDistributorModalOpen(false)}
+        />
       )}
       
       {/* Add Customer Modal */}

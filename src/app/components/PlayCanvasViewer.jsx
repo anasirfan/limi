@@ -77,7 +77,7 @@ const PlayCanvasViewer = ({
         // Default selections
         iframeRef.current.contentWindow.postMessage("light_type:ceiling", "*");
         iframeRef.current.contentWindow.postMessage("light_amount:1", "*");
-        iframeRef.current.contentWindow.postMessage("pendant_design:product_2", "*");
+        iframeRef.current.contentWindow.postMessage("cable_0:product_2", "*");
       } else {
         // Send configurations from props instead of defaults
         sendConfigToPlayCanvas(config);
@@ -178,7 +178,7 @@ const PlayCanvasViewer = ({
       if (config.pendants && Array.isArray(config.pendants)) {
         config.pendants.forEach((pendant, index) => {
           if (pendant && pendant.design) {
-            iframeRef.current.contentWindow.postMessage(`pendant_${index}_design:${pendant.design}`, "*");
+            iframeRef.current.contentWindow.postMessage(`pendant_${index}_0:${pendant.design}`, "*");
           }
           if (pendant && pendant.color) {
             iframeRef.current.contentWindow.postMessage(`pendant_${index}_color:${pendant.color}`, "*");
@@ -191,7 +191,7 @@ const PlayCanvasViewer = ({
         if(config.lightDesign === 'radial'){
           config.lightDesign = 'product_2';
         }
-        iframeRef.current.contentWindow.postMessage(`pendant_design:${config.lightDesign}`, "*");
+        iframeRef.current.contentWindow.postMessage(`cable_0:${config.lightDesign}`, "*");
       }
     } catch (error) {
       console.error("Error sending configuration to PlayCanvas:", error);

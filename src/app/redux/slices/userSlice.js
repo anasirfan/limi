@@ -40,7 +40,9 @@ const defaultUserData = {
   },
   addresses: [],
   paymentMethods: [],
-  savedConfigurations: []
+  savedConfigurations: [],
+  // Add token expiration tracking
+  tokenExpiresAt: null
 };
 
 // Merge saved user with default structure to ensure all fields exist
@@ -77,34 +79,38 @@ export const loginUser = createAsyncThunk(
         return rejectWithValue('Please enter both email and password');
       }
       
-      // Make API request
-      const response = await fetch('https://api1.limitless-lighting.co.uk/client/user/login', {
+      // Make API request 
+      const response = await fetch('https://dev.api.limitless-lighting.co.uk/client/verify_otp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           email: credentials.email,
-          password: credentials.password
+          password: credentials.password,
+          isWebsiteLogin: true
         }),
       });
-      
       if (!response.ok) {
         const errorData = await response.json();
-        return rejectWithValue(errorData.message || 'Login failed');
+        console.log("error login", errorData);
+        return rejectWithValue(errorData.error_message || 'Login failed');
       }
       
       const data = await response.json();
-      
-      // Save token to localStorage
-      if (data.token) {
-        localStorage.setItem('limiToken', data.token);
+      console.log( 'data Login : ', data);
+      // Save token to localStorage with Bearer prefix for consistency
+      if (data.data.token) {
+        const token = data.data.token.startsWith('Bearer ') ? data.data.token : `${data.data.token}`;
+        localStorage.setItem('limiToken', token);
       }
       
       // Get user profile with token
-      const profileResponse = await fetch('https://api1.limitless-lighting.co.uk/client/user/profile', {
+      const token = data.data.token.startsWith('Bearer ') ? data.data.token : `${data.data.token}`;
+      console.log("token : ",token);
+      const profileResponse = await fetch('https://dev.api1.limitless-lighting.co.uk/client/user/profile', {
         headers: {
-          'Authorization': `${data.token}`
+          'Authorization': token
         }
       });
       
@@ -120,7 +126,7 @@ export const loginUser = createAsyncThunk(
       
       return userData;
     } catch (error) {
-      return rejectWithValue(error.message || 'Login failed');
+      return rejectWithValue(error.error_message || 'Login failed');
     }
   }
 );
@@ -129,6 +135,7 @@ export const loginUser = createAsyncThunk(
 export const signupUser = createAsyncThunk(
   'user/signup',
   async (userData, { rejectWithValue }) => {
+    const { name, email, password } = userData;
 
     console.log("in userSlice : ",userData);
     try {
@@ -138,68 +145,35 @@ export const signupUser = createAsyncThunk(
       }
       
       // Make API request
-      const response = await fetch('https://api1.limitless-lighting.co.uk/client/user/signup', {
+      const response = await fetch('https://dev.api.limitless-lighting.co.uk/client/send_otp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          name: userData.name,
+          username: userData.name,
           email: userData.email,
-          password: userData.password
+          password: userData.password,
+          isWebsiteSignup: true
         }),
       });
       
       if (!response.ok) {
         const errorData = await response.json();
-        return rejectWithValue(errorData.message || 'Signup failed');
+        return rejectWithValue(errorData.error_message || 'Signup failed');
       }
       
       const data = await response.json();
-      console.log("data : ",data);
+      console.log("Signup successful: ", data);
       
-      // Auto login after successful signup
-      const loginResponse = await fetch('https://api1.limitless-lighting.co.uk/client/user/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: userData.email,
-          password: userData.password
-        }),
-      });
-      
-      if (!loginResponse.ok) {
-        return rejectWithValue('Account created but login failed');
-      }
-      
-      const loginData = await loginResponse.json();
-      
-      // Save token to localStorage
-      if (loginData.token) {
-        localStorage.setItem('limiToken', loginData.token);
-      }
-      console.log("loginData : ",loginData);
-      // Get user profile
-      const profileResponse = await fetch('https://api1.limitless-lighting.co.uk/client/user/profile', {
-        headers: {
-          'Authorization': `${loginData.token}`
-        }
-      });
-
-      if (!profileResponse.ok) {
-        return rejectWithValue('Account created but failed to fetch profile');
-      }
-
-      const newUser = await profileResponse.json();
-      console.log("newUser : ",newUser);
-      // Save to localStorage
-      saveUserToStorage(newUser);
-      
-      return newUser;
+      // Return success message and user email for redirection
+      return {
+        success: true,
+        message: 'Account created successfully! Please log in.',
+        email: userData.email
+      };
     } catch (error) {
-      return rejectWithValue(error.message || 'Signup failed');
+      return rejectWithValue(error.error_message || 'Signup failed');
     }
   }
 );
@@ -211,39 +185,44 @@ export const updateUserProfile = createAsyncThunk(
     try {
       // Get current user and token
       const { user } = getState().user;
-      const token = localStorage.getItem('limiToken');
+      let token = localStorage.getItem('limiToken');
       
       if (!user || !token) {
-        return rejectWithValue('User not logged in');
+        return rejectWithValue('Please log in to update your profile');
       }
+
+      // Ensure token has Bearer prefix
+      token = token.startsWith('Bearer ') ? token : `Bearer ${token}`;
       
-      // Make API request
-      const response = await fetch('/client/user/profile', {
+      // Make API request with full URL
+      const response = await fetch('https://dev.api1.limitless-lighting.co.uk/client/user/profile', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Authorization': token
         },
         body: JSON.stringify(profileData),
       });
       
+      if (response.status === 401) {
+        // Token might be expired, clear it
+        localStorage.removeItem('limiToken');
+        return rejectWithValue('Your session has expired. Please log in again.');
+      }
+      
       if (!response.ok) {
-        const errorData = await response.json();
-        return rejectWithValue(errorData.message || 'Profile update failed');
+        const errorData = await response.json().catch(() => ({}));
+        return rejectWithValue(errorData.message || 'Failed to update profile. Please try again.');
       }
       
-      // Get updated profile
-      const profileResponse = await fetch('/client/user/profile', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      
-      if (!profileResponse.ok) {
-        return rejectWithValue('Failed to fetch updated profile');
+      // Return the updated user data from the response if available
+      let updatedUser;
+      try {
+        updatedUser = await response.json();
+      } catch (e) {
+        // If no response body, use the profileData as fallback
+        updatedUser = { ...user, ...profileData };
       }
-      
-      const updatedUser = await profileResponse.json();
       
       // Save to localStorage
       saveUserToStorage(updatedUser);
@@ -259,6 +238,20 @@ export const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
+    updateUser: (state, action) => {
+      if (state.user) {
+        state.user = {
+          ...state.user,
+          ...action.payload,
+          // Preserve nested objects if not provided in the update
+          data: {
+            ...state.user.data,
+            ...(action.payload.data || {})
+          }
+        };
+        saveUserToStorage(state.user);
+      }
+    },
     login: (state, action) => {
       state.isLoggedIn = true;
       state.user = action.payload;
@@ -305,6 +298,11 @@ export const userSlice = createSlice({
     },
     addAddress(state, action) {
       if (state.user) {
+        // Initialize addresses array if it doesn't exist
+        if (!state.user.addresses) {
+          state.user.addresses = [];
+        }
+        
         const newAddress = {
           id: `addr-${Date.now()}`,
           default: state.user.addresses.length === 0, // First address is default
@@ -322,6 +320,19 @@ export const userSlice = createSlice({
           addr.id === id ? { ...addr, ...addressData } : addr
         );
         saveUserToStorage(state.user);
+      }
+    },
+    updateUserAvatar(state, action) {
+      if (state.user) {
+        try {
+          state.user.avatar = action.payload;
+          // Save to localStorage
+          saveUserToStorage(state.user);
+        } catch (error) {
+          console.error('Error updating avatar in Redux:', error);
+          // The error will be caught by the error boundary or can be handled by the component
+          throw error; // Re-throw to allow error handling in components
+        }
       }
     },
     removeAddress(state, action) {
@@ -483,7 +494,9 @@ export const {
   removePaymentMethod, 
   setDefaultPaymentMethod,
   saveConfiguration,
-  removeSavedConfiguration
+  removeSavedConfiguration,
+  updateUserAvatar,
+  updateUser
 } = userSlice.actions;
 
 export default userSlice.reducer;

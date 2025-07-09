@@ -49,7 +49,7 @@ const PendantConfigurator = ({ pendants, updatePendantDesign, isDarkMode }) => {
                   <div 
                     className="w-6 h-6 rounded-full flex-shrink-0" 
                     style={{ 
-                      backgroundImage: `url(/images/configOptions/${pendant.design === 'bumble' ? '1' : pendant.design === 'radial' ? '2' : pendant.design === 'fina' ? '3' : pendant.design === 'ico' ? '4' : '5'}.png)`,
+                      backgroundImage: `url(/images/configOptions/${pendant.design === 'bumble' ? '1' : pendant.design === 'radial' ? '2' : pendant.design === 'fina' ? '3' : pendant.design === 'ico' ? '4' : pendant.design === 'piko' ? '5' : '1'}.png)`,
                       backgroundSize: "cover"
                     }}
                   ></div>

@@ -96,6 +96,7 @@ export default function Home() {
     const consentStatus = localStorage.getItem('cookieConsent');
     if (consentStatus === 'true') {
       initTracking();
+      
     }
     
     // Cleanup tracking on component unmount
