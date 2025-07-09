@@ -378,13 +378,18 @@ useEffect(() => {
         console.log("light_type", savedConfig.lightType);
         sendMessageToPlayCanvas(`light_amount:${savedConfig.lightAmount}`);
         sendMessageToPlayCanvas(`base_type:${savedConfig.baseType}`);
+        sendMessageToPlayCanvas(`base_color:${savedConfig.baseColor}`);
         
         savedCables.forEach((cable, index) => {
           if (cable.systemType) {
             sendMessageToPlayCanvas(`system:${cable.systemType}`);
             sendMessageToPlayCanvas(`cable_${index}:${cable.designId}`);
+            console.log("cable" , cable.size)
+            sendMessageToPlayCanvas(`cable_${index}:size_${cable.size}`);
+
           } else {
             sendMessageToPlayCanvas(`cable_${index}:${cable.designId}`);
+            sendMessageToPlayCanvas(`cable_${index}:size_${cable.size}`);
           }
         });
       }
