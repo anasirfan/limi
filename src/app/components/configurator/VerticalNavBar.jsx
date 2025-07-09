@@ -54,6 +54,13 @@ const VerticalNavBar = ({
   const textColor = '#FFFFFF';
   
   const [isMobile, setIsMobile] = useState(false);
+  const sendMessageToPlayCanvas = (message) => {
+    console.log("Sending message to PlayCanvas iframe:", message);
+    const iframe = document.getElementById("playcanvas-app");
+    if (iframe && iframe.contentWindow) {
+      iframe.contentWindow.postMessage(message, "*");
+    }
+  };
 
   
   // Effect to check screen size and update on resize
@@ -91,6 +98,7 @@ const VerticalNavBar = ({
   // Handle step click in vertical nav - with auto-close config panel
   const handleStepClick = (stepId) => {
     // Auto-close config panel when clicking on any vertical navbar option
+    console.log("handleStepClick", stepId);
     if (localConfiguringType) {
       setLocalConfiguringType(null);
       // Also reset in parent component
@@ -98,7 +106,11 @@ const VerticalNavBar = ({
         onConfigurationTypeChange(null);
       }
     }
-    
+    if(stepId === 'pendantSelection'){
+      sendMessageToPlayCanvas(`hotspot:on`);
+    }else{
+      sendMessageToPlayCanvas(`hotspot:off`);
+    }
     // Always set this step as the active step
     setActiveStep(stepId);
     

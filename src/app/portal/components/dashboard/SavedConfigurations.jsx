@@ -320,7 +320,7 @@ export default function SavedConfigurations() {
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {filteredConfigurations.map((config) => (
             <motion.div
               key={config._id}
@@ -338,10 +338,10 @@ export default function SavedConfigurations() {
                     }-mobile.jpg`
                   }
                   alt={config.name || "Configuration"}
-                  width={200}
-                  height={200}
-                  quality={100}
-                   className="w-full h-full object-cover"
+                height={1000}
+                width={1000}
+              
+                   className="w-full h-full object-contain"
                   priority
                 />
               </div>

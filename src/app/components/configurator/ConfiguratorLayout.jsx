@@ -481,6 +481,9 @@ useEffect(() => {
 
       // Send light amount message
       sendMessageToPlayCanvas(`light_amount:${newAmount}`);
+      //hotspot off
+      sendMessageToPlayCanvas(`hotspot:'off'`);
+
 
       // For multiple pendants, send individual pendant messages
       //   if (newAmount > 0) {
@@ -823,6 +826,7 @@ useEffect(() => {
 
     if (baseType === "rectangular") {
       sendMessageToPlayCanvas(`light_amount:3`);
+      //hotspot off
 
       sendMessageToPlayCanvas(`system:bar`);
       sendMessageToPlayCanvas(`cable_0:system_base_2`);
@@ -1005,6 +1009,7 @@ useEffect(() => {
 
   // Helper function to send messages to PlayCanvas iframe
   const sendMessageToPlayCanvas = (message) => {
+    console.log("Sending message to PlayCanvas iframe:", message);
     const iframe = document.getElementById("playcanvas-app");
     if (iframe && iframe.contentWindow) {
       iframe.contentWindow.postMessage(message, "*");
@@ -1071,6 +1076,7 @@ useEffect(() => {
       iframeMessagesArray.push(`base_type:${config.baseType}`);
     }
     iframeMessagesArray.push(`light_amount:${config.lightAmount}`);
+  
     if (configToSave.cables && Array.isArray(configToSave.cables)) {
       configToSave.cables.forEach((cable, i) => {
         if (cable.isSystem) {
