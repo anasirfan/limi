@@ -323,7 +323,7 @@ useEffect(() => {
       !configData.iframe ||
       !Array.isArray(configData.iframe)
     ) {
-      toast.error("Invalid configuration data");
+      // toast.error("Invalid configuration data");
       return;
     }
 
@@ -1294,14 +1294,14 @@ useEffect(() => {
       className="relative w-full h-full max-sm:h-[100vh] bg-transparent overflow-hidden"
     >
       {/* Loading overlay */}
-      {isLoadingFromUrl && (
+      {/* {isLoadingFromUrl && (
         <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center">
           <div className="bg-[#1e1e1e] p-8 rounded-lg flex flex-col items-center">
             <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-emerald-500 mb-4"></div>
             <p className="text-white text-lg">Loading your configuration...</p>
           </div>
         </div>
-      )}
+      )} */}
 
       {/* 3D Viewer */}
       <div className="w-full h-full">

@@ -45,22 +45,20 @@ export const PreviewControls = ({
 
   return (
     <>
-      <div 
-        className="fixed left-8 top-24 z-[100] group" 
+  
+      <div className="absolute top-24 left-8 z-50 flex gap-2"
         ref={guideRef}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        onTouchStart={handleTouch}
-      >
-        <div className="relative">
-          <button
-            className={`p-3 rounded-full bg-[#50C878] text-white transition-all shadow-lg ${isHovered ? 'bg-gray-700' : 'hover:scale-110 hover:bg-gray-700'}`}
+        onTouchStart={handleTouch}>
+      <button
+            className={`p-2 rounded-full bg-[#50C878] text-white transition-all shadow-lg ${isHovered ? 'bg-gray-700' : 'hover:scale-110 hover:bg-gray-700'}`}
             title="View Navigation Guide"
             aria-expanded={isHovered}
           >
-            <FaInfo  size={20} />
+            <FaInfo  size={16} />
           </button>
-        </div>
+ 
 
         {(isHovered || (isMobile && isHovered)) && (
           <div className="absolute -left-4 top-12 z-[101] w-64 p-4 bg-white rounded-lg shadow-xl border border-gray-200 animate-fadeIn">
@@ -72,10 +70,10 @@ export const PreviewControls = ({
                     <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-600 text-xs font-medium shrink-0">👆</span>
                     <span>One finger drag to rotate</span>
                   </li>
-                  <li className="flex items-start gap-2">
+                  {/* <li className="flex items-start gap-2">
                     <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-600 text-xs font-medium shrink-0">✌️</span>
                     <span>Two fingers drag to pan</span>
-                  </li>
+                  </li> */}
                   <li className="flex items-start gap-2">
                     <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-600 text-xs font-medium shrink-0">🤏</span>
                     <span>Pinch to zoom in/out</span>
@@ -87,14 +85,14 @@ export const PreviewControls = ({
                     <FaMousePointer className="text-blue-500 mt-0.5 flex-shrink-0" />
                     <span>Left-click and drag to rotate</span>
                   </li>
-                  <li className="flex items-start gap-2">
+                  {/* <li className="flex items-start gap-2">
                     <FaMouse className="text-blue-500 mt-0.5 flex-shrink-0" />
                     <span>Right-click and drag to pan</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FaArrowsAlt className="text-blue-500 mt-0.5 flex-shrink-0" />
                     <span>Middle-click and drag to zoom</span>
-                  </li>
+                  </li> */}
                   <li className="flex items-start gap-2">
                     <FaSearchPlus className="text-blue-500 mt-0.5 flex-shrink-0" />
                     <span>Scroll up to zoom in</span>
@@ -108,8 +106,8 @@ export const PreviewControls = ({
             </ul>
               </div>
         )}
-      </div>
 
+      </div>
       <div className="absolute top-24 right-8 z-50 flex gap-2">
         <button
           className="p-2 rounded-full bg-gray-800 text-gray-300 hover:opacity-90 transition-all"

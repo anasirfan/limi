@@ -232,7 +232,7 @@ export const PendantSelectionDropdown = ({
           {/* <h3 className="text-base font-bold text-white mb-3 font-['Amenti']">Select Design</h3> */}
           
           {/* Wrap ConfigPanel in a div with mobile-specific styles */}
-          <div className="max-sm:relative max-sm:w-full max-sm:h-auto max-sm:bg-transparent max-sm:border-0 max-sm:shadow-none">
+          <div className="max-sm:relative max-sm:w-full max-sm:h-auto max-sm:bg-transparent max-sm:border-0 max-sm:shadow-none mb-8">
             <ConfigPanel
               configuringType={configuringType}
               configuringSystemType={configuringSystemType}

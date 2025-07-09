@@ -145,7 +145,7 @@ export const NavButton = ({
               maxWidth: isMobile ? `${containerDimensions.width || screenWidth}px` : 'calc(100vw - 2rem)',
               // Position at 25% from the top of the container on mobile
               ...(isMobile && containerDimensions.height > 0 && {
-                top: `338px`,
+                top: `360px`,
               })
             }}
             onClick={(e) => e.stopPropagation()}
