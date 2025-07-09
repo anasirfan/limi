@@ -421,7 +421,7 @@ const PlayCanvasViewer = ({
       <iframe
         ref={iframeRef}
         id="playcanvas-app"
-        src="https://playcanv.as/e/p/cW2W3Amn/"
+        src="https://playcanv.as/e/p/DegE57et/"
         allow="autoplay; fullscreen; vr"
         className={`w-full h-full transition-opacity duration-500 ${appReady ? 'opacity-100' : 'opacity-0'}`}
         style={{ border: 'none' }}
