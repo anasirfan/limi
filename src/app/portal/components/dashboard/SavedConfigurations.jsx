@@ -22,9 +22,65 @@ import {
   FaSpinner,
 } from "react-icons/fa";
 
+const CableItem = ({ designName, cableType, cableSize, additionalDetails }) => (
+  <details className="group">
+    <summary className="flex items-center justify-between p-3 bg-[#1e1e1e] rounded-lg border border-gray-800 cursor-pointer hover:bg-[#252525] transition-colors duration-200">
+      <div className="flex items-center">
+        <span className="w-2 h-2 rounded-full bg-blue-500 mr-3"></span>
+        <span className="font-medium text-white">{designName}</span>
+        {cableSize && (
+          <span className="ml-2 px-2 py-0.5 text-xs font-medium rounded-full bg-green-900/30 text-green-400 border border-green-800/50">
+            Size: {cableSize} mm
+          </span>
+        )}
+        {cableType && (
+          <span className="ml-2 px-2 py-0.5 text-xs font-medium rounded-full bg-blue-900/30 text-blue-400 border border-blue-800/50">
+            {cableType}
+          </span>
+        )}
+      </div>
+      <svg
+        className="w-4 h-4 text-gray-400 transform transition-transform duration-200 group-open:rotate-180"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M19 9l-7 7-7-7"
+        />
+      </svg>
+    </summary>
+    <div className="mt-1 p-3 bg-[#252525] rounded-b-lg border border-t-0 border-gray-800">
+      <div className="space-y-2">
+        {cableSize && (
+          <div className="flex justify-between text-sm py-1">
+            <span className="text-gray-400">Size:</span>
+            <span className="text-white">{cableSize} mm</span>
+          </div>
+        )}
+        {additionalDetails.length > 0 && (
+          <div className="pt-2 border-t border-gray-700">
+            <div className="space-y-2">
+              {additionalDetails.map(({ key, value }, idx) => (
+                <div key={idx} className="flex justify-between text-sm py-1">
+                  <span className="text-gray-400">{key.replace(/_/g, " ")}:</span>
+                  <span className="text-white">{value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  </details>
+);
+
 export default function SavedConfigurations() {
   const router = useRouter();
-  const { user } = useSelector(state => state.user);
+  const { user } = useSelector((state) => state.user);
   const [configurations, setConfigurations] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -34,73 +90,81 @@ export default function SavedConfigurations() {
   const [filterStatus, setFilterStatus] = useState("all");
   const [selectedConfig, setSelectedConfig] = useState(null);
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
-  
+
   // Fetch configurations when component mounts
   useEffect(() => {
     if (user?.data?._id) {
       fetchConfigurations();
     }
   }, [user]);
-  
 
   // Fetch configurations from API
   const fetchConfigurations = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('https://api1.limitless-lighting.co.uk/admin/products/users/light-configs', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ userId: user.data._id })
-      });
-      
+      const response = await fetch(
+        "https://dev.api1.limitless-lighting.co.uk/admin/products/users/light-configs",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userId: user.data._id }),
+        }
+      );
+
       if (!response.ok) {
-        throw new Error('Failed to fetch configurations');
+        throw new Error("Failed to fetch configurations");
       }
-      
+
       const data = await response.json();
       setConfigurations(data);
-      console.log('Fetched configurations:', data);
+      console.log("configurations", configurations);
     } catch (error) {
-      console.error('Error fetching configurations:', error);
-      toast.error('Failed to load configurations');
+      console.error("Error fetching configurations:", error);
+      toast.error("Failed to load configurations");
     } finally {
       setIsLoading(false);
     }
   };
-  
+  console.log("configurations", configurations);
+
   // Delete configuration
   const deleteConfiguration = async (configId) => {
-    if (window.confirm('Are you sure you want to delete this configuration?')) {
+    if (window.confirm("Are you sure you want to delete this configuration?")) {
       setIsDeleting(true);
       try {
-        const response = await fetch(`https://api1.limitless-lighting.co.uk/admin/products/light-configs/${configId}`, {
-          method: 'DELETE'
-        });
-        
+        const response = await fetch(
+          `https://dev.api1.limitless-lighting.co.uk/admin/products/light-configs/${configId}`,
+          {
+            method: "DELETE",
+          }
+        );
+
         if (!response.ok) {
-          throw new Error('Failed to delete configuration');
+          throw new Error("Failed to delete configuration");
         }
-        
+
         // Remove from local state
-        setConfigurations(prev => prev.filter(config => config._id !== configId));
-        
+        setConfigurations((prev) =>
+          prev.filter((config) => config._id !== configId)
+        );
+
         // Close modal if the deleted config was selected
         if (selectedConfig && selectedConfig._id === configId) {
           setSelectedConfig(null);
         }
-        
-        toast.success('Configuration deleted successfully');
+
+        toast.success("Configuration deleted successfully");
       } catch (error) {
-        console.error('Error deleting configuration:', error);
-        toast.error('Failed to delete configuration');
+        console.error("Error deleting configuration:", error);
+        toast.error("Failed to delete configuration");
       } finally {
         setIsDeleting(false);
       }
     }
   };
-  
+
   // View in configurator
   const viewInConfigurator = (configId) => {
     router.push(`/configurator?configId=${configId}`);
@@ -110,9 +174,15 @@ export default function SavedConfigurations() {
   const filteredConfigurations = configurations
     .filter((config) => {
       // Filter by search term
-      const matchesSearch = searchTerm === "" || 
-        (config.name && config.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (config.config && config.config.light_type && config.config.light_type.toLowerCase().includes(searchTerm.toLowerCase()));
+      const matchesSearch =
+        searchTerm === "" ||
+        (config.name &&
+          config.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (config.config &&
+          config.config.light_type &&
+          config.config.light_type
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()));
 
       // Filter by status - currently all configs have same status, but keeping for future use
       const matchesStatus = filterStatus === "all";
@@ -122,7 +192,7 @@ export default function SavedConfigurations() {
     .sort((a, b) => {
       // Sort by selected field
       let aValue, bValue;
-      
+
       if (sortBy === "updatedAt" || sortBy === "createdAt") {
         aValue = new Date(a[sortBy] || a.createdAt).getTime();
         bValue = new Date(b[sortBy] || b.createdAt).getTime();
@@ -145,7 +215,6 @@ export default function SavedConfigurations() {
   const toggleSortOrder = () => {
     setSortOrder(sortOrder === "asc" ? "desc" : "asc");
   };
-
   // View configuration details
   const viewConfigDetails = (config) => {
     setSelectedConfig(config);
@@ -194,7 +263,7 @@ export default function SavedConfigurations() {
 
           <div className="flex gap-2">
             <div className="relative">
-              <button 
+              <button
                 onClick={() => setShowFilterDropdown(!showFilterDropdown)}
                 className="flex items-center gap-2 bg-[#292929] text-white px-3 py-2 rounded-md hover:bg-[#333] transition-colors"
               >
@@ -251,7 +320,7 @@ export default function SavedConfigurations() {
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {filteredConfigurations.map((config) => (
             <motion.div
               key={config._id}
@@ -260,42 +329,32 @@ export default function SavedConfigurations() {
               transition={{ duration: 0.3 }}
               className="bg-[#292929] rounded-lg overflow-hidden"
             >
-              <div className="relative h-48">
-                {config.thumbnail?.url ? (
-                  <img
-                    src={config.thumbnail.url}
-                    alt={config.name || 'Configuration'}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = `/images/homepage-products/${Math.floor(Math.random() * 7) + 1}-mobile.jpg`;
-                    }}
-                  />
-                ) : (
-                  <img
-                    src={`/images/homepage-products/${Math.floor(Math.random() * 7) + 1}-mobile.jpg`}
-                    alt="Fallback image"
-                    className="w-full h-full object-cover"
-                  />
-                )}
+              <div className="flex items-center h-[200px] w-full justify-center py-2 bg-[#292929] border-b border-gray-200">
+                <Image
+                  src={
+                    config.thumbnail?.url ||
+                    `/images/homepage-products/${
+                      Math.floor(Math.random() * 7) + 1
+                    }-mobile.jpg`
+                  }
+                  alt={config.name || "Configuration"}
+                  width={200}
+                  height={200}
+                  quality={100}
+                   className="w-full h-full object-cover"
+                  priority
+                />
               </div>
 
-              <div className="p-4">
-                <h3 className="text-lg font-semibold text-white mb-1">
-                  {config.name || 'Unnamed Configuration'}
-                </h3>
-
-                <div className="text-sm text-gray-400 mb-2">
-                  <p>Light Type: {config.config?.light_type || 'N/A'}</p>
-                  <p>Light Amount: {config.config?.light_amount || 'N/A'}</p>
-                  {config.config?.base_type && <p>Base Type: {config.config.base_type}</p>}
+              <div className="p-4 ">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold text-white mb-1">
+                    {config.name || "Unnamed Configuration"}
+                  </h3>
+                  <span>{formatDate(config.createdAt)}</span>
                 </div>
-
                 <div className="flex justify-between items-center text-sm text-gray-400 mb-4">
-                  <div>
-                    <span>Created: </span>
-                    <span>{formatDate(config.createdAt)}</span>
-                  </div>
+                  <div></div>
                 </div>
 
                 <div className="flex flex-wrap gap-2">
@@ -307,20 +366,28 @@ export default function SavedConfigurations() {
                     <span className="text-sm">View</span>
                   </button>
 
-                  <button 
+                  <button
+                    id="open_id"
                     onClick={() => viewInConfigurator(config._id)}
                     className="flex-1 flex items-center justify-center gap-1 bg-[#292929] border border-[#54BB74] text-[#54BB74] px-3 py-2 rounded hover:bg-[#54BB74] hover:text-white transition-colors"
                   >
                     <FaEdit />
-                    <span className="text-sm">Open</span>
+
+                    <span id={config._id} className="text-sm">
+                      Open
+                    </span>
                   </button>
 
-                  <button 
+                  <button
                     onClick={() => deleteConfiguration(config._id)}
                     className="flex items-center justify-center gap-1 bg-[#292929] border border-gray-700 text-white px-3 py-2 rounded hover:bg-red-600 hover:border-red-600 transition-colors"
                     disabled={isDeleting}
                   >
-                    {isDeleting ? <FaSpinner className="animate-spin" /> : <FaTrash />}
+                    {isDeleting ? (
+                      <FaSpinner className="animate-spin" />
+                    ) : (
+                      <FaTrash />
+                    )}
                   </button>
                 </div>
               </div>
@@ -331,146 +398,262 @@ export default function SavedConfigurations() {
 
       {/* Configuration Details Modal */}
       {selectedConfig && (
-        <div className="fixed inset-0 pt-20 bg-black/70 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 pt-20 bg-black/80 backdrop-blur-sm flex items-start justify-center z-50 p-4 overflow-y-auto">
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.3 }}
-            className="bg-[#1e1e1e] rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+            className="bg-gradient-to-br from-[#1e1e1e] to-[#141414] rounded-xl shadow-2xl border border-gray-800 w-full max-w-6xl my-8 overflow-hidden"
           >
-            <div className="relative">
-              <div className="h-64 relative">
-                {selectedConfig.thumbnail?.url ? (
-                  <img
-                    src={selectedConfig.thumbnail.url}
-                    alt={selectedConfig.name || 'Configuration'}
-                    className="w-full h-full object-cover rounded-t-lg"
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = `/images/homepage-products/${Math.floor(Math.random() * 7) + 1}-mobile.jpg`;
-                    }}
-                  />
-                ) : (
-                  <img
-                    src={`/images/homepage-products/${Math.floor(Math.random() * 7) + 1}-mobile.jpg`}
-                    alt="Fallback image"
-                    className="w-full h-full object-cover rounded-t-lg"
-                  />
-                )}
-                <button
-                  onClick={closeConfigDetails}
-                  className="absolute top-4 right-4 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
+            {/* Header with close button */}
+            <div className="border-b border-gray-800 p-4 flex justify-between items-center bg-gradient-to-r from-[#1e1e1e] to-[#1a1a1a]">
+              <div>
+                <h2 className="text-xl font-bold text-white">
+                  Configuration Details
+                </h2>
+                <p className="text-sm text-gray-400">
+                  View and manage your lighting configuration
+                </p>
               </div>
+              <button
+                onClick={closeConfigDetails}
+                className="p-2 rounded-lg hover:bg-gray-800 transition-colors duration-200 text-gray-400 hover:text-white"
+                aria-label="Close"
+              >
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
 
-              <div className="p-6">
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl font-bold text-white">
-                    {selectedConfig.name || 'Unnamed Configuration'}
-                  </h2>
-                  <div className="text-sm text-gray-400">
-                    Created: {formatDate(selectedConfig.createdAt)}
+            <div className="p-6">
+              <div className="flex flex-col lg:flex-row gap-8">
+                {/* Left Section - Image & Actions */}
+                <div className="w-full lg:w-2/5">
+                  <div className="bg-[#1a1a1a] rounded-xl p-4 border border-gray-800 shadow-lg">
+                    <div className="relative w-full aspect-square mb-4 rounded-lg overflow-hidden bg-gradient-to-br from-gray-900 to-gray-800">
+                      <Image
+                        src={
+                          selectedConfig.thumbnail?.url ||
+                          `/images/homepage-products/${
+                            Math.floor(Math.random() * 7) + 1
+                          }-mobile.jpg`
+                        }
+                        alt={selectedConfig.name || "Configuration"}
+                        fill
+                        style={{ objectFit: "contain" }}
+                        className="hover:scale-105 transition-transform duration-300"
+                        priority
+                      />
+                    </div>
+
+                    <div className="mb-6">
+                      <h1 className="text-2xl font-bold text-white mb-1 truncate">
+                        {selectedConfig.name || "Unnamed Configuration"}
+                      </h1>
+                      <div className="flex items-center text-sm text-gray-400">
+                        <svg
+                          className="w-4 h-4 mr-1.5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                          />
+                        </svg>
+                        Created: {formatDate(selectedConfig.createdAt)}
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col space-y-3">
+                      <button
+                        onClick={() => viewInConfigurator(selectedConfig._id)}
+                        className="group flex items-center justify-center gap-2 bg-gradient-to-r from-[#54BB74] to-[#3e8e5a] text-white px-6 py-3 rounded-lg font-medium hover:opacity-90 transition-all duration-200 transform hover:-translate-y-0.5 shadow-lg hover:shadow-[#54BB74]/20"
+                      >
+                        <FaEdit className="h-4 w-4 transition-transform group-hover:scale-110" />
+                        <span>Open in Configurator</span>
+                      </button>
+
+                      <button
+                        onClick={() => deleteConfiguration(selectedConfig._id)}
+                        disabled={isDeleting}
+                        className="group flex items-center justify-center gap-2 bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-3 rounded-lg font-medium hover:opacity-90 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
+                      >
+                        {isDeleting ? (
+                          <>
+                            <FaSpinner className="h-4 w-4 animate-spin" />
+                            <span>Deleting...</span>
+                          </>
+                        ) : (
+                          <>
+                            <FaTrash className="h-4 w-4 transition-transform group-hover:scale-110" />
+                            <span>Delete Configuration</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
                   </div>
                 </div>
-                
-                <div className="mb-6">
-                  <h3 className="text-lg font-semibold text-white mb-3">
-                    Configuration Details
-                  </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <div className="bg-[#292929] p-4 rounded-xl border border-[#333] hover:border-[#54BB74] transition-all duration-300">
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className="w-2 h-2 rounded-full bg-[#54BB74]"></div>
-                        <div className="text-sm font-medium text-gray-400">Light Type</div>
+
+                {/* Right Section - Details */}
+                <div className="w-full lg:w-3/5 space-y-6">
+                  {/* Configuration Details */}
+                  <div className="bg-gradient-to-br from-[#1a1a1a] to-[#141414] rounded-xl border border-gray-800 overflow-hidden shadow-lg">
+                    <div className="p-5 bg-gradient-to-r from-[#1a1a1a] to-[#1e1e1e] border-b border-gray-800">
+                      <div className="flex items-center">
+                        <h3 className="text-lg font-semibold text-white">
+                          Configuration Specifications
+                        </h3>
                       </div>
-                      <div className="text-lg font-semibold text-white">{selectedConfig.config?.light_type || 'N/A'}</div>
                     </div>
-                    
-                    <div className="bg-[#292929] p-4 rounded-xl border border-[#333] hover:border-[#54BB74] transition-all duration-300">
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className="w-2 h-2 rounded-full bg-[#54BB74]"></div>
-                        <div className="text-sm font-medium text-gray-400">Light Amount</div>
+                    <div className="p-3">
+                      <div className="space-y-1.5 text-sm">
+                        {selectedConfig.config?.light_type && (
+                          <div className="flex justify-between py-1">
+                            <span className="text-gray-400">Light Type</span>
+                            <span className="text-white">
+                              {selectedConfig.config.light_type}
+                            </span>
+                          </div>
+                        )}
+                        {selectedConfig.config?.cable_color && (
+                          <div className="flex justify-between py-1">
+                            <span className="text-gray-400">Base Color</span>
+                            <span className="text-white">
+                              {selectedConfig.config.cable_color}
+                            </span>
+                          </div>
+                        )}
+                        {selectedConfig.config?.light_amount && (
+                          <div className="flex justify-between py-1">
+                            <span className="text-gray-400">Light Amount</span>
+                            <span className="text-white">
+                              {selectedConfig.config.light_amount}
+                            </span>
+                          </div>
+                        )}
+                        {selectedConfig.config?.base_type && (
+                          <div className="flex justify-between py-1">
+                            <span className="text-gray-400">Base Type</span>
+                            <span className="text-white">
+                              {selectedConfig.config.base_type}
+                            </span>
+                          </div>
+                        )}
                       </div>
-                      <div className="text-lg font-semibold text-white">{selectedConfig.config?.light_amount || 'N/A'}</div>
                     </div>
-                    
-                    {selectedConfig.config?.base_type && (
-                      <div className="bg-[#292929] p-4 rounded-xl border border-[#333] hover:border-[#54BB74] transition-all duration-300">
-                        <div className="flex items-center gap-2 mb-2">
-                          <div className="w-2 h-2 rounded-full bg-[#54BB74]"></div>
-                          <div className="text-sm font-medium text-gray-400">Base Type</div>
-                        </div>
-                        <div className="text-lg font-semibold text-white">{selectedConfig.config.base_type}</div>
-                      </div>
-                    )}
                   </div>
-                </div>
-                
-                {/* Pendants/System Attached */}
-                {selectedConfig.config?.cables && Object.keys(selectedConfig.config.cables).length > 0 && (
-                  <div className="mb-6">
-                    <h3 className="text-lg font-semibold text-white mb-3">
-                      Pendants/System Attached
-                    </h3>
-                    <div className="bg-[#292929] p-4 rounded-lg overflow-auto max-h-48">
-                      {Object.entries(selectedConfig.config.cables).map(([key, value]) => (
-                        <div key={key} className="mb-4 pb-3 border-b border-gray-700 last:border-0 last:pb-0 last:mb-0">
-                          <div className="font-medium text-white mb-2">Cable {parseInt(key) + 1}</div>
-                          <div className="text-sm text-gray-400">
-                            {value.replace(/^Cable \d+: \{|\}$/g, '').split('\n').map((line, index) => 
-                              line.trim() ? (
-                                <div key={index} className="mb-1 flex">
-                                  <span className="mr-2">•</span>
-                                  {line.includes(':') ? (
-                                    <>
-                                      <span className="font-medium">{line.split(':')[0].trim()}</span>
-                                      <span>: {line.split(':')[1].trim()}</span>
-                                    </>
-                                  ) : (
-                                    <span>{line.trim()}</span>
-                                  )}
-                                </div>
-                              ) : null
-                            )}
+
+                  {/* Cables Section - Accordion */}
+                  {selectedConfig.config?.cables &&
+                    Object.keys(selectedConfig.config.cables).length > 0 && (
+                      <div className="bg-gradient-to-br from-[#1a1a1a] to-[#141414] rounded-xl border border-gray-800 overflow-hidden shadow-lg">
+                        <div className="p-5 bg-gradient-to-r from-[#1a1a1a] to-[#1e1e1e] border-b border-gray-800">
+                          <div className="flex items-center justify-between">
+                            <h3 className="text-lg font-semibold text-white">
+                              Cable Configuration
+                            </h3>
+                            <div className="text-sm text-gray-400">
+                              {Object.keys(selectedConfig.config.cables).length}{" "}
+                              cables
+                            </div>
                           </div>
                         </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                
-                <div className="flex gap-3">
-                  <button
-                    onClick={() => viewInConfigurator(selectedConfig._id)}
-                    className="flex-1 flex items-center  justify-center gap-1 bg-[#292929] border border-[#54BB74] text-[#54BB74] px-2 py-4 rounded-md hover:bg-[#54BB74] hover:text-white transition-colors text-sm"
-                  >
-                    <FaEdit className="h-4 w-4" />
-                    <span>View</span>
-                  </button>
+                        <div className="p-4">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              {Object.entries(selectedConfig.config.cables)
+                                .filter(([key]) => parseInt(key) < 3)
+                                .map(([key, value]) => {
+                                  const cableData = value
+                                    .split("\n")
+                                    .reduce((acc, line) => {
+                                      const [k, v] = line
+                                        .split(":")
+                                        .map((s) => s.trim());
+                                      if (k && v) acc[k] = v;
+                                      return acc;
+                                    }, {});
 
-                  <button 
-                    onClick={() => deleteConfiguration(selectedConfig._id)}
-                    className="flex-1 flex items-center justify-center gap-1 bg-[#292929] border border-red-600 text-red-600 px-2 py-2 rounded-md hover:bg-red-600 hover:text-white transition-colors text-sm"
-                    disabled={isDeleting}
-                  >
-                    {isDeleting ? <FaSpinner className="animate-spin h-4 w-4" /> : <FaTrash className="h-4 w-4" />}
-                    <span>Delete</span>
-                  </button>
+                                  const cableNumber = parseInt(key) + 1;
+                                  const designName = cableData.design_name || `Cable ${cableNumber}`;
+                                  const cableType = cableData.type;
+                                  let cableSize = selectedConfig.config?.cableConfig[cableNumber - 1]?.size;
+                                  if (typeof cableSize === "string" && cableSize.trim().toLowerCase().endsWith("mm")) {
+                                    cableSize = cableSize.replace(/mm$/i, "").trim();
+                                  }
+
+                                  const additionalDetails = Object.entries(cableData)
+                                    .filter(([k]) => !["design_name", "type", "size"].includes(k))
+                                    .map(([k, v]) => ({ key: k, value: v }));
+
+                                  return (
+                                    <CableItem 
+                                      key={key}
+                                      designName={designName}
+                                      cableType={cableType}
+                                      cableSize={cableSize}
+                                      additionalDetails={additionalDetails}
+                                    />
+                                  );
+                                })}
+                            </div>
+                            <div className="space-y-2">
+                              {Object.entries(selectedConfig.config.cables)
+                                .filter(([key]) => parseInt(key) >= 3)
+                                .map(([key, value]) => {
+                                  const cableData = value
+                                    .split("\n")
+                                    .reduce((acc, line) => {
+                                      const [k, v] = line
+                                        .split(":")
+                                        .map((s) => s.trim());
+                                      if (k && v) acc[k] = v;
+                                      return acc;
+                                    }, {});
+
+                                  const cableNumber = parseInt(key) + 1;
+                                  const designName = cableData.design_name || `Cable ${cableNumber}`;
+                                  const cableType = cableData.type;
+                                  let cableSize = selectedConfig.config?.cableConfig[cableNumber - 1]?.size;
+                                  if (typeof cableSize === "string" && cableSize.trim().toLowerCase().endsWith("mm")) {
+                                    cableSize = cableSize.replace(/mm$/i, "").trim();
+                                  }
+
+                                  const additionalDetails = Object.entries(cableData)
+                                    .filter(([k]) => !["design_name", "type", "size"].includes(k))
+                                    .map(([k, v]) => ({ key: k, value: v }));
+
+                                  return (
+                                    <CableItem 
+                                      key={key}
+                                      designName={designName}
+                                      cableType={cableType}
+                                      cableSize={cableSize}
+                                      additionalDetails={additionalDetails}
+                                    />
+                                  );
+                                })}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                 </div>
               </div>
             </div>

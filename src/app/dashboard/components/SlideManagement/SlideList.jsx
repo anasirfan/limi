@@ -22,9 +22,6 @@ const SlideList = ({
 
   const [showDuplicateModal, setShowDuplicateModal] = useState(false);
 
-  useEffect(() => {
-    console.log("slide ",slides)
-  }, [slides]);
   
   // Handle duplicate slide from another customer
   const handleDuplicateSlide = (slideToClone) => {

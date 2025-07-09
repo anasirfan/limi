@@ -72,7 +72,6 @@ export default function MediaTextSplit({ slide }) {
   useEffect(() => {
     if (videoRef.current && media?.type === 'video') {
       videoRef.current.play().catch(error => {
-        console.log('Auto-play prevented:', error);
       });
     }
   }, [media]);

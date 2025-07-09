@@ -7,7 +7,10 @@ const PlayCanvasViewer = ({
   config = {}, 
   isDarkMode,
   className = '',
-  loadcanvas
+  loadcanvas,
+
+  localSavedCables,
+  localSavedConfig
 }) => {
   const iframeRef = useRef(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -36,7 +39,6 @@ const PlayCanvasViewer = ({
     const handleMessage = (event) => {
       // Check if the message is from our iframe
       if (event.data === 'app:ready1') {
-        console.log('PlayCanvas app is ready');
         setAppReady(true);
         setIsLoading(false);
         
@@ -56,7 +58,6 @@ const PlayCanvasViewer = ({
     // This is especially important for mobile browsers
     // const readyTimeout = setTimeout(() => {
     //   if (!appReady) {
-    //     console.log('PlayCanvas ready timeout - forcing ready state');
     //     setAppReady(true);
     //     setIsLoading(false);
     //     sendDefaultSelections();
@@ -68,9 +69,27 @@ const PlayCanvasViewer = ({
       // clearTimeout(readyTimeout);
     };
   }, [appReady]);
-  
+  const sendMessageToPlayCanvas = (message) => {
+    const iframe = document.getElementById("playcanvas-app");
+    if (iframe && iframe.contentWindow) {
+      iframe.contentWindow.postMessage(message, "*");
+    }
+  };
   // Send default selections when app is ready
   const sendDefaultSelections = () => {
+    if(localSavedConfig){
+    console.log("localSavedConfig",localSavedConfig);
+      sendConfigToPlayCanvas(localSavedConfig.config);
+      localSavedCables.forEach((cable, index) => {
+        if(cable.systemType){
+          sendMessageToPlayCanvas(`system:${cable.systemType}`);
+          sendMessageToPlayCanvas(`cable_${index}:${cable.designId}`);
+        } else {
+          sendMessageToPlayCanvas(`cable_${index}:${cable.designId}`);
+        }
+      });
+    }
+    else{
     if (iframeRef.current && iframeRef.current.contentWindow) {
       // Only send default selections if they're not provided in the config
       if (!config.lightType && !config.lightAmount && !config.lightDesign) {
@@ -83,6 +102,7 @@ const PlayCanvasViewer = ({
         sendConfigToPlayCanvas(config);
       }
     }
+  }
   };
   
   // Handle iframe load event
@@ -90,12 +110,10 @@ const PlayCanvasViewer = ({
     const handleIframeLoad = () => {
       try {
         if (iframeRef.current && iframeRef.current.contentWindow) {
-          console.log('PlayCanvas iframe loaded');
           
           // For desktop browsers, set quality
           if (!isMobile) {
             iframeRef.current.contentWindow.postMessage("highdis", "*");
-            console.log('Set quality to high for desktop');
           }
           
           // For mobile browsers, we handle this differently with script injection
@@ -103,7 +121,6 @@ const PlayCanvasViewer = ({
           // if (isMobile) {
           //   setTimeout(() => {
           //     if (isLoading) {
-          //       console.log('Mobile iframe loaded - setting ready state after timeout');
           //       setAppReady(true);
           //       setIsLoading(false);
           //       // We don't call sendDefaultSelections() here as it's handled in the script injection
@@ -164,7 +181,12 @@ const PlayCanvasViewer = ({
       if (config.lightAmount !== undefined && config.lightAmount !== null) {
         iframeRef.current.contentWindow.postMessage(`light_amount:${config.lightAmount}`, "*");
       }
-      
+      if(config.baseType){
+        iframeRef.current.contentWindow.postMessage(`base_type:${config.baseType}`, "*");
+      }
+       if(config.baseColor){
+        iframeRef.current.contentWindow.postMessage(`base_color:${config.baseColor}`, "*");
+       }
       // // Send cable options
       // if (config.cableColor) {
       //   iframeRef.current.contentWindow.postMessage(`cable_color:${config.cableColor}`, "*");
@@ -175,24 +197,10 @@ const PlayCanvasViewer = ({
       // }
       
       // Send pendant configurations if available
-      if (config.pendants && Array.isArray(config.pendants)) {
-        config.pendants.forEach((pendant, index) => {
-          if (pendant && pendant.design) {
-            iframeRef.current.contentWindow.postMessage(`pendant_${index}_0:${pendant.design}`, "*");
-          }
-          if (pendant && pendant.color) {
-            iframeRef.current.contentWindow.postMessage(`pendant_${index}_color:${pendant.color}`, "*");
-          }
-        });
-      }
+     
       
       // Send global design if single pendant
-      if (config.lightAmount === 1 && config.lightDesign) {
-        if(config.lightDesign === 'radial'){
-          config.lightDesign = 'product_2';
-        }
-        iframeRef.current.contentWindow.postMessage(`cable_0:${config.lightDesign}`, "*");
-      }
+     
     } catch (error) {
       console.error("Error sending configuration to PlayCanvas:", error);
       setHasError(true);
@@ -213,7 +221,6 @@ const PlayCanvasViewer = ({
       const script = doc.createElement('script');
       script.src = 'https://code.playcanvas.com/playcanvas-stable.min.js';
       script.onload = () => {
-        console.log('PlayCanvas engine loaded via script injection');
         
         // Create a script to initialize the PlayCanvas application
         const initScript = doc.createElement('script');
@@ -241,7 +248,6 @@ const PlayCanvasViewer = ({
             
             // Listen for messages from parent
             window.addEventListener('message', function(event) {
-              console.log('Message received in PlayCanvas:', event.data);
               // Handle messages here
             });
           });

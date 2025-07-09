@@ -106,7 +106,7 @@ export async function GET(request) {
           
           if (geoResponse.ok) {
             const geoData = await geoResponse.json();
-            console.log('Geolocation API (ipinfo.io) response:', geoData);
+            
             
             // Prepare the response data
             const responseData = {
@@ -119,7 +119,6 @@ export async function GET(request) {
               timezone: geoData.timezone || 'Unknown'
             };
             
-            console.log('Sending to client:', responseData);
             return NextResponse.json(responseData, { status: 200 });
           }
         } catch (geoError) {
@@ -133,7 +132,6 @@ export async function GET(request) {
           city: 'Unknown',
           region: 'Unknown'
         };
-        console.log('Geolocation failed, sending fallback data:', fallbackData);
         return NextResponse.json(fallbackData, { status: 200 });
       }
     } catch (error) {
@@ -147,7 +145,6 @@ export async function GET(request) {
       city: 'Unknown',
       region: 'Unknown'
     };
-    console.log('All IP APIs failed, sending ultimate fallback data:', ultimateFallbackData);
     return NextResponse.json(ultimateFallbackData, { status: 200 });
     
   } catch (error) {

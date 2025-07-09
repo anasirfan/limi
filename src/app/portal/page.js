@@ -13,7 +13,6 @@ export default function CustomerPortal() {
   const dispatch = useDispatch();
   const { isLoggedIn = false, user = null, loginStatus = 'idle' } = useSelector((state) => state.user || {});
 
-  console.log(user)
   const router = useRouter();
   const loading = loginStatus === 'loading';
   

@@ -39,7 +39,6 @@ export default function VideoBackground({ slide }) {
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.play().catch(error => {
-        console.log('Auto-play prevented:', error);
       });
     }
   }, []);

@@ -43,7 +43,6 @@ async function handleTrackingData(request, method) {
     
     // In a real implementation, this would save to MongoDB
     // For now, we'll just log the data and return success
-    // console.log(`${method === 'PATCH' ? 'Updated' : 'Received'} tracking data:`, data);
     
     // Return success response
     return NextResponse.json(

@@ -27,7 +27,6 @@ const ConfiguratorLayout = () => {
   const [isLoadingFromUrl, setIsLoadingFromUrl] = useState(false);
   const [configFromUrl, setConfigFromUrl] = useState(null);
   const [hasConfigIdParam, setHasConfigIdParam] = useState(false);
-console.log(user)
   // Main configuration state
   const [config, setConfig] = useState({
     lightType: 'ceiling',
@@ -200,7 +199,6 @@ console.log(user)
     const iframe = document.getElementById('playcanvas-app');
     if (iframe && iframe.contentWindow) {
       iframe.contentWindow.postMessage(message, '*');
-      console.log(`Sent message to PlayCanvas: ${message}`);
     } else {
       console.warn('PlayCanvas iframe not found or not ready');
     }
@@ -433,7 +431,6 @@ console.log(user)
   };
   
   const handleBaseTypeChange = useCallback((baseType) => {
-    console.log(`Changing base type to: ${baseType}`);
     
     // Set default light amount based on base type
     const newAmount = baseType === 'rectangular' ? 3 : 1;
@@ -489,7 +486,6 @@ console.log(user)
       // Update system type for each selected cable
       selectedCables.forEach(cableNo => {
         cableSystemTypes[cableNo] = system;
-        console.log(`Setting cable ${cableNo} system type to ${system}`);
       });
       
       return {
@@ -519,7 +515,6 @@ console.log(user)
     setTimeout(() => {
       // Send system type message to iframe
       sendMessageToPlayCanvas(`system:${system}`);
-      console.log(`Sending system:${system} to iframe`);
       setShowTypeSelector(false);
     }, 10);
   };
@@ -581,12 +576,10 @@ console.log(user)
       // Check if we have only 1 pendant or multiple pendants
       if (config.lightAmount === 1) {
         // For single pendant, send a global pendant design message
-        console.log(`Updating single pendant to design ${design} (${productId})`);
         sendMessageToPlayCanvas(`cable_0:${productId}`);
       } else {
         // For multiple pendants, send individual pendant messages
         pendantIds.forEach(id => {
-          console.log(`Updating pendant ${id} to design ${design} (${productId})`);
           sendMessageToPlayCanvas(`cable_${id}:${productId}`);
         });
       }
@@ -679,21 +672,19 @@ console.log(user)
         // Get the base ID for this design within the current system type
         const baseId = designMap[design] || 'system_base_0';
         
-        console.log(`Updating cable ${cableNo} base design to ${design} for system type ${cableSystemType} (${baseId})`);
+        
         
         // Send system type message first for this cable
         sendMessageToPlayCanvas(`system:${cableSystemType}`);
-        console.log(`Sending system:${cableSystemType} to iframe for cable ${cableNo}`);
         
         // Then send the cable base design message
         sendMessageToPlayCanvas(`cable_${cableNo}:${baseId}`);
-        console.log(`Sending cable_${cableNo}:${baseId} to iframe`);
       });
     }, 10);
   }, [config.selectedPendants, config.systemType, config.cableSystemTypes]);
   
   const handlePendantSelection = useCallback((pendantIds) => {
-    console.log('Selected pendants:', pendantIds);
+    
     
     // Update config state with selected pendants
     setConfig(prev => ({
@@ -776,7 +767,7 @@ console.log(user)
   
   // Handle final save of configuration with name
   const handleFinalSave = async (configName) => {
-    console.log('configToSave:', configToSave);
+    
     
     if (!configToSave) {
       console.error('configToSave is null or undefined');

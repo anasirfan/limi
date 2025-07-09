@@ -66,7 +66,6 @@ const ConfiguratorLayout = () => {
   useEffect(() => {
     const handleMessage = (event) => {
       if (event.data === 'app:ready1') {
-        console.log('PlayCanvas app is ready');
         setIsLoading(false);
       }
     };
@@ -317,7 +316,6 @@ const ConfiguratorLayout = () => {
       
       // Send messages for each selected pendant
       pendantIds.forEach(id => {
-        console.log(`Updating pendant ${id} to design ${design} (${productId})`);
         sendMessageToPlayCanvas(`pendant_${id}:${productId}`);
       });
     }, 10); // Slight delay to ensure state is updated first
@@ -420,7 +418,6 @@ const handlePendantDesignChange = useCallback((pendantIds, design) => {
     
     // Send messages for each selected pendant
     pendantIds.forEach(id => {
-      console.log(`Updating pendant ${id} to design ${design} (${productId})`);
       sendMessageToPlayCanvas(`pendant_${id}:${productId}`);
     });
   }, 10); // Slight delay to ensure state is updated first

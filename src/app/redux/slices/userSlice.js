@@ -89,16 +89,15 @@ export const loginUser = createAsyncThunk(
           email: credentials.email,
           password: credentials.password,
           isWebsiteLogin: true
+        
         }),
       });
       if (!response.ok) {
         const errorData = await response.json();
-        console.log("error login", errorData);
         return rejectWithValue(errorData.error_message || 'Login failed');
       }
       
       const data = await response.json();
-      console.log( 'data Login : ', data);
       // Save token to localStorage with Bearer prefix for consistency
       if (data.data.token) {
         const token = data.data.token.startsWith('Bearer ') ? data.data.token : `${data.data.token}`;
@@ -107,7 +106,6 @@ export const loginUser = createAsyncThunk(
       
       // Get user profile with token
       const token = data.data.token.startsWith('Bearer ') ? data.data.token : `${data.data.token}`;
-      console.log("token : ",token);
       const profileResponse = await fetch('https://dev.api1.limitless-lighting.co.uk/client/user/profile', {
         headers: {
           'Authorization': token
@@ -119,7 +117,6 @@ export const loginUser = createAsyncThunk(
       }
       
       const userData = await profileResponse.json();
-      console.log("userData : ",userData);
       
       // Save to localStorage
       saveUserToStorage(userData);
@@ -131,13 +128,45 @@ export const loginUser = createAsyncThunk(
   }
 );
 
+//Login through token 
+export const fetchUserByToken = createAsyncThunk(
+  'user/fetchUserByToken',
+  async (token, { rejectWithValue }) => {
+    try {
+      if (!token) {
+        return rejectWithValue('Token is required');
+      }
+
+      // Use token to fetch user profile
+      const profileResponse = await fetch('https://dev.api1.limitless-lighting.co.uk/client/user/profile', {
+        headers: {
+          'Authorization': token.startsWith('Bearer ') ? token : `${token}`
+        }
+      });
+
+      if (!profileResponse.ok) {
+        return rejectWithValue('Failed to fetch user profile');
+      }
+
+      const userData = await profileResponse.json();
+
+      // Save to localStorage
+      saveUserToStorage(userData);
+
+      return userData;
+    } catch (error) {
+      return rejectWithValue(error.error_message || 'Failed to fetch user by token');
+    }
+  }
+);
+
+
 // Real API signup thunk
 export const signupUser = createAsyncThunk(
   'user/signup',
   async (userData, { rejectWithValue }) => {
     const { name, email, password } = userData;
 
-    console.log("in userSlice : ",userData);
     try {
       // Validation
       if (!userData.email || !userData.password || !userData.name) {
@@ -164,7 +193,6 @@ export const signupUser = createAsyncThunk(
       }
       
       const data = await response.json();
-      console.log("Signup successful: ", data);
       
       // Return success message and user email for redirection
       return {
@@ -460,6 +488,10 @@ export const userSlice = createSlice({
       .addCase(loginUser.rejected, (state, action) => {
         state.loginStatus = 'failed';
         state.error = action.payload || 'Login failed';
+      })
+      .addCase(fetchUserByToken.fulfilled, (state, action) => {
+        state.user = action.payload; // or whatever your user data shape is
+        state.isLoggedIn = true;
       })
       
       // Signup cases

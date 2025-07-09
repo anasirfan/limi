@@ -34,7 +34,6 @@ export default function AccountSettings({ user, onUserUpdate }) {
   const [activeTab, setActiveTab] = useState("profile");
   const [editMode, setEditMode] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  console.log(user);
   // Form state for editing (to avoid direct Redux updates until form submission)
   const [formData, setFormData] = useState({
     username: user.data.username || "",
@@ -283,7 +282,7 @@ export default function AccountSettings({ user, onUserUpdate }) {
 
       // Upload profile picture using PUT method
       const response = await fetch(
-        "https://api1.limitless-lighting.co.uk/client/user/profile/picture",
+        "https://dev.api1.limitless-lighting.co.uk/client/user/profile/picture",
         {
           method: "PUT",
           body: formData,
@@ -293,7 +292,6 @@ export default function AccountSettings({ user, onUserUpdate }) {
         }
       );
 
-      console.log("response : ", response);
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(
@@ -303,7 +301,6 @@ export default function AccountSettings({ user, onUserUpdate }) {
 
       // Get the updated user data from the response
       const updatedUser = await response.json();
-      console.log("updatedUser : ", updatedUser);
       if (!updatedUser || !updatedUser.profilePicture) {
         throw new Error("Failed to update profile picture");
       }

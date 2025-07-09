@@ -63,7 +63,7 @@ const DuplicateSlideModal = ({ isOpen, onClose, onDuplicate }) => {
     
     try {
       const token = localStorage.getItem('token') || localStorage.getItem('dashboardToken');
-      const response = await fetch(`https://api1.limitless-lighting.co.uk/admin/slide/customers/${customerId}/slideshows`, {
+      const response = await fetch(`https://dev.api1.limitless-lighting.co.uk/admin/slide/customers/${customerId}/slideshows`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -80,29 +80,24 @@ const DuplicateSlideModal = ({ isOpen, onClose, onDuplicate }) => {
       if (data && data.success && data.data && data.data.length > 0) {
         // Standard API response with data array
         slides = data.data[data.data.length - 1].slides || [];
-        console.log("Loaded slides from API data array:", slides);
       } else if (data && data.slides && data.slides.length > 0) {
         // Direct object response
         slides = data.slides;
-        console.log("Loaded slides from direct object:", slides);
       } else if (data && Array.isArray(data) && data.length > 0) {
         // Direct array response
         slides = data[0].slides || [];
-        console.log("Loaded slides from array response:", slides);
       }
 
       // If API fetch fails or returns no slides, try localStorage
       if (slides.length === 0) {
         const storageKey = `slides_${customerId}`;
         const savedSlides = localStorage.getItem(storageKey);
-        console.log("Checking localStorage for:", storageKey);
         
         if (savedSlides) {
           try {
             const parsedSlides = JSON.parse(savedSlides);
             if (parsedSlides && parsedSlides.length > 0) {
               slides = parsedSlides;
-              console.log("Loaded slides from localStorage:", slides);
             }
           } catch (e) {
             console.error('Error parsing saved slides:', e);
