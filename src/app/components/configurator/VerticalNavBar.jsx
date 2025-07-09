@@ -97,6 +97,7 @@ const VerticalNavBar = ({
   
   // Handle step click in vertical nav - with auto-close config panel
   const handleStepClick = (stepId) => {
+
     // Auto-close config panel when clicking on any vertical navbar option
     console.log("handleStepClick", stepId);
     if (localConfiguringType) {
@@ -106,11 +107,14 @@ const VerticalNavBar = ({
         onConfigurationTypeChange(null);
       }
     }
-    if(stepId === 'pendantSelection'){
+
+    // Handle hotspot - on for pendant selection, off for everything else
+    if (stepId === 'pendantSelection') {
       sendMessageToPlayCanvas(`hotspot:on`);
-    }else{
+    } else {
       sendMessageToPlayCanvas(`hotspot:off`);
     }
+
     // Always set this step as the active step
     setActiveStep(stepId);
     

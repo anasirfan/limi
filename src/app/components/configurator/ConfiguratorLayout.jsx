@@ -826,7 +826,6 @@ useEffect(() => {
 
     if (baseType === "rectangular") {
       sendMessageToPlayCanvas(`light_amount:3`);
-      //hotspot off
 
       sendMessageToPlayCanvas(`system:bar`);
       sendMessageToPlayCanvas(`cable_0:system_base_2`);
