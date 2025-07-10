@@ -243,8 +243,8 @@ useEffect(() => {
     // Send initial messages to PlayCanvas
     if (playCanvasReadyRef.current) {
       sendMessageToPlayCanvas(`light_type:${config.lightType}`);
-      sendMessageToPlayCanvas(`light_amount:${config.lightAmount}`);
       sendMessageToPlayCanvas(`base_type:${config.baseType}`);
+      sendMessageToPlayCanvas(`light_amount:${config.lightAmount}`);
       
       // Send pendant messages
       initialPendants.forEach((pendant, index) => {
@@ -376,8 +376,8 @@ useEffect(() => {
         console.log("Loading saved configuration...");
         sendMessageToPlayCanvas(`light_type:${savedConfig.lightType}`);
         console.log("light_type", savedConfig.lightType);
-        sendMessageToPlayCanvas(`light_amount:${savedConfig.lightAmount}`);
         sendMessageToPlayCanvas(`base_type:${savedConfig.baseType}`);
+        sendMessageToPlayCanvas(`light_amount:${savedConfig.lightAmount}`);
         sendMessageToPlayCanvas(`base_color:${savedConfig.baseColor}`);
         
         savedCables.forEach((cable, index) => {
