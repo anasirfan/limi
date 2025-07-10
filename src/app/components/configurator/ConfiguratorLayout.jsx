@@ -244,8 +244,8 @@ useEffect(() => {
     // Send initial messages to PlayCanvas
     if (playCanvasReadyRef.current) {
       sendMessageToPlayCanvas(`light_type:${config.lightType}`);
-      sendMessageToPlayCanvas(`light_amount:${config.lightAmount}`);
       sendMessageToPlayCanvas(`base_type:${config.baseType}`);
+      sendMessageToPlayCanvas(`light_amount:${config.lightAmount}`);
       
       // Send pendant messages
       initialPendants.forEach((pendant, index) => {

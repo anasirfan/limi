@@ -54,6 +54,40 @@ const VerticalNavBar = ({
   const textColor = '#FFFFFF';
   
   const [isMobile, setIsMobile] = useState(false);
+  const [currentGuideStep, setCurrentGuideStep] = useState(0);
+  const [completedSteps, setCompletedSteps] = useState([]);
+  const [showTooltip, setShowTooltip] = useState(true);
+  
+  // Define the order of steps for the guided tour
+  const guidedSteps = [
+    { id: 'lightType', message: 'First, select your light type' },
+    { id: 'baseType', message: 'Now, choose the base type' },
+    { id: 'baseColor', message: 'Select a base color' },
+    { id: 'lightAmount', message: 'How many lights do you need?' },
+    { id: 'pendantSelection', message: 'Finally, customize your pendant selection' }
+  ];
+  
+  // Check if current step is completed
+  const isStepCompleted = (stepId) => completedSteps.includes(stepId);
+  
+  // Mark step as completed
+  const completeStep = (stepId) => {
+    if (!completedSteps.includes(stepId)) {
+      setCompletedSteps([...completedSteps, stepId]);
+      
+      // Move to next step in the guide
+      const currentIndex = guidedSteps.findIndex(step => step.id === stepId);
+      if (currentIndex < guidedSteps.length - 1) {
+        setCurrentGuideStep(currentIndex + 1);
+      }
+    }
+  };
+  
+  // Check if a step is currently being guided
+  const isGuidedStep = (stepId) => {
+    return guidedSteps[currentGuideStep]?.id === stepId;
+  };
+  
   const sendMessageToPlayCanvas = (message) => {
     console.log("Sending message to PlayCanvas iframe:", message);
     const iframe = document.getElementById("playcanvas-app");
@@ -97,6 +131,10 @@ const VerticalNavBar = ({
   
   // Handle step click in vertical nav - with auto-close config panel
   const handleStepClick = (stepId) => {
+    // If this is the guided step, complete it when clicked
+    if (isGuidedStep(stepId)) {
+      completeStep(stepId);
+    }
 
     // Auto-close config panel when clicking on any vertical navbar option
     console.log("handleStepClick", stepId);
@@ -258,21 +296,29 @@ const VerticalNavBar = ({
               return true;
             }).map((step, index) => (
               
-              <NavButton
-                key={step.id}
-                step={step}
-                index={index}
-                activeStep={activeStep}
-                openDropdown={openDropdown}
-                handleStepClick={handleStepClick}
-                toggleDropdown={toggleDropdown}
-                getNavIcon={getNavIcon}
-                emerald={emerald}
-                charlestonGreen={charlestonGreen}
-                textColor={textColor}
-                dropdownRefs={dropdownRefs}
-                containerDimensions={containerDimensions}
-              >
+              <div className="relative" key={step.id}>
+                {isGuidedStep(step.id) && showTooltip && (
+                  <div className="absolute right-full mr-4 top-1/2 transform -translate-y-1/2 bg-charlestonGreen text-white px-4 py-2 rounded-lg shadow-lg z-50 w-64">
+                    <p className="text-sm">{guidedSteps[currentGuideStep].message}</p>
+                    <div className="absolute right-0 top-1/2 transform translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-charlestonGreen rotate-45"></div>
+                  </div>
+                )}
+                <NavButton
+                  step={step}
+                  index={index}
+                  activeStep={activeStep}
+                  openDropdown={openDropdown}
+                  handleStepClick={handleStepClick}
+                  toggleDropdown={toggleDropdown}
+                  getNavIcon={getNavIcon}
+                  emerald={emerald}
+                  charlestonGreen={charlestonGreen}
+                  textColor={textColor}
+                  dropdownRefs={dropdownRefs}
+                  containerDimensions={containerDimensions}
+                  isGuided={isGuidedStep(step.id)}
+                  isCompleted={isStepCompleted(step.id)}
+                >
                 {step?.id === 'lightType' && openDropdown === step?.id && (
                   <LightTypeDropdown 
                     config={config}
@@ -378,7 +424,8 @@ const VerticalNavBar = ({
                 )}
                 
                 
-              </NavButton>
+                </NavButton>
+              </div>
              
             ))}
           </motion.div>
