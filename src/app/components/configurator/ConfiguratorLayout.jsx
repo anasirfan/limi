@@ -19,6 +19,7 @@ import ConfigurationSummary from "../lightConfigurator/ConfigurationSummary";
 import { fetchUserByToken } from "../../../app/redux/slices/userSlice.js";
 
 const ConfiguratorLayout = () => {
+  
   const router = useRouter();
   const dispatch = useDispatch();
   const { isLoggedIn, user } = useSelector((state) => state.user);
@@ -898,9 +899,61 @@ useEffect(() => {
     (design) => {
       // Update the system base design in the config
       setConfig((prev) => ({ ...prev, systemBaseDesign: design }));
+    
+    // Reset current shade when changing base design
+    setCurrentShade(null);
+    
+    // Send message to PlayCanvas iframe
+    setTimeout(() => {
+      // Map design names to product IDs for the iframe based on system type
+      // Each system type (bar/ball/universal) has its own set of base designs with specific IDs
+      const systemTypeBaseMap = {
+        'bar': {
+          // Bar system uses baseNumbers 0-8
+          'prism': 'system_base_1',
+          'helix': 'system_base_2',
+          'orbit': 'system_base_3',
+          'zenith': 'system_base_4',
+          'pulse': 'system_base_5',
+          'vortex': 'system_base_6',
+          'nexus': 'system_base_7',
+          'quasar': 'system_base_8',
+          'nova': 'system_base_9'
+        },
+        'universal': {
+          // Universal system uses baseNumbers 1-15
+          'atom': 'system_base_1',
+          'nebula': 'system_base_2',
+          'cosmos': 'system_base_3',
+          'stellar': 'system_base_4',
+          'eclipse': 'system_base_5',
+          'aurora': 'system_base_6',
+          'solstice': 'system_base_7',
+          'quantum': 'system_base_8',
+          'vertex': 'system_base_9',
+          'horizon': 'system_base_10',
+          'zenith': 'system_base_11',
+          'equinox': 'system_base_12',
+          'meridian': 'system_base_13',
+          'polaris': 'system_base_14',
+          'pulsar': 'system_base_15',
+          'quasar': 'system_base_16',
+          'supernova': 'system_base_17',
+          'galaxy': 'system_base_18',
+          'comet': 'system_base_19',
+          'meteor': 'system_base_20',
+          'asteroid': 'system_base_21',
+          'celestial': 'system_base_22',
+          'orbital': 'system_base_23',
+          'lunar': 'system_base_24',
+          'solar': 'system_base_25',
+          'nova': 'system_base_26',
+          'photon': 'system_base_27',
+          'gravity': 'system_base_28',
+          'spectrum': 'system_base_29',
+        }
+      };
 
-      // Reset current shade when changing base design
-      setCurrentShade(null);
 
       // Send message to PlayCanvas iframe
       setTimeout(() => {
@@ -1004,6 +1057,7 @@ useEffect(() => {
     },
     [config.selectedPendants, config.systemType, config.cableSystemTypes]
   );
+});
 
   // Handle shade selection
 
@@ -1425,4 +1479,5 @@ useEffect(() => {
     </div>
   );
 };
+
 export default ConfiguratorLayout;
