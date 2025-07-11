@@ -319,6 +319,30 @@ export const ConfigPanel = ({
           baseNumber: "29",
           image: "",
         },
+        {
+          id: "infinity",
+          name: "Infinity",
+          baseNumber: "30",
+          image: "",
+        },
+        {
+          id: "void",
+          name: "Void",
+          baseNumber: "31",
+          image: "",
+        },
+        {
+          id: "blackhole",
+          name: "Blackhole",
+          baseNumber: "32",
+          image: "",
+        },
+        {
+          id: "singularity",
+          name: "Singularity",
+          baseNumber: "33",
+          image: "",
+        },
       ],
     };
     // Always use the canonical design id from baseOptions
@@ -834,6 +858,30 @@ export const ConfigPanel = ({
               id: "spectrum",
               name: "Spectrum",
               baseNumber: "29",
+              image: "",
+            },
+            {
+              id: "infinity",
+              name: "Infinity",
+              baseNumber: "30",
+              image: "",
+            },
+            {
+              id: "void",
+              name: "Void",
+              baseNumber: "31",
+              image: "",
+            },
+            {
+              id: "blackhole",
+              name: "Blackhole",
+              baseNumber: "32",
+              image: "",
+            },
+            {
+              id: "singularity",
+              name: "Singularity",
+              baseNumber: "33",
               image: "",
             },
           ],
