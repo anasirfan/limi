@@ -1,6 +1,9 @@
   "use client";
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useRef, useEffect } from 'react';
+// Add these imports at the top with other imports
+import { createPortal } from 'react-dom';
+import { FiX, FiChevronLeft, FiChevronRight, FiHelpCircle } from 'react-icons/fi';
 import {
   NavButton,
   ProgressIndicator,
@@ -57,6 +60,14 @@ const VerticalNavBar = ({
   const [currentGuideStep, setCurrentGuideStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState([]);
   const [showTooltip, setShowTooltip] = useState(true);
+  // Add these state variables after other state declarations
+const [tourStep, setTourStep] = useState(0);
+const [isTourActive, setIsTourActive] = useState(true);
+const [highlightedElement, setHighlightedElement] = useState(null);
+const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });
+const [targetElement, setTargetElement] = useState(null);
+// Welcome modal state
+const [showWelcomeModal, setShowWelcomeModal] = useState(true);
   
   // Define the order of steps for the guided tour
   const guidedSteps = [
@@ -66,6 +77,36 @@ const VerticalNavBar = ({
     { id: 'lightAmount', message: 'How many lights do you need?' },
     { id: 'pendantSelection', message: 'Finally, customize your pendant selection' }
   ];
+
+
+// Define tour steps
+const tourSteps = [
+  {
+    id: 'lightType',
+    title: 'Select Light Type',
+    description: 'Start by choosing your preferred light type from the options available.',
+    position: 'right'
+  },
+  {
+    id: 'baseType',
+    title: 'Choose Base Type',
+    description: 'Next, select the base type that fits your needs.',
+    position: 'right'
+  },
+  {
+    id: 'lightAmount',
+    title: 'Configure Light Amount',
+    description: 'Specify how many lights you need for your setup.',
+    position: 'right'
+  },
+  {
+    id: 'pendantSelection',
+    title: 'Customize Pendants',
+    description: 'Finally, customize your pendant selection and configuration.',
+    position: 'right'
+  }
+];
+
   
   // Check if current step is completed
   const isStepCompleted = (stepId) => completedSteps.includes(stepId);
@@ -273,6 +314,29 @@ const VerticalNavBar = ({
   
   return (
     <>
+      {/* Welcome Modal */}
+      <WelcomeTourModal
+        isOpen={showWelcomeModal}
+        onSkip={() => setShowWelcomeModal(false) && setIsTourActive(false)}
+        onStart={() => {
+          setShowWelcomeModal(false);
+          setTourStep(0); // Reset to first step
+          setIsTourActive(true);
+        }}
+      />
+      {/* Guided Tour Overlay */}
+      {isTourActive && !showWelcomeModal && (
+        <GuidedTourOverlay
+          isActive={isTourActive}
+          step={tourSteps[tourStep]}
+          stepIndex={tourStep}
+          totalSteps={tourSteps.length}
+          targetSelector={`[data-tour-step="${tourSteps[tourStep]?.id}"]`}
+          onNext={() => setTourStep((prev) => Math.min(prev + 1, tourSteps.length - 1))}
+          onPrev={() => setTourStep((prev) => Math.max(prev - 1, 0))}
+          onClose={() => setIsTourActive(false)}
+        />
+      )}
       {/* Only show vertical nav when not configuring individual pendant/system */}
       {showVerticalNav && (
         <div 
@@ -287,22 +351,14 @@ const VerticalNavBar = ({
             onClick={(e) => e.stopPropagation()}
             onTouchStart={(e) => e.stopPropagation()}
           >
-            
+            {/* Render NavButtons with data-tour-step for guided tour */}
             {steps.filter(step => {
-              // Hide baseType step when not ceiling light type
               if (step.id === 'baseType' && config.lightType !== 'ceiling') {
                 return false;
               }
               return true;
             }).map((step, index) => (
-              
               <div className="relative" key={step.id}>
-                {isGuidedStep(step.id) && showTooltip && (
-                  <div className="absolute right-full mr-4 top-1/2 transform -translate-y-1/2 bg-charlestonGreen text-white px-4 py-2 rounded-lg shadow-lg z-50 w-64">
-                    <p className="text-sm">{guidedSteps[currentGuideStep].message}</p>
-                    <div className="absolute right-0 top-1/2 transform translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-charlestonGreen rotate-45"></div>
-                  </div>
-                )}
                 <NavButton
                   step={step}
                   index={index}
@@ -318,6 +374,7 @@ const VerticalNavBar = ({
                   containerDimensions={containerDimensions}
                   isGuided={isGuidedStep(step.id)}
                   isCompleted={isStepCompleted(step.id)}
+                  data-tour-step={step.id}
                 >
                 {step?.id === 'lightType' && openDropdown === step?.id && (
                   <LightTypeDropdown 
@@ -493,5 +550,174 @@ const VerticalNavBar = ({
     </>
   );
 };
+
+// GuidedTourOverlay component
+import { useLayoutEffect } from 'react';
+function GuidedTourOverlay({ isActive, step, stepIndex, totalSteps, targetSelector, onNext, onPrev, onClose }) {
+  const [highlightRect, setHighlightRect] = useState(null);
+  const [tooltipPos, setTooltipPos] = useState({ top: 0, left: 0 });
+
+  // Find and track the position of the highlighted element
+  useLayoutEffect(() => {
+    if (!isActive || !targetSelector) {
+      setHighlightRect(null);
+      return;
+    }
+    const el = document.querySelector(targetSelector);
+    if (el) {
+      const rect = el.getBoundingClientRect();
+      setHighlightRect(rect);
+      // Position tooltip to the right of the button
+      setTooltipPos({
+        top: rect.top + rect.height / 2,
+        left: rect.right + 24,
+      });
+    }
+  }, [isActive, step, targetSelector]);
+
+  // Escape to close
+  useEffect(() => {
+    if (!isActive) return;
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [isActive, onClose]);
+
+  if (!isActive || !highlightRect) return null;
+
+  return createPortal(
+    <>
+      {/* Overlay */}
+      <div
+        className="fixed inset-0 bg-black bg-opacity-50 z-[10000] transition-opacity duration-300"
+        style={{ pointerEvents: 'none' }}
+        aria-hidden="true"
+      />
+      {/* Highlighted element effect */}
+      <div
+        className="fixed z-[10001]"
+        style={{
+          top: highlightRect.top - 8,
+          left: highlightRect.left - 8,
+          width: highlightRect.width + 16,
+          height: highlightRect.height + 16,
+          borderRadius: '50%',
+          boxShadow: '0 0 0 6px rgba(80,200,120,0.6), 0 0 32px 8px rgba(80,200,120,0.4)',
+          transition: 'all 0.3s cubic-bezier(.4,2,.6,1)',
+          border: '2px solid #50C878',
+          background: 'rgba(80,200,120,0.10)',
+          pointerEvents: 'none',
+        }}
+      />
+      {/* Tooltip */}
+      <div
+  className="fixed z-[10002] bg-gradient-to-br from-white to-gray-50 text-gray-800 rounded-xl shadow-2xl px-6 py-5 flex flex-col gap-3 w-[340px] animate-fadeIn border border-gray-100"
+  style={{
+    top: Math.max(tooltipPos.top - 70, 24),
+    left: '50%',
+    transform: 'translateX(-50%)',
+  }}
+  role="dialog"
+  aria-modal="true"
+>
+  {/* Header with close button */}
+  <div className="flex justify-between items-center">
+    <div className="flex-1">
+      <div className="flex items-center gap-2">
+        <span className="font-bold text-gray-900 text-lg">{step?.title || ''}</span>
+        <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
+          Step {stepIndex + 1} of {totalSteps}
+        </span>
+      </div>
+      {/* Progress bar */}
+      <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
+        <div 
+          className="bg-emerald-500 h-1.5 rounded-full transition-all duration-300 ease-out" 
+          style={{ 
+            width: `${((stepIndex + 1) / totalSteps) * 100}%` 
+          }}
+        />
+      </div>
+    </div>
+    <button
+      onClick={onClose}
+      className="ml-2 p-1.5 rounded-full hover:bg-gray-100 transition-colors duration-200 text-gray-500 hover:text-gray-700"
+      aria-label="Close tour"
+      tabIndex={0}
+    >
+      <FiX size={18} />
+    </button>
+  </div>
+
+  {/* Description */}
+  <div className="text-sm text-gray-600 leading-relaxed">
+    {step?.description || ''}
+  </div>
+
+  {/* Navigation buttons */}
+  <div className="flex items-center justify-between gap-3 mt-2">
+    <button
+      onClick={onPrev}
+      disabled={stepIndex === 0}
+      className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 flex items-center ${
+        stepIndex === 0
+          ? 'text-gray-400 cursor-not-allowed'
+          : 'text-emerald-600 hover:bg-emerald-50 hover:shadow-sm'
+      }`}
+    >
+      <FiChevronLeft size={18} className="mr-1" />
+      Back
+    </button>
+
+    {stepIndex === totalSteps - 1 ? (
+      <button
+        onClick={onClose}
+        className="px-5 py-2 rounded-lg font-medium text-sm bg-emerald-600 text-white hover:bg-emerald-700 transition-colors duration-200 flex-1 text-center shadow-sm hover:shadow-md"
+      >
+        Finish Tour
+      </button>
+    ) : (
+      <button
+        onClick={onNext}
+        className="px-5 py-2 rounded-lg font-medium text-sm bg-emerald-600 text-white hover:bg-emerald-700 transition-colors duration-200 flex-1 text-center shadow-sm hover:shadow-md flex items-center justify-center"
+      >
+        Continue <FiChevronRight size={18} className="ml-1.5" />
+      </button>
+    )}
+  </div>
+</div>
+    </>,
+    document.body
+  );
+}
+
+// WelcomeTourModal component
+function WelcomeTourModal({ isOpen, onSkip, onStart }) {
+  if (!isOpen) return null;
+  return (
+    <div className="fixed inset-0 z-[11000] flex items-center justify-center bg-black bg-opacity-60 animate-fadeIn">
+      <div className="bg-white rounded-2xl shadow-2xl px-8 py-8 flex flex-col items-center gap-4 max-w-[90vw] w-[380px]">
+        <div className="text-2xl font-bold mb-2 text-emerald-600">Are you new to the configurator?</div>
+        <div className="text-gray-700 text-base mb-4 text-center">We can walk you through the main features step by step.<br/>Would you like a quick tour?</div>
+        <div className="flex gap-4 mt-2 w-full">
+          <button
+            className="flex-1 py-2 rounded-lg border border-gray-300 bg-gray-100 text-gray-700 font-semibold hover:bg-gray-200 transition"
+            onClick={onSkip}
+          >
+            Skip
+          </button>
+          <button
+            className="flex-1 py-2 rounded-lg bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition"
+            onClick={onStart}
+          >
+            Start Tour
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default VerticalNavBar;

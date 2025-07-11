@@ -18,7 +18,8 @@ export const NavButton = ({
   containerDimensions,
   isGuided = false,
   isCompleted = false,
-  children
+  children,
+  ...rest
 }) => {
   // State to track if we're on mobile and screen dimensions
   const [isMobile, setIsMobile] = useState(false);
@@ -52,7 +53,7 @@ export const NavButton = ({
   if (!step) return null;
   
   return (
-    <div key={step?.id} className="relative">
+    <div key={step?.id} className="relative" {...rest}>
       {/* Tooltip only shows when dropdown is closed */}
       {openDropdown !== step?.id && (
         <Tooltip content={step?.tooltip || 'Navigation option'} position="left" className="">
