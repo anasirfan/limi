@@ -16,7 +16,10 @@ export const NavButton = ({
   textColor,
   dropdownRefs,
   containerDimensions,
-  children
+  isGuided = false,
+  isCompleted = false,
+  children,
+  ...rest
 }) => {
   // State to track if we're on mobile and screen dimensions
   const [isMobile, setIsMobile] = useState(false);
@@ -50,28 +53,26 @@ export const NavButton = ({
   if (!step) return null;
   
   return (
-    <div key={step?.id} className="relative">
+    <div key={step?.id} className="relative" {...rest}>
       {/* Tooltip only shows when dropdown is closed */}
       {openDropdown !== step?.id && (
         <Tooltip content={step?.tooltip || 'Navigation option'} position="left" className="">
           <div className="relative group">
             <motion.button
-              className={`rounded-full flex items-center justify-center transition-all duration-300 w-10 h-10`}
+              className={`relative w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ${activeStep === step?.id ? 'shadow-lg' : 'opacity-80 hover:opacity-100'} ${step?.disabled ? 'opacity-50 cursor-not-allowed' : ''} ${isGuided ? 'ring-4 ring-offset-2 ring-emerald-500 ring-offset-charlestonGreen animate-pulse' : ''} ${isCompleted ? 'ring-2 ring-emerald-500' : ''}`}
+              onClick={() => !step?.disabled && handleStepClick(step?.id)}
+              whileHover={!step?.disabled ? { scale: 1.1 } : {}}
+              whileTap={!step?.disabled ? { scale: 0.95 } : {}}
+              animate={{
+                scale: isGuided ? [1, 1.05, 1] : 1,
+                transition: isGuided ? { repeat: Infinity, duration: 1.5 } : {}
+              }}
               style={{
-                backgroundColor: openDropdown === step?.id ? emerald : 
-                                activeStep === step?.id ? emerald : 'transparent',
-                color: openDropdown === step?.id ? '#FFFFFF' : 
-                      activeStep === step?.id ? '#FFFFFF' : 
-                      step?.isActive ? `${textColor}80` : `${textColor}40`
+                backgroundColor: activeStep === step?.id ? emerald : isCompleted ? `${emerald}40` : charlestonGreen,
+                color: activeStep === step?.id ? '#FFFFFF' : isCompleted ? emerald : `${textColor}80`,
+                border: isMobile && openDropdown === step?.id ? `2px solid ${emerald}` : 'none',
+                boxShadow: isGuided ? `0 0 15px ${emerald}` : 'none'
               }}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleStepClick(step?.id);
-              }}
-              onTouchStart={(e) => e.stopPropagation()}
-              whileHover={step?.isActive ? { scale: 1.1 } : {}}
-              whileTap={step?.isActive ? { scale: 0.95 } : {}}
-              disabled={!step?.isActive}
             >
               {getNavIcon && step?.id && getNavIcon(step.id) ? (
                 <Image 
