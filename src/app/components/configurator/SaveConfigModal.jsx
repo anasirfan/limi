@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { FaTimes } from 'react-icons/fa';
 
@@ -19,8 +19,9 @@ export const SaveConfigModal = ({
       if (!configName.trim()) return;
       onSave(configName, thumbnail, modalId);
       setConfigName('');
-
+      setModalId(null);
   };
+
 
   const getThumbnailFromIframe = () => {
     return new Promise((resolve) => {
@@ -49,55 +50,73 @@ export const SaveConfigModal = ({
       const iframe = document.getElementById('playcanvas-app');
       if (iframe && iframe.contentWindow) {
         iframe.contentWindow.postMessage('savedataimage', '*');
-      }
+      } 
 
     });
   };
+  const [uploadSuccessData, setUploadSuccessData] = useState(null);
+  const messageHandlerRef = useRef(null);
+
   const saveDataModal = () => {
     return new Promise((resolve, reject) => {
+      // Remove any previous handler to prevent duplicates
+      if (messageHandlerRef.current) {
+        window.removeEventListener('message', messageHandlerRef.current);
+        messageHandlerRef.current = null;
+      }
+
       const timeout = setTimeout(() => {
-        window.removeEventListener('message', handleMessage);
+        if (messageHandlerRef.current) {
+          window.removeEventListener('message', messageHandlerRef.current);
+          messageHandlerRef.current = null;
+        }
         reject(new Error('Timeout: No response from iframe'));
-      }, 10000); // 10 seconds
-  
-      const handleMessage = (event) => {
+      }, 10000);
+
+      const handler = (event) => {
         if (
           event.data &&
           typeof event.data === 'object' &&
-          event.data.type === 'SAVE_MODAL_RESPONSE' &&
-          event.data.modalId
+          (event.data.type === 'Upload success')
         ) {
+          setUploadSuccessData(event.data);
+          console.log('Upload success: ', event.data);
           clearTimeout(timeout);
-          window.removeEventListener('message', handleMessage);
-          resolve(event.data.modalId);
+          window.removeEventListener('message', handler);
+          messageHandlerRef.current = null;
+          resolve(event.data);
         }
       };
-      window.addEventListener('message', handleMessage);
-  
+      messageHandlerRef.current = handler;
+      window.addEventListener('message', handler);
       const iframe = document.getElementById('playcanvas-app');
       if (iframe && iframe.contentWindow) {
-        iframe.contentWindow.postMessage('savedatmodal', '*');
-      } else {
-        clearTimeout(timeout);
-        window.removeEventListener('message', handleMessage);
-        reject(new Error('Iframe not found'));
+        iframe.contentWindow.postMessage('saveModalId', '*');
       }
     });
   };
+
+  // Clean up on modal close (remove any lingering handler)
+  useEffect(() => {
+    if (!isOpen && messageHandlerRef.current) {
+      window.removeEventListener('message', messageHandlerRef.current);
+      messageHandlerRef.current = null;
+    }
+  }, [isOpen]);
+
+
   // Request thumbnail when modal is opened
   useEffect(() => {
     if (isOpen) {
       getThumbnailFromIframe().then((url) => {
         setThumbnail(url);
+        console.log("url",url);
+        // Only call saveDataModal ONCE per modal open
+        saveDataModal().then((modalId) => {
+          setModalId(modalId);
+          console.log("modalId",modalId);
+        });
       });
-    }
-  }, [isOpen]);
-
-  useEffect(() => {
-    if (isOpen) {
-     saveDataModal().then((modalId) => {
-       setModalId(modalId);
-     });
     }
   }, [isOpen]);
 
