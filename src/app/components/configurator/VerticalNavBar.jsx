@@ -317,7 +317,10 @@ const tourSteps = [
       {/* Welcome Modal */}
       <WelcomeTourModal
         isOpen={showWelcomeModal}
-        onSkip={() => setShowWelcomeModal(false) && setIsTourActive(false)}
+        onSkip={() => {
+          setShowWelcomeModal(false);
+          setIsTourActive(false);
+        }}
         onStart={() => {
           setShowWelcomeModal(false);
           setTourStep(0); // Reset to first step
@@ -556,6 +559,7 @@ import { useLayoutEffect } from 'react';
 function GuidedTourOverlay({ isActive, step, stepIndex, totalSteps, targetSelector, onNext, onPrev, onClose }) {
   const [highlightRect, setHighlightRect] = useState(null);
   const [tooltipPos, setTooltipPos] = useState({ top: 0, left: 0 });
+  const [actionCompleted, setActionCompleted] = useState(false);
 
   // Find and track the position of the highlighted element
   useLayoutEffect(() => {
@@ -585,42 +589,109 @@ function GuidedTourOverlay({ isActive, step, stepIndex, totalSteps, targetSelect
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [isActive, onClose]);
 
+  // --- BEGIN: Auto-advance logic for required actions ---
+  useEffect(() => {
+    if (!isActive || !step?.requiredAction || !step.targetSelector) return;
+    const el = document.querySelector(step.targetSelector);
+    if (!el) return;
+    let handler;
+    if (step.requiredAction.type === 'click') {
+      handler = () => {
+        setActionCompleted(true);
+        setTimeout(() => {
+          setActionCompleted(false);
+          onNext();
+        }, 700);
+      };
+      el.addEventListener('click', handler);
+    } else if (step.requiredAction.type === 'change') {
+      handler = () => {
+        setActionCompleted(true);
+        setTimeout(() => {
+          setActionCompleted(false);
+          onNext();
+        }, 700);
+      };
+      el.addEventListener('change', handler);
+    }
+    return () => {
+      if (handler) {
+        if (step.requiredAction.type === 'click') el.removeEventListener('click', handler);
+        if (step.requiredAction.type === 'change') el.removeEventListener('change', handler);
+      }
+    };
+  }, [isActive, step, onNext]);
+  // --- END: Auto-advance logic ---
+
   if (!isActive || !highlightRect) return null;
 
   return createPortal(
     <>
       {/* Overlay */}
-      <div
-        className="fixed inset-0 bg-black bg-opacity-50 z-[10000] transition-opacity duration-300"
-        style={{ pointerEvents: 'none' }}
+      {/* Fullscreen blurred overlay with SVG 'cut-out hole' spotlight effect */}
+      <svg
+        className="fixed inset-0 z-[10000] pointer-events-none"
+        width={typeof window !== 'undefined' ? window.innerWidth : 0}
+        height={typeof window !== 'undefined' ? window.innerHeight : 0}
+        style={{ width: '100vw', height: '100vh', display: 'block', pointerEvents: 'none' }}
         aria-hidden="true"
-      />
-      {/* Highlighted element effect */}
+      >
+        <defs>
+          <mask id="spotlight-mask">
+            <rect x="0" y="0" width="100%" height="100%" fill="white" />
+            {highlightRect && (
+              <circle
+                cx={highlightRect.left + highlightRect.width / 2}
+                cy={highlightRect.top + highlightRect.height / 2}
+                r={Math.max(highlightRect.width, highlightRect.height) / 2 + 24}
+                fill="black"
+              />
+            )}
+          </mask>
+        </defs>
+        <rect
+          x="0"
+          y="0"
+          width="100%"
+          height="100%"
+          fill="rgba(16,20,24,0.75)"
+          style={{ backdropFilter: 'blur(6px)', pointerEvents: 'none' }}
+          mask="url(#spotlight-mask)"
+        />
+      </svg>
+      {/* Highlight Glow + Tooltip */}
       <div
-        className="fixed z-[10001]"
+        className="fixed z-[10010] pointer-events-none"
         style={{
-          top: highlightRect.top - 8,
-          left: highlightRect.left - 8,
-          width: highlightRect.width + 16,
-          height: highlightRect.height + 16,
-          borderRadius: '50%',
-          boxShadow: '0 0 0 6px rgba(80,200,120,0.6), 0 0 32px 8px rgba(80,200,120,0.4)',
-          transition: 'all 0.3s cubic-bezier(.4,2,.6,1)',
-          border: '2px solid #50C878',
-          background: 'rgba(80,200,120,0.10)',
+          top: highlightRect.top - 24,
+          left: highlightRect.left - 24,
+          width: highlightRect.width + 48,
+          height: highlightRect.height + 48,
           pointerEvents: 'none',
         }}
-      />
+      >
+        {/* Glowing effect */}
+        <div className="absolute inset-0 rounded-full shadow-[0_0_0_8px_rgba(16,185,129,0.25),0_0_0_24px_rgba(16,185,129,0.15)] animate-pulse-glow pointer-events-none" />
+        {/* Action completed checkmark */}
+        {actionCompleted && (
+          <div className="absolute top-0 right-0 p-2 bg-emerald-500 text-white rounded-full shadow-md animate-fadeIn">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+        )}
+      </div>
       {/* Tooltip */}
       <div
-  className="fixed z-[10002] bg-gradient-to-br from-white to-gray-50 text-gray-800 rounded-xl shadow-2xl px-6 py-5 flex flex-col gap-3 w-[340px] animate-fadeIn border border-gray-100"
-  style={{
-    top: Math.max(tooltipPos.top - 70, 24),
-    left: '50%',
-    transform: 'translateX(-50%)',
-  }}
-  role="dialog"
-  aria-modal="true"
+        className="fixed z-[10002] bg-gradient-to-br from-white to-gray-50 text-gray-800 rounded-xl shadow-2xl px-6 py-5 flex flex-col gap-3 w-[340px] animate-fadeIn border border-gray-100"
+        style={{
+          top: Math.max(tooltipPos.top - 70, 24),
+          left: '50%',
+          transform: 'translateX(-50%)',
+          pointerEvents: 'auto',
+        }}
+        role="dialog"
+        aria-modal="true"
 >
   {/* Header with close button */}
   <div className="flex justify-between items-center">
