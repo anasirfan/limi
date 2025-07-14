@@ -325,12 +325,12 @@ export const ConfigPanel = ({
           baseNumber: "30",
           image: "/images/configOptions/universal/30.png",
         },
-        {
-          id: "void",
-          name: "Void",
-          baseNumber: "31",
-          image: "/images/configOptions/universal/31.png",
-        },
+        // {
+        //   id: "void",
+        //   name: "Void",
+        //   baseNumber: "31",
+        //   image: "/images/configOptions/universal/31.png",
+        // },
         {
           id: "blackhole",
           name: "Blackhole",
@@ -343,12 +343,12 @@ export const ConfigPanel = ({
           baseNumber: "33",
           image: "/images/configOptions/universal/33.png",
         },
-        {
-          id: "supernova",
-          name: "Supernova",
-          baseNumber: "34",
-          image: "/images/configOptions/universal/34.png",
-        },
+        // {
+        //   id: "supernova",
+        //   name: "Supernova",
+        //   baseNumber: "34",
+        //   image: "/images/configOptions/universal/34.png",
+        // },
       ],
     };
     // Always use the canonical design id from baseOptions
@@ -872,12 +872,12 @@ export const ConfigPanel = ({
               baseNumber: "30",
               image: "/images/configOptions/universal/30.png",
             },
-            {
-              id: "void",
-              name: "Void",
-              baseNumber: "31",
-              image: "/images/configOptions/universal/31.png",
-            },
+            // {
+            //   id: "void",
+            //   name: "Void",
+            //   baseNumber: "31",
+            //   image: "/images/configOptions/universal/31.png",
+            // },
             {
               id: "blackhole",
               name: "Blackhole",
