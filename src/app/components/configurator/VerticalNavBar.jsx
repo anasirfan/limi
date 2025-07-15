@@ -67,7 +67,7 @@ const [highlightedElement, setHighlightedElement] = useState(null);
 const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });
 const [targetElement, setTargetElement] = useState(null);
 // Welcome modal state
-const [showWelcomeModal, setShowWelcomeModal] = useState(true);
+const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   
   // Define the order of steps for the guided tour
   const guidedSteps = [
@@ -328,7 +328,7 @@ const tourSteps = [
         }}
       />
       {/* Guided Tour Overlay */}
-      {isTourActive && !showWelcomeModal && (
+      {!isTourActive && !showWelcomeModal && (
         <GuidedTourOverlay
           isActive={isTourActive}
           step={tourSteps[tourStep]}

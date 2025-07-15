@@ -55,6 +55,7 @@ export const SaveConfigModal = ({
     });
   };
   const [uploadSuccessData, setUploadSuccessData] = useState(null);
+  const [modalIdString, setModalIdString] = useState('');
   const messageHandlerRef = useRef(null);
 
   const saveDataModal = () => {
@@ -74,18 +75,25 @@ export const SaveConfigModal = ({
       }, 10000);
 
       const handler = (event) => {
-        if (
-          event.data &&
-          typeof event.data === 'object' &&
-          (event.data.type === 'Upload success')
-        ) {
-          setUploadSuccessData(event.data);
-          console.log('Upload success: ', event.data);
+        // Handle string from iframe (like getThumbnailFromIframe)
+        if (typeof event.data === 'string') {
+          setModalIdString(event.data);
+          // Extract model ID if present
+          const match = event.data.match(/Uploaded model ID:\s*([a-fA-F0-9]+)/);
+          // FIX: use single backslash for whitespace in regex
+          const correctMatch = event.data.match(/Uploaded model ID:\s*([a-fA-F0-9]+)/);
+          if (correctMatch && correctMatch[1]) {
+            console.log('Extracted model ID:', correctMatch[1]);
+          } else {
+            console.log('ModalId string from iframe:', event.data);
+          }
           clearTimeout(timeout);
           window.removeEventListener('message', handler);
           messageHandlerRef.current = null;
           resolve(event.data);
+          return;
         }
+        // Optionally, handle object messages here if needed (e.g., Upload success)
       };
       messageHandlerRef.current = handler;
       window.addEventListener('message', handler);
@@ -95,6 +103,7 @@ export const SaveConfigModal = ({
       }
     });
   };
+
 
   // Clean up on modal close (remove any lingering handler)
   useEffect(() => {
