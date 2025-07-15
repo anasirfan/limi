@@ -2,7 +2,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { FaTimes } from 'react-icons/fa';
-
+import { listenForModelIdMessages } from '../../util/iframeCableMessageHandler';
 export const SaveConfigModal = ({ 
   isOpen, 
   onClose, 
@@ -11,15 +11,16 @@ export const SaveConfigModal = ({
 }) => {
   const [configName, setConfigName] = useState('');
   const [thumbnail, setThumbnail] = useState('');
-  const [modalId, setModalId] = useState(null); // <-- New state
-
+  const [modelId, setModelId] = useState(''); // <-- New state
+  const [fetchingModelId, setFetchingModelId] = useState(false);
+  const [loading, setLoading] = useState(false);
   if (!isOpen) return null;
 
   const handleSave = async () => {
       if (!configName.trim()) return;
-      onSave(configName, thumbnail, modalId);
+      onSave(configName, thumbnail, modelId);
       setConfigName('');
-      setModalId(null);
+      setModelId('');
   };
 
 
@@ -58,6 +59,35 @@ export const SaveConfigModal = ({
   const [modalIdString, setModalIdString] = useState('');
   const messageHandlerRef = useRef(null);
 
+  useEffect(() => {
+    if (isOpen) {
+      setFetchingModelId(true);
+      setLoading(true);
+    } else {
+      setFetchingModelId(false);
+      setLoading(false);
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!fetchingModelId) return;
+    // Start listening for model_id messages
+    const cleanup = listenForModelIdMessages((data, event) => {
+      // Example: model_id:12345
+      if (typeof data === 'string' && data.startsWith('model_id')) {
+        console.log('[SaveConfigModal] Received model_id:', data);
+        // console.log("modelId splitted",data.split(' ')[1])
+        setModelId(data.split(' ')[1]);
+        setFetchingModelId(false);
+        setLoading(false);
+      }
+    });
+    return () => {
+      if (cleanup) cleanup();
+    };
+  }, [fetchingModelId]);
+
+  console.log("modelId", modelId);
   const saveDataModal = () => {
     return new Promise((resolve, reject) => {
       // Remove any previous handler to prevent duplicates
@@ -216,9 +246,9 @@ export const SaveConfigModal = ({
           <button
             onClick={handleSave}
             className="px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700"
-            disabled={!configName.trim()}
+            disabled={!configName.trim() || loading || fetchingModelId}
           >
-            Save
+            {loading || fetchingModelId ? 'Saving' : 'Save'}
           </button>
         </div>
       </motion.div>

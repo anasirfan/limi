@@ -260,7 +260,7 @@ useEffect(() => {
       sendMessageToPlayCanvas(`light_type:${config.lightType}`);
       sendMessageToPlayCanvas(`base_type:${config.baseType}`);
       sendMessageToPlayCanvas(`light_amount:${config.lightAmount}`);
-      
+
       // Send pendant messages
       initialPendants.forEach((pendant, index) => {
         const productId = pendant.design === 'bumble' ? 'product_1' : 
@@ -277,6 +277,7 @@ useEffect(() => {
         }]);
         
         sendMessageToPlayCanvas(`cable_${index}:${productId}`);
+        sendMessageToPlayCanvas(`cable_${index}:size_2`);
       });
     }
   } else {
@@ -386,7 +387,7 @@ useEffect(() => {
       // Load saved configuration if available
       const savedConfig = loadFromLocalStorage('lightConfig', null);
       const savedCables = loadFromLocalStorage('lightCables', null);
-      
+      console.log(savedConfig, savedCables)
       if (savedConfig && savedCables) {
         console.log("Loading saved configuration...");
         sendMessageToPlayCanvas(`light_type:${savedConfig.lightType}`);
@@ -398,7 +399,14 @@ useEffect(() => {
         savedCables.forEach((cable, index) => {
           if (cable.systemType) {
             sendMessageToPlayCanvas(`system:${cable.systemType}`);
-            sendMessageToPlayCanvas(`cable_${index}:${cable.designId}`);
+            const parts = cable.designId.split('_'); // system_base_2_2
+            if (parts.length === 4) { // [system, base, 2, 2]
+              const baseDesign = parts.slice(0, 3).join('_'); // e.g., "system_base_2"
+              sendMessageToPlayCanvas(`cable_${index}:${baseDesign}`);
+              sendMessageToPlayCanvas(`cable_${index}:${cable.designId}`);
+            } else {
+              sendMessageToPlayCanvas(`cable_${index}:${cable.designId}`);
+            }
             console.log("cable" , cable.size)
             sendMessageToPlayCanvas(`cable_${index}:size_${cable.size}`);
 
@@ -517,6 +525,7 @@ useEffect(() => {
             : "product_2";
 
         sendMessageToPlayCanvas(`cable_${index}:${productId}`);
+        sendMessageToPlayCanvas(`cable_${index}:${pendant.size ? `size_${pendant.size}` : 'size_2'}`);
       });
       // } else {
       //   const productId = newPendants.design === 'bumble' ? 'product_1' :
@@ -1158,7 +1167,9 @@ useEffect(() => {
   };
 
   // Handle final save after user enters configuration name
-  const handleFinalSave = async (configName, thumbnail) => {
+  const handleFinalSave = async (configName, thumbnail, modelId) => {
+
+   
     if (!configToSave) {
       console.error("configToSave is null or undefined");
       return;
@@ -1244,6 +1255,7 @@ useEffect(() => {
       });
     }
 
+   
     // Prepare data for API
     const apiPayload = {
       name: configName,
@@ -1251,7 +1263,10 @@ useEffect(() => {
         url: thumbnail,
         public_id: "",
       }, // Will be updated after screenshot upload
-      config: uiConfig, // UI-friendly structured data for display
+      config: {
+        ...uiConfig,
+        download_Id: modelId,
+      }, // UI-friendly structured data for display
 
       user_id: user?.data?._id || "", // Get user_id from Redux store
       iframe: iframeMessagesArray, // Raw messages from iframe in sequence

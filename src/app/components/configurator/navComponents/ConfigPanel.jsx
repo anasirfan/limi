@@ -528,11 +528,11 @@ export const ConfigPanel = ({
           name: "System",
           image: "/images/configOptions/system.png",
         },
-        {
-          id: "cableSize",
-          name: "Cable Size",
-          image: "/images/configOptions/cable.png",
-        },
+        // {
+        //   id: "cableSize",
+        //   name: "Cable Size",
+        //   image: "/images/configOptions/cable.png",
+        // },
       ];
       config.onItemSelect = onSelectConfigurationType;
       config.selectedItem = null;

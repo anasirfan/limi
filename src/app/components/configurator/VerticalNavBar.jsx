@@ -206,6 +206,8 @@ const tourSteps = [
       }
     }
 
+
+    console.log("openDropdown", openDropdown);
     // Handle hotspot - on for pendant selection, off for everything else
     if (stepId === 'pendantSelection') {
       sendMessageToPlayCanvas(`hotspot:on`);
