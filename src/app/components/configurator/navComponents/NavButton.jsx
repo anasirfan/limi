@@ -66,7 +66,7 @@ export const NavButton = ({
               
               style={{
                 backgroundColor: activeStep === step?.id ? emerald : 'transparent',
-                color: activeStep === step?.id ? '#FFFFFF' : isCompleted ? emerald : `${textColor}80`,
+                color: activeStep === step?.id ? '#FFFFFF' : `${textColor}80`,
                 border: isMobile && openDropdown === step?.id ? `2px solid ${emerald}` : 'none',
                 boxShadow: 'none'
               }}
