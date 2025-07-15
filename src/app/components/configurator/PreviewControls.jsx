@@ -1,8 +1,7 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
 import { FaEye, FaSave, FaFolderOpen, FaMousePointer, FaMouse, FaArrowsAlt, FaSearchPlus, FaSearchMinus, FaInfo } from "react-icons/fa";
-import VerticalSlider from './VerticalSlider';
-import VerticalSlider2 from './VerticalSlider2';
+
 
 export const PreviewControls = ({
   isPreviewMode,
@@ -46,13 +45,7 @@ export const PreviewControls = ({
   };
 
   return (
-    <>
-      {/* Vertical Slider */}
-      {/* <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-40">
-        <VerticalSlider /> 
-         <VerticalSlider2 />
-      </div> */}
-      
+    <>  
       {/* Navigation Guide */}
       <div className="absolute top-24 left-8 z-50 flex gap-2"
         ref={guideRef}
