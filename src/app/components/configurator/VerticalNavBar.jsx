@@ -346,7 +346,7 @@ const tourSteps = [
           setIsTourActive(true);
         }}
       />
-      {/* Guided Tour Overlay */}
+      {/* Guided Tour Overlay is disabled by request
       {!isTourActive && !showWelcomeModal && (
         <GuidedTourOverlay
           isActive={isTourActive}
@@ -359,6 +359,7 @@ const tourSteps = [
           onClose={() => setIsTourActive(false)}
         />
       )}
+      */}
       {/* Only show vertical nav when not configuring individual pendant/system */}
       {showVerticalNav && (
         <div 
