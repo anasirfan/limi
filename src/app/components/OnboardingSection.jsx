@@ -388,7 +388,7 @@ export default function OnboardingSection() {
   }, [isMobile, iframeLoaded, iframeKey]);
 
   // We'll use the embed URL for both mobile and desktop for maximum compatibility.
-  const playcanvasEmbedUrl = "https://playcanv.as/e/p/DegE57et/";
+  const playcanvasEmbedUrl = "https://playcanv.as/e/p/7c2273a2/";
 
   return (
     <section className="bg-[#2B2D2F] text-white py-8 md:py-12">

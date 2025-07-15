@@ -45,6 +45,8 @@ const VerticalNavBar = ({
   configuringSystemType,
   breadcrumbPath,
   onBreadcrumbNavigation,
+  cableMessage,
+  setCableMessage,
 
   
   onSystemTypeSelection,
@@ -78,6 +80,23 @@ const [showWelcomeModal, setShowWelcomeModal] = useState(false);
     { id: 'pendantSelection', message: 'Finally, customize your pendant selection' }
   ];
 
+  useEffect(() => {
+
+    if (cableMessage && cableMessage.startsWith('cable_')) {
+      // Extract the cable id (e.g., cable_0)
+      const match = cableMessage.match(/^cable_(\d+)/);
+      console.log("cableMessage in vertical",cableMessage);
+      console.log("match",match)
+      if (match) {
+        const cableId = Number(match[1]);
+        console.log("cableId",cableId)
+        setActiveStep('pendantSelection'); // open pendant selection step
+        setSelectedPendants([cableId]);    // select the cable
+        setShowConfigurationTypeSelector(true); 
+        setCableMessage('')         // open the config panel
+      }
+    }
+  }, [cableMessage, setActiveStep, setSelectedPendants,setCableMessage]);
 
 // Define tour steps
 const tourSteps = [

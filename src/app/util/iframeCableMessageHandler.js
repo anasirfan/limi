@@ -1,0 +1,14 @@
+// Utility to listen for iframe messages starting with 'cable_'
+export function listenForCableMessages(callback) {
+    function handleMessage(event) {
+      console.log('[CableMsg] BEFORE FILTER:', event.data);
+      if (typeof event.data === 'string' && event.data.startsWith('cable_')) {
+        console.log('[CableMsg] MATCHED cable_:', event.data);
+        callback(event.data, event);
+        console.log('[CableMsg] AFTER CALLBACK:', event.data);
+      }
+    }
+    window.addEventListener('message', handleMessage);
+    // Return cleanup
+    return () => window.removeEventListener('message', handleMessage);
+  }
