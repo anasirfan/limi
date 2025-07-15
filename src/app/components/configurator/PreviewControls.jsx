@@ -1,8 +1,7 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
 import { FaEye, FaSave, FaFolderOpen, FaMousePointer, FaMouse, FaArrowsAlt, FaSearchPlus, FaSearchMinus, FaInfo } from "react-icons/fa";
-import VerticalSlider from './VerticalSlider';
-import VerticalSlider2 from './VerticalSlider2';
+
 
 export const PreviewControls = ({
   isPreviewMode,
