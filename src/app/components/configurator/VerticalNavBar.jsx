@@ -82,33 +82,21 @@ const [showWelcomeModal, setShowWelcomeModal] = useState(false);
 
   useEffect(() => {
     if (cableMessage && cableMessage.startsWith('cable_')) {
+      // Extract the cable id (e.g., cable_2 → id = 2)
       const match = cableMessage.match(/^cable_(\d+)/);
-
       if (match) {
-        const cableNum = Number(match[1]);
-        const pendantId = cableIdMap[cableNum]; // Map number to string id
-        if (pendantId) {
-          setActiveStep('pendantSelection');
-          setSelectedPendants([pendantId]); // Use the string id, not the number
-          setShowConfigurationTypeSelector(true);
-          setCableMessage('');
-        }
+        const cableId = Number(match[1]);
+        // 1. Open the pendant selection step
+        setActiveStep('pendantSelection');
+        // 2. Select the pendant with the extracted id
+        setSelectedPendants([cableId]);
+        // 3. Show the configuration type selector
+        setShowConfigurationTypeSelector(true);
+        // 4. Optionally clear the cable message to avoid repeated triggers
+        setCableMessage('');
       }
     }
-    if (cableMessage === 'wallbaseColor') {
-      // Example: open wall base color selection step
-      setActiveStep('baseColor');
-      setShowConfigurationTypeSelector(false); // Make sure this matches your step id
-      // Optionally, do other state updates here
-      setCableMessage('');
-    }
-  }, [
-    cableMessage,
-    setActiveStep,
-    setSelectedPendants,
-    setCableMessage,
-  ]);
- 
+  }, [cableMessage, setActiveStep, setSelectedPendants, setCableMessage]);
 // Define tour steps
 const tourSteps = [
   {
