@@ -18,6 +18,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import ConfigurationSummary from "../lightConfigurator/ConfigurationSummary";
 import { fetchUserByToken } from "../../../app/redux/slices/userSlice.js";
 import { listenForCableMessages } from "../../util/iframeCableMessageHandler";
+import { listenForWallbaseColorMessages } from "../../util/iframeCableMessageHandler";
 
 const ConfiguratorLayout = () => {
   
@@ -102,6 +103,16 @@ useEffect(() => {
     // Example: open a modal, update config, etc.
     // setIsCableModalOpen(true);
     setCableMessage(message);
+  });
+  return cleanup;
+}, []);
+useEffect(() => {
+  const cleanup = listenForWallbaseColorMessages((data, event) => {
+    // handle wallbaseColor message here
+    console.log('[ConfigPanel] Received wallbaseColor message:', data,event.data);
+    // Example: open a modal, update config, etc.
+    // setIsCableModalOpen(true);
+    setCableMessage(data);
   });
   return cleanup;
 }, []);
