@@ -18,7 +18,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import ConfigurationSummary from "../lightConfigurator/ConfigurationSummary";
 import { fetchUserByToken } from "../../../app/redux/slices/userSlice.js";
 import { listenForCableMessages } from "../../util/iframeCableMessageHandler";
-import { listenForWallbaseColorMessages } from "../../util/iframeCableMessageHandler";
+// import { listenForWallbaseColorMessages } from "../../util/iframeCableMessageHandler";
 
 const ConfiguratorLayout = () => {
   
@@ -106,16 +106,16 @@ useEffect(() => {
   });
   return cleanup;
 }, []);
-useEffect(() => {
-  const cleanup = listenForWallbaseColorMessages((data, event) => {
-    // handle wallbaseColor message here
-    console.log('[ConfigPanel] Received wallbaseColor message:', data,event.data);
-    // Example: open a modal, update config, etc.
-    // setIsCableModalOpen(true);
-    setCableMessage(data);
-  });
-  return cleanup;
-}, []);
+// useEffect(() => {
+//   const cleanup = listenForWallbaseColorMessages((data, event) => {
+//     // handle wallbaseColor message here
+//     console.log('[ConfigPanel] Received wallbaseColor message:', data,event.data);
+//     // Example: open a modal, update config, etc.
+//     // setIsCableModalOpen(true);
+//     setCableMessage(data);
+//   });
+//   return cleanup;
+// }, []);
 
 
   // Handler for cable size change
@@ -1180,7 +1180,7 @@ useEffect(() => {
   // Handle final save after user enters configuration name
   const handleFinalSave = async (configName, thumbnail, modelId) => {
 
-   
+   console.log("modelId", modelId)
     if (!configToSave) {
       console.error("configToSave is null or undefined");
       return;

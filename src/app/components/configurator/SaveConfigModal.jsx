@@ -24,6 +24,9 @@ export const SaveConfigModal = ({
   };
 
 
+
+  console.log("modelId", modelId);
+
   const getThumbnailFromIframe = () => {
     return new Promise((resolve) => {
       const handleMessage = (event) => {
@@ -79,15 +82,39 @@ export const SaveConfigModal = ({
 
   // };
 
+  useEffect(() => {
+    if (!fetchingModelId) return;
+    // Start listening for model_id messages
+    const cleanup = listenForModelIdMessages((data, event) => {
+      // Example: model_id:12345
+      if (typeof data === 'string' && data.startsWith('model_id')) {
+        console.log('[SaveConfigModal] Received model_id:', data);
+        // console.log("modelId splitted",data.split(' ')[1])
+        setModelId(data.split(' ')[1]);
+        setFetchingModelId(false);
+        setLoading(false);
+      }
+    });
+    return () => {
+      if (cleanup) cleanup();
+    };
+  }, [fetchingModelId]);
 
   // Clean up on modal close (remove any lingering handler)
   useEffect(() => {
+    if (isOpen) {
+      setFetchingModelId(true);
+      setLoading(true);
+    } else {
+      setFetchingModelId(false);
+      setLoading(false);
+    }
     if (!isOpen && messageHandlerRef.current) {
       window.removeEventListener('message', messageHandlerRef.current);
       messageHandlerRef.current = null;
     }
   }, [isOpen]);
-
+  console.log("modelId", modelId);
 
   // Request thumbnail when modal is opened
   useEffect(() => {

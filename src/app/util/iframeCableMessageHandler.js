@@ -16,27 +16,27 @@ export function listenForCableMessages(callback) {
 
   export function listenForModelIdMessages(callback) {
     function handleMessage(event) {
-      console.log('[CableMsg] BEFORE FILTER:', event.data);
+      console.log('[ModelIdMsg] BEFORE FILTER:', event.data);
       if (typeof event.data === 'string' && event.data.startsWith('model_id')) {
-        console.log('[CableMsg] MATCHED model_id:', event.data);
+        console.log('[ModelIdMsg] MATCHED model_id:', event.data);
         callback(event.data, event);
-        console.log('[CableMsg] AFTER CALLBACK:', event.data);
+        console.log('[ModelIdMsg] AFTER CALLBACK:', event.data);
       }
     }
     window.addEventListener('message', handleMessage);
     // Return cleanup
-    return () => window.removeEventListener('message', handleMessage);
+    // return () => window.removeEventListener('message', handleMessage);
   }
-  export function listenForWallbaseColorMessages(callback) {
-    function handleMessage(event) {
-      console.log('[WallbaseColorMsg] BEFORE FILTER:', event.data);
-      if (typeof event.data === 'string' && event.data === 'wallbaseColor') {
-        console.log('[WallbaseColorMsg] MATCHED wallbaseColor:', event.data);
-        callback(event.data, event);
-        console.log('[WallbaseColorMsg] AFTER CALLBACK:', event.data);
-      }
-    }
-    window.addEventListener('message', handleMessage);
-    // Return cleanup
-    return () => window.removeEventListener('message', handleMessage);
-  }
+  // export function listenForWallbaseColorMessages(callback) {
+  //   function handleMessage(event) {
+  //     console.log('[WallbaseColorMsg] BEFORE FILTER:', event.data);
+  //     if (typeof event.data === 'string' && event.data === 'wallbaseColor') {
+  //       console.log('[WallbaseColorMsg] MATCHED wallbaseColor:', event.data);
+  //       callback(event.data, event);
+  //       console.log('[WallbaseColorMsg] AFTER CALLBACK:', event.data);
+  //     }
+  //   }
+  //   window.addEventListener('message', handleMessage);
+  //   // Return cleanup
+  //   return () => window.removeEventListener('message', handleMessage);
+  // }
