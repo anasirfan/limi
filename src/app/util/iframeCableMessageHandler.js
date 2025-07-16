@@ -16,6 +16,7 @@ export function listenForCableMessages(callback) {
 
   export function listenForModelIdMessages(callback) {
     function handleMessage(event) {
+      console.log(event)
       console.log('[ModelIdMsg] BEFORE FILTER:', event.data);
       if (typeof event.data === 'string' && event.data.startsWith('model_id')) {
         console.log('[ModelIdMsg] MATCHED model_id:', event.data);
