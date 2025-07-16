@@ -173,8 +173,8 @@ export const signupUser = createAsyncThunk(
         return rejectWithValue('Please fill in all required fields');
       }
       
-      // Make API request
-      const response = await fetch('https://dev.api.limitless-lighting.co.uk/client/send_otp', {
+      // Make API request to create account (send_otp)
+      const signupResponse = await fetch('https://dev.api.limitless-lighting.co.uk/client/send_otp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -186,23 +186,62 @@ export const signupUser = createAsyncThunk(
           isWebsiteSignup: true
         }),
       });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
+
+      if (!signupResponse.ok) {
+        const errorData = await signupResponse.json();
         return rejectWithValue(errorData.error_message || 'Signup failed');
       }
-      
-      const data = await response.json();
-      
-      // Return success message and user email for redirection
-      return {
-        success: true,
-        message: 'Account created successfully! Please log in.',
-        email: userData.email
-      };
+
+      // Now verify OTP (auto verification after signup)
+      const verifyResponse = await fetch('https://dev.api.limitless-lighting.co.uk/client/verify_otp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: userData.email,
+          password: userData.password,
+          isWebsiteLogin: true
+        }),
+      });
+
+      if (!verifyResponse.ok) {
+        const errorData = await verifyResponse.json();
+        return rejectWithValue(errorData.error_message || 'OTP Verification failed');
+      }
+
+      const verifyData = await verifyResponse.json();
+
+      // Save token to localStorage with Bearer prefix for consistency
+      if (verifyData.data && verifyData.data.token) {
+        const token = verifyData.data.token.startsWith('Bearer ') ? verifyData.data.token : `${verifyData.data.token}`;
+        localStorage.setItem('limiToken', token);
+      } else {
+        return rejectWithValue('No token received after OTP verification');
+      }
+
+      // Get user profile with token
+      const token = verifyData.data.token.startsWith('Bearer ') ? verifyData.data.token : `${verifyData.data.token}`;
+      const profileResponse = await fetch('https://dev.api1.limitless-lighting.co.uk/client/user/profile', {
+        headers: {
+          'Authorization': token
+        }
+      });
+
+      if (!profileResponse.ok) {
+        return rejectWithValue('Failed to fetch user profile');
+      }
+
+      const profileData = await profileResponse.json();
+
+      // Save to localStorage
+      saveUserToStorage(profileData);
+
+      return profileData;
     } catch (error) {
-      return rejectWithValue(error.error_message || 'Signup failed');
+      return rejectWithValue(error.error_message || 'Login failed');
     }
+
   }
 );
 
@@ -501,8 +540,9 @@ export const userSlice = createSlice({
       })
       .addCase(signupUser.fulfilled, (state, action) => {
         state.registeredUsers.push(action.payload);
+        state.user = action.payload;
+        state.isLoggedIn = true;
         state.signupStatus = 'succeeded';
-        state.successMessage = 'Account created successfully! Please log in.';
       })
       .addCase(signupUser.rejected, (state, action) => {
         state.signupStatus = 'failed';

@@ -38,30 +38,7 @@ useEffect(() => {
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
-  
-  // Auto-play functionality
-  useEffect(() => {
-    if (!hasSlides) return;
-  
-    const startAutoPlay = () => {
-      autoPlayTimerRef.current = setInterval(() => {
-        if (currentIndex === safeSlides.length - 1) {
-          goToSlide(0);
-        } else {
-          goToNextSlide();
-        }
-      }, 2000);
-    };
-    
-    startAutoPlay();
-    
-    return () => {
-      if (autoPlayTimerRef.current) {
-        clearInterval(autoPlayTimerRef.current);
-      }
-    };
-  }, [currentIndex, hasSlides, safeSlides.length]);
-  
+
   // Handle navigation
   const goToSlide = (index) => {
     // Ensure index is within bounds
