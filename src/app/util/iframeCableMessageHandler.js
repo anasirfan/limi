@@ -28,16 +28,46 @@ export function listenForCableMessages(callback) {
     // Return cleanup
     // return () => window.removeEventListener('message', handleMessage);
   }
-  // export function listenForWallbaseColorMessages(callback) {
-  //   function handleMessage(event) {
-  //     console.log('[WallbaseColorMsg] BEFORE FILTER:', event.data);
-  //     if (typeof event.data === 'string' && event.data === 'wallbaseColor') {
-  //       console.log('[WallbaseColorMsg] MATCHED wallbaseColor:', event.data);
-  //       callback(event.data, event);
-  //       console.log('[WallbaseColorMsg] AFTER CALLBACK:', event.data);
-  //     }
-  //   }
-  //   window.addEventListener('message', handleMessage);
-  //   // Return cleanup
-  //   return () => window.removeEventListener('message', handleMessage);
-  // }
+
+  export function listenForMouseOverMessages(callback) {
+    function handleMessage(event) {
+      console.log(event)
+      console.log('[MouseOverMsg] BEFORE FILTER:', event.data);
+      if (typeof event.data === 'string' && event.data.startsWith('MousepointerChange')) {
+        console.log('[MouseOverMsg] MATCHED MousepointerChange:', event.data);
+        callback(event.data, event);
+        console.log('[MouseOverMsg] AFTER CALLBACK:', event.data);
+      }
+    }
+    window.addEventListener('message', handleMessage);
+    // Return cleanup
+    // return () => window.removeEventListener('message', handleMessage);
+  }
+  export function listenForMouseOutMessages(callback) {
+    function handleMessage(event) {
+      console.log(event)
+      console.log('[MouseOutMsg] BEFORE FILTER:', event.data);
+      if (typeof event.data === 'string' && event.data.startsWith('MousepointerNormal')) {
+        console.log('[MouseOutMsg] MATCHED MousepointerNormal:', event.data);
+        callback(event.data, event);
+        console.log('[MouseOutMsg] AFTER CALLBACK:', event.data);
+      }
+    }
+    window.addEventListener('message', handleMessage);
+    // Return cleanup
+    // return () => window.removeEventListener('message', handleMessage);
+  } 
+  
+  export function listenForWallbaseColorMessages(callback) {
+    function handleMessage(event) {
+      console.log('[WallbaseColorMsg] BEFORE FILTER:', event.data);
+      if (typeof event.data === 'string' && event.data === 'wallbaseColor') {
+        console.log('[WallbaseColorMsg] MATCHED wallbaseColor:', event.data);
+        callback(event.data, event);
+        console.log('[WallbaseColorMsg] AFTER CALLBACK:', event.data);
+      }
+    }
+    window.addEventListener('message', handleMessage);
+    // Return cleanup
+    return () => window.removeEventListener('message', handleMessage);
+  }

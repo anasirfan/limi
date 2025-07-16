@@ -68,6 +68,7 @@ const [isTourActive, setIsTourActive] = useState(true);
 const [highlightedElement, setHighlightedElement] = useState(null);
 const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });
 const [targetElement, setTargetElement] = useState(null);
+const [openingBase, setOpenBase] = useState(false);
 // Welcome modal state
 const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   
@@ -80,18 +81,47 @@ const [showWelcomeModal, setShowWelcomeModal] = useState(false);
     { id: 'pendantSelection', message: 'Finally, customize your pendant selection' }
   ];
 
+
   useEffect(() => {
+    const cleanup = listenForWallbaseColorMessages((data, event) => {
+      // handle wallbaseColor message here
+      console.log('[ConfigPanel] Received wallbaseColor message:', data,event.data);
+      // Example: open a modal, update config, etc.
+      setActiveStep('baseColor');
+      setOpenDropdown('baseColor');
+      setShowConfigurationTypeSelector(false);
+      setOpenBase(true);
+    });
+    return cleanup;
+  }, []);
+
+  useEffect(()=> {
+    if(activeStep === 'pendantSelection'){
+      setOpenBase(false);
+      setShowConfigurationTypeSelector(true);
+    }
+  },[activeStep])
+
+  useEffect(() => {
+   
     if (cableMessage && cableMessage.startsWith('cable_')) {
+      setShowConfigurationTypeSelector(false);
+      setOpenBase(false);
       // Extract the cable id (e.g., cable_2 → id = 2)
       const match = cableMessage.match(/^cable_(\d+)/);
       if (match) {
         const cableId = Number(match[1]);
         // 1. Open the pendant selection step
         setActiveStep('pendantSelection');
+        setOpenDropdown('pendantSelection');
         // 2. Select the pendant with the extracted id
         setSelectedPendants([cableId]);
         // 3. Show the configuration type selector
+      setTimeout(()=> {
         setShowConfigurationTypeSelector(true);
+      },200)
+
+  
         // 4. Optionally clear the cable message to avoid repeated triggers
         setCableMessage('');
       }
@@ -190,13 +220,18 @@ const tourSteps = [
   
   // Handle step click in vertical nav - with auto-close config panel
   const handleStepClick = (stepId) => {
+    console.log("handleStepClick", stepId);
     // If this is the guided step, complete it when clicked
     if (isGuidedStep(stepId)) {
       completeStep(stepId);
     }
 
     // Auto-close config panel when clicking on any vertical navbar option
-    console.log("handleStepClick", stepId);
+    console.log("handleStepClick", stepId)
+    if(stepId !== 'pendantSelection') {
+      setShowConfigurationTypeSelector(false);
+    }
+    ;
     if (localConfiguringType) {
       setLocalConfiguringType(null);
       // Also reset in parent component
@@ -268,7 +303,7 @@ const tourSteps = [
     applyToAllPendants,
     getDesignImageNumber,
     getPendantDesignImageNumber
-  } = usePendantSelection(pendants, selectedPendants, setSelectedPendants, onPendantDesignChange);
+  } = usePendantSelection(pendants, selectedPendants, setSelectedPendants, onPendantDesignChange,setShowConfigurationTypeSelector,setOpenBase);
   
   // Handle pendant location selection to show configuration type selector
   const handlePendantLocationClick = (locationIndex) => {
@@ -451,6 +486,7 @@ const tourSteps = [
                     selectedPendants={selectedPendants}
                     cables={cables} // Pass cables prop to child component
                     currentDesign={currentDesign}
+                    setOpenBase={setOpenBase}
                     setCurrentDesign={setCurrentDesign}
                     carouselRef={carouselRef}
                     onCableSizeChange={onCableSizeChange}
@@ -516,7 +552,7 @@ const tourSteps = [
       
       {/* Configuration Panel */}
       <AnimatePresence>
-        {(showConfigurationTypeSelector || localConfiguringType) && selectedPendants.length > 0 && !isMobile && (
+        {(showConfigurationTypeSelector || localConfiguringType) && !openingBase && selectedPendants.length > 0 && !isMobile && (
           <ConfigPanel
             configuringType={localConfiguringType}
             configuringSystemType={configuringSystemType}
@@ -578,6 +614,8 @@ const tourSteps = [
 
 // GuidedTourOverlay component
 import { useLayoutEffect } from 'react';
+import { listenForWallbaseColorMessages } from '../../util/iframeCableMessageHandler';
+
 function GuidedTourOverlay({ isActive, step, stepIndex, totalSteps, targetSelector, onNext, onPrev, onClose }) {
   const [highlightRect, setHighlightRect] = useState(null);
   const [tooltipPos, setTooltipPos] = useState({ top: 0, left: 0 });
@@ -785,7 +823,6 @@ function GuidedTourOverlay({ isActive, step, stepIndex, totalSteps, targetSelect
     document.body
   );
 }
-
 // WelcomeTourModal component
 function WelcomeTourModal({ isOpen, onSkip, onStart }) {
   if (!isOpen) return null;

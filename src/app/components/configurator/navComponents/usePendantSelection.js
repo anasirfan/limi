@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 
-export const usePendantSelection = (pendants, selectedPendants, setSelectedPendants, onPendantDesignChange) => {
+export const usePendantSelection = (pendants, selectedPendants, setSelectedPendants, onPendantDesignChange,setShowConfigurationTypeSelector,setOpenBase) => {
   const [currentDesign, setCurrentDesign] = useState('radial');
   const carouselRef = useRef(null);
   
@@ -64,11 +64,15 @@ export const usePendantSelection = (pendants, selectedPendants, setSelectedPenda
     // Fallback
     return `${designName}.jpg`;
   };
-  
+  // if(selectedPendants.length > 0){
+  //   setShowConfigurationTypeSelector(true);
+  //   setOpenBase(true);
+  // }
   // Toggle pendant selection
   const togglePendantSelection = (pendantId) => {
     if (selectedPendants.includes(pendantId)) {
       setSelectedPendants(selectedPendants.filter(id => id !== pendantId));
+      
     } else {
       setSelectedPendants([...selectedPendants, pendantId]);
     }

@@ -17,8 +17,8 @@ import { saveConfiguration } from "../../../app/redux/slices/userSlice.js";
 import { useRouter, useSearchParams } from "next/navigation";
 import ConfigurationSummary from "../lightConfigurator/ConfigurationSummary";
 import { fetchUserByToken } from "../../../app/redux/slices/userSlice.js";
-import { listenForCableMessages } from "../../util/iframeCableMessageHandler";
-// import { listenForWallbaseColorMessages } from "../../util/iframeCableMessageHandler";
+import { listenForCableMessages, listenForMouseOutMessages, listenForMouseOverMessages } from "../../util/iframeCableMessageHandler";
+import { listenForWallbaseColorMessages } from "../../util/iframeCableMessageHandler";
 
 const ConfiguratorLayout = () => {
   
@@ -45,6 +45,44 @@ const loadFromLocalStorage = (key, defaultValue) => {
     return defaultValue;
   }
 };
+const iframe = document.getElementById('playcanvas-app');
+// useEffect(() => {
+//   // Handler to set cursor to hand/grab/drag
+//   const handleMouseOver = () => {
+
+  
+//     const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+//     if (iframeDoc) {
+//       iframeDoc.body.style.cursor = 'grab';
+//     }
+//   };
+//   const cleanup = listenForMouseOverMessages((message, event) => {
+//     console.log('[ConfigPanel] Received mouse over message:', message,event.data);
+//     handleMouseOver();
+//   });
+
+//   return cleanup;
+// }, []);
+// useEffect(() => {
+
+//   // Handler to revert cursor to default
+//   const handleMouseOut = () => {
+  
+//      const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+//     if (iframeDoc) {
+//       iframeDoc.body.style.cursor = 'default';
+//     }
+//   };
+
+//   const cleanup2 = listenForMouseOutMessages((message, event) => {
+//     // Do something with the message, e.g. open UI, update state, etc.
+//     console.log('[ConfigPanel] Received mouse out message:', message,event.data);
+//     // Example: open a modal, update config, etc.
+//     handleMouseOut();
+//   });
+//   return cleanup2;
+// }, []);
+
 
 const saveToLocalStorage = (key, value) => {
   if (typeof window === "undefined") return;
@@ -106,16 +144,7 @@ useEffect(() => {
   });
   return cleanup;
 }, []);
-// useEffect(() => {
-//   const cleanup = listenForWallbaseColorMessages((data, event) => {
-//     // handle wallbaseColor message here
-//     console.log('[ConfigPanel] Received wallbaseColor message:', data,event.data);
-//     // Example: open a modal, update config, etc.
-//     // setIsCableModalOpen(true);
-//     setCableMessage(data);
-//   });
-//   return cleanup;
-// }, []);
+
 
 
   // Handler for cable size change
