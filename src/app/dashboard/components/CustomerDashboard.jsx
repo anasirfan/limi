@@ -8,8 +8,10 @@ import ProductManagement from './ProductManagement';
 import SlideManagement from './SlideManagement';
 import AddCustomerModal from './SlideManagement/AddCustomerModal';
 import DistributorDetailsModal from './DistributorDetailsModal';
+import SlideInsights from './SlideInsights';
 
 export default function CustomerDashboard({ token }) {
+  const [slideshowTab, setSlideshowTab] = useState('edit');
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -1684,29 +1686,18 @@ export default function CustomerDashboard({ token }) {
                 
                 {/* Sessions Over Time Line Chart */}
                 <div className="bg-[#1e1e1e] p-4 rounded-lg shadow-lg">
-                  <h3 className="text-[#54BB74] text-lg font-semibold mb-4">Sessions Over Time</h3>
-                  <div className="h-64">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart
-                        data={analytics.sessionsOverTime}
-                        margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-                        <XAxis dataKey="date" stroke="#ccc" />
-                        <YAxis stroke="#ccc" />
-                        <Tooltip />
-                        <Legend />
-                        <Line
-                          type="monotone"
-                          dataKey="sessions"
-                          name="Sessions"
-                          stroke="#54BB74"
-                          activeDot={{ r: 8 }}
-                        />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </div>
-                </div>
+        <h3 className="text-[#54BB74] text-lg font-semibold mb-4">Sessions Over Time</h3>
+        <div>
+          <SlideInsights
+            slideTimes={[]}
+            sessions={analytics.sessionsOverTime.map(s => ({
+              sessionStart: s.date,
+              sessionEnd: s.date,
+              durationSeconds: s.sessions
+            }))}
+          />
+        </div>
+      </div>
               </div>
               
               {/* Visitor Logs Table */}
@@ -2167,66 +2158,126 @@ export default function CustomerDashboard({ token }) {
       
       {/* Slideshow Tab */}
       {activeTab === 'slideshow' && (
-        <div className="mt-6">
-          <div className="bg-[#1e1e1e] p-6 rounded-lg shadow-lg mb-6">
-            <h2 className="text-xl font-[Amenti] text-[#93cfa2] mb-4">Customer Slideshow Management</h2>
-            <p className="text-gray-300 mb-4">Select a customer to manage their slideshow presentation.</p>
-            
-            <div className="max-w-md">
-              <label className="block text-gray-400 mb-2">Select Customer</label>
-              <select
-                className="bg-[#292929] text-white w-full px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#54bb74]"
-                onChange={(e) => {
-                  const selectedCustomer = customers.find(c => c.profileId === e.target.value);
-                  setSelectedCustomer(selectedCustomer);
-                }}
-                value={selectedCustomer?.profileId || ''}
-              >
-                <option value="">-- Select a customer --</option>
-                {customers.map(customer => (
-                  <option key={customer.profileId} value={customer.profileId}>
-                    {customer.clientCompanyInfo} ({customer.profileId})
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-          
-          {selectedCustomer ? (
-            <SlideManagement customer={selectedCustomer} />
-          ) : (
-            <div className="bg-[#1e1e1e] p-6 rounded-lg">
-              <div className="flex flex-col items-center justify-center py-8">
-                <p className="text-gray-300 mb-6"> Please select a customer to manage their slideshow or add a new customer</p>
-                <button
-                  onClick={() => setShowAddCustomerModal(true)}
-                  className="bg-[#54BB74] text-[#1e1e1e] px-6 py-3 rounded-md hover:bg-[#93cfa2] transition-colors flex items-center font-medium"
-                >
-                  <FaUserPlus className="mr-2" />
-                  Add New Customer
-                </button>
-              </div>
-            </div>
-          )}
-          
-          {/* Add Customer Modal */}
-          <AddCustomerModal 
-            isOpen={showAddCustomerModal}
-            onClose={() => setShowAddCustomerModal(false)}
-            onCustomerAdded={(newCustomer) => {
-              // Refresh customers list
-              setLoading(true);
-              setTimeout(() => {
-                // Add the new customer to the list
-                setCustomers([newCustomer, ...customers]);
-                // Select the new customer
-                setSelectedCustomer(newCustomer);
-                setLoading(false);
-              }, 1000);
-            }}
-            token={token}
-          />
+  <div className="mt-6">
+    <div className="bg-[#1e1e1e] p-6 rounded-lg shadow-lg mb-6">
+      <h2 className="text-xl font-[Amenti] text-[#93cfa2] mb-4">Customer Slideshow Management</h2>
+      <p className="text-gray-300 mb-4">Select a customer to manage their slideshow presentation.</p>
+      <div className="max-w-md">
+        <label className="block text-gray-400 mb-2">Select Customer</label>
+        <select
+          className="bg-[#292929] text-white w-full px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#54bb74]"
+          onChange={(e) => {
+            const selectedCustomer = customers.find(c => c.profileId === e.target.value);
+            setSelectedCustomer(selectedCustomer);
+            setSlideshowTab('edit'); // default to edit tab on customer change
+          }}
+          value={selectedCustomer?.profileId || ''}
+        >
+          <option value="">-- Select a customer --</option>
+          {customers.map(customer => (
+            <option key={customer.profileId} value={customer.profileId}>
+              {customer.clientCompanyInfo} ({customer.profileId})
+            </option>
+          ))}
+        </select>
+      </div>
+    </div>
+
+    {selectedCustomer ? (
+      <div>
+        {/* Sub-tabs for Edit/Insights */}
+        <div className="flex gap-4 mb-6">
+          <button
+            className={`px-6 py-2 rounded-t-md font-semibold focus:outline-none transition-colors ${slideshowTab === 'edit' ? 'bg-[#54bb74] text-[#1e1e1e]' : 'bg-[#292929] text-white hover:bg-[#333]'}`}
+            onClick={() => setSlideshowTab('edit')}
+          >
+            Edit
+          </button>
+          <button
+            className={`px-6 py-2 rounded-t-md font-semibold focus:outline-none transition-colors ${slideshowTab === 'insights' ? 'bg-[#54bb74] text-[#1e1e1e]' : 'bg-[#292929] text-white hover:bg-[#333]'}`}
+            onClick={() => setSlideshowTab('insights')}
+          >
+            Insights
+          </button>
         </div>
+        <div className="bg-[#1e1e1e] rounded-b-lg p-6">
+          {slideshowTab === 'edit' && <SlideManagement customer={selectedCustomer} />}
+          {slideshowTab === 'insights' && (
+            <SlideInsights
+              slideTimes={(() => {
+                const key = `slideTimes_${selectedCustomer.profileId}`;
+                try {
+                  return JSON.parse(localStorage.getItem(key)) || [];
+                } catch {
+                  return [];
+                }
+              })()}
+              sessions={(() => {
+                const key = `slideSessions_${selectedCustomer.profileId}`;
+                try {
+                  return JSON.parse(localStorage.getItem(key)) || [];
+                } catch {
+                  return [];
+                }
+              })()}
+            />
+          )}
+        </div>
+      </div>
+    ) : (
+      <div className="bg-[#1e1e1e] p-6 rounded-lg">
+        <div className="flex flex-col items-center justify-center py-8">
+          <p className="text-gray-300 mb-6"> Please select a customer to manage their slideshow or add a new customer</p>
+          <button
+            onClick={() => setShowAddCustomerModal(true)}
+            className="bg-[#54BB74] text-[#1e1e1e] px-6 py-3 rounded-md hover:bg-[#93cfa2] transition-colors flex items-center font-medium"
+          >
+            <FaUserPlus className="mr-2" />
+            Add New Customer
+          </button>
+        </div>
+      </div>
+    )}
+
+    {/* Add Customer Modal */}
+    <AddCustomerModal 
+      isOpen={showAddCustomerModal}
+      onClose={() => setShowAddCustomerModal(false)}
+      onCustomerAdded={(newCustomer) => {
+        // Refresh customers list
+        setLoading(true);
+        setTimeout(() => {
+          // Add the new customer to the list
+          setCustomers([newCustomer, ...customers]);
+          // Select the new customer
+          setSelectedCustomer(newCustomer);
+          setLoading(false);
+        }, 1000);
+      }}
+      token={token}
+    />
+  </div>
+)}
+
+      {activeTab === 'insights' && selectedCustomer && (
+        <SlideInsights
+          slideTimes={(() => {
+            const key = `slideTimes_${selectedCustomer.profileId}`;
+            try {
+              return JSON.parse(localStorage.getItem(key)) || [];
+            } catch {
+              return [];
+            }
+          })()}
+          sessions={(() => {
+            const key = `slideSessions_${selectedCustomer.profileId}`;
+            try {
+              return JSON.parse(localStorage.getItem(key)) || [];
+            } catch {
+              return [];
+            }
+          })()}
+        />
       )}
 
       {activeTab === 'customers' && (
