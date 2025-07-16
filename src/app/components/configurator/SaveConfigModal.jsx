@@ -26,6 +26,7 @@ export const SaveConfigModal = ({
   const getThumbnailFromIframe = () => {
     return new Promise((resolve) => {
       const handleMessage = (event) => {
+        console.log("event",event);
         let url = null;
         if (event.data) {
           if (typeof event.data === 'string') {
@@ -58,51 +59,24 @@ export const SaveConfigModal = ({
   const [modalIdString, setModalIdString] = useState('');
   const messageHandlerRef = useRef(null);
 
-  const saveDataModal = () => {
-    return new Promise((resolve, reject) => {
-      // Remove any previous handler to prevent duplicates
-      if (messageHandlerRef.current) {
-        window.removeEventListener('message', messageHandlerRef.current);
-        messageHandlerRef.current = null;
-      }
+  // const saveDataModal = (e) => {
+  //   const handleMessage = (event) => {
+  //     console.log("event",event);
+  //     if (event.data) {
+  //       if (typeof event.data === 'string') {
+  //         console.log("event.data",event.data);
+  //         // setModalIdString(event.data);
+  //       }
+  //     }
+  //   };
+  //   window.addEventListener('message', handleMessage);
 
-      const timeout = setTimeout(() => {
-        if (messageHandlerRef.current) {
-          window.removeEventListener('message', messageHandlerRef.current);
-          messageHandlerRef.current = null;
-        }
-        reject(new Error('Timeout: No response from iframe'));
-      }, 10000);
+  //   const iframe = document.getElementById('playcanvas-app');
+  //   if (iframe && iframe.contentWindow) {
+  //     iframe.contentWindow.postMessage('savedatamodel', '*');
+  //   } 
 
-      const handler = (event) => {
-        // Handle string from iframe (like getThumbnailFromIframe)
-        if (typeof event.data === 'string') {
-          setModalIdString(event.data);
-          // Extract model ID if present
-          const match = event.data.match(/Uploaded model ID:\s*([a-fA-F0-9]+)/);
-          // FIX: use single backslash for whitespace in regex
-          const correctMatch = event.data.match(/Uploaded model ID:\s*([a-fA-F0-9]+)/);
-          if (correctMatch && correctMatch[1]) {
-            console.log('Extracted model ID:', correctMatch[1]);
-          } else {
-            console.log('ModalId string from iframe:', event.data);
-          }
-          clearTimeout(timeout);
-          window.removeEventListener('message', handler);
-          messageHandlerRef.current = null;
-          resolve(event.data);
-          return;
-        }
-        // Optionally, handle object messages here if needed (e.g., Upload success)
-      };
-      messageHandlerRef.current = handler;
-      window.addEventListener('message', handler);
-      const iframe = document.getElementById('playcanvas-app');
-      if (iframe && iframe.contentWindow) {
-        iframe.contentWindow.postMessage('saveModalId', '*');
-      }
-    });
-  };
+  // };
 
 
   // Clean up on modal close (remove any lingering handler)
@@ -121,11 +95,13 @@ export const SaveConfigModal = ({
         setThumbnail(url);
         console.log("url",url);
         // Only call saveDataModal ONCE per modal open
-        saveDataModal().then((modalId) => {
-          setModalId(modalId);
-          console.log("modalId",modalId);
-        });
+        // saveDataModal();
       });
+
+      // saveDataModal().then((modalId) => {
+      //   setModalId(modalId);
+      //   console.log("modalId",modalId);
+      // });
     }
   }, [isOpen]);
 
