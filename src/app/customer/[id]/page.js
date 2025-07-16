@@ -392,7 +392,10 @@ export default function CustomerProfile() {
                   
                   {/* Slide Carousel */}
                   <div className="bg-black rounded-lg overflow-hidden">
-                    <SlideCarousel slides={presentationData.slides} />  
+                    <SlideCarousel 
+                      slides={presentationData.slides} 
+                      customerId={customer?.profileId || customerId} 
+                    />  
                   </div>
                 </div>
               )}

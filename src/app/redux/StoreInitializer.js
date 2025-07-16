@@ -33,6 +33,7 @@ export default function StoreInitializer() {
     }
 
     // Load products from localStorage
+    
     const savedProducts = localStorage.getItem('limiProducts');
     if (savedProducts) {
       try {

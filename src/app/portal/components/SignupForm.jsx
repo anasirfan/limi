@@ -23,16 +23,14 @@ export default function SignupForm({ onSwitchToLogin }) {
     };
   }, [dispatch]);
   
-  // Show success message and switch to login after successful signup
+  // Redirect to dashboard after successful signup
+  const router = require('next/navigation').useRouter();
+  const user = useSelector((state) => state.user.user);
   useEffect(() => {
-    if (signupStatus === 'succeeded' && successMessage) {
-      const timer = setTimeout(() => {
-        onSwitchToLogin();
-      }, 2000);
-      
-      return () => clearTimeout(timer);
+    if (signupStatus === 'succeeded' && user) {
+      router.push('/portal'); // or '/portal' or your desired route
     }
-  }, [signupStatus, successMessage, onSwitchToLogin]);
+  }, [signupStatus, user, router]);
   
   const validatePassword = () => {
     if (password !== confirmPassword) {
@@ -59,6 +57,16 @@ export default function SignupForm({ onSwitchToLogin }) {
     dispatch(signupUser({ name, email, password }));
   };
   
+  // Loading overlay
+  if (signupStatus === 'loading') {
+    return (
+      <div className="fixed inset-0 z-50 bg-black bg-opacity-70 flex flex-col items-center justify-center">
+        <div className="w-16 h-16 border-t-4 border-[#93cfa2] border-solid rounded-full animate-spin mb-6"></div>
+        <p className="text-gray-300">Creating Your Account...</p>
+      </div>
+    );
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}

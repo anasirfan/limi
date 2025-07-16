@@ -83,14 +83,15 @@ export default function PortalLogin({ onLogin }) {
       }
     }
   };
-  // Update parent component when login is successful
+  // Redirect to dashboard after successful login
+  const router = require('next/navigation').useRouter();
   useEffect(() => {
     if (isLoggedIn && user) {
+      router.push('/dashboard'); // or '/portal' or your desired route
       onLogin(user);
-      // Don't switch to signup after successful login
       setShowSignup(false);
     }
-  }, [isLoggedIn, user, onLogin]);
+  }, [isLoggedIn, user, router, onLogin]);
 
   // Handle email login
   const handleEmailLogin = (e) => {
