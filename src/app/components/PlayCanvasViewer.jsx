@@ -43,7 +43,7 @@ const PlayCanvasViewer = ({
         setIsLoading(false);
         
         // Send default selections after app is ready
-        sendDefaultSelections();
+        // sendDefaultSelections();
       }
     };
     
