@@ -15,6 +15,7 @@ export const ConfigPanel = ({
   configuringType,
   configuringSystemType,
   breadcrumbPath,
+  showConfigurationTypeSelector,
   onBreadcrumbNavigation,
   onSystemTypeSelection,
   selectedLocation,
@@ -39,6 +40,13 @@ export const ConfigPanel = ({
       setLocalSelectedShade(null);
     }
   }, [configuringType]);
+
+  useEffect(() => {
+    if (showConfigurationTypeSelector) {
+      console.log("showConfigurationTypeSelector",showConfigurationTypeSelector)
+      handleBreadcrumbNavigation("home");
+    }
+  }, [showConfigurationTypeSelector]);
 
   const [currentDesign, setCurrentDesign] = useState(null);
   // Internal state for selected cable size (for immediate UI feedback)
@@ -1038,6 +1046,7 @@ export const ConfigPanel = ({
   // Custom breadcrumb navigation handler
   const handleBreadcrumbNavigation = (id) => {
     // Use the navigation state to determine where to go
+    console.log("handleBreadcrumbNavigation",id)
     if (id === "home") {
       // Reset to configuration type selection (first level)
       onSelectConfigurationType(null);

@@ -31,6 +31,7 @@ const VerticalNavBar = ({
   onLightTypeChange,
   onBaseTypeChange,
   onBaseColorChange,
+  onConnectorColorChange,
   onConfigurationTypeChange,
   onLightAmountChange,
   onSystemTypeChange,
@@ -119,6 +120,7 @@ const [showWelcomeModal, setShowWelcomeModal] = useState(false);
         // 3. Show the configuration type selector
       setTimeout(()=> {
         setShowConfigurationTypeSelector(true);
+        setLocalConfiguringType(null)
       },200)
 
   
@@ -457,6 +459,8 @@ const tourSteps = [
                   <BaseColorPanel 
                     currentBaseColor={config.baseColor}
                     onBaseColorChange={onBaseColorChange}
+                    currentConnectorColor={config?.connectorColor}
+                    onConnectorColorChange={onConnectorColorChange}
                   />
                 )}
                 
@@ -552,7 +556,7 @@ const tourSteps = [
       
       {/* Configuration Panel */}
       <AnimatePresence>
-        {(showConfigurationTypeSelector || localConfiguringType) && !openingBase && selectedPendants.length > 0 && !isMobile && (
+        {(showConfigurationTypeSelector) && !openingBase && selectedPendants.length > 0 && !isMobile && (
           <ConfigPanel
             configuringType={localConfiguringType}
             configuringSystemType={configuringSystemType}
@@ -567,6 +571,7 @@ const tourSteps = [
             onSystemBaseDesignChange={onSystemBaseDesignChange}
             onShadeSelect={onShadeSelect}
             currentShade={null}
+            showConfigurationTypeSelector={showConfigurationTypeSelector}
             onSelectConfigurationType={(type) => {
               // This matches the original handleConfigTypeSelection function
               setLocalConfiguringType(type);
