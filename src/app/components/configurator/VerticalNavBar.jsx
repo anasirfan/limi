@@ -95,6 +95,18 @@ const [showWelcomeModal, setShowWelcomeModal] = useState(false);
     });
     return cleanup;
   }, []);
+  useEffect(() => {
+    const cleanup = listenForConnectorColorMessages((data, event) => {
+      // handle wallbaseColor message here
+      console.log('[ConfigPanel] Received connectorColor message:', data,event.data);
+      // Example: open a modal, update config, etc.
+      setActiveStep('baseColor');
+      setOpenDropdown('baseColor');
+      setShowConfigurationTypeSelector(false);
+      setOpenBase(true);
+    });
+    return cleanup;
+  }, []);
 
   useEffect(()=> {
     if(activeStep === 'pendantSelection'){
@@ -619,7 +631,7 @@ const tourSteps = [
 
 // GuidedTourOverlay component
 import { useLayoutEffect } from 'react';
-import { listenForWallbaseColorMessages } from '../../util/iframeCableMessageHandler';
+import { listenForConnectorColorMessages, listenForWallbaseColorMessages } from '../../util/iframeCableMessageHandler';
 
 function GuidedTourOverlay({ isActive, step, stepIndex, totalSteps, targetSelector, onNext, onPrev, onClose }) {
   const [highlightRect, setHighlightRect] = useState(null);

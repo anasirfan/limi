@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FaCheck } from 'react-icons/fa';
+import { listenForConnectorColorMessages } from '../../../util/iframeCableMessageHandler';
 
 const BaseColorPanel = ({
   onBaseColorChange,
@@ -12,6 +13,15 @@ const BaseColorPanel = ({
   const [selectedBaseColor, setSelectedBaseColor] = useState(currentBaseColor || 'black');
   const [selectedConnectorColor, setSelectedConnectorColor] = useState(currentConnectorColor || 'black');
 
+    useEffect(() => {
+      const cleanup = listenForConnectorColorMessages((data, event) => {
+        // handle wallbaseColor message here
+        console.log('[ConfigPanel] Received connectorColor message:', data,event.data);
+        // Example: open a modal, update config, etc.
+        setActiveTab('connector');
+      });
+      return cleanup;
+    }, []);
   useEffect(() => {
     if (currentBaseColor) {
       setSelectedBaseColor(currentBaseColor);
