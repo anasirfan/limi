@@ -300,13 +300,20 @@ const PlayCanvasViewer = ({
                   key={i}
                   className="absolute bg-emerald-500 rounded-full"
                   style={{
-                    width: `${Math.random() * 10 + 5}px`,
-                    height: `${Math.random() * 10 + 5}px`,
-                    top: `${Math.random() * 100}%`,
-                    left: `${Math.random() * 100}%`,
-                    opacity: Math.random() * 0.5 + 0.25,
-                    animation: `float ${Math.random() * 10 + 10}s infinite linear`,
-                    animationDelay: `${Math.random() * 5}s`
+                    // width: `${Math.random() * 10 + 5}px`,
+                    // height: `${Math.random() * 10 + 5}px`,
+                    // top: `${Math.random() * 100}%`,
+                    // left: `${Math.random() * 100}%`,
+                    // opacity: Math.random() * 0.5 + 0.25,
+                    // animation: `float ${Math.random() * 10 + 10}s infinite linear`,
+                    // animationDelay: `${Math.random() * 5}s`
+                    width: '10px',
+                    height: '10px',
+                    top: '50%',
+                    left: '50%',
+                    opacity: 1,
+                    animation: 'float 5s infinite linear',
+                    animationDelay: '0s'
                   }}
                 />
               ))}

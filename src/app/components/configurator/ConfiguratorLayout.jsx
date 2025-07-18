@@ -34,6 +34,8 @@ const ConfiguratorLayout = () => {
   const [localSavedConfig,setLocalSavedConfig] = useState({});
   const [localSavedCables,setLocalSavedCables] = useState({});
   const [cableMessage, setCableMessage] = useState('');
+  const [mounted, setMounted] = useState(false);
+useEffect(() => setMounted(true), []);
 
 const handleOpenSaveModal = () => {
   setConfiguringType("save");
@@ -131,6 +133,17 @@ const saveToLocalStorage = (key, value) => {
       },
     ]);
   }); 
+
+  useEffect(() => {
+    if (mounted && config.pendants.length === 0) {
+      const initialPendants = generateRandomPendants(config.lightAmount);
+      setConfig(prev => ({
+        ...prev,
+        pendants: initialPendants,
+        systemConfigurations: generateRandomSystems(config.lightAmount)
+      }));
+    }
+  }, [mounted, config.lightAmount]);
 
   
   // Save to localStorage whenever config or cables change
@@ -1490,6 +1503,7 @@ useEffect(() => {
       )} */}
 
       {/* 3D Viewer */}
+      {mounted && (
       <div className="w-full h-full">
         <PlayCanvasViewer
           config={config}
@@ -1498,10 +1512,9 @@ useEffect(() => {
           loadcanvas={isLoading}
           localSavedConfig={localSavedConfig}
           localSavedCables={localSavedCables}
-    
-
         />
       </div>
+      )}
 
       {/* Preview Controls - Always visible */}
       <PreviewControls
