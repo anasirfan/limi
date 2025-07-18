@@ -174,7 +174,6 @@ const ConfiguratorLayout = () => {
         const designIdMap = {
           'bumble': 'product_1',
           'radial': 'product_2',
-          'fina': 'product_3',
           'ico': 'product_4',
           'piko': 'product_5'
         };
@@ -240,7 +239,7 @@ const ConfiguratorLayout = () => {
         initialPendants.forEach((pendant, index) => {
           const productId = pendant.design === 'bumble' ? 'product_1' : 
                         pendant.design === 'radial' ? 'product_2' : 
-                        pendant.design === 'fina' ? 'product_3' : 
+                        // pendant.design === 'fina' ? 'product_3' : 
                         pendant.design === 'ico' ? 'product_4' : 
                         pendant.design === 'piko' ? 'product_5' : 'product_2';
           
@@ -341,7 +340,7 @@ const ConfiguratorLayout = () => {
       newPendants.forEach((pendant, index) => {
         const productId = pendant.design === 'bumble' ? 'product_1' : 
                        pendant.design === 'radial' ? 'product_2' : 
-                       pendant.design === 'fina' ? 'product_3' : 
+                      //  pendant.design === 'fina' ? 'product_3' : 
                        pendant.design === 'ico' ? 'product_4' : 
                        pendant.design === 'piko' ? 'product_5' : 'product_2';
         
@@ -422,7 +421,7 @@ const ConfiguratorLayout = () => {
       newPendants.forEach((pendant, index) => {
         const productId = pendant.design === 'bumble' ? 'product_1' : 
                        pendant.design === 'radial' ? 'product_2' : 
-                       pendant.design === 'fina' ? 'product_3' : 
+                       // pendant.design === 'fina' ? 'product_3' : 
                        pendant.design === 'ico' ? 'product_4' : 
                        pendant.design === 'piko' ? 'product_5' : 'product_2';
         
@@ -459,7 +458,7 @@ const ConfiguratorLayout = () => {
     newPendants.forEach((pendant, index) => {
       const productId = pendant.design === 'bumble' ? 'product_1' : 
                      pendant.design === 'radial' ? 'product_2' : 
-                     pendant.design === 'fina' ? 'product_3' : 
+                     // pendant.design === 'fina' ? 'product_3' : 
                      pendant.design === 'ico' ? 'product_4' : 
                      pendant.design === 'piko' ? 'product_5' : 'product_2';
       
@@ -548,7 +547,7 @@ const ConfiguratorLayout = () => {
           const designIdMap = {
             'bumble': 'product_1',
             'radial': 'product_2',
-            'fina': 'product_3',
+            // 'fina': 'product_3',
             'ico': 'product_4',
             'piko': 'product_5'
           };
@@ -570,7 +569,7 @@ const ConfiguratorLayout = () => {
     setTimeout(() => {
       const productId = design === 'bumble' ? 'product_1' : 
                       design === 'radial' ? 'product_2' : 
-                      design === 'fina' ? 'product_3' : 
+                      // design === 'fina' ? 'product_3' : 
                       design === 'ico' ? 'product_4' : 
                       design === 'piko' ? 'product_5' : 'product_2';
       
@@ -754,7 +753,7 @@ const ConfiguratorLayout = () => {
         loadedConfig.pendants.forEach((pendant, index) => {
           const productId = pendant.design === 'bumble' ? 'product_1' : 
                          pendant.design === 'radial' ? 'product_2' : 
-                         pendant.design === 'fina' ? 'product_3' : 
+                         // pendant.design === 'fina' ? 'product_3' : 
                          pendant.design === 'ico' ? 'product_4' : 
                          pendant.design === 'piko' ? 'product_5' : 'product_2';
           

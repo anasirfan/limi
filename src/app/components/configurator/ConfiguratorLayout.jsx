@@ -145,7 +145,7 @@ const saveToLocalStorage = (key, value) => {
     }
   }, [mounted, config.lightAmount]);
 
-  
+
   // Save to localStorage whenever config or cables change
 useEffect(() => {
   saveToLocalStorage('lightConfig', config);
@@ -327,7 +327,6 @@ useEffect(() => {
       initialPendants.forEach((pendant, index) => {
         const productId = pendant.design === 'bumble' ? 'product_1' : 
                       pendant.design === 'radial' ? 'product_2' : 
-                      pendant.design === 'fina' ? 'product_3' : 
                       pendant.design === 'ico' ? 'product_4' : 
                       pendant.design === 'piko' ? 'product_5' : 'product_2';
         
@@ -380,7 +379,7 @@ useEffect(() => {
   //         });
   //         const productId = designOptions[Math.floor(Math.random() * designOptions.length)] === 'bumble' ? 'product_1' :
   //         designOptions[Math.floor(Math.random() * designOptions.length)] === 'radial' ? 'product_2' :
-  //         designOptions[Math.floor(Math.random() * designOptions.length)] === 'fina' ? 'product_3' :
+         
   //         designOptions[Math.floor(Math.random() * designOptions.length)] === 'ico' ? 'product_4' :
   //         designOptions[Math.floor(Math.random() * designOptions.length)] === 'piko' ? 'product_5' : 'product_2';
   //         setCables(prev => [...prev, { isSystem: false, systemType: "", design: designOptions[Math.floor(Math.random() * designOptions.length)], designId: productId }]);
@@ -543,8 +542,6 @@ useEffect(() => {
           ? "product_1"
           : pendant.design === "radial"
           ? "product_2"
-          : pendant.design === "fina"
-          ? "product_3"
           : pendant.design === "ico"
           ? "product_4"
           : pendant.design === "piko"
@@ -580,8 +577,6 @@ useEffect(() => {
             ? "product_1"
             : pendant.design === "radial"
             ? "product_2"
-            : pendant.design === "fina"
-            ? "product_3"
             : pendant.design === "ico"
             ? "product_4"
             : pendant.design === "piko"
@@ -669,8 +664,7 @@ useEffect(() => {
           ? "product_1"
           : pendant.design === "radial"
           ? "product_2"
-          : pendant.design === "fina"
-          ? "product_3"
+         
           : pendant.design === "ico"
           ? "product_4"
           : pendant.design === "piko"
@@ -699,8 +693,7 @@ useEffect(() => {
               ? "product_1"
               : pendant.design === "radial"
               ? "product_2"
-              : pendant.design === "fina"
-              ? "product_3"
+              
               : pendant.design === "ico"
               ? "product_4"
               : pendant.design === "piko"
@@ -715,8 +708,7 @@ useEffect(() => {
             ? "product_1"
             : newPendants.design === "radial"
             ? "product_2"
-            : newPendants.design === "fina"
-            ? "product_3"
+        
             : newPendants.design === "ico"
             ? "product_4"
             : newPendants.design === "piko"
@@ -844,8 +836,7 @@ useEffect(() => {
             ? "product_1"
             : design === "radial"
             ? "product_2"
-            : design === "fina"
-            ? "product_3"
+
             : design === "ico"
             ? "product_4"
             : design === "piko"
@@ -876,8 +867,7 @@ useEffect(() => {
             ? "product_1"
             : design === "radial"
             ? "product_2"
-            : design === "fina"
-            ? "product_3"
+            
             : design === "ico"
             ? "product_4"
             : design === "piko"
