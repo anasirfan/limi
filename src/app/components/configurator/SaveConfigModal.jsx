@@ -7,6 +7,7 @@ export const SaveConfigModal = ({
   isOpen, 
   onClose, 
   onSave,
+  handleCloseSaveModal,
   configSummary,
 }) => {
   const [configName, setConfigName] = useState('');
@@ -26,7 +27,7 @@ export const SaveConfigModal = ({
 
 
   console.log("modelId", modelId);
-
+  
   const getThumbnailFromIframe = () => {
     return new Promise((resolve) => {
       const handleMessage = (event) => {
@@ -212,13 +213,19 @@ export const SaveConfigModal = ({
         
         <div className="flex justify-end">
           <button
-            onClick={onClose}
+            onClick={() => {
+              onClose();
+              handleCloseSaveModal();
+            }}
             className="mr-2 px-4 py-2 bg-gray-800 text-gray-300 rounded-md hover:bg-gray-700"
           >
             Cancel
           </button>
           <button
-            onClick={handleSave}
+            onClick={() => {
+              onClose();
+              handleCloseSaveModal();
+            }}
             className="px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700"
             disabled={!configName.trim() || loading || fetchingModelId}
           >

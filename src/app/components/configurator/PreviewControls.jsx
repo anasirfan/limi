@@ -10,6 +10,7 @@ export const PreviewControls = ({
   cables,
   onSaveConfig,
   onLoadConfig,
+  handleOpenSaveModal,
 }) => {
   const [isMobile, setIsMobile] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -121,7 +122,10 @@ export const PreviewControls = ({
         <button
           type="button"
           className="p-2 rounded-full bg-gray-800 text-gray-300 hover:opacity-90 transition-all"
-          onClick={() => onSaveConfig(config, cables)}
+          onClick={() => {
+            onSaveConfig(config, cables);
+            handleOpenSaveModal(); // This will hide the nav
+          }}
           title="Save Configuration"
         >
           <FaSave size={16} />

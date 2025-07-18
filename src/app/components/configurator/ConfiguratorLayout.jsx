@@ -34,6 +34,10 @@ const ConfiguratorLayout = () => {
   const [localSavedConfig,setLocalSavedConfig] = useState({});
   const [localSavedCables,setLocalSavedCables] = useState({});
   const [cableMessage, setCableMessage] = useState('');
+
+const handleOpenSaveModal = () => {
+  setConfiguringType("save");
+};
 // Helper functions for localStorage persistence
 const loadFromLocalStorage = (key, defaultValue) => {
   if (typeof window === "undefined") return defaultValue;
@@ -128,6 +132,7 @@ const saveToLocalStorage = (key, value) => {
     ]);
   }); 
 
+  
   // Save to localStorage whenever config or cables change
 useEffect(() => {
   saveToLocalStorage('lightConfig', config);
@@ -209,6 +214,9 @@ useEffect(() => {
   const [activeStep, setActiveStep] = useState("lightType");
   const [isLoading, setIsLoading] = useState(true);
 
+  const handleCloseSaveModal = () => {
+    setConfiguringType(null);
+  };
   // Helper function to generate random pendants
   const generateRandomPendants = (amount) => {
     const productCount = 4; // Number of available pendant designs
@@ -1502,6 +1510,7 @@ useEffect(() => {
         config={config}
         cables={cables}
         onSaveConfig={handleSaveConfig}
+        handleOpenSaveModal={handleOpenSaveModal}
         onLoadConfig={handleLoadConfig}
       />
 
@@ -1574,6 +1583,7 @@ useEffect(() => {
             isOpen={isSaveModalOpen}
             onClose={() => setIsSaveModalOpen(false)}
             onSave={handleFinalSave}
+            handleCloseSaveModal={handleCloseSaveModal}
             configSummary={configToSave}
           />
         )}
