@@ -119,6 +119,7 @@ export const PreviewControls = ({
         </button>
 
         <button
+          type="button"
           className="p-2 rounded-full bg-gray-800 text-gray-300 hover:opacity-90 transition-all"
           onClick={() => onSaveConfig(config, cables)}
           title="Save Configuration"
