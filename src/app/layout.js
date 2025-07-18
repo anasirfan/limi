@@ -1,6 +1,6 @@
 import { Poppins } from 'next/font/google';
 import "./globals.css";
-import SmoothScroll from './components/SmoothScroll';
+// import SmoothScroll from './components/SmoothScroll';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ReduxProvider } from './redux/provider';
@@ -84,10 +84,10 @@ export default function RootLayout({ children }) {
         <ReduxProvider>
           <StoreInitializer />
           <ModalProvider>
-            <SmoothScroll>
+            {/* <SmoothScroll> */}
               <ToastContainer />
               {children}
-            </SmoothScroll>
+            {/* </SmoothScroll> */}
           </ModalProvider>
         </ReduxProvider>
 

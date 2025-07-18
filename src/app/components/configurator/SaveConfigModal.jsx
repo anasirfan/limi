@@ -182,7 +182,13 @@ export const SaveConfigModal = ({
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold text-white">Save Configuration</h2>
           <button 
-            onClick={onClose}
+            onClick={
+              () => {
+                onClose();
+                handleCloseSaveModal();
+              }
+            }
+            
             className="text-gray-400 hover:text-white"
           >
             <FaTimes />
