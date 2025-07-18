@@ -335,6 +335,7 @@ const ConfiguratorLayout = () => {
       
       // Send light amount message
       sendMessageToPlayCanvas(`light_amount:${newAmount}`);
+      sendMessageToPlayCanvas(`savedatamodel`);
     
       // For multiple pendants, send individual pendant messages
       newPendants.forEach((pendant, index) => {
