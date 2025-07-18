@@ -17,8 +17,8 @@ import { saveConfiguration } from "../../../app/redux/slices/userSlice.js";
 import { useRouter, useSearchParams } from "next/navigation";
 import ConfigurationSummary from "../lightConfigurator/ConfigurationSummary";
 import { fetchUserByToken } from "../../../app/redux/slices/userSlice.js";
-import { listenForCableMessages } from "../../util/iframeCableMessageHandler";
-// import { listenForWallbaseColorMessages } from "../../util/iframeCableMessageHandler";
+import { listenForCableMessages, listenForMouseOutMessages, listenForMouseOverMessages } from "../../util/iframeCableMessageHandler";
+import { listenForWallbaseColorMessages } from "../../util/iframeCableMessageHandler";
 
 const ConfiguratorLayout = () => {
   
@@ -45,6 +45,44 @@ const loadFromLocalStorage = (key, defaultValue) => {
     return defaultValue;
   }
 };
+const iframe = document.getElementById('playcanvas-app');
+// useEffect(() => {
+//   // Handler to set cursor to hand/grab/drag
+//   const handleMouseOver = () => {
+
+  
+//     const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+//     if (iframeDoc) {
+//       iframeDoc.body.style.cursor = 'grab';
+//     }
+//   };
+//   const cleanup = listenForMouseOverMessages((message, event) => {
+//     console.log('[ConfigPanel] Received mouse over message:', message,event.data);
+//     handleMouseOver();
+//   });
+ 
+//   return cleanup;
+// }, []);
+// useEffect(() => {
+
+//   // Handler to revert cursor to default
+//   const handleMouseOut = () => {
+  
+//      const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+//     if (iframeDoc) {
+//       iframeDoc.body.style.cursor = 'default';
+//     }
+//   };
+
+//   const cleanup2 = listenForMouseOutMessages((message, event) => {
+//     // Do something with the message, e.g. open UI, update state, etc.
+//     console.log('[ConfigPanel] Received mouse out message:', message,event.data);
+//     // Example: open a modal, update config, etc.
+//     handleMouseOut();
+//   });
+//   return cleanup2;
+// }, []);
+
 
 const saveToLocalStorage = (key, value) => {
   if (typeof window === "undefined") return;
@@ -64,6 +102,7 @@ const saveToLocalStorage = (key, value) => {
       systemType: "bar",
       systemBaseDesign: "nexus",
       baseColor: "black",
+      connectorColor: "black",
       pendants: [],
       selectedPendants: [],
       lightDesign: "radial",
@@ -106,16 +145,7 @@ useEffect(() => {
   });
   return cleanup;
 }, []);
-// useEffect(() => {
-//   const cleanup = listenForWallbaseColorMessages((data, event) => {
-//     // handle wallbaseColor message here
-//     console.log('[ConfigPanel] Received wallbaseColor message:', data,event.data);
-//     // Example: open a modal, update config, etc.
-//     // setIsCableModalOpen(true);
-//     setCableMessage(data);
-//   });
-//   return cleanup;
-// }, []);
+
 
 
   // Handler for cable size change
@@ -376,7 +406,7 @@ useEffect(() => {
     const baseType = configData.config.base_type?.toLowerCase() || "round";
     const lightAmount = configData.config.light_amount || 1;
     const baseColor = configData.config.base_color || "black";
-
+    const connectorColor = configData.config.connector_color || "black";
     // Update the config state
     setConfig((prev) => ({
       ...prev,
@@ -384,6 +414,7 @@ useEffect(() => {
       baseType,
       lightAmount,
       baseColor,
+      connectorColor,
       // We don't need to update pendants or other details as they will be handled by the iframe messages
     }));
     setCables(configData.config.cableConfig);
@@ -406,6 +437,7 @@ useEffect(() => {
         sendMessageToPlayCanvas(`base_type:${savedConfig.baseType}`);
         sendMessageToPlayCanvas(`light_amount:${savedConfig.lightAmount}`);
         sendMessageToPlayCanvas(`base_color:${savedConfig.baseColor}`);
+        sendMessageToPlayCanvas(`connector_color:${savedConfig.connectorColor}`);
         
         savedCables.forEach((cable, index) => {
           if (cable.systemType) {
@@ -918,6 +950,19 @@ useEffect(() => {
     // Move to next step
     setActiveStep("systemType");
   }, []);
+  const handleConnectorColorChange = useCallback((connectorColor) => {
+    // Update config state
+    setConfig((prev) => ({
+      ...prev,
+      connectorColor,
+    }));
+
+    // Send message to PlayCanvas iframe
+    sendMessageToPlayCanvas(`connector_color:${connectorColor}`);
+
+    // Move to next step
+    setActiveStep("systemType");
+  }, []);
 
   // Handle pendant selection
   const handlePendantSelection = useCallback((pendantIds) => {
@@ -1165,6 +1210,7 @@ useEffect(() => {
       light_type: config.lightType,
       light_amount: config.lightAmount,
       base_color: config.baseColor,
+      connector_color: config.connectorColor,
       cables: cables,
       shades: config.shades || {}, // Include shade selections
     };
@@ -1216,6 +1262,9 @@ useEffect(() => {
     if (config.baseColor) {
       iframeMessagesArray.push(`base_color:${config.baseColor}`);
     }
+    if (config.connectorColor) {
+      iframeMessagesArray.push(`connector_color:${config.connectorColor}`);
+    }
 
     if (config.cableColor) {
       iframeMessagesArray.push(`cable_color:${config.cableColor}`);
@@ -1231,6 +1280,7 @@ useEffect(() => {
         config.lightType.charAt(0).toUpperCase() + config.lightType.slice(1),
       light_amount: config.lightAmount,
       cable_color: config.baseColor,
+      connector_color: config.connectorColor,
       cables: {},
       cableConfig: cables,
     };
@@ -1469,6 +1519,7 @@ useEffect(() => {
               onLightTypeChange={handleLightTypeChange}
               onBaseTypeChange={handleBaseTypeChange}
               onBaseColorChange={handleBaseColorChange}
+              onConnectorColorChange={handleConnectorColorChange}
               onConfigurationTypeChange={handleConfigurationTypeChange}
               onLightAmountChange={handleLightAmountChange}
               onSystemTypeChange={handleSystemTypeChange}

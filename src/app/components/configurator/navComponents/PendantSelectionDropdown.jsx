@@ -13,6 +13,7 @@ export const PendantSelectionDropdown = ({
   carouselRef,
   scrollCarousel,
   togglePendantSelection,
+  setOpenBase,
   selectAllPendants,
   clearSelections,
   applyDesignToSelected,
@@ -63,6 +64,7 @@ export const PendantSelectionDropdown = ({
     onCableSizeChange(size, selectedCables);
   };
   
+
   return (
     <div className="p-4" onClick={(e) => e.stopPropagation()} onTouchStart={(e) => e.stopPropagation()}>
       {/* Mobile tabs - only show on mobile */}

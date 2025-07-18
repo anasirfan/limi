@@ -43,7 +43,7 @@ const PlayCanvasViewer = ({
         setIsLoading(false);
         
         // Send default selections after app is ready
-        sendDefaultSelections();
+        // sendDefaultSelections();
       }
     };
     
@@ -80,7 +80,7 @@ const PlayCanvasViewer = ({
     if(localSavedConfig){
     console.log("localSavedConfig",localSavedConfig);
       sendConfigToPlayCanvas(localSavedConfig.config);
-      localSavedCables.forEach((cable, index) => {
+      localSavedCables?.forEach((cable, index) => {
         if(cable.systemType){
           sendMessageToPlayCanvas(`system:${cable.systemType}`);
           sendMessageToPlayCanvas(`cable_${index}:${cable.designId}`);

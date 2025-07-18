@@ -1,22 +1,50 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FaCheck } from 'react-icons/fa';
+import { listenForConnectorColorMessages } from '../../../util/iframeCableMessageHandler';
 
-const BaseColorPanel = ({ onBaseColorChange, currentBaseColor }) => {
-  const [selectedColor, setSelectedColor] = useState(currentBaseColor || 'black');
+const BaseColorPanel = ({
+  onBaseColorChange,
+  onConnectorColorChange,
+  currentBaseColor,
+  currentConnectorColor
+}) => {
+  const [activeTab, setActiveTab] = useState('base'); // 'base' or 'connector'
+  const [selectedBaseColor, setSelectedBaseColor] = useState(currentBaseColor || 'black');
+  const [selectedConnectorColor, setSelectedConnectorColor] = useState(currentConnectorColor || 'black');
 
+    useEffect(() => {
+      const cleanup = listenForConnectorColorMessages((data, event) => {
+        // handle wallbaseColor message here
+        console.log('[ConfigPanel] Received connectorColor message:', data,event.data);
+        // Example: open a modal, update config, etc.
+        setActiveTab('connector');
+      });
+      return cleanup;
+    }, []);
   useEffect(() => {
     if (currentBaseColor) {
-      setSelectedColor(currentBaseColor);
+      setSelectedBaseColor(currentBaseColor);
     }
   }, [currentBaseColor]);
 
-  const handleColorSelect = (color) => {
-    setSelectedColor(color);
-    onBaseColorChange(color);
+  useEffect(() => {
+    if (currentConnectorColor) {
+      setSelectedConnectorColor(currentConnectorColor);
+    }
+  }, [currentConnectorColor]);
+
+  const handleBaseColorSelect = (color) => {
+    setSelectedBaseColor(color);
+    onBaseColorChange && onBaseColorChange(color);
   };
 
-  const baseColors = [
+  const handleConnectorColorSelect = (color) => {
+    setSelectedConnectorColor(color);
+    onConnectorColorChange && onConnectorColorChange(color);
+  };
+
+  const colorOptions = [
     { id: 'black', name: 'Black', hexColor: '#000000' },
     { id: 'gold', name: 'Gold', hexColor: '#D4AF37' },
     { id: 'silver', name: 'Silver', hexColor: '#C0C0C0' },
@@ -30,6 +58,28 @@ const BaseColorPanel = ({ onBaseColorChange, currentBaseColor }) => {
       borderRadius: '8px',
       color: 'white',
       width: '100%'
+    },
+    tabs: {
+      display: 'flex',
+      marginBottom: '16px',
+      borderBottom: '1px solid #333',
+    },
+    tab: {
+      flex: 1,
+      padding: '10px 0',
+      cursor: 'pointer',
+      background: 'none',
+      border: 'none',
+      color: 'inherit',
+      fontSize: '16px',
+      fontWeight: 500,
+      outline: 'none',
+      borderBottom: '2px solid transparent',
+      transition: 'border-bottom 0.2s',
+    },
+    tabActive: {
+      borderBottom: '2px solid #54BB74',
+      color: '#54BB74',
     },
     title: {
       fontSize: '18px',
@@ -52,7 +102,7 @@ const BaseColorPanel = ({ onBaseColorChange, currentBaseColor }) => {
       border: '2px solid transparent'
     },
     selectedColor: {
-      border: '2px solid white'
+      border: '2px solid #54BB74'
     },
     colorLabels: {
       display: 'flex',
@@ -68,33 +118,82 @@ const BaseColorPanel = ({ onBaseColorChange, currentBaseColor }) => {
 
   return (
     <div style={styles.container}>
-      <h3 style={styles.title}>Base Color</h3>
-      <div style={styles.colorPalette}>
-        {baseColors.map((color) => (
-          <motion.div
-            key={color.id}
-            style={{
-              ...styles.colorOption,
-              backgroundColor: color.hexColor,
-              ...(selectedColor === color.id ? styles.selectedColor : {})
-            }}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => handleColorSelect(color.id)}
-          >
-            {selectedColor === color.id && (
-              <FaCheck color={color.id === 'black' ? 'white' : 'black'} />
-            )}
-          </motion.div>
-        ))}
+      <div style={styles.tabs}>
+        <button
+          style={{ ...styles.tab, ...(activeTab === 'base' ? styles.tabActive : {}) }}
+          onClick={() => setActiveTab('base')}
+        >
+          Base 
+        </button>
+        <button
+          style={{ ...styles.tab, ...(activeTab === 'connector' ? styles.tabActive : {}) }}
+          onClick={() => setActiveTab('connector')}
+        >
+          Connector 
+        </button>
       </div>
-      <div style={styles.colorLabels}>
-        {baseColors.map((color) => (
-          <div key={color.id} style={styles.colorLabel}>
-            {color.name}
+      {activeTab === 'base' && (
+        <>
+          <h3 style={styles.title}>Base Color</h3>
+          <div style={styles.colorPalette}>
+            {colorOptions.map((color) => (
+              <motion.div
+                key={color.id}
+                style={{
+                  ...styles.colorOption,
+                  backgroundColor: color.hexColor,
+                  ...(selectedBaseColor === color.id ? styles.selectedColor : {})
+                }}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => handleBaseColorSelect(color.id)}
+              >
+                {selectedBaseColor === color.id && (
+                  <FaCheck color={color.id === 'black' ? 'white' : 'black'} />
+                )}
+              </motion.div>
+            ))}
           </div>
-        ))}
-      </div>
+          <div style={styles.colorLabels}>
+            {colorOptions.map((color) => (
+              <div key={color.id} style={styles.colorLabel}>
+                {color.name}
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+      {activeTab === 'connector' && (
+        <>
+          <h3 style={styles.title}>Connector Color</h3>
+          <div style={styles.colorPalette}>
+            {colorOptions.map((color) => (
+              <motion.div
+                key={color.id}
+                style={{
+                  ...styles.colorOption,
+                  backgroundColor: color.hexColor,
+                  ...(selectedConnectorColor === color.id ? styles.selectedColor : {})
+                }}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => handleConnectorColorSelect(color.id)}
+              >
+                {selectedConnectorColor === color.id && (
+                  <FaCheck color={color.id === 'black' ? 'white' : 'black'} />
+                )}
+              </motion.div>
+            ))}
+          </div>
+          <div style={styles.colorLabels}>
+            {colorOptions.map((color) => (
+              <div key={color.id} style={styles.colorLabel}>
+                {color.name}
+              </div>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 };
