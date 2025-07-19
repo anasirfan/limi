@@ -16,7 +16,10 @@ export const NavButton = ({
   textColor,
   dropdownRefs,
   containerDimensions,
-  children
+  isGuided = false,
+  isCompleted = false,
+  children,
+  ...rest
 }) => {
   // State to track if we're on mobile and screen dimensions
   const [isMobile, setIsMobile] = useState(false);
@@ -45,40 +48,36 @@ export const NavButton = ({
       };
     }
   }, []);
+  console.log("NavButton",step);
   
   // Guard against undefined or null step
   if (!step) return null;
   
   return (
-    <div key={step?.id} className="relative">
+    <div key={step?.id} className="relative" {...rest}>
       {/* Tooltip only shows when dropdown is closed */}
       {openDropdown !== step?.id && (
         <Tooltip content={step?.tooltip || 'Navigation option'} position="left" className="">
           <div className="relative group">
             <motion.button
-              className={`rounded-full flex items-center justify-center transition-all duration-300 w-10 h-10`}
+              className={`relative w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ${activeStep === step?.id ? 'shadow-lg' : 'opacity-80 hover:opacity-100'} ${step?.disabled ? 'opacity-50 cursor-not-allowed' : ''} ${isCompleted ? 'ring-2 ring-emerald-500' : ''}`}
+              onClick={() => !step?.disabled && handleStepClick(step?.id)}
+              // whileHover={!step?.disabled ? { scale: 1.1 } : {}}
+              
+              
               style={{
-                backgroundColor: openDropdown === step?.id ? emerald : 
-                                activeStep === step?.id ? emerald : 'transparent',
-                color: openDropdown === step?.id ? '#FFFFFF' : 
-                      activeStep === step?.id ? '#FFFFFF' : 
-                      step?.isActive ? `${textColor}80` : `${textColor}40`
+                backgroundColor: activeStep === step?.id ? emerald : 'transparent',
+                color: activeStep === step?.id ? '#FFFFFF' : `${textColor}80`,
+                border: isMobile && openDropdown === step?.id ? `2px solid ${emerald}` : 'none',
+                boxShadow: 'none'
               }}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleStepClick(step?.id);
-              }}
-              onTouchStart={(e) => e.stopPropagation()}
-              whileHover={step?.isActive ? { scale: 1.1 } : {}}
-              whileTap={step?.isActive ? { scale: 0.95 } : {}}
-              disabled={!step?.isActive}
             >
               {getNavIcon && step?.id && getNavIcon(step.id) ? (
                 <Image 
                   src={getNavIcon(step.id)}
                   alt={step?.label || 'Navigation button'}
-                  width={16}
-                  height={16}
+                  width={24}
+                  height={24}
                   className="object-contain"
                   onError={(e) => {
                     // Fallback to the original icon if image fails to load
@@ -99,7 +98,7 @@ export const NavButton = ({
       {/* Button without tooltip when dropdown is open */}
       {openDropdown === step?.id && (
         <motion.button
-          className={`rounded-full flex items-center justify-center transition-all duration-300 w-10 h-10`}
+          className={`relative w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ${activeStep === step?.id ? 'shadow-lg' : 'opacity-80 hover:opacity-100'} ${step?.disabled ? 'opacity-50 cursor-not-allowed' : ''} ${isCompleted ? 'ring-2 ring-emerald-500' : ''}`}
           style={{
             backgroundColor: isMobile ? charlestonGreen : emerald,
             color: '#FFFFFF'
@@ -109,14 +108,14 @@ export const NavButton = ({
             toggleDropdown(step?.id);
           }}
           onTouchStart={(e) => e.stopPropagation()}
-          whileTap={{ scale: 0.95 }}
+          
         >
           {getNavIcon && step?.id && getNavIcon(step?.id) ? (
             <Image 
               src={getNavIcon(step?.id)}
               alt={step?.label || 'Navigation button'}
-              width={32}
-              height={32}
+              width={24}
+              height={24}
               className="object-contain"
               onError={(e) => {
                 // Fallback to the original icon if image fails to load

@@ -1,30 +1,37 @@
 "use client";
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { FaTimes } from 'react-icons/fa';
-
+import { listenForModelIdMessages } from '../../util/iframeCableMessageHandler';
 export const SaveConfigModal = ({ 
   isOpen, 
   onClose, 
   onSave,
+  handleCloseSaveModal,
   configSummary,
 }) => {
   const [configName, setConfigName] = useState('');
   const [thumbnail, setThumbnail] = useState('');
-  const [modalId, setModalId] = useState(null); // <-- New state
-
+  const [modelId, setModelId] = useState(''); // <-- New state
+  const [fetchingModelId, setFetchingModelId] = useState(false);
+  const [loading, setLoading] = useState(false);
   if (!isOpen) return null;
 
   const handleSave = async () => {
       if (!configName.trim()) return;
-      onSave(configName, thumbnail, modalId);
+      onSave(configName, thumbnail, modelId);
       setConfigName('');
-
+      setModelId('');
   };
 
+
+
+  console.log("modelId", modelId);
+  
   const getThumbnailFromIframe = () => {
     return new Promise((resolve) => {
       const handleMessage = (event) => {
+        console.log("event",event);
         let url = null;
         if (event.data) {
           if (typeof event.data === 'string') {
@@ -49,55 +56,81 @@ export const SaveConfigModal = ({
       const iframe = document.getElementById('playcanvas-app');
       if (iframe && iframe.contentWindow) {
         iframe.contentWindow.postMessage('savedataimage', '*');
-      }
+      } 
 
     });
   };
-  const saveDataModal = () => {
-    return new Promise((resolve, reject) => {
-      const timeout = setTimeout(() => {
-        window.removeEventListener('message', handleMessage);
-        reject(new Error('Timeout: No response from iframe'));
-      }, 10000); // 10 seconds
-  
-      const handleMessage = (event) => {
-        if (
-          event.data &&
-          typeof event.data === 'object' &&
-          event.data.type === 'SAVE_MODAL_RESPONSE' &&
-          event.data.modalId
-        ) {
-          clearTimeout(timeout);
-          window.removeEventListener('message', handleMessage);
-          resolve(event.data.modalId);
-        }
-      };
-      window.addEventListener('message', handleMessage);
-  
-      const iframe = document.getElementById('playcanvas-app');
-      if (iframe && iframe.contentWindow) {
-        iframe.contentWindow.postMessage('savedatmodal', '*');
-      } else {
-        clearTimeout(timeout);
-        window.removeEventListener('message', handleMessage);
-        reject(new Error('Iframe not found'));
+  const [uploadSuccessData, setUploadSuccessData] = useState(null);
+  const [modalIdString, setModalIdString] = useState('');
+  const messageHandlerRef = useRef(null);
+
+  // const saveDataModal = (e) => {
+  //   const handleMessage = (event) => {
+  //     console.log("event",event);
+  //     if (event.data) {
+  //       if (typeof event.data === 'string') {
+  //         console.log("event.data",event.data);
+  //         // setModalIdString(event.data);
+  //       }
+  //     }
+  //   };
+  //   window.addEventListener('message', handleMessage);
+
+  //   const iframe = document.getElementById('playcanvas-app');
+  //   if (iframe && iframe.contentWindow) {
+  //     iframe.contentWindow.postMessage('savedatamodel', '*');
+  //   } 
+
+  // };
+
+  useEffect(() => {
+    if (!fetchingModelId) return;
+    // Start listening for model_id messages
+    const cleanup = listenForModelIdMessages((data, event) => {
+      // Example: model_id:12345
+      if (typeof data === 'string' && data.startsWith('model_id')) {
+        console.log('[SaveConfigModal] Received model_id:', data);
+        // console.log("modelId splitted",data.split(' ')[1])
+        setModelId(data.split(' ')[1]);
+        setFetchingModelId(false);
+        setLoading(false);
       }
     });
-  };
+    return () => {
+      if (cleanup) cleanup();
+    };
+  }, [fetchingModelId]);
+
+  // Clean up on modal close (remove any lingering handler)
+  useEffect(() => {
+    if (isOpen) {
+      setFetchingModelId(true);
+      setLoading(true);
+    } else {
+      setFetchingModelId(false);
+      setLoading(false);
+    }
+    if (!isOpen && messageHandlerRef.current) {
+      window.removeEventListener('message', messageHandlerRef.current);
+      messageHandlerRef.current = null;
+    }
+  }, [isOpen]);
+  console.log("modelId", modelId);
+
   // Request thumbnail when modal is opened
   useEffect(() => {
     if (isOpen) {
       getThumbnailFromIframe().then((url) => {
         setThumbnail(url);
+        console.log("url",url);
+        // Only call saveDataModal ONCE per modal open
+        // saveDataModal();
       });
-    }
-  }, [isOpen]);
 
-  useEffect(() => {
-    if (isOpen) {
-     saveDataModal().then((modalId) => {
-       setModalId(modalId);
-     });
+      // saveDataModal().then((modalId) => {
+      //   setModalId(modalId);
+      //   console.log("modalId",modalId);
+      // });
     }
   }, [isOpen]);
 
@@ -149,7 +182,13 @@ export const SaveConfigModal = ({
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold text-white">Save Configuration</h2>
           <button 
-            onClick={onClose}
+            onClick={
+              () => {
+                onClose();
+                handleCloseSaveModal();
+              }
+            }
+            
             className="text-gray-400 hover:text-white"
           >
             <FaTimes />
@@ -180,17 +219,24 @@ export const SaveConfigModal = ({
         
         <div className="flex justify-end">
           <button
-            onClick={onClose}
+            onClick={() => {
+              onClose();
+              handleCloseSaveModal();
+            }}
             className="mr-2 px-4 py-2 bg-gray-800 text-gray-300 rounded-md hover:bg-gray-700"
           >
             Cancel
           </button>
           <button
-            onClick={handleSave}
+            onClick={() => {
+              onClose();
+              handleCloseSaveModal();
+              onSave(configName, thumbnail, modelId);
+            }}
             className="px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700"
-            disabled={!configName.trim()}
+            disabled={!configName.trim() || loading || fetchingModelId}
           >
-            Save
+            {loading || fetchingModelId ? 'Saving' : 'Save'}
           </button>
         </div>
       </motion.div>

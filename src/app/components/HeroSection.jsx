@@ -511,7 +511,7 @@ function HeroSection() {
         loop
         playsInline
         preload="auto"
-        poster="/images/hero-poster.jpg"
+        // poster="/images/hero-poster.jpg"
         style={{ willChange: 'transform', transform: 'translateZ(0)' }}
       >
         <source src={isMobile ? "/videos/limi-mobile.m4v" : "/videos/limi-web.m4v"} type="video/mp4" />

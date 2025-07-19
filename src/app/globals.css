@@ -48,6 +48,12 @@ body {
   font-family: var(--font-poppins), sans-serif;
 }
 
+.cursor-grab-global {
+  cursor: grab !important;
+}
+.cursor-default-global {
+  cursor: default !important;
+}
 /* Custom utility classes */
 @layer utilities {
   .scrollbar-hide {

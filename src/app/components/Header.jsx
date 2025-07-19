@@ -18,6 +18,8 @@ const Header = () => {
   const [cartDropdownOpen, setCartDropdownOpen] = useState(false);
   const [favoritesDropdownOpen, setFavoritesDropdownOpen] = useState(false);
   const [isClient, setIsClient] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
 
   const menuRef = useRef(null);
   const menuContentRef = useRef(null);
@@ -47,6 +49,10 @@ const Header = () => {
   // Set isClient to true after component mounts
   useEffect(() => {
     setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    setMounted(true);
   }, []);
 
   const toggleMenu = () => {
@@ -375,6 +381,7 @@ const Header = () => {
           ref={menuContentRef}
           className="container mx-auto px-4 py-20 h-full flex flex-col justify-center items-center"
         >
+          {mounted && (
           <nav className=" flex flex-col items-center gap-6 text-softBeige">
             {/* Homepage section links - only shown on homepage */}
             {isHomePage && sections.map((section) => (
@@ -438,6 +445,7 @@ const Header = () => {
               </button>
             )}
           </nav>
+          )}
         </div>
       </div>
     </header>

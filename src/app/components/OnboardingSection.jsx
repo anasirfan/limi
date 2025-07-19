@@ -49,7 +49,7 @@ export default function OnboardingSection() {
 
   //random funtion for pendants
   const getRandomProduct = () => {
-    const products = ['product_1', 'product_2', 'product_3', 'product_4', 'product_5'];
+    const products = ['product_1', 'product_2', 'product_4', 'product_5'];
     return products[Math.floor(Math.random() * products.length)];
   };
   // Handle iframe messages

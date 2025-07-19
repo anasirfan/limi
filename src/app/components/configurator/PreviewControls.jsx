@@ -2,6 +2,7 @@
 import { useState, useRef, useEffect } from "react";
 import { FaEye, FaSave, FaFolderOpen, FaMousePointer, FaMouse, FaArrowsAlt, FaSearchPlus, FaSearchMinus, FaInfo } from "react-icons/fa";
 
+
 export const PreviewControls = ({
   isPreviewMode,
   setIsPreviewMode,
@@ -9,6 +10,7 @@ export const PreviewControls = ({
   cables,
   onSaveConfig,
   onLoadConfig,
+  handleOpenSaveModal,
 }) => {
   const [isMobile, setIsMobile] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -44,8 +46,8 @@ export const PreviewControls = ({
   };
 
   return (
-    <>
-  
+    <>  
+      {/* Navigation Guide */}
       <div className="absolute top-24 left-8 z-50 flex gap-2"
         ref={guideRef}
         onMouseEnter={handleMouseEnter}
@@ -118,8 +120,12 @@ export const PreviewControls = ({
         </button>
 
         <button
+          type="button"
           className="p-2 rounded-full bg-gray-800 text-gray-300 hover:opacity-90 transition-all"
-          onClick={() => onSaveConfig(config, cables)}
+          onClick={() => {
+            onSaveConfig(config, cables);
+            handleOpenSaveModal(); // This will hide the nav
+          }}
           title="Save Configuration"
         >
           <FaSave size={16} />

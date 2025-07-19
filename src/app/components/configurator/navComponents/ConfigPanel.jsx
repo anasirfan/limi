@@ -15,6 +15,7 @@ export const ConfigPanel = ({
   configuringType,
   configuringSystemType,
   breadcrumbPath,
+  showConfigurationTypeSelector,
   onBreadcrumbNavigation,
   onSystemTypeSelection,
   selectedLocation,
@@ -39,6 +40,13 @@ export const ConfigPanel = ({
       setLocalSelectedShade(null);
     }
   }, [configuringType]);
+
+  useEffect(() => {
+    if (showConfigurationTypeSelector) {
+      console.log("showConfigurationTypeSelector",showConfigurationTypeSelector)
+      handleBreadcrumbNavigation("home");
+    }
+  }, [showConfigurationTypeSelector]);
 
   const [currentDesign, setCurrentDesign] = useState(null);
   // Internal state for selected cable size (for immediate UI feedback)
@@ -233,92 +241,122 @@ export const ConfigPanel = ({
           id: "pulsar",
           name: "Pulsar",
           baseNumber: "15",
-          image: "",
+          image: "/images/configOptions/universal/15.png",
         },
         {
           id: "quasar",
           name: "Quasar",
           baseNumber: "16",
-          image: "",
+          image: "/images/configOptions/universal/16.png",
         },
         {
           id: "supernova",
           name: "Supernova",
           baseNumber: "17",
-          image: "",
+          image: "/images/configOptions/universal/17.png",
         },
         {
           id: "galaxy",
           name: "Galaxy",
           baseNumber: "18",
-          image: "",
+          image: "/images/configOptions/universal/18.png",
         },
         {
           id: "comet",
           name: "Comet",
           baseNumber: "19",
-          image: "",
+          image: "/images/configOptions/universal/19.png",
         },
         {
           id: "meteor",
           name: "Meteor",
           baseNumber: "20",
-          image: "",
+          image: "/images/configOptions/universal/20.png",
         },
         {
           id: "asteroid",
           name: "Asteroid",
           baseNumber: "21",
-          image: "",
+          image: "/images/configOptions/universal/21.png",
         },
         {
           id: "celestial",
           name: "Celestial",
           baseNumber: "22",
-          image: "",
+          image: "/images/configOptions/universal/22.png",
         },
         {
           id: "orbital",
           name: "Orbital",
           baseNumber: "23",
-          image: "",
+          image: "/images/configOptions/universal/23.png",
         },
         {
           id: "lunar",
           name: "Lunar",
           baseNumber: "24",
-          image: "",
+          image: "/images/configOptions/universal/24.png",
         },
         {
           id: "solar",
           name: "Solar",
           baseNumber: "25",
-          image: "",
+          image: "/images/configOptions/universal/25.png",
         },
         {
           id: "nova",
           name: "Nova",
           baseNumber: "26",
-          image: "",
+          image: "/images/configOptions/universal/26.png",
         },
         {
           id: "photon",
           name: "Photon",
           baseNumber: "27",
-          image: "",
+          image: "/images/configOptions/universal/27.png",
         },
         {
           id: "gravity",
           name: "Gravity",
           baseNumber: "28",
-          image: "",
+          image: "/images/configOptions/universal/28.png",
         },
         {
           id: "spectrum",
           name: "Spectrum",
           baseNumber: "29",
-          image: "",
+          image: "/images/configOptions/universal/29.png",
         },
+        {
+          id: "infinity",
+          name: "Infinity",
+          baseNumber: "30",
+          image: "/images/configOptions/universal/30.png",
+        },
+        // {
+        //   id: "void",
+        //   name: "Void",
+        //   baseNumber: "31",
+        //   image: "/images/configOptions/universal/31.png",
+        // },
+        {
+          id: "blackhole",
+          name: "Blackhole",
+          baseNumber: "32",
+          image: "/images/configOptions/universal/32.png",
+        },
+        {
+          id: "singularity",
+          name: "Singularity",
+          baseNumber: "33",
+          image: "/images/configOptions/universal/33.png",
+        },
+        // {
+        //   id: "supernova",
+        //   name: "Supernova",
+        //   baseNumber: "34",
+        //   image: "/images/configOptions/universal/34.png",
+        // },
       ],
     };
     // Always use the canonical design id from baseOptions
@@ -549,7 +587,6 @@ export const ConfigPanel = ({
       config.items = [
         { id: "bumble", name: "Bumble", image: "/images/configOptions/1.png" },
         { id: "radial", name: "Radial", image: "/images/configOptions/2.png" },
-        { id: "fina", name: "Fina", image: "/images/configOptions/3.png" },
         { id: "ico", name: "Ico", image: "/images/configOptions/4.png" },
         { id: "piko", name: "Piko", image: "/images/configOptions/5.png" },
       ];
@@ -978,6 +1015,7 @@ export const ConfigPanel = ({
   // Custom breadcrumb navigation handler
   const handleBreadcrumbNavigation = (id) => {
     // Use the navigation state to determine where to go
+    console.log("handleBreadcrumbNavigation",id)
     if (id === "home") {
       // Reset to configuration type selection (first level)
       onSelectConfigurationType(null);

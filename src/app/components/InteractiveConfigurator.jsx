@@ -85,12 +85,18 @@ export default function InteractiveConfigurator() {
               key={i} 
               className="absolute rounded-full bg-[#50C878] opacity-20"
               style={{
-                width: `${Math.random() * 30 + 10}px`,
-                height: `${Math.random() * 30 + 10}px`,
-                top: `${Math.random() * 100}%`,
-                left: `${Math.random() * 100}%`,
-                filter: `blur(${Math.random() * 5 + 2}px)`,
-                animation: `float ${Math.random() * 10 + 10}s infinite ease-in-out`
+                // width: `${Math.random() * 30 + 10}px`,
+                // height: `${Math.random() * 30 + 10}px`,
+                // top: `${Math.random() * 100}%`,
+                // left: `${Math.random() * 100}%`,
+                // filter: `blur(${Math.random() * 5 + 2}px)`,
+                // animation: `float ${Math.random() * 10 + 10}s infinite ease-in-out`
+                width: '10px',
+                height: '10px',
+                top: '50%',
+                left: '50%',
+                filter: 'blur(2px)',
+                animation: 'float 5s infinite ease-in-out',
               }}
             ></div>
           ))}

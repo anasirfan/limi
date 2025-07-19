@@ -1,0 +1,42 @@
+{
+  "heroSection": {
+    "header": "Welcome to Limi’s Investor Portal",
+    "subheader": "Modular Smart home & Lighting Ecosystem. | Series A",
+    "body": "You’ve seen our traction—choose how you’d like to dive in."
+  },
+  "resources": [
+    {
+      "contentID": "resourceA",
+      "title": "📄 Investor 1-Pager",
+      "description": "A concise, one-page overview you can review in 90 seconds.",
+      "linkText": "Download 1-Pager",
+      "linkURL": "https://www.limilighting.com/assets/Limi_OnePager.pdf?ref=<INVESTOR_ID>"
+    },
+    {
+      "contentID": "resourceB",
+      "title": "📊 Pitch Deck Excerpt",
+      "description": "The core 5-slide pitch: Problem → Solution → Traction → Team → Ask.",
+      "linkText": "View Deck Excerpt",
+      "linkURL": "https://www.limilighting.com/assets/Limi_Deck_Excerpt.pdf?ref=<INVESTOR_ID>"
+    },
+    {
+      "contentID": "resourceC",
+      "title": "🎙️ Podcast Style",
+      "description": "Hear our founders’ story—innovation, speed, and vision.",
+      "linkText": "Play Podcast",
+      "linkURL": "https://www.limilighting.com/podcast/episode1?ref=<INVESTOR_ID>"
+    },
+    {
+      "contentID": "resourceD",
+      "title": "🔍 Limi 360 Deep-Dive",
+      "description": "Full company dossier: journey, media coverage, technical architecture and more.",
+      "linkText": "Explore Limi 360",
+      "linkURL": "https://www.limilighting.com/assets/Limi360_Detail.pdf?ref=<INVESTOR_ID>"
+    }
+  ],
+  "ctaSection": {
+    "text": "Ready to chat? Book a 30-minute call with our team.",
+    "buttonText": "Book a Call",
+    "buttonLink": "https://calendly.com/?ref=<INVESTOR_ID>"
+  }
+}

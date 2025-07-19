@@ -10,7 +10,7 @@ import SlideRenderer from './SlideRenderer';
  * SlideCarousel component for displaying customer presentation slides
  * Uses Redux for state management and supports multiple layout types
  */
-export default function SlideCarousel({ slides }) {
+export default function SlideCarousel({ slides, customerId }) {
   const dispatch = useDispatch();
   const activeIndex = useSelector(selectActiveSlideIndex);
   const [touchStart, setTouchStart] = useState(null);
@@ -19,9 +19,94 @@ export default function SlideCarousel({ slides }) {
   const carouselRef = useRef(null);
   const autoPlayTimerRef = useRef(null);
   const safeSlides = slides || [];
-const hasSlides = safeSlides.length > 0;
-const currentIndex = hasSlides ? Math.min(activeIndex, safeSlides.length - 1) : 0;
-const currentSlide = hasSlides ? safeSlides[currentIndex] : null;
+  const hasSlides = safeSlides.length > 0;
+  const currentIndex = hasSlides ? Math.min(activeIndex, safeSlides.length - 1) : 0;
+  const currentSlide = hasSlides ? safeSlides[currentIndex] : null;
+
+  // --- Time & Session Tracking ---
+  const [slideTimes, setSlideTimes] = useState({}); // {slideId: seconds}
+  const [sessionStart, setSessionStart] = useState(null);
+  const [lastSlideStart, setLastSlideStart] = useState(null);
+  const [lastSlideId, setLastSlideId] = useState(null);
+
+  // Start session on mount
+  useEffect(() => {
+    setSessionStart(Date.now());
+    setLastSlideStart(Date.now());
+    setLastSlideId(currentSlide?.id);
+    return () => {
+      // On unmount, save session and last slide time
+      saveSlideTime();
+      saveSession();
+    };
+    // eslint-disable-next-line
+  }, []);
+
+  // On slide change, save previous slide time and start timing new slide
+  useEffect(() => {
+    if (!currentSlide?.id) return;
+    if (lastSlideId && lastSlideStart) {
+      const delta = (Date.now() - lastSlideStart) / 1000;
+      setSlideTimes(prev => {
+        const prevTime = prev[lastSlideId] || 0;
+        const updated = { ...prev, [lastSlideId]: prevTime + delta };
+        saveSlideTimesToStorage(updated);
+        return updated;
+      });
+    }
+    setLastSlideStart(Date.now());
+    setLastSlideId(currentSlide.id);
+    // eslint-disable-next-line
+  }, [currentSlide?.id]);
+
+  // Save slide times to localStorage
+  const saveSlideTimesToStorage = (times) => {
+    if (!customerId) return;
+    // Save as array of {slideId, slideTitle, seconds}
+    const arr = safeSlides.map(slide => ({
+      slideId: slide.id,
+      slideTitle: slide.text?.heading || slide.text?.title || `Slide ${slide.id}`,
+      seconds: times[slide.id] || 0,
+    }));
+    localStorage.setItem(`slideTimes_${customerId}`, JSON.stringify(arr));
+  };
+
+  // Save session data to localStorage
+  const saveSession = () => {
+    if (!customerId || !sessionStart) return;
+    const sessionEnd = Date.now();
+    const duration = (sessionEnd - sessionStart) / 1000;
+    const prevSessions = JSON.parse(localStorage.getItem(`slideSessions_${customerId}`) || '[]');
+    prevSessions.push({
+      sessionStart,
+      sessionEnd,
+      durationSeconds: duration,
+    });
+    localStorage.setItem(`slideSessions_${customerId}`, JSON.stringify(prevSessions));
+  };
+
+  // Save last slide time on unmount or tab close
+  const saveSlideTime = () => {
+    if (!lastSlideId || !lastSlideStart) return;
+    const delta = (Date.now() - lastSlideStart) / 1000;
+    setSlideTimes(prev => {
+      const prevTime = prev[lastSlideId] || 0;
+      const updated = { ...prev, [lastSlideId]: prevTime + delta };
+      saveSlideTimesToStorage(updated);
+      return updated;
+    });
+  };
+
+  // Save on page/tab close
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      saveSlideTime();
+      saveSession();
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    // eslint-disable-next-line
+  }, [lastSlideId, lastSlideStart, sessionStart]);
 
 
 
@@ -38,30 +123,7 @@ useEffect(() => {
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
-  
-  // Auto-play functionality
-  useEffect(() => {
-    if (!hasSlides) return;
-  
-    const startAutoPlay = () => {
-      autoPlayTimerRef.current = setInterval(() => {
-        if (currentIndex === safeSlides.length - 1) {
-          goToSlide(0);
-        } else {
-          goToNextSlide();
-        }
-      }, 2000);
-    };
-    
-    startAutoPlay();
-    
-    return () => {
-      if (autoPlayTimerRef.current) {
-        clearInterval(autoPlayTimerRef.current);
-      }
-    };
-  }, [currentIndex, hasSlides, safeSlides.length]);
-  
+
   // Handle navigation
   const goToSlide = (index) => {
     // Ensure index is within bounds

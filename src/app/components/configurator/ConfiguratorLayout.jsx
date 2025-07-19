@@ -17,6 +17,8 @@ import { saveConfiguration } from "../../../app/redux/slices/userSlice.js";
 import { useRouter, useSearchParams } from "next/navigation";
 import ConfigurationSummary from "../lightConfigurator/ConfigurationSummary";
 import { fetchUserByToken } from "../../../app/redux/slices/userSlice.js";
+import { listenForCableMessages, listenForMouseOutMessages, listenForMouseOverMessages } from "../../util/iframeCableMessageHandler";
+import { listenForWallbaseColorMessages } from "../../util/iframeCableMessageHandler";
 
 const ConfiguratorLayout = () => {
   
@@ -31,6 +33,13 @@ const ConfiguratorLayout = () => {
   const [hasConfigIdParam, setHasConfigIdParam] = useState(false);
   const [localSavedConfig,setLocalSavedConfig] = useState({});
   const [localSavedCables,setLocalSavedCables] = useState({});
+  const [cableMessage, setCableMessage] = useState('');
+  const [mounted, setMounted] = useState(false);
+useEffect(() => setMounted(true), []);
+
+const handleOpenSaveModal = () => {
+  setConfiguringType("save");
+};
 // Helper functions for localStorage persistence
 const loadFromLocalStorage = (key, defaultValue) => {
   if (typeof window === "undefined") return defaultValue;
@@ -42,6 +51,44 @@ const loadFromLocalStorage = (key, defaultValue) => {
     return defaultValue;
   }
 };
+const iframe = document.getElementById('playcanvas-app');
+// useEffect(() => {
+//   // Handler to set cursor to hand/grab/drag
+//   const handleMouseOver = () => {
+
+  
+//     const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+//     if (iframeDoc) {
+//       iframeDoc.body.style.cursor = 'grab';
+//     }
+//   };
+//   const cleanup = listenForMouseOverMessages((message, event) => {
+//     console.log('[ConfigPanel] Received mouse over message:', message,event.data);
+//     handleMouseOver();
+//   });
+ 
+//   return cleanup;
+// }, []);
+// useEffect(() => {
+
+//   // Handler to revert cursor to default
+//   const handleMouseOut = () => {
+  
+//      const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+//     if (iframeDoc) {
+//       iframeDoc.body.style.cursor = 'default';
+//     }
+//   };
+
+//   const cleanup2 = listenForMouseOutMessages((message, event) => {
+//     // Do something with the message, e.g. open UI, update state, etc.
+//     console.log('[ConfigPanel] Received mouse out message:', message,event.data);
+//     // Example: open a modal, update config, etc.
+//     handleMouseOut();
+//   });
+//   return cleanup2;
+// }, []);
+
 
 const saveToLocalStorage = (key, value) => {
   if (typeof window === "undefined") return;
@@ -61,6 +108,7 @@ const saveToLocalStorage = (key, value) => {
       systemType: "bar",
       systemBaseDesign: "nexus",
       baseColor: "black",
+      connectorColor: "black",
       pendants: [],
       selectedPendants: [],
       lightDesign: "radial",
@@ -72,7 +120,7 @@ const saveToLocalStorage = (key, value) => {
     });
     return savedConfig;
   });
-
+ console.log("cable selected", cableMessage);
   // Cables state with localStorage persistence
   const [cables, setCables] = useState(() => {
     return loadFromLocalStorage("lightCables", [
@@ -86,11 +134,36 @@ const saveToLocalStorage = (key, value) => {
     ]);
   }); 
 
+  useEffect(() => {
+    if (mounted && config.pendants.length === 0) {
+      const initialPendants = generateRandomPendants(config.lightAmount);
+      setConfig(prev => ({
+        ...prev,
+        pendants: initialPendants,
+        systemConfigurations: generateRandomSystems(config.lightAmount)
+      }));
+    }
+  }, [mounted, config.lightAmount]);
+
+
   // Save to localStorage whenever config or cables change
 useEffect(() => {
   saveToLocalStorage('lightConfig', config);
   saveToLocalStorage('lightCables', cables);
 }, [config, cables]);
+
+useEffect(() => {
+  // Set up cable message listener
+  const cleanup = listenForCableMessages((message, event) => {
+    // Do something with the message, e.g. open UI, update state, etc.
+    console.log('[ConfigPanel] Received cable message:', message,event.data);
+    // Example: open a modal, update config, etc.
+    // setIsCableModalOpen(true);
+    setCableMessage(message);
+  });
+  return cleanup;
+}, []);
+
 
 
   // Handler for cable size change
@@ -154,6 +227,9 @@ useEffect(() => {
   const [activeStep, setActiveStep] = useState("lightType");
   const [isLoading, setIsLoading] = useState(true);
 
+  const handleCloseSaveModal = () => {
+    setConfiguringType(null);
+  };
   // Helper function to generate random pendants
   const generateRandomPendants = (amount) => {
     const productCount = 4; // Number of available pendant designs
@@ -244,14 +320,13 @@ useEffect(() => {
     // Send initial messages to PlayCanvas
     if (playCanvasReadyRef.current) {
       sendMessageToPlayCanvas(`light_type:${config.lightType}`);
-      sendMessageToPlayCanvas(`light_amount:${config.lightAmount}`);
       sendMessageToPlayCanvas(`base_type:${config.baseType}`);
-      
+      sendMessageToPlayCanvas(`light_amount:${config.lightAmount}`);
+
       // Send pendant messages
       initialPendants.forEach((pendant, index) => {
         const productId = pendant.design === 'bumble' ? 'product_1' : 
                       pendant.design === 'radial' ? 'product_2' : 
-                      pendant.design === 'fina' ? 'product_3' : 
                       pendant.design === 'ico' ? 'product_4' : 
                       pendant.design === 'piko' ? 'product_5' : 'product_2';
         
@@ -263,6 +338,7 @@ useEffect(() => {
         }]);
         
         sendMessageToPlayCanvas(`cable_${index}:${productId}`);
+        sendMessageToPlayCanvas(`cable_${index}:size_2`);
       });
     }
   } else {
@@ -303,7 +379,7 @@ useEffect(() => {
   //         });
   //         const productId = designOptions[Math.floor(Math.random() * designOptions.length)] === 'bumble' ? 'product_1' :
   //         designOptions[Math.floor(Math.random() * designOptions.length)] === 'radial' ? 'product_2' :
-  //         designOptions[Math.floor(Math.random() * designOptions.length)] === 'fina' ? 'product_3' :
+         
   //         designOptions[Math.floor(Math.random() * designOptions.length)] === 'ico' ? 'product_4' :
   //         designOptions[Math.floor(Math.random() * designOptions.length)] === 'piko' ? 'product_5' : 'product_2';
   //         setCables(prev => [...prev, { isSystem: false, systemType: "", design: designOptions[Math.floor(Math.random() * designOptions.length)], designId: productId }]);
@@ -350,7 +426,7 @@ useEffect(() => {
     const baseType = configData.config.base_type?.toLowerCase() || "round";
     const lightAmount = configData.config.light_amount || 1;
     const baseColor = configData.config.base_color || "black";
-
+    const connectorColor = configData.config.connector_color || "black";
     // Update the config state
     setConfig((prev) => ({
       ...prev,
@@ -358,6 +434,7 @@ useEffect(() => {
       baseType,
       lightAmount,
       baseColor,
+      connectorColor,
       // We don't need to update pendants or other details as they will be handled by the iframe messages
     }));
     setCables(configData.config.cableConfig);
@@ -372,7 +449,7 @@ useEffect(() => {
       // Load saved configuration if available
       const savedConfig = loadFromLocalStorage('lightConfig', null);
       const savedCables = loadFromLocalStorage('lightCables', null);
-      
+      console.log(savedConfig, savedCables)
       if (savedConfig && savedCables) {
         console.log("Loading saved configuration...");
         sendMessageToPlayCanvas(`light_type:${savedConfig.lightType}`);
@@ -380,11 +457,19 @@ useEffect(() => {
         sendMessageToPlayCanvas(`base_type:${savedConfig.baseType}`);
         sendMessageToPlayCanvas(`light_amount:${savedConfig.lightAmount}`);
         sendMessageToPlayCanvas(`base_color:${savedConfig.baseColor}`);
+        sendMessageToPlayCanvas(`connector_color:${savedConfig.connectorColor}`);
         
         savedCables.forEach((cable, index) => {
           if (cable.systemType) {
             sendMessageToPlayCanvas(`system:${cable.systemType}`);
-            sendMessageToPlayCanvas(`cable_${index}:${cable.designId}`);
+            const parts = cable.designId.split('_'); // system_base_2_2
+            if (parts.length === 4) { // [system, base, 2, 2]
+              const baseDesign = parts.slice(0, 3).join('_'); // e.g., "system_base_2"
+              sendMessageToPlayCanvas(`cable_${index}:${baseDesign}`);
+              sendMessageToPlayCanvas(`cable_${index}:${cable.designId}`);
+            } else {
+              sendMessageToPlayCanvas(`cable_${index}:${cable.designId}`);
+            }
             console.log("cable" , cable.size)
             sendMessageToPlayCanvas(`cable_${index}:size_${cable.size}`);
 
@@ -457,8 +542,6 @@ useEffect(() => {
           ? "product_1"
           : pendant.design === "radial"
           ? "product_2"
-          : pendant.design === "fina"
-          ? "product_3"
           : pendant.design === "ico"
           ? "product_4"
           : pendant.design === "piko"
@@ -494,8 +577,6 @@ useEffect(() => {
             ? "product_1"
             : pendant.design === "radial"
             ? "product_2"
-            : pendant.design === "fina"
-            ? "product_3"
             : pendant.design === "ico"
             ? "product_4"
             : pendant.design === "piko"
@@ -503,6 +584,7 @@ useEffect(() => {
             : "product_2";
 
         sendMessageToPlayCanvas(`cable_${index}:${productId}`);
+        sendMessageToPlayCanvas(`cable_${index}:${pendant.size ? `size_${pendant.size}` : 'size_2'}`);
       });
       // } else {
       //   const productId = newPendants.design === 'bumble' ? 'product_1' :
@@ -582,8 +664,7 @@ useEffect(() => {
           ? "product_1"
           : pendant.design === "radial"
           ? "product_2"
-          : pendant.design === "fina"
-          ? "product_3"
+         
           : pendant.design === "ico"
           ? "product_4"
           : pendant.design === "piko"
@@ -612,8 +693,7 @@ useEffect(() => {
               ? "product_1"
               : pendant.design === "radial"
               ? "product_2"
-              : pendant.design === "fina"
-              ? "product_3"
+              
               : pendant.design === "ico"
               ? "product_4"
               : pendant.design === "piko"
@@ -628,8 +708,7 @@ useEffect(() => {
             ? "product_1"
             : newPendants.design === "radial"
             ? "product_2"
-            : newPendants.design === "fina"
-            ? "product_3"
+        
             : newPendants.design === "ico"
             ? "product_4"
             : newPendants.design === "piko"
@@ -757,8 +836,7 @@ useEffect(() => {
             ? "product_1"
             : design === "radial"
             ? "product_2"
-            : design === "fina"
-            ? "product_3"
+
             : design === "ico"
             ? "product_4"
             : design === "piko"
@@ -789,8 +867,7 @@ useEffect(() => {
             ? "product_1"
             : design === "radial"
             ? "product_2"
-            : design === "fina"
-            ? "product_3"
+            
             : design === "ico"
             ? "product_4"
             : design === "piko"
@@ -827,7 +904,6 @@ useEffect(() => {
 
     if (baseType === "rectangular") {
       sendMessageToPlayCanvas(`light_amount:3`);
-      //hotspot off
 
       sendMessageToPlayCanvas(`system:bar`);
       sendMessageToPlayCanvas(`cable_0:system_base_2`);
@@ -881,6 +957,19 @@ useEffect(() => {
 
     // Send message to PlayCanvas iframe
     sendMessageToPlayCanvas(`base_color:${baseColor}`);
+
+    // Move to next step
+    setActiveStep("systemType");
+  }, []);
+  const handleConnectorColorChange = useCallback((connectorColor) => {
+    // Update config state
+    setConfig((prev) => ({
+      ...prev,
+      connectorColor,
+    }));
+
+    // Send message to PlayCanvas iframe
+    sendMessageToPlayCanvas(`connector_color:${connectorColor}`);
 
     // Move to next step
     setActiveStep("systemType");
@@ -952,6 +1041,15 @@ useEffect(() => {
           'photon': 'system_base_27',
           'gravity': 'system_base_28',
           'spectrum': 'system_base_29',
+          'infinity': 'system_base_30',
+          'void': 'system_base_31',
+          'blackhole': 'system_base_32',
+          'singularity': 'system_base_33',
+          'supernav': 'system_base_34',
+          // 'wormhole': 'system_base_34',
+          // 'black': 'system_base_35',
+          // 'white': 'system_base_36',
+
         }
       };
 
@@ -989,6 +1087,32 @@ useEffect(() => {
             equinox: "system_base_12",
             meridian: "system_base_13",
             polaris: "system_base_14",
+            pulsar: "system_base_15",
+            quasar: "system_base_16",
+            supernova: "system_base_17",
+            galaxy: "system_base_18",
+            comet: "system_base_19",
+            meteor: "system_base_20",
+            asteroid: "system_base_21",
+            celestial: "system_base_22",
+            orbital: "system_base_23",
+            lunar: "system_base_24",
+            solar: "system_base_25",
+            nova: "system_base_26",
+            photon: "system_base_27",
+            gravity: "system_base_28",
+            spectrum: "system_base_29",
+            infinity: "system_base_30",
+            // void: "system_base_31",
+            blackhole: "system_base_32",
+            singularity: "system_base_33",
+            // supernav: "system_base_34",
+            // wormhole: "system_base_34",
+            // black: "system_base_35",
+            // white: "system_base_36",
+            
+
+            
           },
         };
 
@@ -1097,6 +1221,7 @@ useEffect(() => {
       light_type: config.lightType,
       light_amount: config.lightAmount,
       base_color: config.baseColor,
+      connector_color: config.connectorColor,
       cables: cables,
       shades: config.shades || {}, // Include shade selections
     };
@@ -1110,7 +1235,9 @@ useEffect(() => {
   };
 
   // Handle final save after user enters configuration name
-  const handleFinalSave = async (configName, thumbnail) => {
+  const handleFinalSave = async (configName, thumbnail, modelId) => {
+
+   console.log("modelId", modelId)
     if (!configToSave) {
       console.error("configToSave is null or undefined");
       return;
@@ -1146,6 +1273,9 @@ useEffect(() => {
     if (config.baseColor) {
       iframeMessagesArray.push(`base_color:${config.baseColor}`);
     }
+    if (config.connectorColor) {
+      iframeMessagesArray.push(`connector_color:${config.connectorColor}`);
+    }
 
     if (config.cableColor) {
       iframeMessagesArray.push(`cable_color:${config.cableColor}`);
@@ -1161,6 +1291,7 @@ useEffect(() => {
         config.lightType.charAt(0).toUpperCase() + config.lightType.slice(1),
       light_amount: config.lightAmount,
       cable_color: config.baseColor,
+      connector_color: config.connectorColor,
       cables: {},
       cableConfig: cables,
     };
@@ -1196,6 +1327,7 @@ useEffect(() => {
       });
     }
 
+   
     // Prepare data for API
     const apiPayload = {
       name: configName,
@@ -1203,7 +1335,10 @@ useEffect(() => {
         url: thumbnail,
         public_id: "",
       }, // Will be updated after screenshot upload
-      config: uiConfig, // UI-friendly structured data for display
+      config: {
+        ...uiConfig,
+        download_Id: modelId,
+      }, // UI-friendly structured data for display
 
       user_id: user?.data?._id || "", // Get user_id from Redux store
       iframe: iframeMessagesArray, // Raw messages from iframe in sequence
@@ -1358,6 +1493,7 @@ useEffect(() => {
       )} */}
 
       {/* 3D Viewer */}
+      {mounted && (
       <div className="w-full h-full">
         <PlayCanvasViewer
           config={config}
@@ -1366,10 +1502,9 @@ useEffect(() => {
           loadcanvas={isLoading}
           localSavedConfig={localSavedConfig}
           localSavedCables={localSavedCables}
-    
-
         />
       </div>
+      )}
 
       {/* Preview Controls - Always visible */}
       <PreviewControls
@@ -1378,6 +1513,7 @@ useEffect(() => {
         config={config}
         cables={cables}
         onSaveConfig={handleSaveConfig}
+        handleOpenSaveModal={handleOpenSaveModal}
         onLoadConfig={handleLoadConfig}
       />
 
@@ -1395,6 +1531,7 @@ useEffect(() => {
               onLightTypeChange={handleLightTypeChange}
               onBaseTypeChange={handleBaseTypeChange}
               onBaseColorChange={handleBaseColorChange}
+              onConnectorColorChange={handleConnectorColorChange}
               onConfigurationTypeChange={handleConfigurationTypeChange}
               onLightAmountChange={handleLightAmountChange}
               onSystemTypeChange={handleSystemTypeChange}
@@ -1402,6 +1539,7 @@ useEffect(() => {
               onPendantDesignChange={handlePendantDesignChange}
               onSystemBaseDesignChange={handleSystemBaseDesignChange}
               pendants={config.pendants}
+              cableMessage={cableMessage}
               selectedPendants={config.selectedPendants || []}
               setSelectedPendants={(pendantIds) =>
                 handlePendantSelection(pendantIds)
@@ -1414,6 +1552,7 @@ useEffect(() => {
               onSystemTypeSelection={handleIndividualSystemTypeSelection}
               onCableSizeChange={handleCableSizeChange}
               onShadeSelect={handleShadeSelect}
+              setCableMessage={setCableMessage}
             />
           )}
 
@@ -1447,6 +1586,7 @@ useEffect(() => {
             isOpen={isSaveModalOpen}
             onClose={() => setIsSaveModalOpen(false)}
             onSave={handleFinalSave}
+            handleCloseSaveModal={handleCloseSaveModal}
             configSummary={configToSave}
           />
         )}

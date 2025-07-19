@@ -79,6 +79,7 @@ export const SaveConfigurationModal = ({
                 Cancel
               </motion.button>
               <motion.button
+              type="button"
                 onClick={saveConfigToSystem}
                 className="bg-[#50C878] hover:bg-[#3da861] text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
                 whileHover={{ scale: 1.05 }}
