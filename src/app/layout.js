@@ -77,6 +77,12 @@ export default function RootLayout({ children }) {
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 <meta name="format-detection" content="telephone=no" />
 <meta name="mobile-web-app-capable" content="yes" />
+      {/* Umami Analytics */}
+      <script 
+        defer 
+        src={process.env.NEXT_PUBLIC_UMAMI_SCRIPT_URL || "https://cloud.umami.is/script.js"}
+        data-website-id={process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID || "d1ff84bb-5098-45e2-b135-568ef7264eff"}
+      ></script>
       </head>
 
       <body className={poppins.className} suppressHydrationWarning>

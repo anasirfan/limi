@@ -9,6 +9,7 @@ import SlideManagement from './SlideManagement';
 import AddCustomerModal from './SlideManagement/AddCustomerModal';
 import DistributorDetailsModal from './DistributorDetailsModal';
 import SlideInsights from './SlideInsights';
+import MarketingTab from './MarketingTab';
 
 export default function CustomerDashboard({ token }) {
   const [slideshowTab, setSlideshowTab] = useState('edit');
@@ -1062,8 +1063,26 @@ export default function CustomerDashboard({ token }) {
           <FaUserPlus className="mr-2" />
           Registrations
         </button>
+        <button
+          onClick={() => setActiveTab('marketing')}
+          className={`px-4 py-2 rounded-md flex items-center ${activeTab === 'marketing' ? 'bg-[#54BB74] text-[#1e1e1e] font-medium' : 'bg-[#333333] text-white hover:bg-[#444444]'}`}
+        >
+          <FaBoxOpen className="mr-2" />
+          Marketing
+        </button>
       </div>
 
+      {activeTab === 'marketing' && (
+        <div className="bg-[#1e1e1e] rounded-lg shadow-lg overflow-hidden border border-[#3a3a3a] mt-6">
+          <div className="px-6 py-5 bg-[#1e1e1e] border-b border-[#3a3a3a]">
+            <h2 className="text-3xl font-bold text-white font-amenti">Marketing Dashboard</h2>
+            <p className="text-gray-400 mt-2">Investor outreach and preview links for LIMI Lighting</p>
+          </div>
+          <div className="p-6">
+            <MarketingTab />
+          </div>
+        </div>
+      )}
       {activeTab === 'distributorQuery' && (
       <div className="bg-[#1e1e1e] rounded-lg shadow-lg overflow-hidden border border-[#3a3a3a]">
         {/* Header Section */}

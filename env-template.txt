@@ -1,0 +1,31 @@
+# LIMI Umami Analytics Environment Variables Template
+# Copy these to your .env.local file
+
+# ===========================================
+# LOCALHOST/DEVELOPMENT CONFIGURATION
+# ===========================================
+NEXT_PUBLIC_UMAMI_WEBSITE_ID=d1ff84bb-5098-45e2-b135-568ef7264eff
+NEXT_PUBLIC_UMAMI_SCRIPT_URL=https://cloud.umami.is/script.js
+UMAMI_API_URL=https://api.umami.is/v1
+UMAMI_API_KEY=api_08gPcyjfrwopTUEG9H11K4rQ3Zi8KevG
+
+# ===========================================
+# PRODUCTION CONFIGURATION (Update when deploying)
+# ===========================================
+# When you deploy to production:
+# 1. Create a new website in Umami for your production domain
+# 2. Generate a new API token for the production website
+# 3. Update these values in your production environment:
+#
+# NEXT_PUBLIC_UMAMI_WEBSITE_ID=your_production_website_id
+# NEXT_PUBLIC_UMAMI_SCRIPT_URL=https://cloud.umami.is/script.js
+# UMAMI_API_URL=https://api.umami.is/v1
+# UMAMI_API_KEY=your_production_api_key
+
+# ===========================================
+# NOTES
+# ===========================================
+# - NEXT_PUBLIC_ variables are exposed to the browser
+# - UMAMI_API_KEY should NOT have NEXT_PUBLIC_ prefix (server-side only)
+# - The system automatically detects localhost vs production
+# - Mock data is shown on localhost, real data on production

@@ -1,0 +1,89 @@
+{
+  "VCFirmData": [
+    {
+      "name": "Demo test 1",
+      "website": "https://test.com/",
+      "email": "hello@test.com",
+      "slug": "demo-test-1",
+      "contentId": "vc_demo1"
+    },
+    {
+      "name": "Demo test 2",
+      "website": "https://test.com/",
+      "email": "hello@test.com",
+      "slug": "demo-test-2",
+      "contentId": "vc_demo1"
+    },
+    {
+      "name": "13Books Capital",
+      "website": "https://13bookscapital.com/",
+      "email": "hello@13bookscapital.com",
+      "slug": "13books-capital",
+      "contentId": "vc_demo1"
+    },
+    {
+      "name": "1414 Ventures",
+      "website": "https://www.1414ventures.com/",
+      "email": "contact@1414ventures.com",
+      "slug": "1414-ventures",
+      "contentId": "vc_demo2"
+    },
+    {
+      "name": "20VC",
+      "website": "https://www.thetwentyminutevc.com/",
+      "email": "sarah@20vc.com",
+      "slug": "20vc",
+      "contentId": "vc_demo1"
+    },
+    {
+      "name": "24Haymarket",
+      "website": "https://24haymarket.com/",
+      "email": "fund@24haymarket.com",
+      "slug": "24haymarket",
+      "contentId": "vc_demo2"
+    },
+    {
+      "name": "468 Capital",
+      "website": "https://www.468cap.com/",
+      "email": "contact@468cap.com",
+      "slug": "468-capital",
+      "contentId": "vc_demo1"
+    },
+    {
+      "name": "4BIO Capital",
+      "website": "https://www.4biocapital.com/",
+      "email": "info@4biocapital.com",
+      "slug": "4bio-capital",
+      "contentId": "vc_demo2"
+    },
+    {
+      "name": "Creative Ventures",
+      "website": "https://creativeventures.vc/",
+      "email": "invest@creativeventures.vc",
+      "slug": "creative-ventures",
+      "contentId": "vc_demo1"
+    },
+    {
+      "name": "EMV Capital",
+      "website": "https://emvcapital.com/",
+      "email": "info@emvcapital.com",
+      "slug": "emv-capital",
+      "contentId": "vc_demo2"
+    },
+    {
+      "name": "IQ Capital",
+      "website": "https://iqcapital.vc/",
+      "email": "hello@iqcapital.vc",
+      "slug": "iq-capital",
+      "contentId": "vc_demo1"
+    },
+    {
+      "name": "Sussex Place Ventures",
+      "website": "https://www.spventures.com/",
+      "email": "info@spventures.com",
+      "slug": "sussex-place-ventures",
+      "contentId": "vc_demo2"
+    }
+  ],
+  "AngelInvestorData": []
+}

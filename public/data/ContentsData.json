@@ -1,0 +1,24 @@
+{
+  "vc_demo1": {
+    "headings": [
+      "Welcome to LIMI Lighting",
+      "A New Era in Smart Lighting"
+    ],
+    "paragraphs": [
+      "LIMI Lighting is transforming spaces with intelligent, adaptive lighting solutions. Our technology is designed for efficiency, sustainability, and human well-being.",
+      "As a valued VC partner, you have the opportunity to join us at the forefront of innovation in the lighting industry."
+    ],
+    "ctaId": "demo_cta1"
+  },
+  "vc_demo2": {
+    "headings": [
+      "Investment Opportunity with LIMI",
+      "Join Our Growth Journey"
+    ],
+    "paragraphs": [
+      "We are excited to present LIMI Lighting's vision for the future. Our products are already making an impact in homes and businesses worldwide.",
+      "Explore our investment deck and see how you can be part of our success story."
+    ],
+    "ctaId": "demo_cta2"
+  }
+}
