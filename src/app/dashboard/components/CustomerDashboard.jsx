@@ -3,7 +3,8 @@
 import React, { useState, useEffect, Fragment } from 'react';
 import Image from 'next/image';
 import { FaSort, FaInbox, FaSpinner, FaEnvelope, FaSortUp, FaSortDown, FaSearch, FaEye, FaTimes, FaFilter, FaGlobe, FaClock, FaDesktop, FaTabletAlt, FaMobileAlt, FaUsers, FaBoxOpen, FaShoppingCart, FaBox, FaSlideshare, FaUserPlus, FaTrash } from 'react-icons/fa';
-import { BarChart,FaTimesCircle, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
+import { FaTimesCircle } from 'react-icons/fa';
 import ProductManagement from './ProductManagement';
 import SlideManagement from './SlideManagement';
 import AddCustomerModal from './SlideManagement/AddCustomerModal';

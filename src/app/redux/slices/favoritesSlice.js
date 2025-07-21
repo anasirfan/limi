@@ -10,20 +10,20 @@ export const favoritesSlice = createSlice({
   reducers: {
     addToFavorites: (state, action) => {
       const product = action.payload;
+      console.log("product",product);
       const exists = state.items.some(item => item.id === product.id);
-      
+    
       if (!exists) {
         state.items.push({
           id: product.id,
           name: product.name,
-          price: product.price,
-          image: product.thumbnail,
-          slug: product.slug,
-          category: product.category
+          image: product.image,
+         
         });
       }
       
       // Save to localStorage
+      console.log("product",product);
       localStorage.setItem('limiFavorites', JSON.stringify(state));
     },
     

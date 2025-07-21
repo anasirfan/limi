@@ -1,15 +1,22 @@
 import { motion } from "framer-motion";
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
+import { useSelector, useDispatch } from "react-redux";
 import {
+  FaHeart,
+  FaTimes,
   FaChevronLeft,
   FaChevronRight,
   FaCheck,
-  FaTimes,
+  FaCubes,
 } from "react-icons/fa";
 import { Breadcrumb } from "./Breadcrumb";
 import BaseColorPanel from "./BaseColorPanel";
 import { FaArrow } from "react-icons/fa";
+import {
+  addToFavorites,
+  removeFromFavorites,
+} from "../../../redux/slices/favoritesSlice";
 
 export const ConfigPanel = ({
   configuringType,
@@ -27,12 +34,13 @@ export const ConfigPanel = ({
   onSelectConfigurationType,
   onShadeSelect,
   currentShade,
-  onCableSizeChange , // NEW PROP
+  onCableSizeChange, // NEW PROP
   onClose,
   className = "", // Add className prop with default empty string
 }) => {
   // Clear shade state when entering pendant mode (defensive, avoids render loop)
   // Only runs when configuringType changes
+
   useEffect(() => {
     if (configuringType === "pendant") {
       setShowShades(false);
@@ -43,11 +51,15 @@ export const ConfigPanel = ({
 
   useEffect(() => {
     if (showConfigurationTypeSelector) {
-      console.log("showConfigurationTypeSelector",showConfigurationTypeSelector)
+      console.log(
+        "showConfigurationTypeSelector",
+        showConfigurationTypeSelector
+      );
       handleBreadcrumbNavigation("home");
     }
   }, [showConfigurationTypeSelector]);
-
+  const dispatch = useDispatch();
+  const favorites = useSelector((state) => state.favorites.items);
   const [currentDesign, setCurrentDesign] = useState(null);
   // Internal state for selected cable size (for immediate UI feedback)
   const [localSelectedCableSize, setLocalSelectedCableSize] = useState(1);
@@ -384,8 +396,7 @@ export const ConfigPanel = ({
   }, [configuringType, configuringSystemType]);
 
   // Debug log for tracking props and state
-  useEffect(() => {
-  }, [
+  useEffect(() => {}, [
     configuringType,
     configuringSystemType,
     currentDesign,
@@ -561,7 +572,7 @@ export const ConfigPanel = ({
       config.onItemSelect = (size) => {
         setLocalSelectedCableSize(size); // Update UI immediately
         let cablesToUpdate = [];
-        
+
         if (selectedPendants && selectedPendants.length > 0) {
           cablesToUpdate = selectedPendants.filter(
             (idx) => typeof idx === "number"
@@ -572,7 +583,6 @@ export const ConfigPanel = ({
         if (cablesToUpdate.length > 0) {
           onCableSizeChange(size, cablesToUpdate);
         }
-
       };
       config.selectedItem = localSelectedCableSize;
       config.breadcrumbItems = [
@@ -1045,7 +1055,7 @@ export const ConfigPanel = ({
   // Custom breadcrumb navigation handler
   const handleBreadcrumbNavigation = (id) => {
     // Use the navigation state to determine where to go
-    console.log("handleBreadcrumbNavigation",id)
+    console.log("handleBreadcrumbNavigation", id);
     if (id === "home") {
       // Reset to configuration type selection (first level)
       onSelectConfigurationType(null);
@@ -1119,7 +1129,6 @@ export const ConfigPanel = ({
 
   // Determine if we're in mobile view based on the className prop
   const isMobileView = className.includes("max-sm:static");
-  
 
   return (
     <div className="flex justify-center items-center w-full">
@@ -1247,6 +1256,40 @@ export const ConfigPanel = ({
                           : "ring-1 ring-gray-600"
                       }`}
                     >
+                      {/* Wishlist Icon Overlay */}
+                      {item.id !== "pendant" && item.id !== "system" && (
+                        <button
+                          type="button"
+                          className="absolute top-1 right-1 z-10 bg-white/80 rounded-full p-1 hover:bg-rose-200 transition-all"
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevent triggering parent click
+                            if (favorites.some((fav) => fav.id === item.id)) {
+                              dispatch(removeFromFavorites(item.id));
+                            } else {
+                              dispatch(
+                                addToFavorites({
+                                  id: item.id,
+                                  name: item.name,
+                                  image: item.image, 
+                                })
+                              );
+                            }
+                          }}
+                          title={
+                            favorites.some((fav) => fav.id === item.id)
+                              ? "Remove from Wishlist"
+                              : "Add to Wishlist"
+                          }
+                        >
+                          <FaHeart
+                            className={
+                              favorites.some((fav) => fav.id === item.id)
+                                ? "text-rose-500"
+                                : "text-gray-400"
+                            }
+                          />
+                        </button>
+                      )}
                       {item.image ? (
                         <Image
                           src={item.image}

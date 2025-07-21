@@ -25,6 +25,9 @@ import BaseColorPanel from './navComponents/BaseColorPanel';
 const VerticalNavBar = ({ 
   activeStep, 
   setActiveStep, 
+  showConfigurationTypeSelector,
+  setShowConfigurationTypeSelector,
+
   config,
   cables, // Add cables prop
   onCableSizeChange, // Add cable size change handler
@@ -293,9 +296,7 @@ const tourSteps = [
     }
   };
   
-  // Configuration type selector state
-  const [showConfigurationTypeSelector, setShowConfigurationTypeSelector] = useState(false);
-  
+ 
   // Local state for configuration type (will be synced with parent component)
   const [localConfiguringType, setLocalConfiguringType] = useState(configuringType);
   
@@ -567,6 +568,7 @@ const tourSteps = [
       )}
       
       {/* Configuration Panel */}
+  
       <AnimatePresence>
         {(showConfigurationTypeSelector) && !openingBase && selectedPendants.length > 0 && !isMobile && (
           <ConfigPanel
@@ -614,6 +616,7 @@ const tourSteps = [
           />
         )}
       </AnimatePresence>
+
       
       {showSaveModal && (
         <SaveConfigurationModal 

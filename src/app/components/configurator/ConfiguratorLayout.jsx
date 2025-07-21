@@ -39,6 +39,7 @@ useEffect(() => setMounted(true), []);
 
 const handleOpenSaveModal = () => {
   setConfiguringType("save");
+  setShowConfigurationTypeSelector(false);
 };
 // Helper functions for localStorage persistence
 const loadFromLocalStorage = (key, defaultValue) => {
@@ -222,13 +223,14 @@ useEffect(() => {
   const [configuringSystemType, setConfiguringSystemType] = useState(null); // 'bar', 'ball', 'universal'
   const [breadcrumbPath, setBreadcrumbPath] = useState([]);
   const [currentShade, setCurrentShade] = useState(null); // Currently selected shade
-
+  const [showConfigurationTypeSelector, setShowConfigurationTypeSelector] = useState(false);
   // Navigation state
   const [activeStep, setActiveStep] = useState("lightType");
   const [isLoading, setIsLoading] = useState(true);
 
   const handleCloseSaveModal = () => {
     setConfiguringType(null);
+    setShowConfigurationTypeSelector(true);
   };
   // Helper function to generate random pendants
   const generateRandomPendants = (amount) => {
@@ -1528,6 +1530,8 @@ useEffect(() => {
               setActiveStep={setActiveStep}
               config={config}
               cables={cables}
+              showConfigurationTypeSelector={showConfigurationTypeSelector}
+              setShowConfigurationTypeSelector={setShowConfigurationTypeSelector}
               onLightTypeChange={handleLightTypeChange}
               onBaseTypeChange={handleBaseTypeChange}
               onBaseColorChange={handleBaseColorChange}
@@ -1597,6 +1601,7 @@ useEffect(() => {
         {isLoadModalOpen && (
           <LoadConfigModal
             isOpen={isLoadModalOpen}
+            handleCloseSaveModal={handleCloseSaveModal}
             onClose={() => setIsLoadModalOpen(false)}
             onLoad={handleLoadSpecificConfig}
             userId={user?.data?._id}
