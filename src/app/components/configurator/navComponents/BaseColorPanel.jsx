@@ -7,9 +7,11 @@ const BaseColorPanel = ({
   onBaseColorChange,
   onConnectorColorChange,
   currentBaseColor,
-  currentConnectorColor
+  currentConnectorColor,
+  setActiveTab,
+  activeTab
 }) => {
-  const [activeTab, setActiveTab] = useState('base'); // 'base' or 'connector'
+
   const [selectedBaseColor, setSelectedBaseColor] = useState(currentBaseColor || 'black');
   const [selectedConnectorColor, setSelectedConnectorColor] = useState(currentConnectorColor || 'black');
 

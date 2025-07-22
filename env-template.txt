@@ -1,6 +1,6 @@
 # LIMI Umami Analytics Environment Variables Template
 # Copy these to your .env.local file
-
+ 
 # ===========================================
 # LOCALHOST/DEVELOPMENT CONFIGURATION
 # ===========================================
