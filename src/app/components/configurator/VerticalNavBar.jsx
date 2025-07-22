@@ -151,6 +151,9 @@ const handleSetActiveTab = (tab) => {
       }
     }
   }, [cableMessage, setActiveStep, setSelectedPendants, setCableMessage]);
+
+
+  console.log("config in vertical:",config)
 // Define tour steps
 const tourSteps = [
   {
@@ -432,9 +435,19 @@ const tourSteps = [
             onClick={(e) => e.stopPropagation()}
             onTouchStart={(e) => e.stopPropagation()}
           >
+            {console.log(
+              'in steps',
+              "step id ",steps,
+              "config",config,
+            )}
             {/* Render NavButtons with data-tour-step for guided tour */}
             {steps.filter(step => {
-              if (step.id === 'baseType' && config.lightType !== 'ceiling') {
+              if ((step.id === 'baseType' || step.id === 'baseColor') && (config.lightType !== 'ceiling')) {
+                console.log("working if")
+                return false;
+              }
+              if ((step.id === 'baseColor') && (config.baseType !== 'round')) {
+                console.log("working if")
                 return false;
               }
               return true;

@@ -127,7 +127,7 @@ const saveToLocalStorage = (key, value) => {
     return loadFromLocalStorage("lightCables", [
       {
         isSystem: false,
-        systemType: "",
+        systemType: "", 
         design: "Radial",
         designId: "product_2",
         size: "2mm",
@@ -340,7 +340,7 @@ useEffect(() => {
         }]);
         
         sendMessageToPlayCanvas(`cable_${index}:${productId}`);
-        sendMessageToPlayCanvas(`cable_${index}:size_2`);
+        sendMessageToPlayCanvas(`cable_${index}:size_${Math.floor(Math.random() * 5) + 2}`);
       });
     }
   } else {
@@ -586,7 +586,7 @@ useEffect(() => {
             : "product_2";
 
         sendMessageToPlayCanvas(`cable_${index}:${productId}`);
-        sendMessageToPlayCanvas(`cable_${index}:${pendant.size ? `size_${pendant.size}` : 'size_2'}`);
+        sendMessageToPlayCanvas(`cable_${index}:${pendant.size ? `size_${pendant.size}` : 'size_3'}`);
       });
       // } else {
       //   const productId = newPendants.design === 'bumble' ? 'product_1' :
@@ -703,6 +703,7 @@ useEffect(() => {
               : "product_2";
 
           sendMessageToPlayCanvas(`cable_${index}:${productId}`);
+          sendMessageToPlayCanvas(`cable_${index}:size_3`);
         });
       } else {
         const productId =
@@ -717,6 +718,7 @@ useEffect(() => {
             ? "product_5"
             : "product_2";
         sendMessageToPlayCanvas(`cable_0:${productId}`);
+        sendMessageToPlayCanvas(`cable_0:size_3`);
       }
     }, 0);
   };
@@ -909,9 +911,12 @@ useEffect(() => {
 
       sendMessageToPlayCanvas(`system:bar`);
       sendMessageToPlayCanvas(`cable_0:system_base_2`);
+      sendMessageToPlayCanvas(`cable_0:size_3`);
       sendMessageToPlayCanvas(`system:bar`);
       sendMessageToPlayCanvas(`cable_1:system_base_2`);
-      sendMessageToPlayCanvas(`cable_2:product_2`);
+      sendMessageToPlayCanvas(`cable_1:size_3`);
+      sendMessageToPlayCanvas(`cable_2:product_2`); 
+      sendMessageToPlayCanvas(`cable_2:size_3`);
       setCables([
         {
           isSystem: true,
@@ -935,6 +940,7 @@ useEffect(() => {
     } else {
       sendMessageToPlayCanvas(`light_amount:1`);
       sendMessageToPlayCanvas(`cable_0:product_2`);
+      sendMessageToPlayCanvas(`cable_0:size_3`);
       setCables([
         {
           isSystem: false,
