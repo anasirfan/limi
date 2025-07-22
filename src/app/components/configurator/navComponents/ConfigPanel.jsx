@@ -1,15 +1,22 @@
 import { motion } from "framer-motion";
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
+import { useSelector, useDispatch } from "react-redux";
 import {
+  FaHeart,
+  FaTimes,
   FaChevronLeft,
   FaChevronRight,
   FaCheck,
-  FaTimes,
+  FaCubes,
 } from "react-icons/fa";
 import { Breadcrumb } from "./Breadcrumb";
 import BaseColorPanel from "./BaseColorPanel";
 import { FaArrow } from "react-icons/fa";
+import {
+  addToFavorites,
+  removeFromFavorites,
+} from "../../../redux/slices/favoritesSlice";
 
 export const ConfigPanel = ({
   configuringType,
@@ -27,12 +34,13 @@ export const ConfigPanel = ({
   onSelectConfigurationType,
   onShadeSelect,
   currentShade,
-  onCableSizeChange , // NEW PROP
+  onCableSizeChange, // NEW PROP
   onClose,
   className = "", // Add className prop with default empty string
 }) => {
   // Clear shade state when entering pendant mode (defensive, avoids render loop)
   // Only runs when configuringType changes
+
   useEffect(() => {
     if (configuringType === "pendant") {
       setShowShades(false);
@@ -43,11 +51,15 @@ export const ConfigPanel = ({
 
   useEffect(() => {
     if (showConfigurationTypeSelector) {
-      console.log("showConfigurationTypeSelector",showConfigurationTypeSelector)
+      console.log(
+        "showConfigurationTypeSelector",
+        showConfigurationTypeSelector
+      );
       handleBreadcrumbNavigation("home");
     }
   }, [showConfigurationTypeSelector]);
-
+  const dispatch = useDispatch();
+  const favorites = useSelector((state) => state.favorites.items);
   const [currentDesign, setCurrentDesign] = useState(null);
   // Internal state for selected cable size (for immediate UI feedback)
   const [localSelectedCableSize, setLocalSelectedCableSize] = useState(1);
@@ -384,8 +396,7 @@ export const ConfigPanel = ({
   }, [configuringType, configuringSystemType]);
 
   // Debug log for tracking props and state
-  useEffect(() => {
-  }, [
+  useEffect(() => {}, [
     configuringType,
     configuringSystemType,
     currentDesign,
@@ -458,54 +469,54 @@ export const ConfigPanel = ({
     // Map of designs to their available shades
     const shadeOptions = {
       // Universal system shades
-      universal: {
-        atom: [
-          { id: "shallowdome", name: "Shallow Dome", color: "#2B2D2F" },
-          { id: "deepdome", name: "Deep Dome", color: "#50C878" },
-          { id: "flatplate", name: "Flat Plate", color: "#87CEAB" },
-        ],
-        nebula: [
-          { id: "cone", name: "Cone", color: "#2B2D2F" },
-          { id: "cylinder", name: "Cylinder", color: "#50C878" },
-        ],
-        cosmos: [
-          { id: "sphere", name: "Sphere", color: "#2B2D2F" },
-          { id: "hemisphere", name: "Hemisphere", color: "#50C878" },
-          { id: "disc", name: "Disc", color: "#87CEAB" },
-          { id: "ring", name: "Ring", color: "#F2F0E6" },
-        ],
-        stellar: [
-          { id: "pyramid", name: "Pyramid", color: "#2B2D2F" },
-          { id: "cube", name: "Cube", color: "#50C878" },
-          { id: "prism", name: "Prism", color: "#87CEAB" },
-        ],
-        eclipse: [
-          { id: "oval", name: "Oval", color: "#2B2D2F" },
-          { id: "rectangle", name: "Rectangle", color: "#50C878" },
-        ],
-      },
+      // universal: {
+        // atom: [
+        //   { id: "shallowdome", name: "Shallow Dome", color: "#2B2D2F" },
+        //   { id: "deepdome", name: "Deep Dome", color: "#50C878" },
+        //   { id: "flatplate", name: "Flat Plate", color: "#87CEAB" },
+        // ],
+        // nebula: [
+        //   { id: "cone", name: "Cone", color: "#2B2D2F" },
+        //   { id: "cylinder", name: "Cylinder", color: "#50C878" },
+        // ],
+        // cosmos: [
+        //   { id: "sphere", name: "Sphere", color: "#2B2D2F" },
+        //   { id: "hemisphere", name: "Hemisphere", color: "#50C878" },
+        //   { id: "disc", name: "Disc", color: "#87CEAB" },
+        //   { id: "ring", name: "Ring", color: "#F2F0E6" },
+        // ],
+        // stellar: [
+        //   { id: "pyramid", name: "Pyramid", color: "#2B2D2F" },
+        //   { id: "cube", name: "Cube", color: "#50C878" },
+        //   { id: "prism", name: "Prism", color: "#87CEAB" },
+        // ],
+        // eclipse: [
+        //   { id: "oval", name: "Oval", color: "#2B2D2F" },
+        //   { id: "rectangle", name: "Rectangle", color: "#50C878" },
+        // ],
+      // },
       // Bar system shades
-      bar: {
-        prism: [
-          { id: "standard", name: "Standard", color: "#2B2D2F" },
-          { id: "extended", name: "Extended", color: "#50C878" },
-        ],
-        helix: [
-          { id: "single", name: "Single", color: "#2B2D2F" },
-          { id: "double", name: "Double", color: "#50C878" },
-          { id: "triple", name: "Triple", color: "#87CEAB" },
-        ],
-      },
+      // bar: {
+        // prism: [
+        //   { id: "standard", name: "Standard", color: "#2B2D2F" },
+        //   { id: "extended", name: "Extended", color: "#50C878" },
+        // ],
+        // helix: [
+        //   { id: "single", name: "Single", color: "#2B2D2F" },
+        //   { id: "double", name: "Double", color: "#50C878" },
+        //   { id: "triple", name: "Triple", color: "#87CEAB" },
+        // ],
+      // },
     };
 
     // Check if this design has shade options
-    if (
-      systemType &&
-      shadeOptions[systemType] &&
-      shadeOptions[systemType][designId]
-    ) {
-      return shadeOptions[systemType][designId];
-    }
+    // if (
+    //   systemType &&
+    //   shadeOptions[systemType] &&
+    //   shadeOptions[systemType][designId]
+    // ) {
+    //   return shadeOptions[systemType][designId];
+    // }
 
     return null; // No shades available
   };
@@ -561,7 +572,7 @@ export const ConfigPanel = ({
       config.onItemSelect = (size) => {
         setLocalSelectedCableSize(size); // Update UI immediately
         let cablesToUpdate = [];
-        
+
         if (selectedPendants && selectedPendants.length > 0) {
           cablesToUpdate = selectedPendants.filter(
             (idx) => typeof idx === "number"
@@ -572,7 +583,6 @@ export const ConfigPanel = ({
         if (cablesToUpdate.length > 0) {
           onCableSizeChange(size, cablesToUpdate);
         }
-
       };
       config.selectedItem = localSelectedCableSize;
       config.breadcrumbItems = [
@@ -783,125 +793,95 @@ export const ConfigPanel = ({
               baseNumber: "14",
               image: "/images/configOptions/universal/14.png",
             },
-            {
-              id: "pulsar",
-              name: "Pulsar",
-              baseNumber: "15",
-              image: "/images/configOptions/universal/15.png",
-            },
-            {
-              id: "quasar",
-              name: "Quasar",
-              baseNumber: "16",
-              image: "/images/configOptions/universal/16.png",
-            },
-            {
-              id: "supernova",
-              name: "Supernova",
-              baseNumber: "17",
-              image: "/images/configOptions/universal/17.png",
-            },
-            {
-              id: "galaxy",
-              name: "Galaxy",
-              baseNumber: "18",
-              image: "/images/configOptions/universal/18.png",
-            },
-            {
-              id: "comet",
-              name: "Comet",
-              baseNumber: "19",
-              image: "/images/configOptions/universal/19.png",
-            },
-            {
-              id: "meteor",
-              name: "Meteor",
-              baseNumber: "20",
-              image: "/images/configOptions/universal/20.png",
-            },
-            {
-              id: "asteroid",
-              name: "Asteroid",
-              baseNumber: "21",
-              image: "/images/configOptions/universal/21.png",
-            },
-            {
-              id: "celestial",
-              name: "Celestial",
-              baseNumber: "22",
-              image: "/images/configOptions/universal/22.png",
-            },
-            {
-              id: "orbital",
-              name: "Orbital",
-              baseNumber: "23",
-              image: "/images/configOptions/universal/23.png",
-            },
-            {
-              id: "lunar",
-              name: "Lunar",
-              baseNumber: "24",
-              image: "/images/configOptions/universal/24.png",
-            },
-            {
-              id: "solar",
-              name: "Solar",
-              baseNumber: "25",
-              image: "/images/configOptions/universal/25.png",
-            },
-            {
-              id: "nova",
-              name: "Nova",
-              baseNumber: "26",
-              image: "/images/configOptions/universal/26.png",
-            },
-            {
-              id: "photon",
-              name: "Photon",
-              baseNumber: "27",
-              image: "/images/configOptions/universal/27.png",
-            },
-            {
-              id: "gravity",
-              name: "Gravity",
-              baseNumber: "28",
-              image: "/images/configOptions/universal/28.png",
-            },
-            {
-              id: "spectrum",
-              name: "Spectrum",
-              baseNumber: "29",
-              image: "/images/configOptions/universal/29.png",
-            },
-            {
-              id: "infinity",
-              name: "Infinity",
-              baseNumber: "30",
-              image: "/images/configOptions/universal/30.png",
-            },
             // {
-            //   id: "void",
-            //   name: "Void",
-            //   baseNumber: "31",
-            //   image: "/images/configOptions/universal/31.png",
+            //   id: "pulsar",
+            //   name: "Pulsar",
+            //   baseNumber: "15",
+            //   image: "",
             // },
-            {
-              id: "blackhole",
-              name: "Blackhole",
-              baseNumber: "32",
-              image: "/images/configOptions/universal/32.png",
-            },
-            {
-              id: "singularity",
-              name: "Singularity",
-              baseNumber: "33",
-              image: "/images/configOptions/universal/33.png",
-            },
             // {
-            //   id: "supernav",
-            //   name: "Supernav",
-            //   baseNumber: "34",
-            //   image: "/images/configOptions/universal/34.png",
+            //   id: "quasar",
+            //   name: "Quasar",
+            //   baseNumber: "16",
+            //   image: "",
+            // },
+            // {
+            //   id: "supernova",
+            //   name: "Supernova",
+            //   baseNumber: "17",
+            //   image: "",
+            // },
+            // {
+            //   id: "galaxy",
+            //   name: "Galaxy",
+            //   baseNumber: "18",
+            //   image: "",
+            // },
+            // {
+            //   id: "comet",
+            //   name: "Comet",
+            //   baseNumber: "19",
+            //   image: "",
+            // },
+            // {
+            //   id: "meteor",
+            //   name: "Meteor",
+            //   baseNumber: "20",
+            //   image: "",
+            // },
+            // {
+            //   id: "asteroid",
+            //   name: "Asteroid",
+            //   baseNumber: "21",
+            //   image: "",
+            // },
+            // {
+            //   id: "celestial",
+            //   name: "Celestial",
+            //   baseNumber: "22",
+            //   image: "",
+            // },
+            // {
+            //   id: "orbital",
+            //   name: "Orbital",
+            //   baseNumber: "23",
+            //   image: "",
+            // },
+            // {
+            //   id: "lunar",
+            //   name: "Lunar",
+            //   baseNumber: "24",
+            //   image: "",
+            // },
+            // {
+            //   id: "solar",
+            //   name: "Solar",
+            //   baseNumber: "25",
+            //   image: "",
+            // },
+            // {
+            //   id: "nova",
+            //   name: "Nova",
+            //   baseNumber: "26",
+            //   image: "",
+            // },
+            // {
+            //   id: "photon",
+            //   name: "Photon",
+            //   baseNumber: "27",
+            //   image: "",
+            // },
+            // {
+            //   id: "gravity",
+            //   name: "Gravity",
+            //   baseNumber: "28",
+            //   image: "",
+            // },
+            // {
+            //   id: "spectrum",
+            //   name: "Spectrum",
+            //   baseNumber: "29",
+            //   image: "",
             // },
           ],
         };
@@ -1045,7 +1025,7 @@ export const ConfigPanel = ({
   // Custom breadcrumb navigation handler
   const handleBreadcrumbNavigation = (id) => {
     // Use the navigation state to determine where to go
-    console.log("handleBreadcrumbNavigation",id)
+    console.log("handleBreadcrumbNavigation", id);
     if (id === "home") {
       // Reset to configuration type selection (first level)
       onSelectConfigurationType(null);
@@ -1119,7 +1099,6 @@ export const ConfigPanel = ({
 
   // Determine if we're in mobile view based on the className prop
   const isMobileView = className.includes("max-sm:static");
-  
 
   return (
     <div className="flex justify-center items-center w-full">
@@ -1247,6 +1226,40 @@ export const ConfigPanel = ({
                           : "ring-1 ring-gray-600"
                       }`}
                     >
+                      {/* Wishlist Icon Overlay */}
+                      {item.id !== "pendant" && item.id !== "system" && item.id !== "bar" && item.id !== "ball" && item.id !== "universal" && (
+                        <button
+                          type="button"
+                          className="absolute top-1 right-1 z-10 bg-white/80 rounded-full p-1 hover:bg-rose-200 transition-all"
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevent triggering parent click
+                            if (favorites.some((fav) => fav.id === item.id)) {
+                              dispatch(removeFromFavorites(item.id));
+                            } else {
+                              dispatch(
+                                addToFavorites({
+                                  id: item.id,
+                                  name: item.name,
+                                  image: item.image, 
+                                })
+                              );
+                            }
+                          }}
+                          title={
+                            favorites.some((fav) => fav.id === item.id)
+                              ? "Remove from Wishlist"
+                              : "Add to Wishlist"
+                          }
+                        >
+                          <FaHeart
+                            className={
+                              favorites.some((fav) => fav.id === item.id)
+                                ? "text-rose-500"
+                                : "text-gray-400"
+                            }
+                          />
+                        </button>
+                      )}
                       {item.image ? (
                         <Image
                           src={item.image}

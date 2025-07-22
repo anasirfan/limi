@@ -236,8 +236,17 @@ export const SaveConfigModal = ({
             className="px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700"
             disabled={!configName.trim() || loading || fetchingModelId}
           >
-            {loading || fetchingModelId ? 'Saving' : 'Save'}
+            Save
           </button>
+
+          {(loading || fetchingModelId) && (
+            <div className="absolute inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 rounded-xl">
+              <div className="text-white text-xl font-bold animate-pulse">
+                Saving your configuration...
+              </div>
+            </div>
+          )
+          }
         </div>
       </motion.div>
     </motion.div>

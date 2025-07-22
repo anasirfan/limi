@@ -434,6 +434,7 @@ const PlayCanvasViewer = ({
       <iframe
         ref={iframeRef}
         id="playcanvas-app"
+        // https://configurator.limilighting.com
         src="https://playcanv.as/e/p/7c2273a2/"
         allow="autoplay; fullscreen; vr"
         className={`w-full h-full transition-opacity duration-500 ${appReady ? 'opacity-100' : 'opacity-0'}`}

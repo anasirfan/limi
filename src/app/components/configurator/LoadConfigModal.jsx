@@ -7,7 +7,8 @@ export const LoadConfigModal = ({
   isOpen, 
   onClose, 
   onLoad,
-  userId
+  userId,
+  handleCloseSaveModal
 }) => {
   const [configurations, setConfigurations] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -97,7 +98,9 @@ export const LoadConfigModal = ({
         <div className="flex justify-between items-center mb-2">
           <h2 className="text-xl font-semibold text-white">Load Configuration</h2>
           <button 
-            onClick={onClose}
+            onClick={()=>{onClose(); 
+              handleCloseSaveModal();
+            }}
             className="text-gray-400 hover:text-white"
           >
             <FaTimes size={20} />
@@ -219,13 +222,17 @@ export const LoadConfigModal = ({
         {!isLoading && !error && configurations.length > 0 && (
           <div className="mt-2 flex justify-end">
             <button
-              onClick={onClose}
+              onClick={()=>{
+                onClose();
+                handleCloseSaveModal();
+              }}
               className="px-4 py-2 mr-2 bg-gray-700 text-white rounded hover:bg-gray-600"
             >
               Cancel
             </button>
             <button
-              onClick={() => selectedConfig && handleLoadConfig(selectedConfig)}
+              onClick={() => selectedConfig && handleLoadConfig(selectedConfig) && handleCloseSaveModal()}
+           
               disabled={!selectedConfig}
               className={`px-4 py-2 rounded ${
                 selectedConfig 

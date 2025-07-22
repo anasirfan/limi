@@ -3,12 +3,14 @@
 import React, { useState, useEffect, Fragment } from 'react';
 import Image from 'next/image';
 import { FaSort, FaInbox, FaSpinner, FaEnvelope, FaSortUp, FaSortDown, FaSearch, FaEye, FaTimes, FaFilter, FaGlobe, FaClock, FaDesktop, FaTabletAlt, FaMobileAlt, FaUsers, FaBoxOpen, FaShoppingCart, FaBox, FaSlideshare, FaUserPlus, FaTrash } from 'react-icons/fa';
-import { BarChart,FaTimesCircle, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
+import { FaTimesCircle } from 'react-icons/fa';
 import ProductManagement from './ProductManagement';
 import SlideManagement from './SlideManagement';
 import AddCustomerModal from './SlideManagement/AddCustomerModal';
 import DistributorDetailsModal from './DistributorDetailsModal';
 import SlideInsights from './SlideInsights';
+import { getSessionDataFromLocalStorage } from '../../utils/slideAnalytics';
 import MarketingTab from './MarketingTab';
 
 export default function CustomerDashboard({ token }) {
@@ -2224,20 +2226,12 @@ export default function CustomerDashboard({ token }) {
           {slideshowTab === 'insights' && (
             <SlideInsights
               slideTimes={(() => {
-                const key = `slideTimes_${selectedCustomer.profileId}`;
-                try {
-                  return JSON.parse(localStorage.getItem(key)) || [];
-                } catch {
-                  return [];
-                }
+                const data = getSessionDataFromLocalStorage(selectedCustomer.profileId);
+                return data.slideTimes || [];
               })()}
               sessions={(() => {
-                const key = `slideSessions_${selectedCustomer.profileId}`;
-                try {
-                  return JSON.parse(localStorage.getItem(key)) || [];
-                } catch {
-                  return [];
-                }
+                const data = getSessionDataFromLocalStorage(selectedCustomer.profileId);
+                return data.sessions || [];
               })()}
             />
           )}
