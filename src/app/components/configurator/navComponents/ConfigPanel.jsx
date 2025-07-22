@@ -1257,7 +1257,7 @@ export const ConfigPanel = ({
                       }`}
                     >
                       {/* Wishlist Icon Overlay */}
-                      {item.id !== "pendant" && item.id !== "system" && (
+                      {item.id !== "pendant" && item.id !== "system" && item.id !== "bar" && item.id !== "ball" && item.id !== "universal" && (
                         <button
                           type="button"
                           className="absolute top-1 right-1 z-10 bg-white/80 rounded-full p-1 hover:bg-rose-200 transition-all"

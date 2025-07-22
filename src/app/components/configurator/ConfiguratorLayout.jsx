@@ -1530,6 +1530,7 @@ useEffect(() => {
               setActiveStep={setActiveStep}
               config={config}
               cables={cables}
+              
               showConfigurationTypeSelector={showConfigurationTypeSelector}
               setShowConfigurationTypeSelector={setShowConfigurationTypeSelector}
               onLightTypeChange={handleLightTypeChange}
@@ -1557,6 +1558,7 @@ useEffect(() => {
               onCableSizeChange={handleCableSizeChange}
               onShadeSelect={handleShadeSelect}
               setCableMessage={setCableMessage}
+            
             />
           )}
 
