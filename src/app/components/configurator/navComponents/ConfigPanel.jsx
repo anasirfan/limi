@@ -458,54 +458,54 @@ export const ConfigPanel = ({
     // Map of designs to their available shades
     const shadeOptions = {
       // Universal system shades
-      universal: {
-        atom: [
-          { id: "shallowdome", name: "Shallow Dome", color: "#2B2D2F" },
-          { id: "deepdome", name: "Deep Dome", color: "#50C878" },
-          { id: "flatplate", name: "Flat Plate", color: "#87CEAB" },
-        ],
-        nebula: [
-          { id: "cone", name: "Cone", color: "#2B2D2F" },
-          { id: "cylinder", name: "Cylinder", color: "#50C878" },
-        ],
-        cosmos: [
-          { id: "sphere", name: "Sphere", color: "#2B2D2F" },
-          { id: "hemisphere", name: "Hemisphere", color: "#50C878" },
-          { id: "disc", name: "Disc", color: "#87CEAB" },
-          { id: "ring", name: "Ring", color: "#F2F0E6" },
-        ],
-        stellar: [
-          { id: "pyramid", name: "Pyramid", color: "#2B2D2F" },
-          { id: "cube", name: "Cube", color: "#50C878" },
-          { id: "prism", name: "Prism", color: "#87CEAB" },
-        ],
-        eclipse: [
-          { id: "oval", name: "Oval", color: "#2B2D2F" },
-          { id: "rectangle", name: "Rectangle", color: "#50C878" },
-        ],
-      },
+      // universal: {
+        // atom: [
+        //   { id: "shallowdome", name: "Shallow Dome", color: "#2B2D2F" },
+        //   { id: "deepdome", name: "Deep Dome", color: "#50C878" },
+        //   { id: "flatplate", name: "Flat Plate", color: "#87CEAB" },
+        // ],
+        // nebula: [
+        //   { id: "cone", name: "Cone", color: "#2B2D2F" },
+        //   { id: "cylinder", name: "Cylinder", color: "#50C878" },
+        // ],
+        // cosmos: [
+        //   { id: "sphere", name: "Sphere", color: "#2B2D2F" },
+        //   { id: "hemisphere", name: "Hemisphere", color: "#50C878" },
+        //   { id: "disc", name: "Disc", color: "#87CEAB" },
+        //   { id: "ring", name: "Ring", color: "#F2F0E6" },
+        // ],
+        // stellar: [
+        //   { id: "pyramid", name: "Pyramid", color: "#2B2D2F" },
+        //   { id: "cube", name: "Cube", color: "#50C878" },
+        //   { id: "prism", name: "Prism", color: "#87CEAB" },
+        // ],
+        // eclipse: [
+        //   { id: "oval", name: "Oval", color: "#2B2D2F" },
+        //   { id: "rectangle", name: "Rectangle", color: "#50C878" },
+        // ],
+      // },
       // Bar system shades
-      bar: {
-        prism: [
-          { id: "standard", name: "Standard", color: "#2B2D2F" },
-          { id: "extended", name: "Extended", color: "#50C878" },
-        ],
-        helix: [
-          { id: "single", name: "Single", color: "#2B2D2F" },
-          { id: "double", name: "Double", color: "#50C878" },
-          { id: "triple", name: "Triple", color: "#87CEAB" },
-        ],
-      },
+      // bar: {
+        // prism: [
+        //   { id: "standard", name: "Standard", color: "#2B2D2F" },
+        //   { id: "extended", name: "Extended", color: "#50C878" },
+        // ],
+        // helix: [
+        //   { id: "single", name: "Single", color: "#2B2D2F" },
+        //   { id: "double", name: "Double", color: "#50C878" },
+        //   { id: "triple", name: "Triple", color: "#87CEAB" },
+        // ],
+      // },
     };
 
     // Check if this design has shade options
-    if (
-      systemType &&
-      shadeOptions[systemType] &&
-      shadeOptions[systemType][designId]
-    ) {
-      return shadeOptions[systemType][designId];
-    }
+    // if (
+    //   systemType &&
+    //   shadeOptions[systemType] &&
+    //   shadeOptions[systemType][designId]
+    // ) {
+    //   return shadeOptions[systemType][designId];
+    // }
 
     return null; // No shades available
   };
@@ -783,125 +783,95 @@ export const ConfigPanel = ({
               baseNumber: "14",
               image: "/images/configOptions/universal/14.png",
             },
-            {
-              id: "pulsar",
-              name: "Pulsar",
-              baseNumber: "15",
-              image: "/images/configOptions/universal/15.png",
-            },
-            {
-              id: "quasar",
-              name: "Quasar",
-              baseNumber: "16",
-              image: "/images/configOptions/universal/16.png",
-            },
-            {
-              id: "supernova",
-              name: "Supernova",
-              baseNumber: "17",
-              image: "/images/configOptions/universal/17.png",
-            },
-            {
-              id: "galaxy",
-              name: "Galaxy",
-              baseNumber: "18",
-              image: "/images/configOptions/universal/18.png",
-            },
-            {
-              id: "comet",
-              name: "Comet",
-              baseNumber: "19",
-              image: "/images/configOptions/universal/19.png",
-            },
-            {
-              id: "meteor",
-              name: "Meteor",
-              baseNumber: "20",
-              image: "/images/configOptions/universal/20.png",
-            },
-            {
-              id: "asteroid",
-              name: "Asteroid",
-              baseNumber: "21",
-              image: "/images/configOptions/universal/21.png",
-            },
-            {
-              id: "celestial",
-              name: "Celestial",
-              baseNumber: "22",
-              image: "/images/configOptions/universal/22.png",
-            },
-            {
-              id: "orbital",
-              name: "Orbital",
-              baseNumber: "23",
-              image: "/images/configOptions/universal/23.png",
-            },
-            {
-              id: "lunar",
-              name: "Lunar",
-              baseNumber: "24",
-              image: "/images/configOptions/universal/24.png",
-            },
-            {
-              id: "solar",
-              name: "Solar",
-              baseNumber: "25",
-              image: "/images/configOptions/universal/25.png",
-            },
-            {
-              id: "nova",
-              name: "Nova",
-              baseNumber: "26",
-              image: "/images/configOptions/universal/26.png",
-            },
-            {
-              id: "photon",
-              name: "Photon",
-              baseNumber: "27",
-              image: "/images/configOptions/universal/27.png",
-            },
-            {
-              id: "gravity",
-              name: "Gravity",
-              baseNumber: "28",
-              image: "/images/configOptions/universal/28.png",
-            },
-            {
-              id: "spectrum",
-              name: "Spectrum",
-              baseNumber: "29",
-              image: "/images/configOptions/universal/29.png",
-            },
-            {
-              id: "infinity",
-              name: "Infinity",
-              baseNumber: "30",
-              image: "/images/configOptions/universal/30.png",
-            },
             // {
-            //   id: "void",
-            //   name: "Void",
-            //   baseNumber: "31",
-            //   image: "/images/configOptions/universal/31.png",
+            //   id: "pulsar",
+            //   name: "Pulsar",
+            //   baseNumber: "15",
+            //   image: "",
             // },
-            {
-              id: "blackhole",
-              name: "Blackhole",
-              baseNumber: "32",
-              image: "/images/configOptions/universal/32.png",
-            },
-            {
-              id: "singularity",
-              name: "Singularity",
-              baseNumber: "33",
-              image: "/images/configOptions/universal/33.png",
-            },
             // {
-            //   id: "supernav",
-            //   name: "Supernav",
-            //   baseNumber: "34",
-            //   image: "/images/configOptions/universal/34.png",
+            //   id: "quasar",
+            //   name: "Quasar",
+            //   baseNumber: "16",
+            //   image: "",
+            // },
+            // {
+            //   id: "supernova",
+            //   name: "Supernova",
+            //   baseNumber: "17",
+            //   image: "",
+            // },
+            // {
+            //   id: "galaxy",
+            //   name: "Galaxy",
+            //   baseNumber: "18",
+            //   image: "",
+            // },
+            // {
+            //   id: "comet",
+            //   name: "Comet",
+            //   baseNumber: "19",
+            //   image: "",
+            // },
+            // {
+            //   id: "meteor",
+            //   name: "Meteor",
+            //   baseNumber: "20",
+            //   image: "",
+            // },
+            // {
+            //   id: "asteroid",
+            //   name: "Asteroid",
+            //   baseNumber: "21",
+            //   image: "",
+            // },
+            // {
+            //   id: "celestial",
+            //   name: "Celestial",
+            //   baseNumber: "22",
+            //   image: "",
+            // },
+            // {
+            //   id: "orbital",
+            //   name: "Orbital",
+            //   baseNumber: "23",
+            //   image: "",
+            // },
+            // {
+            //   id: "lunar",
+            //   name: "Lunar",
+            //   baseNumber: "24",
+            //   image: "",
+            // },
+            // {
+            //   id: "solar",
+            //   name: "Solar",
+            //   baseNumber: "25",
+            //   image: "",
+            // },
+            // {
+            //   id: "nova",
+            //   name: "Nova",
+            //   baseNumber: "26",
+            //   image: "",
+            // },
+            // {
+            //   id: "photon",
+            //   name: "Photon",
+            //   baseNumber: "27",
+            //   image: "",
+            // },
+            // {
+            //   id: "gravity",
+            //   name: "Gravity",
+            //   baseNumber: "28",
+            //   image: "",
+            // },
+            // {
+            //   id: "spectrum",
+            //   name: "Spectrum",
+            //   baseNumber: "29",
+            //   image: "",
             // },
           ],
         };
