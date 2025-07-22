@@ -72,7 +72,12 @@ const [targetElement, setTargetElement] = useState(null);
 const [openingBase, setOpenBase] = useState(false);
 // Welcome modal state
 const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+const [activeTab, setActiveTab] = useState('base'); 
   
+
+const handleSetActiveTab = (tab) => {
+  setActiveTab(tab);
+};
   // Define the order of steps for the guided tour
   const guidedSteps = [
     { id: 'lightType', message: 'First, select your light type' },
@@ -90,6 +95,7 @@ const [showWelcomeModal, setShowWelcomeModal] = useState(false);
       // Example: open a modal, update config, etc.
       setActiveStep('baseColor');
       setOpenDropdown('baseColor');
+      handleSetActiveTab('base');
       setShowConfigurationTypeSelector(false);
       setOpenBase(true);
     });
@@ -100,8 +106,9 @@ const [showWelcomeModal, setShowWelcomeModal] = useState(false);
       // handle wallbaseColor message here
       console.log('[ConfigPanel] Received connectorColor message:', data,event.data);
       // Example: open a modal, update config, etc.
-      setActiveStep('baseColor');
       setOpenDropdown('baseColor');
+      setActiveStep('baseColor');
+      handleSetActiveTab('connector');
       setShowConfigurationTypeSelector(false);
       setOpenBase(true);
     });
@@ -473,6 +480,8 @@ const tourSteps = [
                     onBaseColorChange={onBaseColorChange}
                     currentConnectorColor={config?.connectorColor}
                     onConnectorColorChange={onConnectorColorChange}
+                    setActiveTab={handleSetActiveTab}
+                    activeTab={activeTab}
                   />
                 )}
                 
