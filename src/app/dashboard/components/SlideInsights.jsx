@@ -56,7 +56,7 @@ export default function SlideInsights({ slideTimes = [], sessions = [] }) {
     if (session.deviceInfo) {
       const { isMobile, screenWidth, screenHeight, userAgent } = session.deviceInfo;
       
-      // Device type
+      // Device type 
       const deviceType = isMobile ? 'Mobile' : 
                         screenWidth > 1024 ? 'Desktop' : 'Tablet';
       acc.deviceTypes[deviceType] = (acc.deviceTypes[deviceType] || 0) + 1;
