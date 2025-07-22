@@ -10,6 +10,7 @@ import SlideManagement from './SlideManagement';
 import AddCustomerModal from './SlideManagement/AddCustomerModal';
 import DistributorDetailsModal from './DistributorDetailsModal';
 import SlideInsights from './SlideInsights';
+import { getSessionDataFromLocalStorage } from '../../utils/slideAnalytics';
 import MarketingTab from './MarketingTab';
 
 export default function CustomerDashboard({ token }) {
@@ -2225,20 +2226,12 @@ export default function CustomerDashboard({ token }) {
           {slideshowTab === 'insights' && (
             <SlideInsights
               slideTimes={(() => {
-                const key = `slideTimes_${selectedCustomer.profileId}`;
-                try {
-                  return JSON.parse(localStorage.getItem(key)) || [];
-                } catch {
-                  return [];
-                }
+                const data = getSessionDataFromLocalStorage(selectedCustomer.profileId);
+                return data.slideTimes || [];
               })()}
               sessions={(() => {
-                const key = `slideSessions_${selectedCustomer.profileId}`;
-                try {
-                  return JSON.parse(localStorage.getItem(key)) || [];
-                } catch {
-                  return [];
-                }
+                const data = getSessionDataFromLocalStorage(selectedCustomer.profileId);
+                return data.sessions || [];
               })()}
             />
           )}

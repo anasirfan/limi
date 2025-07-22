@@ -26,26 +26,126 @@ export default function SlideCarousel({ slides, customerId }) {
   // --- Time & Session Tracking ---
   const [slideTimes, setSlideTimes] = useState({}); // {slideId: seconds}
   const [sessionStart, setSessionStart] = useState(null);
+  const [sessionId, setSessionId] = useState(null);
   const [lastSlideStart, setLastSlideStart] = useState(null);
   const [lastSlideId, setLastSlideId] = useState(null);
+  const [isIdle, setIsIdle] = useState(false);
+  const [engagementEvents, setEngagementEvents] = useState([]);
+  const idleTimerRef = useRef(null);
+  const IDLE_TIME = 30000; // 30 seconds
+
+  // Generate unique session ID
+  const generateSessionId = () => {
+    return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  };
+
+  // Track engagement events
+  const logEngagementEvent = (eventType, data = {}) => {
+    const event = {
+      id: `event_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      type: eventType,
+      timestamp: Date.now(),
+      slideId: currentSlide?.id,
+      data
+    };
+    setEngagementEvents(prev => [...prev, event]);
+  };
+
+  // Reset idle timer
+  const resetIdleTimer = () => {
+    if (isIdle) {
+      setIsIdle(false);
+      // Resume timing if we were idle
+      setLastSlideStart(Date.now());
+      logEngagementEvent('activity_resumed');
+    }
+    
+    clearTimeout(idleTimerRef.current);
+    idleTimerRef.current = setTimeout(() => {
+      setIsIdle(true);
+      logEngagementEvent('user_idle');
+    }, IDLE_TIME);
+  };
 
   // Start session on mount
   useEffect(() => {
+    const newSessionId = generateSessionId();
+    setSessionId(newSessionId);
     setSessionStart(Date.now());
     setLastSlideStart(Date.now());
     setLastSlideId(currentSlide?.id);
+    
+    logEngagementEvent('session_start', { sessionId: newSessionId });
+    
     return () => {
       // On unmount, save session and last slide time
       saveSlideTime();
       saveSession();
+      clearTimeout(idleTimerRef.current);
     };
     // eslint-disable-next-line
   }, []);
 
+  // Set up engagement tracking
+  useEffect(() => {
+    const handleClick = (e) => {
+      resetIdleTimer();
+      logEngagementEvent('click', {
+        target: e.target.tagName,
+        x: e.clientX,
+        y: e.clientY
+      });
+    };
+
+    const handleScroll = () => {
+      resetIdleTimer();
+      logEngagementEvent('scroll', {
+        scrollY: window.scrollY,
+        scrollX: window.scrollX
+      });
+    };
+
+    const handleKeyDown = (e) => {
+      resetIdleTimer();
+      logEngagementEvent('keypress', { key: e.key });
+    };
+
+    const handleMouseMove = () => {
+      resetIdleTimer();
+    };
+
+    // Add event listeners
+    document.addEventListener('click', handleClick);
+    document.addEventListener('scroll', handleScroll);
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('mousemove', handleMouseMove);
+    
+    // Start idle timer
+    resetIdleTimer();
+
+    return () => {
+      document.removeEventListener('click', handleClick);
+      document.removeEventListener('scroll', handleScroll);
+      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('mousemove', handleMouseMove);
+      clearTimeout(idleTimerRef.current);
+    };
+  }, [currentSlide?.id, isIdle]);
+
   // On slide change, save previous slide time and start timing new slide
   useEffect(() => {
     if (!currentSlide?.id) return;
-    if (lastSlideId && lastSlideStart) {
+    
+    // Log slide change event
+    if (lastSlideId !== currentSlide.id) {
+      logEngagementEvent('slide_change', {
+        fromSlideId: lastSlideId,
+        toSlideId: currentSlide.id,
+        slideIndex: currentIndex
+      });
+    }
+    
+    if (lastSlideId && lastSlideStart && !isIdle) {
       const delta = (Date.now() - lastSlideStart) / 1000;
       setSlideTimes(prev => {
         const prevTime = prev[lastSlideId] || 0;
@@ -57,7 +157,7 @@ export default function SlideCarousel({ slides, customerId }) {
     setLastSlideStart(Date.now());
     setLastSlideId(currentSlide.id);
     // eslint-disable-next-line
-  }, [currentSlide?.id]);
+  }, [currentSlide?.id, isIdle]);
 
   // Save slide times to localStorage
   const saveSlideTimesToStorage = (times) => {
@@ -71,18 +171,77 @@ export default function SlideCarousel({ slides, customerId }) {
     localStorage.setItem(`slideTimes_${customerId}`, JSON.stringify(arr));
   };
 
-  // Save session data to localStorage
-  const saveSession = () => {
-    if (!customerId || !sessionStart) return;
+  // Send session data to API
+  const sendSessionToAPI = async (sessionData) => {
+    try {
+      const response = await fetch('/api/slide-sessions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(sessionData)
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const result = await response.json();
+      console.log('Session data sent successfully:', result);
+      return result;
+    } catch (error) {
+      console.error('Failed to send session data to API:', error);
+      // Fallback to localStorage if API fails
+      return null;
+    }
+  };
+
+  // Save session data to localStorage and API
+  const saveSession = async () => {
+    if (!customerId || !sessionStart || !sessionId) return;
+    
     const sessionEnd = Date.now();
     const duration = (sessionEnd - sessionStart) / 1000;
-    const prevSessions = JSON.parse(localStorage.getItem(`slideSessions_${customerId}`) || '[]');
-    prevSessions.push({
+    
+    // Prepare slide data
+    const slideData = safeSlides.map(slide => ({
+      slideId: slide.id,
+      slideTitle: slide.text?.heading || slide.text?.title || `Slide ${slide.id}`,
+      seconds: slideTimes[slide.id] || 0,
+    }));
+    
+    const sessionData = {
+      sessionId,
+      customerId,
       sessionStart,
       sessionEnd,
       durationSeconds: duration,
-    });
+      slides: slideData,
+      engagementEvents,
+      deviceInfo: {
+        userAgent: navigator.userAgent,
+        screenWidth: window.screen.width,
+        screenHeight: window.screen.height,
+        isMobile
+      }
+    };
+    
+    // Try to send to API first
+    const apiResult = await sendSessionToAPI(sessionData);
+    
+    // Always save to localStorage as backup
+    const prevSessions = JSON.parse(localStorage.getItem(`slideSessions_${customerId}`) || '[]');
+    prevSessions.push(sessionData);
     localStorage.setItem(`slideSessions_${customerId}`, JSON.stringify(prevSessions));
+    
+    // Also save engagement events separately
+    localStorage.setItem(`engagementEvents_${customerId}`, JSON.stringify(engagementEvents));
+    
+    logEngagementEvent('session_end', { 
+      sessionId, 
+      duration, 
+      apiSent: !!apiResult 
+    });
   };
 
   // Save last slide time on unmount or tab close
