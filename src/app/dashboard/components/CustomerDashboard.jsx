@@ -1710,6 +1710,7 @@ export default function CustomerDashboard({ token }) {
         <h3 className="text-[#54BB74] text-lg font-semibold mb-4">Sessions Over Time</h3>
         <div>
           <SlideInsights
+            customerId={customerId}
             slideTimes={[]}
             sessions={analytics.sessionsOverTime.map(s => ({
               sessionStart: s.date,
@@ -2225,6 +2226,7 @@ export default function CustomerDashboard({ token }) {
           {slideshowTab === 'edit' && <SlideManagement customer={selectedCustomer} />}
           {slideshowTab === 'insights' && (
             <SlideInsights
+            customerId={selectedCustomer.profileId}
               slideTimes={(() => {
                 const data = getSessionDataFromLocalStorage(selectedCustomer.profileId);
                 return data.slideTimes || [];
@@ -2274,6 +2276,7 @@ export default function CustomerDashboard({ token }) {
 
       {activeTab === 'insights' && selectedCustomer && (
         <SlideInsights
+        customerId={selectedCustomer.profileId}
           slideTimes={(() => {
             const key = `slideTimes_${selectedCustomer.profileId}`;
             try {

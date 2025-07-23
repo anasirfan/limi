@@ -67,16 +67,29 @@ export default function SlideCarousel({ slides, customerId }) {
     }, IDLE_TIME);
   };
 
-  // Start session on mount
+  // Start session on mount (persist sessionId/sessionStart in sessionStorage)
   useEffect(() => {
-    const newSessionId = generateSessionId();
+    if (!customerId) return;
+    console.log('[SESSION-DEBUG] Session effect running for customerId:', customerId);
+    let storedSessionId = sessionStorage.getItem(`slideSessionId_${customerId}`);
+    let storedSessionStart = sessionStorage.getItem(`slideSessionStart_${customerId}`);
+    let newSessionId = storedSessionId;
+    let newSessionStart = storedSessionStart;
+    if (!storedSessionId || !storedSessionStart) {
+      newSessionId = generateSessionId();
+      newSessionStart = Date.now();
+      sessionStorage.setItem(`slideSessionId_${customerId}`, newSessionId);
+      sessionStorage.setItem(`slideSessionStart_${customerId}`, newSessionStart);
+      logEngagementEvent('session_start', { sessionId: newSessionId });
+      console.log('[SESSION-DEBUG] New session created:', newSessionId, newSessionStart);
+    } else {
+      console.log('[SESSION-DEBUG] Existing session reused:', newSessionId, newSessionStart);
+    }
     setSessionId(newSessionId);
-    setSessionStart(Date.now());
+    setSessionStart(Number(newSessionStart));
     setLastSlideStart(Date.now());
     setLastSlideId(currentSlide?.id);
-    
-    logEngagementEvent('session_start', { sessionId: newSessionId });
-    
+
     return () => {
       // On unmount, save session and last slide time
       saveSlideTime();
@@ -86,7 +99,31 @@ export default function SlideCarousel({ slides, customerId }) {
     // eslint-disable-next-line
   }, []);
 
-  // Set up engagement tracking
+  // POST initial session data to API when session starts
+  useEffect(() => {
+    if (sessionId && sessionStart && customerId) {
+      const sessionData = {
+        sessionId,
+        customerId,
+        sessionStart,
+        sessionEnd: null, // session not ended yet
+        durationSeconds: 0,
+        slides: [],
+        engagementEvents: [],
+        deviceInfo: {
+          userAgent: navigator.userAgent,
+          screenWidth: window.screen.width,
+          screenHeight: window.screen.height,
+          isMobile
+        }
+      };
+      console.log('[DEBUG] About to POST initial session data:', sessionData);
+      sendSessionToAPI(sessionData);
+    }
+    // Only run when sessionId/sessionStart/customerId change
+  }, [sessionId, sessionStart, customerId]);
+
+  // Set up engagement tracking and tab visibility detection
   useEffect(() => {
     const handleClick = (e) => {
       resetIdleTimer();
@@ -114,11 +151,34 @@ export default function SlideCarousel({ slides, customerId }) {
       resetIdleTimer();
     };
 
+    // Tab visibility detection
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') {
+        setIsIdle(true);
+        logEngagementEvent('tab_hidden');
+        // POST session data immediately when tab is hidden
+        if (sessionId && sessionStart && customerId) {
+          const sessionData = getCurrentSessionData();
+          sendSessionToAPI(sessionData);
+        }
+      } else if (document.visibilityState === 'visible') {
+        setIsIdle(false);
+        logEngagementEvent('tab_visible');
+        resetIdleTimer();
+        // POST session data immediately when tab becomes visible
+        if (sessionId && sessionStart && customerId) {
+          const sessionData = getCurrentSessionData();
+          sendSessionToAPI(sessionData);
+        }
+      }
+    };
+
     // Add event listeners
     document.addEventListener('click', handleClick);
     document.addEventListener('scroll', handleScroll);
     document.addEventListener('keydown', handleKeyDown);
     document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
     
     // Start idle timer
     resetIdleTimer();
@@ -128,9 +188,18 @@ export default function SlideCarousel({ slides, customerId }) {
       document.removeEventListener('scroll', handleScroll);
       document.removeEventListener('keydown', handleKeyDown);
       document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       clearTimeout(idleTimerRef.current);
     };
-  }, [currentSlide?.id, isIdle]);
+  }, [currentSlide?.id, isIdle, sessionId, sessionStart, customerId]);
+
+  // POST session data when user becomes idle or resumes activity
+  useEffect(() => {
+    if (!sessionId || !sessionStart || !customerId) return;
+    // Only POST when isIdle changes (idle/resume)
+    const sessionData = getCurrentSessionData();
+    sendSessionToAPI(sessionData);
+  }, [isIdle]);
 
   // On slide change, save previous slide time and start timing new slide
   useEffect(() => {
@@ -174,7 +243,7 @@ export default function SlideCarousel({ slides, customerId }) {
   // Send session data to API
   const sendSessionToAPI = async (sessionData) => {
     try {
-      const response = await fetch('/api/slide-sessions', {
+      const response = await fetch('https://dev.api1.limitless-lighting.co.uk/client/user/slide_shows/analytics', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -237,6 +306,10 @@ export default function SlideCarousel({ slides, customerId }) {
     // Also save engagement events separately
     localStorage.setItem(`engagementEvents_${customerId}`, JSON.stringify(engagementEvents));
     
+    // Clear sessionStorage for this customer (end session)
+    sessionStorage.removeItem(`slideSessionId_${customerId}`);
+    sessionStorage.removeItem(`slideSessionStart_${customerId}`);
+
     logEngagementEvent('session_end', { 
       sessionId, 
       duration, 
@@ -284,11 +357,44 @@ useEffect(() => {
   }, []);
 
   // Handle navigation
+  // Helper: Prepare current session data
+  const getCurrentSessionData = () => {
+    const sessionEnd = Date.now();
+    const duration = sessionStart ? (sessionEnd - sessionStart) / 1000 : 0;
+    const slideData = safeSlides.map(slide => ({
+      slideId: slide.id,
+      slideTitle: slide.text?.heading || slide.text?.title || `Slide ${slide.id}`,
+      seconds: slideTimes[slide.id] || 0,
+    }));
+    return {
+      sessionId,
+      customerId,
+      sessionStart,
+      sessionEnd,
+      durationSeconds: duration,
+      slides: slideData,
+      engagementEvents,
+      deviceInfo: {
+        userAgent: navigator.userAgent,
+        screenWidth: window.screen.width,
+        screenHeight: window.screen.height,
+        isMobile
+      }
+    };
+  };
+
   const goToSlide = (index) => {
     // Ensure index is within bounds
     const newIndex = Math.max(0, Math.min(slides?.length - 1, index));
     dispatch(setActiveSlideIndex(newIndex));
+    // POST session analytics on slide change (do NOT create new session)
+    if (sessionId && sessionStart && customerId) {
+      const sessionData = getCurrentSessionData();
+      console.log('[DEBUG] POST on slide change:', sessionData);
+      sendSessionToAPI(sessionData);
+    }
   };
+
   
   const goToNextSlide = () => {
     goToSlide(activeIndex + 1);
@@ -297,6 +403,7 @@ useEffect(() => {
   const goToPrevSlide = () => {
     goToSlide(activeIndex - 1);
   };
+
   
   // Handle keyboard navigation
   useEffect(() => {

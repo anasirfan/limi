@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -22,10 +22,104 @@ ChartJS.register(
 /**
  * SlideInsights
  * @param {Object} props
- * @param {Object[]} props.slideTimes - Array of { slideId, slideTitle, seconds }
- * @param {Object[]} props.sessions - Array of { sessionStart, sessionEnd, durationSeconds }
+ * @param {string} props.customerId - Customer ID to fetch analytics for
+ * @param {Object[]} props.slideTimes - Array of { slideId, slideTitle, seconds } (fallback)
+ * @param {Object[]} props.sessions - Array of { sessionStart, sessionEnd, durationSeconds } (fallback)
  */
-export default function SlideInsights({ slideTimes = [], sessions = [] }) {
+export default function SlideInsights({ customerId, slideTimes = [], sessions = [] }) {
+  const [analyticsData, setAnalyticsData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Fetch analytics data from API
+  const fetchAnalyticsData = async () => {
+    if (!customerId) return;
+    
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const response = await fetch(`https://dev.api1.limitless-lighting.co.uk/client/user/slide_shows/analytics?customerId=${customerId}`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      setAnalyticsData(data);
+    } catch (err) {
+      console.error('Failed to fetch analytics data:', err);
+      setError(err.message);
+      // Fallback to localStorage data
+      loadLocalStorageData();
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Load data from localStorage as fallback
+  const loadLocalStorageData = () => {
+    if (!customerId) return;
+    
+    try {
+      const localSessions = JSON.parse(localStorage.getItem(`slideSessions_${customerId}`) || '[]');
+      const localSlideTimes = JSON.parse(localStorage.getItem(`slideTimes_${customerId}`) || '[]');
+      
+      if (localSessions.length > 0 || localSlideTimes.length > 0) {
+        setAnalyticsData({
+          sessions: localSessions,
+          slideTimes: localSlideTimes
+        });
+      }
+    } catch (err) {
+      console.error('Failed to load localStorage data:', err);
+    }
+  };
+
+  // Fetch data on component mount
+  useEffect(() => {
+    console.log('[DEBUG] useEffect ran in SlideInsights');
+    console.log('customerId:', customerId);
+    setLoading(true);
+    setError(null);
+    (async () => {
+      try {
+        const response = await fetch(`https://dev.api1.limitless-lighting.co.uk/client/user/slide_shows/analytics?customerId=${customerId}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        setAnalyticsData(data);
+      } catch (err) {
+        console.error('Failed to fetch analytics data:', err);
+        setError(err.message);
+        if (typeof loadLocalStorageData === 'function') loadLocalStorageData();
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+  // Use API data if available, otherwise fallback to props
+  // If analyticsData is an array, treat as sessions array (API response format)
+  const currentSessions = Array.isArray(analyticsData)
+    ? analyticsData
+    : (analyticsData?.sessions || sessions);
+
+  // Aggregate slide times across all sessions
+  const slideTimesMap = {};
+  currentSessions.forEach(session => {
+    (session.slides || []).forEach(slide => {
+      if (!slideTimesMap[slide.slideId]) {
+        slideTimesMap[slide.slideId] = { ...slide, seconds: 0 };
+      }
+      slideTimesMap[slide.slideId].seconds += slide.seconds || 0;
+    });
+  });
+  const currentSlideTimes = Object.values(slideTimesMap).length > 0
+    ? Object.values(slideTimesMap)
+    : slideTimes;
+
   // Color palette for bars
   const colorPalette = [
     'rgba(84, 187, 116, 0.8)',    // Primary green
@@ -39,20 +133,20 @@ export default function SlideInsights({ slideTimes = [], sessions = [] }) {
 
   // Calculate session statistics
   const sessionStats = {
-    totalSessions: sessions.length,
-    totalTime: sessions.reduce((sum, session) => sum + (session.durationSeconds || 0), 0),
-    averageSessionTime: sessions.length > 0 ? 
-      sessions.reduce((sum, session) => sum + (session.durationSeconds || 0), 0) / sessions.length : 0,
-    longestSession: sessions.length > 0 ? 
-      Math.max(...sessions.map(s => s.durationSeconds || 0)) : 0
+    totalSessions: currentSessions.length,
+    totalTime: currentSessions.reduce((sum, session) => sum + (session.durationSeconds || 0), 0),
+    averageSessionTime: currentSessions.length > 0 ? 
+      currentSessions.reduce((sum, session) => sum + (session.durationSeconds || 0), 0) / currentSessions.length : 0,
+    longestSession: currentSessions.length > 0 ? 
+      Math.max(...currentSessions.map(s => s.durationSeconds || 0)) : 0
   };
 
   // Get engagement events from latest session
-  const latestSession = sessions.length > 0 ? sessions[sessions.length - 1] : null;
+  const latestSession = currentSessions.length > 0 ? currentSessions[currentSessions.length - 1] : null;
   const engagementEvents = latestSession?.engagementEvents || [];
 
   // Process device analytics
-  const deviceAnalytics = sessions.reduce((acc, session) => {
+  const deviceAnalytics = currentSessions.reduce((acc, session) => {
     if (session.deviceInfo) {
       const { isMobile, screenWidth, screenHeight, userAgent } = session.deviceInfo;
       
@@ -87,15 +181,15 @@ export default function SlideInsights({ slideTimes = [], sessions = [] }) {
 
   // Prepare data for Chart.js
   const chartData = {
-    labels: slideTimes.map(slide => slide.slideTitle),
+    labels: currentSlideTimes.map(slide => slide.slideTitle),
     datasets: [
       {
         label: 'Time Spent (seconds)',
-        data: slideTimes.map(slide => slide.seconds),
-        backgroundColor: slideTimes.map((_, index) => {
+        data: currentSlideTimes.map(slide => slide.seconds),
+        backgroundColor: currentSlideTimes.map((_, index) => {
           return colorPalette[index % colorPalette.length];
         }),
-        borderColor: slideTimes.map((_, index) => {
+        borderColor: currentSlideTimes.map((_, index) => {
           // Slightly darker version of each color for the border
           const baseColor = colorPalette[index % colorPalette.length];
           return baseColor.replace('0.8)', '1)').replace(', 0.8', '');
@@ -179,15 +273,15 @@ export default function SlideInsights({ slideTimes = [], sessions = [] }) {
 
   // Session duration chart data
   const sessionChartData = {
-    labels: sessions.map((_, index) => `Session ${index + 1}`),
+    labels: currentSessions.map((_, index) => `Session ${index + 1}`),
     datasets: [
       {
         label: 'Session Duration (seconds)',
-        data: sessions.map(session => session.durationSeconds || 0),
-        backgroundColor: sessions.map((_, index) => {
+        data: currentSessions.map(session => session.durationSeconds || 0),
+        backgroundColor: currentSessions.map((_, index) => {
           return colorPalette[index % colorPalette.length];
         }),
-        borderColor: sessions.map((_, index) => {
+        borderColor: currentSessions.map((_, index) => {
           const baseColor = colorPalette[index % colorPalette.length];
           return baseColor.replace('0.8)', '1)').replace(', 0.8', '');
         }),
@@ -215,6 +309,20 @@ export default function SlideInsights({ slideTimes = [], sessions = [] }) {
       },
     },
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px] bg-[#1e1e1e] rounded-lg">
+        <div className="flex flex-col items-center">
+          <svg className="animate-spin h-10 w-10 text-[#54bb74] mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+          </svg>
+          <span className="text-[#93cfa2] text-lg font-semibold">Loading analytics...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-[#1e1e1e] rounded-lg p-6 space-y-6">
@@ -254,7 +362,7 @@ export default function SlideInsights({ slideTimes = [], sessions = [] }) {
         <div className="bg-[#2a2a2a] p-4 rounded-lg">
           <h3 className="text-lg font-semibold text-[#93cfa2] mb-4">Session Durations</h3>
           <div style={{ height: '300px' }}>
-            {sessions.length > 0 ? (
+            {currentSessions.length > 0 ? (
               <Bar data={sessionChartData} options={sessionOptions} />
             ) : (
               <div className="flex items-center justify-center h-full text-gray-400">
@@ -281,7 +389,7 @@ export default function SlideInsights({ slideTimes = [], sessions = [] }) {
               </thead>
               <tbody>
                 {engagementEvents.slice(-10).map((event, index) => (
-                  <tr key={event.id || index} className="border-b border-gray-700">
+                  <tr key={`${event.id || ''}_${index}`} className="border-b border-gray-700">
                     <td className="py-2 text-gray-300">
                       {new Date(event.timestamp).toLocaleTimeString()}
                     </td>
@@ -314,7 +422,7 @@ export default function SlideInsights({ slideTimes = [], sessions = [] }) {
       )}
 
       {/* Device Analytics */}
-      {sessions.length > 0 && Object.keys(deviceAnalytics.deviceTypes).length > 0 && (
+      {currentSessions.length > 0 && Object.keys(deviceAnalytics.deviceTypes).length > 0 && (
         <div className="bg-[#2a2a2a] p-4 rounded-lg">
           <h3 className="text-lg font-semibold text-[#93cfa2] mb-4">Device Analytics</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -324,7 +432,7 @@ export default function SlideInsights({ slideTimes = [], sessions = [] }) {
               <h4 className="text-sm font-medium text-gray-400 mb-3">Device Types</h4>
               <div className="space-y-2">
                 {Object.entries(deviceAnalytics.deviceTypes).map(([type, count]) => {
-                  const percentage = ((count / sessions.length) * 100).toFixed(1);
+                  const percentage = ((count / currentSessions.length) * 100).toFixed(1);
                   return (
                     <div key={type} className="flex justify-between items-center">
                       <span className="text-gray-300">{type}</span>
@@ -348,7 +456,7 @@ export default function SlideInsights({ slideTimes = [], sessions = [] }) {
               <h4 className="text-sm font-medium text-gray-400 mb-3">Screen Sizes</h4>
               <div className="space-y-2">
                 {Object.entries(deviceAnalytics.screenSizes).map(([size, count]) => {
-                  const percentage = ((count / sessions.length) * 100).toFixed(1);
+                  const percentage = ((count / currentSessions.length) * 100).toFixed(1);
                   return (
                     <div key={size} className="flex justify-between items-center">
                       <span className="text-gray-300 text-xs">{size}</span>
@@ -372,7 +480,7 @@ export default function SlideInsights({ slideTimes = [], sessions = [] }) {
               <h4 className="text-sm font-medium text-gray-400 mb-3">Browsers</h4>
               <div className="space-y-2">
                 {Object.entries(deviceAnalytics.browsers).map(([browser, count]) => {
-                  const percentage = ((count / sessions.length) * 100).toFixed(1);
+                  const percentage = ((count / currentSessions.length) * 100).toFixed(1);
                   return (
                     <div key={browser} className="flex justify-between items-center">
                       <span className="text-gray-300">{browser}</span>
@@ -395,12 +503,12 @@ export default function SlideInsights({ slideTimes = [], sessions = [] }) {
       )}
 
       {/* Session Details */}
-      {sessions.length > 0 && (
+      {currentSessions.length > 0 && (
         <div className="bg-[#2a2a2a] p-4 rounded-lg">
           <h3 className="text-lg font-semibold text-[#93cfa2] mb-4">Session History</h3>
           <div className="space-y-2">
-            {sessions.slice(-5).map((session, index) => (
-              <div key={session.sessionId || index} className="flex justify-between items-center p-3 bg-[#1e1e1e] rounded">
+            {currentSessions.slice(-5).map((session, index) => (
+              <div key={session._id || `${session.sessionId}_${index}` } className="flex justify-between items-center p-3 bg-[#1e1e1e] rounded">
                 <div>
                   <p className="text-white font-medium">
                     Session {session.sessionId ? session.sessionId.split('_')[1] : index + 1}

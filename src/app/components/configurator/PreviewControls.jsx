@@ -11,6 +11,7 @@ import {
   FaSearchMinus,
   FaInfo,
   FaHeart,
+  FaHandPaper,
 } from "react-icons/fa";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -32,8 +33,12 @@ export const PreviewControls = ({
   const [showWishlistModal, setShowWishlistModal] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [slidesToShow] = useState(3); // Number of items to show at once
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
   const wishlistRef = useRef(null);
   const carouselRef = useRef(null);
+  const onboardingTimeoutRef = useRef(null);
+
   const dispatch = useDispatch();
   const favorites = useSelector((state) => state.favorites.items);
 
@@ -69,6 +74,25 @@ export const PreviewControls = ({
     return () => window.removeEventListener("resize", checkIfMobile);
   }, []);
 
+  // Onboarding animation logic
+  useEffect(() => {
+    // Start animation after 1500ms delay
+    const startDelay = setTimeout(() => {
+      setShowOnboarding(true);
+    }, 3000);
+
+    // Hide animation after 3000ms of running (total 4500ms from page load)
+    const hideDelay = setTimeout(() => {
+      setShowOnboarding(false);
+    }, 8000);
+
+    return () => {
+      clearTimeout(startDelay);
+      clearTimeout(hideDelay);
+    };
+  }, []);
+
+
   const handleMouseEnter = () => {
     if (!isMobile) {
       setIsHovered(true);
@@ -89,6 +113,69 @@ export const PreviewControls = ({
 
   return (
     <>
+      {/* Onboarding Animation */}
+      {showOnboarding && (
+        <div className="absolute inset-0 pointer-events-none z-50 flex items-center justify-center">
+          <div className="relative">
+            {/* Horizontal Guide Line with Arrows and Sliding Hand */}
+            <div className="relative flex items-center justify-center">
+              {/* Horizontal Line */}
+              <div className="w-48 h-0.5 bg-gray-400 relative">
+                {/* Left Arrow */}
+                <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-2">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" className="text-gray-700">
+                    <path d="M15.41 7.41L14 6L8 12L14 18L15.41 16.59L10.83 12Z"/>
+                  </svg>
+                </div>
+                
+                {/* Right Arrow */}
+                <div className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-2">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" className="text-gray-700">
+                    <path d="M8.59 16.59L10 18L16 12L10 6L8.59 7.41L13.17 12Z"/>
+                  </svg>
+                </div>
+                
+                {/* Sliding Hand Icon */}
+                <div 
+                  className="absolute top-1/2 transform -translate-y-1/2 -translate-x-1/2"
+                  style={{
+                    animation: 'slideOnLine 3.5s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+                  }}
+                >
+                  <div className="bg-white rounded-full p-2 shadow-lg border border-gray-200">
+                    <FaHandPaper className="text-gray-600 text-lg" />
+                  </div>
+                </div>
+              </div>
+              
+              {/* Instruction text */}
+              <div 
+                className="absolute -bottom-20 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm shadow-lg border border-gray-200 px-4 py-3 rounded-lg text-sm font-medium text-gray-700 whitespace-nowrap"
+                style={{
+                  animation: 'fadeInUp 0.5s ease-out 0.5s both'
+                }}
+              >
+                <div className="flex items-center gap-2">
+                  {isMobile ? (
+                    <>
+                      <span className="text-blue-500">👆</span>
+                      <span>Touch and drag to rotate</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-blue-500">🖱️</span>
+                      <span>Click and drag to rotate</span>
+                    </>
+                  )}
+                </div>
+                {/* Small arrow pointing up */}
+                <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-white border-l border-t border-gray-200 rotate-45"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Navigation Guide */}
       <div
         className="absolute top-24 left-8 z-50 flex gap-2"
@@ -285,6 +372,63 @@ export const PreviewControls = ({
           <FaFolderOpen size={16} />
         </button>
       </div>
+
+      {/* Onboarding CSS Animations */}
+      <style jsx>{`
+        @keyframes slideOnLine {
+          0% {
+            left: 50%;
+            transform: translateY(-50%) translateX(-50%);
+          }
+          20% {
+            left: 85%;
+            transform: translateY(-50%) translateX(-50%) scale(1.05);
+          }
+          25% {
+            left: 90%;
+            transform: translateY(-50%) translateX(-50%) scale(1.1);
+          }
+          30% {
+            left: 85%;
+            transform: translateY(-50%) translateX(-50%) scale(1.05);
+          }
+          45% {
+            left: 50%;
+            transform: translateY(-50%) translateX(-50%);
+          }
+          65% {
+            left: 15%;
+            transform: translateY(-50%) translateX(-50%) scale(1.05);
+          }
+          70% {
+            left: 10%;
+            transform: translateY(-50%) translateX(-50%) scale(1.1);
+          }
+          75% {
+            left: 15%;
+            transform: translateY(-50%) translateX(-50%) scale(1.05);
+          }
+          90% {
+            left: 50%;
+            transform: translateY(-50%) translateX(-50%);
+          }
+          100% {
+            left: 50%;
+            transform: translateY(-50%) translateX(-50%);
+          }
+        }
+        
+        @keyframes fadeInUp {
+          0% {
+            opacity: 0;
+            transform: translateX(-50%) translateY(10px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0px);
+          }
+        }
+      `}</style>
     </>
   );
 };
