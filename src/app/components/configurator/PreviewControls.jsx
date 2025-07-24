@@ -27,6 +27,10 @@ export const PreviewControls = ({
   onSaveConfig,
   onLoadConfig,
   handleOpenSaveModal,
+  sendMessageToPlayCanvas,
+  onPendantDesignChange,
+  selectedPendants,
+  selectedLocation,
 }) => {
   const [isMobile, setIsMobile] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -64,7 +68,7 @@ export const PreviewControls = ({
 
   useEffect(() => {
     // Check if mobile device
-    console.log("favorites", favorites.items);
+    console.log("favorites", favorites);
     const checkIfMobile = () => {
       setIsMobile(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent));
     };
@@ -91,7 +95,6 @@ export const PreviewControls = ({
       clearTimeout(hideDelay);
     };
   }, []);
-
 
   const handleMouseEnter = () => {
     if (!isMobile) {
@@ -123,23 +126,36 @@ export const PreviewControls = ({
               <div className="w-48 h-0.5 bg-gray-400 relative">
                 {/* Left Arrow */}
                 <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-2">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" className="text-gray-700">
-                    <path d="M15.41 7.41L14 6L8 12L14 18L15.41 16.59L10.83 12Z"/>
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    className="text-gray-700"
+                  >
+                    <path d="M15.41 7.41L14 6L8 12L14 18L15.41 16.59L10.83 12Z" />
                   </svg>
                 </div>
-                
+
                 {/* Right Arrow */}
                 <div className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-2">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" className="text-gray-700">
-                    <path d="M8.59 16.59L10 18L16 12L10 6L8.59 7.41L13.17 12Z"/>
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    className="text-gray-700"
+                  >
+                    <path d="M8.59 16.59L10 18L16 12L10 6L8.59 7.41L13.17 12Z" />
                   </svg>
                 </div>
-                
+
                 {/* Sliding Hand Icon */}
-                <div 
+                <div
                   className="absolute top-1/2 transform -translate-y-1/2 -translate-x-1/2"
                   style={{
-                    animation: 'slideOnLine 3.5s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+                    animation:
+                      "slideOnLine 3.5s cubic-bezier(0.4, 0, 0.6, 1) infinite",
                   }}
                 >
                   <div className="bg-white rounded-full p-2 shadow-lg border border-gray-200">
@@ -147,12 +163,12 @@ export const PreviewControls = ({
                   </div>
                 </div>
               </div>
-              
+
               {/* Instruction text */}
-              <div 
+              <div
                 className="absolute -bottom-20 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm shadow-lg border border-gray-200 px-4 py-3 rounded-lg text-sm font-medium text-gray-700 whitespace-nowrap"
                 style={{
-                  animation: 'fadeInUp 0.5s ease-out 0.5s both'
+                  animation: "fadeInUp 0.5s ease-out 0.5s both",
                 }}
               >
                 <div className="flex items-center gap-2">
@@ -310,38 +326,67 @@ export const PreviewControls = ({
                   </div>
                 ) : (
                   <div className="flex flex-nowrap overflow-x-auto pb-4 px-2">
-                    {favorites.map((pendant) => (
-                      <div key={pendant.id} className="group relative p-2 ">
-                        <div className="flex flex-col items-center text-center">
-                          {pendant.image ? (
-                            <div className="relative h-14 w-14 rounded-full bg-gray-900 overflow-visible mb-1 group">
-                              <img
-                                src={pendant.image}
-                                alt={pendant.name}
-                                className="h-full w-full object-cover"
-                              />
-                              <button
-                                className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center bg-rose-500 rounded-full text-white text-xs font-bold hover:bg-rose-600 transition-colors"
-                                title="Remove from Wishlist"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  dispatch(removeFromFavorites(pendant.id));
-                                }}
-                              >
-                                ×
-                              </button>
-                            </div>
-                          ) : (
-                            <div className="h-14 w-14 rounded-full bg-gray-100 flex items-center justify-center mb-1">
-                              <FaHeart className="h-6 w-6 text-gray-400" />
-                            </div>
-                          )}
-                          <p className="text-xs font-medium text-white line-clamp-2 h-8 flex items-center">
-                            {pendant.name}
-                          </p>
+                    {favorites.map((pendant) => {
+                      const barBaseIds = [
+                        "prism", "helix", "orbit", "zenith", "pulse", "vortex", "nexus", "quasar", "nova"
+                      ];
+                      const universalBaseIds = [
+                        "atom", "nebula", "cosmos", "stellar", "eclipse", "aurora", "solstice", "quantum", "vertex", "horizon",
+                        "zoneith", "equinox", "meridian", "polaris", "pulsar", "quasar", "supernova", "galaxy", "comet", "meteor",
+                        "asteroid", "celestial", "orbital", "lunar", "solar", "nova", "photon", "gravity", "spectrum", "infinity"
+                      ];
+                      return (
+                        
+                        <div
+                          key={pendant.id}
+                          className="group relative p-2 "
+                          onClick={() => {
+                            if (barBaseIds.includes(pendant.id)) {
+                              sendMessageToPlayCanvas(`system:bar`);
+                              sendMessageToPlayCanvas(`cable_0:system_base_${barBaseIds.indexOf(pendant.id) + 1}`);
+                            } else if (universalBaseIds.includes(pendant.id)) {
+                              sendMessageToPlayCanvas(`system:universal`);
+                              sendMessageToPlayCanvas(`cable_0:system_base_${universalBaseIds.indexOf(pendant.id) + 1}`);
+                            } else {
+                                sendMessageToPlayCanvas(`cable_0:${pendant.message}`);
+                            }
+
+                            // if (onPendantDesignChange) {
+                            //   onPendantDesignChange(pendant.name);
+                            // }
+                            }}
+                        >
+                          <div className="flex flex-col items-center text-center">
+                            {pendant.image ? (
+                              <div className="relative h-14 w-14 rounded-full bg-gray-900 overflow-visible mb-1 group">
+                                <img
+                                  src={pendant.image}
+                                  alt={pendant.name}
+                                  className="h-full w-full object-cover"
+                                />
+                                <button
+                                  className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center bg-rose-500 rounded-full text-white text-xs font-bold hover:bg-rose-600 transition-colors"
+                                  title="Remove from Wishlist"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    dispatch(removeFromFavorites(pendant.id));
+                                  }}
+                                >
+                                  ×
+                                </button>
+                              </div>
+                            ) : (
+                              <div className="h-14 w-14 rounded-full bg-gray-100 flex items-center justify-center mb-1">
+                                <FaHeart className="h-6 w-6 text-gray-400" />
+                              </div>
+                            )}
+                            <p className="text-xs font-medium text-white line-clamp-2 h-8 flex items-center">
+                              {pendant.name}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </div>
@@ -417,7 +462,7 @@ export const PreviewControls = ({
             transform: translateY(-50%) translateX(-50%);
           }
         }
-        
+
         @keyframes fadeInUp {
           0% {
             opacity: 0;

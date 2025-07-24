@@ -126,6 +126,18 @@ const handleSetActiveTab = (tab) => {
   },[activeStep])
 
   useEffect(() => {
+    const cleanup = listenForOffconfigMessages((data, event) => {
+    // if (cableMessage && cableMessage.startsWith('offconfig')) {
+      setShowConfigurationTypeSelector(false);
+      setOpenBase(false);
+      setOpenDropdown(false);
+      setActiveStep(null);
+      setCableMessage('');
+    })
+    return cleanup;
+  }, [cableMessage]);
+  
+  useEffect(() => {
    
     if (cableMessage && cableMessage.startsWith('cable_')) {
       setShowConfigurationTypeSelector(false);
@@ -656,7 +668,7 @@ const tourSteps = [
 
 // GuidedTourOverlay component
 import { useLayoutEffect } from 'react';
-import { listenForConnectorColorMessages, listenForWallbaseColorMessages } from '../../util/iframeCableMessageHandler';
+import { listenForConnectorColorMessages, listenForWallbaseColorMessages, listenForOffconfigMessages } from '../../util/iframeCableMessageHandler';
 
 function GuidedTourOverlay({ isActive, step, stepIndex, totalSteps, targetSelector, onNext, onPrev, onClose }) {
   const [highlightRect, setHighlightRect] = useState(null);

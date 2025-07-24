@@ -46,7 +46,7 @@ export const usePendantSelection = (pendants, selectedPendants, setSelectedPenda
         'quantum': '8.png',
         'vertex': '9.png',
         'horizon': '10.png',
-        'zenith': '11.png',
+        'zoneith': '11.png',
         'equinox': '12.png',
         'meridian': '13.png',
         'polaris': '14.png',

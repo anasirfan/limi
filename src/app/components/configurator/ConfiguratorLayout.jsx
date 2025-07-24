@@ -17,8 +17,9 @@ import { saveConfiguration } from "../../../app/redux/slices/userSlice.js";
 import { useRouter, useSearchParams } from "next/navigation";
 import ConfigurationSummary from "../lightConfigurator/ConfigurationSummary";
 import { fetchUserByToken } from "../../../app/redux/slices/userSlice.js";
-import { listenForCableMessages, listenForMouseOutMessages, listenForMouseOverMessages } from "../../util/iframeCableMessageHandler";
+import { listenForCableMessages, listenForMouseOutMessages, listenForMouseOverMessages,listenForOffconfigMessages } from "../../util/iframeCableMessageHandler";
 import { listenForWallbaseColorMessages } from "../../util/iframeCableMessageHandler";
+
 
 const ConfiguratorLayout = () => {
   
@@ -164,6 +165,19 @@ useEffect(() => {
   });
   return cleanup;
 }, []);
+
+useEffect(() => {
+  // Set up cable message listener
+  const cleanup = listenForOffconfigMessages((message, event) => {
+    // Do something with the message, e.g. open UI, update state, etc.
+    console.log('[ConfigPanel] Received offconfig message:', message,event.data);
+    // Example: open a modal, update config, etc.
+    // setIsCableModalOpen(true);
+    setCableMessage(message);
+  });
+  return cleanup;
+}, []);
+
 
 
 
@@ -1030,7 +1044,7 @@ useEffect(() => {
           'quantum': 'system_base_8',
           'vertex': 'system_base_9',
           'horizon': 'system_base_10',
-          'zenith': 'system_base_11',
+          'zoneith': 'system_base_11',
           'equinox': 'system_base_12',
           'meridian': 'system_base_13',
           'polaris': 'system_base_14',
@@ -1050,10 +1064,10 @@ useEffect(() => {
           'gravity': 'system_base_28',
           'spectrum': 'system_base_29',
           'infinity': 'system_base_30',
-          'void': 'system_base_31',
-          'blackhole': 'system_base_32',
-          'singularity': 'system_base_33',
-          'supernav': 'system_base_34',
+          // 'void': 'system_base_31',
+          // 'blackhole': 'system_base_32',
+          // 'singularity': 'system_base_33',
+          // 'supernav': 'system_base_34',
           // 'wormhole': 'system_base_34',
           // 'black': 'system_base_35',
           // 'white': 'system_base_36',
@@ -1091,7 +1105,7 @@ useEffect(() => {
             quantum: "system_base_8",
             vertex: "system_base_9",
             horizon: "system_base_10",
-            zenith: "system_base_11",
+            zoneith: "system_base_11",
             equinox: "system_base_12",
             meridian: "system_base_13",
             polaris: "system_base_14",
@@ -1112,8 +1126,8 @@ useEffect(() => {
             spectrum: "system_base_29",
             infinity: "system_base_30",
             // void: "system_base_31",
-            blackhole: "system_base_32",
-            singularity: "system_base_33",
+            // blackhole: "system_base_32",
+            // singularity: "system_base_33",
             // supernav: "system_base_34",
             // wormhole: "system_base_34",
             // black: "system_base_35",
@@ -1523,6 +1537,8 @@ useEffect(() => {
         onSaveConfig={handleSaveConfig}
         handleOpenSaveModal={handleOpenSaveModal}
         onLoadConfig={handleLoadConfig}
+        sendMessageToPlayCanvas={sendMessageToPlayCanvas}
+        onPendantDesignChange={handlePendantDesignChange}
       />
 
       {/* Only show UI elements when not in preview mode */}
