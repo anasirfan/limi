@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { FaChevronLeft, FaChevronRight, FaCheck, FaShoppingCart, FaSave } from "react-icons/fa";
 import { ConfigPanel } from './ConfigPanel';
 
+
 export const PendantSelectionDropdown = ({ 
   pendants, 
   selectedPendants, 
@@ -38,6 +39,9 @@ export const PendantSelectionDropdown = ({
   const [activeTab, setActiveTab] = useState('configure'); // 'configure' or 'design'
   const [isMobile, setIsMobile] = useState(false);
   
+
+// Listen for selectedcable messages and update selectedPendants
+
   // Effect to check screen size and update on resize
   useEffect(() => {
     // Check if window is defined (client-side)
@@ -152,9 +156,9 @@ export const PendantSelectionDropdown = ({
                   style={{ userSelect: 'none' }}
                 >
                   <div 
-                    className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold transition-all overflow-hidden relative ${selectedPendants.includes(index) 
-                      ? 'ring-2 ring-emerald-500 ring-offset-2 ring-offset-gray-800' 
-                      : 'bg-gray-700 text-white hover:bg-gray-600'}`}
+                className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold transition-all overflow-hidden relative ${selectedPendants.includes(index) 
+                  ? 'ring-2 ring-emerald-500 ring-offset-2 ring-offset-gray-800' 
+                  : 'bg-gray-700 text-white hover:bg-gray-600'}`}
                   >
                     {/* Show pendant design as background if it has one */}
                     {pendant.design && (

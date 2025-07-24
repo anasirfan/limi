@@ -13,6 +13,20 @@ export function listenForCableMessages(callback) {
     return () => window.removeEventListener('message', handleMessage);
   }
 
+  export function listenForSelectedCableMessages(callback) {
+    function handleMessage(event) {
+      console.log('[SelectedCableMsg] BEFORE FILTER:', event.data);
+      if (typeof event.data === 'string' && event.data.startsWith('selectedcable:')) {
+        console.log('[SelectedCableMsg] MATCHED selectedcable:', event.data);
+        callback(event.data, event);
+        console.log('[SelectedCableMsg] AFTER CALLBACK:', event.data);
+      }
+    }
+    window.addEventListener('message', handleMessage);
+    // Return cleanup
+    return () => window.removeEventListener('message', handleMessage);
+  }
+
   export function listenForOffconfigMessages(callback) {
     function handleMessage(event) {
       console.log('[OffconfigMsg] BEFORE FILTER:', event.data);

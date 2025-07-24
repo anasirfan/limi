@@ -48,8 +48,9 @@ export const PreviewControls = ({
 
   // Reset when favorites change
   useEffect(() => {
+   console.log("selectedPendants", selectedPendants);
     // No need for carousel state anymore
-  }, [favorites]);
+  }, [favorites,selectedPendants]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -341,20 +342,22 @@ export const PreviewControls = ({
                           key={pendant.id}
                           className="group relative p-2 "
                           onClick={() => {
-                            if (barBaseIds.includes(pendant.id)) {
-                              sendMessageToPlayCanvas(`system:bar`);
-                              sendMessageToPlayCanvas(`cable_0:system_base_${barBaseIds.indexOf(pendant.id) + 1}`);
-                            } else if (universalBaseIds.includes(pendant.id)) {
-                              sendMessageToPlayCanvas(`system:universal`);
-                              sendMessageToPlayCanvas(`cable_0:system_base_${universalBaseIds.indexOf(pendant.id) + 1}`);
-                            } else {
-                                sendMessageToPlayCanvas(`cable_0:${pendant.message}`);
-                            }
-
-                            // if (onPendantDesignChange) {
-                            //   onPendantDesignChange(pendant.name);
-                            // }
-                            }}
+  if (barBaseIds.includes(pendant.id)) {
+    sendMessageToPlayCanvas(`system:bar`);
+    selectedPendants.forEach(idx => {
+      sendMessageToPlayCanvas(`cable_${idx}:system_base_${barBaseIds.indexOf(pendant.id) + 1}`);
+    });
+  } else if (universalBaseIds.includes(pendant.id)) {
+    sendMessageToPlayCanvas(`system:universal`);
+    selectedPendants.forEach(idx => {
+      sendMessageToPlayCanvas(`cable_${idx}:system_base_${universalBaseIds.indexOf(pendant.id) + 1}`);
+    });
+  } else {
+    selectedPendants.forEach(idx => {
+      sendMessageToPlayCanvas(`cable_${idx}:${pendant.message}`);
+    });
+  }
+}}
                         >
                           <div className="flex flex-col items-center text-center">
                             {pendant.image ? (

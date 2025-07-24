@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useRef, useEffect } from 'react';
 // Add these imports at the top with other imports
 import { createPortal } from 'react-dom';
+import { listenForSelectedCableMessages } from '../../util/iframeCableMessageHandler'; // update path as needed
+
 import { FiX, FiChevronLeft, FiChevronRight, FiHelpCircle } from 'react-icons/fi';
 import {
   NavButton,
@@ -136,6 +138,15 @@ const handleSetActiveTab = (tab) => {
     })
     return cleanup;
   }, [cableMessage]);
+
+  useEffect(() => {
+    const cleanup = listenForSelectedCableMessages((data) => {
+      const indexes = (data.match(/\d+/g) || []).map(Number);
+      setSelectedPendants(indexes);
+      console.log("Selected pendants iframe message:", indexes);
+    });
+    return cleanup;
+  }, []);
   
   useEffect(() => {
    

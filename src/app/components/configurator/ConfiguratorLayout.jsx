@@ -17,7 +17,7 @@ import { saveConfiguration } from "../../../app/redux/slices/userSlice.js";
 import { useRouter, useSearchParams } from "next/navigation";
 import ConfigurationSummary from "../lightConfigurator/ConfigurationSummary";
 import { fetchUserByToken } from "../../../app/redux/slices/userSlice.js";
-import { listenForCableMessages, listenForMouseOutMessages, listenForMouseOverMessages,listenForOffconfigMessages } from "../../util/iframeCableMessageHandler";
+import { listenForCableMessages, listenForMouseOutMessages, listenForMouseOverMessages,listenForOffconfigMessages,listenForSelectedCableMessages } from "../../util/iframeCableMessageHandler";
 import { listenForWallbaseColorMessages } from "../../util/iframeCableMessageHandler";
 
 
@@ -507,6 +507,19 @@ useEffect(() => {
   window.addEventListener("message", handleMessage);
   return () => window.removeEventListener("message", handleMessage);
 }, [configFromUrl, handleLoadSpecificConfig]); // Added handleLoadSpecificConfig to dependencies
+
+  // useEffect(() => {
+  //   console.log("Selected pendants iframe message:", indexes);
+  //   const cleanup = listenForSelectedCableMessages((data) => {
+  //     const indexes = (data.match(/\d+/g) || []).map(Number);
+  //     setSelectedPendants(indexes);
+      
+  //   });
+  //   return cleanup;
+
+
+  // }, []);
+
 
   // Handle light type change
   const handleLightTypeChange = (type) => {
@@ -1534,6 +1547,7 @@ useEffect(() => {
         setIsPreviewMode={setIsPreviewMode}
         config={config}
         cables={cables}
+        selectedPendants={config.selectedPendants || []}
         onSaveConfig={handleSaveConfig}
         handleOpenSaveModal={handleOpenSaveModal}
         onLoadConfig={handleLoadConfig}
