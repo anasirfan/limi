@@ -10,6 +10,20 @@ const nextConfig = {
           },
         ],
       },
+  async rewrites() {
+  return [
+    {
+      source: '/',
+      has: [
+        {
+          type: 'host',
+          value: 'limiai.co',
+        },
+      ],
+      destination: '/limiai',
+    },
+  ];
+}
 };
 
 export default nextConfig;
