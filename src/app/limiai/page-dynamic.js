@@ -22,7 +22,7 @@ const LimiAIPage = () => {
     [0, 0.2, 0.4, 0.6, 0.8, 1],
     ['#292929', '#f3ebe2', '#292929', '#f3ebe2', '#292929', '#f3ebe2']
   );
-  
+   
   const textColor = useTransform(
     scrollYProgress,
     [0, 0.2, 0.4, 0.6, 0.8, 1],
