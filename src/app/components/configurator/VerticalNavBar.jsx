@@ -3,8 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useRef, useEffect } from 'react';
 // Add these imports at the top with other imports
 import { createPortal } from 'react-dom';
-import { listenForSelectedCableMessages } from '../../util/iframeCableMessageHandler'; // update path as needed
-
 import { FiX, FiChevronLeft, FiChevronRight, FiHelpCircle } from 'react-icons/fi';
 import {
   NavButton,
@@ -139,44 +137,46 @@ const handleSetActiveTab = (tab) => {
     return cleanup;
   }, [cableMessage]);
 
-  useEffect(() => {
-    const cleanup = listenForSelectedCableMessages((data) => {
-      const indexes = (data.match(/\d+/g) || []).map(Number);
-      setSelectedPendants(indexes);
-      console.log("Selected pendants iframe message:", indexes);
-    });
-    return cleanup;
-  }, []);
+ 
   
   useEffect(() => {
-   
     if (cableMessage && cableMessage.startsWith('cable_')) {
-      setShowConfigurationTypeSelector(false);
-      setOpenBase(false);
-      // Extract the cable id (e.g., cable_2 → id = 2)
       const match = cableMessage.match(/^cable_(\d+)/);
       if (match) {
         const cableId = Number(match[1]);
-        // 1. Open the pendant selection step
-        setActiveStep('pendantSelection');
-        setOpenDropdown('pendantSelection');
-        // 2. Select the pendant with the extracted id
-        setSelectedPendants([cableId]);
-        // 3. Show the configuration type selector
-      setTimeout(()=> {
-        setShowConfigurationTypeSelector(true);
-        setLocalConfiguringType(null)
-      },200)
-
-  
-        // 4. Optionally clear the cable message to avoid repeated triggers
+        if (config.lightAmount === 1) {
+          setShowConfigurationTypeSelector(false);
+          setOpenBase(false);
+          // 1. Open the pendant selection step
+          setActiveStep('pendantSelection');
+          // 2. Select the pendant with the extracted id
+          setSelectedPendants([cableId]);
+          // 3. Show the configuration type selector
+          setTimeout(()=> {
+            setShowConfigurationTypeSelector(true);
+            setLocalConfiguringType(null)
+          },200)
+       
+        } else {
+          setShowConfigurationTypeSelector(false);
+          setOpenBase(false);
+          // 1. Open the pendant selection step
+          setActiveStep('pendantSelection');
+          setOpenDropdown('pendantSelection');
+          // 2. Select the pendant with the extracted id
+          setSelectedPendants([cableId]);
+          // 3. Show the configuration type selector
+          setTimeout(()=> {
+            setShowConfigurationTypeSelector(true);
+            setLocalConfiguringType(null)
+          },200)
+        }
         setCableMessage('');
       }
     }
   }, [cableMessage, setActiveStep, setSelectedPendants, setCableMessage]);
+ 
 
-
-  console.log("config in vertical:",config)
 // Define tour steps
 const tourSteps = [
   {
