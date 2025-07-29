@@ -48,9 +48,9 @@ export const PreviewControls = ({
 
   // Reset when favorites change
   useEffect(() => {
-   console.log("selectedPendants", selectedPendants);
+    console.log("selectedPendants", selectedPendants);
     // No need for carousel state anymore
-  }, [favorites,selectedPendants]);
+  }, [favorites, selectedPendants]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -329,35 +329,79 @@ export const PreviewControls = ({
                   <div className="flex flex-nowrap overflow-x-auto pb-4 px-2">
                     {favorites.map((pendant) => {
                       const barBaseIds = [
-                        "prism", "helix", "orbit", "zenith", "pulse", "vortex", "nexus", "quasar", "nova"
+                        "prism",
+                        "helix",
+                        "orbit",
+                        "zenith",
+                        "pulse",
+                        "vortex",
+                        "nexus",
+                        "quasar",
+                        "nova",
                       ];
                       const universalBaseIds = [
-                        "atom", "nebula", "cosmos", "stellar", "eclipse", "aurora", "solstice", "quantum", "vertex", "horizon",
-                        "zoneith", "equinox", "meridian", "polaris", "pulsar", "quasar", "supernova", "galaxy", "comet", "meteor",
-                        "asteroid", "celestial", "orbital", "lunar", "solar", "nova", "photon", "gravity", "spectrum", "infinity"
+                        "atom",
+                        "nebula",
+                        "cosmos",
+                        "stellar",
+                        "eclipse",
+                        "aurora",
+                        "solstice",
+                        "quantum",
+                        "vertex",
+                        "horizon",
+                        "zoneith",
+                        "equinox",
+                        "meridian",
+                        "polaris",
+                        "pulsar",
+                        "quasar",
+                        "supernova",
+                        "galaxy",
+                        "comet",
+                        "meteor",
+                        "asteroid",
+                        "celestial",
+                        "orbital",
+                        "lunar",
+                        "solar",
+                        "nova",
+                        "photon",
+                        "gravity",
+                        "spectrum",
+                        "infinity",
                       ];
                       return (
-                        
                         <div
                           key={pendant.id}
                           className="group relative p-2 "
                           onClick={() => {
-  if (barBaseIds.includes(pendant.id)) {
-    sendMessageToPlayCanvas(`system:bar`);
-    selectedPendants.forEach(idx => {
-      sendMessageToPlayCanvas(`cable_${idx}:system_base_${barBaseIds.indexOf(pendant.id) + 1}`);
-    });
-  } else if (universalBaseIds.includes(pendant.id)) {
-    sendMessageToPlayCanvas(`system:universal`);
-    selectedPendants.forEach(idx => {
-      sendMessageToPlayCanvas(`cable_${idx}:system_base_${universalBaseIds.indexOf(pendant.id) + 1}`);
-    });
-  } else {
-    selectedPendants.forEach(idx => {
-      sendMessageToPlayCanvas(`cable_${idx}:${pendant.message}`);
-    });
-  }
-}}
+                            if (barBaseIds.includes(pendant.id)) {
+                              sendMessageToPlayCanvas(`system:bar`);
+                              selectedPendants.forEach((idx) => {
+                                sendMessageToPlayCanvas(
+                                  `cable_${idx}:system_base_${
+                                    barBaseIds.indexOf(pendant.id) + 1
+                                  }`
+                                );
+                              });
+                            } else if (universalBaseIds.includes(pendant.id)) {
+                              sendMessageToPlayCanvas(`system:universal`);
+                              selectedPendants.forEach((idx) => {
+                                sendMessageToPlayCanvas(
+                                  `cable_${idx}:system_base_${
+                                    universalBaseIds.indexOf(pendant.id) + 1
+                                  }`
+                                );
+                              });
+                            } else {
+                              selectedPendants.forEach((idx) => {
+                                sendMessageToPlayCanvas(
+                                  `cable_${idx}:${pendant.message}`
+                                );
+                              });
+                            }
+                          }}
                         >
                           <div className="flex flex-col items-center text-center">
                             {pendant.image ? (

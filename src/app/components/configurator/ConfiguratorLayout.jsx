@@ -277,24 +277,24 @@ const getDefaultPendantAssignments = (amount) => {
 const getDefaultSystemAssignments = (amount) => {
   switch (amount) {
     case 1:
-      return [{ id: 0, systemType: "universal", baseDesign: "stellar" , designId: "system_base_1"}];
+      return [{ id: 0, systemType: "universal", baseDesign: "stellar" ,isSystem: true, designId: "system_base_4"}];
     case 3:
       return [
         { id: 0, systemType: "bar", baseDesign: "orbit" , designId: "system_base_1", isSystem: true},
         { id: 1, systemType: "", baseDesign: "bumble" , designId: "product_2", isSystem: false},
-        { id: 2, systemType: "bar", baseDesign: "radial" , designId: "system_base_3", isSystem: true},
+        { id: 2, systemType: "universal", baseDesign: "stellar" , designId: "system_base_4", isSystem: true},
       ];
     case 6:
       return [
-        { id: 0, systemType: "bar", baseDesign: "orbit" , designId: "system_base_1"},
-        { id: 1, systemType: "bar", baseDesign: "piko" , designId: "system_base_2" },
-        { id: 2, systemType: "bar", baseDesign: "bumble" , designId: "system_base_3"},
-        { id: 3, systemType: "bar", baseDesign: "radial" , designId: "system_base_4"},
-        { id: 4, systemType: "bar", baseDesign: "zenith" , designId: "system_base_5"},
-        { id: 5, systemType: "bar", baseDesign: "nova" , designId: "system_base_6"},
+        { id: 0, systemType: "", baseDesign: "bumble" , designId: "product_2"},
+        { id: 1, systemType: "", baseDesign: "piko" , designId: "product_5" },
+        { id: 2, systemType: "universal", baseDesign: "vertex" , designId: "system_base_9"},
+        { id: 3, systemType: "bar", baseDesign: "zenith" , designId: "system_base_4"},
+        { id: 4, systemType: "", baseDesign: "ico" , designId: "product_4"},
+        { id: 5, systemType: "bar", baseDesign: "helix" , designId: "system_base_2"},
       ];
     default:
-      return Array.from({ length: amount }, (_, i) => ({ id: i, systemType: "bar", baseDesign: "orbit" }));
+      return Array.from({ length: amount }, (_, i) => ({ id: i, systemType: "universal", baseDesign: "stellar" , designId: `system_base_${i + 1}` ,isSystem:true}));
   }
 };
 
@@ -351,12 +351,11 @@ useEffect(() => {
         setCables(prev => [...prev, { 
           isSystem: true, 
           systemType: system.systemType, 
-          design: system.design, 
+          design: system.designId, 
           designId: system.designId 
         }]);
         sendMessageToPlayCanvas(`system:${system.systemType}`);
         sendMessageToPlayCanvas(`cable_${index}:${system.designId}`);
-        sendMessageToPlayCanvas(`cable_${index}:size_3`);
       });
     }
   } else {
@@ -665,7 +664,7 @@ useEffect(() => {
           sendMessageToPlayCanvas(`system:${system.systemType}`);
         }
         sendMessageToPlayCanvas(`cable_${index}:${system.designId}`);
-        sendMessageToPlayCanvas(`cable_${index}:size_3`);
+        // sendMessageToPlayCanvas(`cable_${index}:size_3`);
       });
     }, 0);
   };
