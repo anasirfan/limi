@@ -277,21 +277,21 @@ const getDefaultPendantAssignments = (amount) => {
 const getDefaultSystemAssignments = (amount) => {
   switch (amount) {
     case 1:
-      return [{ id: 0, systemType: "universal", baseDesign: "stellar" ,isSystem: true, designId: "system_base_4"}];
+      return [{ id: 0, systemType: "bar", baseDesign: "helix" ,isSystem: true, designId: "system_base_2"}];
     case 3:
       return [
         { id: 0, systemType: "bar", baseDesign: "orbit" , designId: "system_base_1", isSystem: true},
         { id: 1, systemType: "", baseDesign: "bumble" , designId: "product_2", isSystem: false},
-        { id: 2, systemType: "universal", baseDesign: "stellar" , designId: "system_base_4", isSystem: true},
+        { id: 2, systemType: "", baseDesign: "ico" , designId: "product_4", isSystem: true},
       ];
     case 6:
       return [
-        { id: 0, systemType: "", baseDesign: "bumble" , designId: "product_2"},
-        { id: 1, systemType: "", baseDesign: "piko" , designId: "product_5" },
-        { id: 2, systemType: "universal", baseDesign: "vertex" , designId: "system_base_9"},
-        { id: 3, systemType: "bar", baseDesign: "zenith" , designId: "system_base_4"},
-        { id: 4, systemType: "", baseDesign: "ico" , designId: "product_4"},
-        { id: 5, systemType: "bar", baseDesign: "helix" , designId: "system_base_2"},
+        { id: 0, systemType: "", baseDesign: "bumble" , designId: "product_2", isSystem: false},
+        { id: 1, systemType: "", baseDesign: "piko" , designId: "product_5", isSystem: false},
+        { id: 2, systemType: "bar", baseDesign: "helix" , designId: "system_base_2", isSystem: true},
+        { id: 3, systemType: "bar", baseDesign: "zenith" , designId: "system_base_4", isSystem: true},
+        { id: 4, systemType: "", baseDesign: "ico" , designId: "product_4", isSystem: false},
+        { id: 5, systemType: "bar", baseDesign: "helix" , designId: "system_base_2", isSystem: true},
       ];
     default:
       return Array.from({ length: amount }, (_, i) => ({ id: i, systemType: "universal", baseDesign: "stellar" , designId: `system_base_${i + 1}` ,isSystem:true}));

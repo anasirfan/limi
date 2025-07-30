@@ -144,17 +144,11 @@ export default function CustomerDashboard({ token }) {
     setRegistrationsError("");
 
     try {
-      const token = localStorage.getItem("limiToken");
-      if (!token) {
-        throw new Error("Authentication required");
-      }
-
       const response = await fetch(
         "https://dev.api1.limitless-lighting.co.uk/client/user/community/subscriptions",
         {
           method: "GET",
           headers: {
-            Authorization: token,
             "Content-Type": "application/json",
           },
         }
@@ -197,13 +191,11 @@ export default function CustomerDashboard({ token }) {
     setIsLoadingQueries(true);
     setQueryError("");
     try {
-      const token = localStorage.getItem("limiToken");
       const response = await fetch(
         "https://dev.api1.limitless-lighting.co.uk/client/user/contact-messages",
         {
           method: "GET",
           headers: {
-            Authorization: token,
             "Content-Type": "application/json",
           },
         }
@@ -246,16 +238,11 @@ export default function CustomerDashboard({ token }) {
     setDistributorQueryError("");
 
     try {
-      const token = localStorage.getItem("limiToken");
-      if (!token) {
-        throw new Error("Please log in to view distributor queries");
-      }
       const response = await fetch(
         "https://dev.api1.limitless-lighting.co.uk/client/user/distributor/contact",
         {
           method: "GET",
           headers: {
-            Authorization: token,
             "Content-Type": "application/json",
           },
         }
