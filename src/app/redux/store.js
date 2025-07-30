@@ -5,6 +5,8 @@ import favoritesReducer from './slices/favoritesSlice';
 import productsReducer from './slices/productsSlice';
 import slidesReducer from './slices/slidesSlice';
 import slideAnalyticsReducer from './slices/slideAnalyticsSlice';
+import assetsReducer from './slices/assetsSlice';
+import activityReducer from './slices/activitySlice';
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +16,8 @@ export const store = configureStore({
     products: productsReducer,
     slides: slidesReducer,
     slideAnalytics: slideAnalyticsReducer,
+    assets: assetsReducer,
+    activity: activityReducer,
   },
   // Add middleware or other store configuration here if needed
 });
