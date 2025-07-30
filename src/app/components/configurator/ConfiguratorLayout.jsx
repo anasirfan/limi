@@ -17,8 +17,9 @@ import { saveConfiguration } from "../../../app/redux/slices/userSlice.js";
 import { useRouter, useSearchParams } from "next/navigation";
 import ConfigurationSummary from "../lightConfigurator/ConfigurationSummary";
 import { fetchUserByToken } from "../../../app/redux/slices/userSlice.js";
-import { listenForCableMessages, listenForMouseOutMessages, listenForMouseOverMessages,listenForOffconfigMessages,listenForSelectedCableMessages } from "../../util/iframeCableMessageHandler";
+import { listenForCableMessages, listenForMouseOutMessages, listenForMouseOverMessages,listenForOffconfigMessages } from "../../util/iframeCableMessageHandler";
 import { listenForWallbaseColorMessages } from "../../util/iframeCableMessageHandler";
+import { listenForSelectedCableMessages } from "../../util/iframeCableMessageHandler";
 
 
 const ConfiguratorLayout = () => {
@@ -137,15 +138,16 @@ const saveToLocalStorage = (key, value) => {
   }); 
 
   useEffect(() => {
-    if (mounted && config.pendants.length === 0) {
-      const initialPendants = generateRandomPendants(config.lightAmount);
-      setConfig(prev => ({
-        ...prev,
-        pendants: initialPendants,
-        systemConfigurations: generateRandomSystems(config.lightAmount)
-      }));
-    }
-  }, [mounted, config.lightAmount]);
+  if (mounted && config.pendants.length === 0) {
+    const initialPendants = getDefaultPendantAssignments(config.lightAmount);
+    const initialSystems = getDefaultSystemAssignments(config.lightAmount);
+    setConfig(prev => ({
+      ...prev,
+      pendants: initialPendants,
+      systemConfigurations: initialSystems
+    }));
+  }
+}, [mounted, config.lightAmount]);
 
 
   // Save to localStorage whenever config or cables change
@@ -246,62 +248,66 @@ useEffect(() => {
     setConfiguringType(null);
     setShowConfigurationTypeSelector(true);
   };
-  // Helper function to generate random pendants
-  const generateRandomPendants = (amount) => {
-    const productCount = 4; // Number of available pendant designs
-    let pendants = [];
-    for (let i = 0; i < amount; i++) {
-      const randomDesign = ["bumble", "radial", "fina", "ico", "piko"][
-        Math.floor(Math.random() * 5)
+  // Deterministic pendant assignments for 1, 3, 6 lights
+const getDefaultPendantAssignments = (amount) => {
+  switch (amount) {
+    case 1:
+      return [{ id: 0, design: "bumble" }];
+    case 3:
+      return [
+        { id: 0, design: "radial" },
+        { id: 1, design: "radial" },
+        { id: 2, design: "radial" },
       ];
-      pendants.push({
-        id: i,
-        design: randomDesign,
-      });
-    }
-    return pendants;
-  };
+    case 6:
+      return [
+        { id: 0, design: "bumble" },
+        { id: 1, design: "bumble" },
+        { id: 2, design: "bumble" },
+        { id: 3, design: "bumble" },
+        { id: 4, design: "bumble" },
+        { id: 5, design: "bumble" },
+      ];
+    default:
+      return Array.from({ length: amount }, (_, i) => ({ id: i, design: "bumble" }));
+  }
+};
 
-  // Helper function to generate random system configurations
-  const generateRandomSystems = (amount) => {
-    // Available system types and their base designs
-    const systemTypes = ["bar", "universal"];
-    const baseDesigns = {
-      bar: [
-        "prism",
-        "helix",
-        "orbit",
-        "zenith",
-        "pulse",
-        "vortex",
-        "nexus",
-        "quasar",
-        "nova",
-      ],
-      universal: ["atom", "nebula", "cosmos", "stellar", "eclipse"],
-    };
+// Deterministic system assignments for 1, 3, 6 lights
+const getDefaultSystemAssignments = (amount) => {
+  switch (amount) {
+    case 1:
+      return [{ id: 0, systemType: "universal", baseDesign: "stellar" ,isSystem: true, designId: "system_base_4"}];
+    case 3:
+      return [
+        { id: 0, systemType: "bar", baseDesign: "orbit" , designId: "system_base_1", isSystem: true},
+        { id: 1, systemType: "", baseDesign: "bumble" , designId: "product_2", isSystem: false},
+        { id: 2, systemType: "universal", baseDesign: "stellar" , designId: "system_base_4", isSystem: true},
+      ];
+    case 6:
+      return [
+        { id: 0, systemType: "", baseDesign: "bumble" , designId: "product_2"},
+        { id: 1, systemType: "", baseDesign: "piko" , designId: "product_5" },
+        { id: 2, systemType: "universal", baseDesign: "vertex" , designId: "system_base_9"},
+        { id: 3, systemType: "bar", baseDesign: "zenith" , designId: "system_base_4"},
+        { id: 4, systemType: "", baseDesign: "ico" , designId: "product_4"},
+        { id: 5, systemType: "bar", baseDesign: "helix" , designId: "system_base_2"},
+      ];
+    default:
+      return Array.from({ length: amount }, (_, i) => ({ id: i, systemType: "universal", baseDesign: "stellar" , designId: `system_base_${i + 1}` ,isSystem:true}));
+  }
+};
 
-    let systems = {};
-
-    for (let i = 0; i < amount; i++) {
-      // Randomly select system type
-      const randomSystemType =
-        systemTypes[Math.floor(Math.random() * systemTypes.length)];
-
-      // Randomly select base design for this system type
-      const availableDesigns = baseDesigns[randomSystemType];
-      const randomDesign =
-        availableDesigns[Math.floor(Math.random() * availableDesigns.length)];
-
-      // Store the system configuration for this cable
-      systems[i] = {
-        systemType: randomSystemType,
-        baseDesign: randomDesign,
-      };
-    }
-
-    return systems;
-  };
+// Helper to map pendant design to productId for PlayCanvas
+const getProductIdForDesign = (design) => {
+  switch (design) {
+    case "bumble": return "product_1";
+    case "radial": return "product_2";
+    case "ico": return "product_4";
+    case "piko": return "product_5";
+    default: return "product_2";
+  }
+};
 
   // Initialize pendants when component mounts
  // Initialize pendants when component mounts
@@ -321,8 +327,8 @@ useEffect(() => {
 
   if (!savedConfig || !savedCables) {
     console.log("initializing with defaults");
-    const initialPendants = generateRandomPendants(config.lightAmount);
-    const initialSystems = generateRandomSystems(config.lightAmount);
+    const initialPendants = getDefaultPendantAssignments(config.lightAmount);
+    const initialSystems = getDefaultSystemAssignments(config.lightAmount);
     
     setConfig(prev => ({ 
       ...prev, 
@@ -340,21 +346,16 @@ useEffect(() => {
       sendMessageToPlayCanvas(`light_amount:${config.lightAmount}`);
 
       // Send pendant messages
-      initialPendants.forEach((pendant, index) => {
-        const productId = pendant.design === 'bumble' ? 'product_1' : 
-                      pendant.design === 'radial' ? 'product_2' : 
-                      pendant.design === 'ico' ? 'product_4' : 
-                      pendant.design === 'piko' ? 'product_5' : 'product_2';
-        
+      initialSystems.forEach((system, index) => {
+        const productId = getProductIdForDesign(system.design);
         setCables(prev => [...prev, { 
-          isSystem: false, 
-          systemType: "", 
-          design: pendant.design, 
-          designId: productId 
+          isSystem: true, 
+          systemType: system.systemType, 
+          design: system.designId, 
+          designId: system.designId 
         }]);
-        
-        sendMessageToPlayCanvas(`cable_${index}:${productId}`);
-        sendMessageToPlayCanvas(`cable_${index}:size_${Math.floor(Math.random() * 5) + 2}`);
+        sendMessageToPlayCanvas(`system:${system.systemType}`);
+        sendMessageToPlayCanvas(`cable_${index}:${system.designId}`);
       });
     }
   } else {
@@ -508,19 +509,6 @@ useEffect(() => {
   return () => window.removeEventListener("message", handleMessage);
 }, [configFromUrl, handleLoadSpecificConfig]); // Added handleLoadSpecificConfig to dependencies
 
-  // useEffect(() => {
-  //   console.log("Selected pendants iframe message:", indexes);
-  //   const cleanup = listenForSelectedCableMessages((data) => {
-  //     const indexes = (data.match(/\d+/g) || []).map(Number);
-  //     setSelectedPendants(indexes);
-      
-  //   });
-  //   return cleanup;
-
-
-  // }, []);
-
-
   // Handle light type change
   const handleLightTypeChange = (type) => {
     // Save current ceiling light amount if switching from ceiling
@@ -539,7 +527,7 @@ useEffect(() => {
         lightType: type,
         lightAmount: newAmount,
       }));
-      newPendants = generateRandomPendants(1);
+      newPendants = getDefaultPendantAssignments(1);
     } else if (type === "floor") {
       newAmount = 3;
       setConfig((prev) => ({
@@ -547,7 +535,7 @@ useEffect(() => {
         lightType: type,
         lightAmount: newAmount,
       }));
-      newPendants = generateRandomPendants(3);
+      newPendants = getDefaultPendantAssignments(3);
     } else if (type === "ceiling") {
       // Restore last ceiling light amount when switching back to ceiling
       if (config.baseType === "rectangular") {
@@ -555,7 +543,7 @@ useEffect(() => {
       } else {
         newAmount = lastCeilingLightAmount;
       }
-      newPendants = generateRandomPendants(newAmount);
+      newPendants = getDefaultPendantAssignments(newAmount);
     }
 
     setConfig((prev) => ({
@@ -566,16 +554,7 @@ useEffect(() => {
     }));
     setCables([]);
     newPendants.forEach((pendant, index) => {
-      const productId =
-        pendant.design === "bumble"
-          ? "product_1"
-          : pendant.design === "radial"
-          ? "product_2"
-          : pendant.design === "ico"
-          ? "product_4"
-          : pendant.design === "piko"
-          ? "product_5"
-          : "product_2";
+      const productId = getProductIdForDesign(pendant.design);
       setCables((prev) => [
         ...prev,
         {
@@ -597,30 +576,11 @@ useEffect(() => {
       //hotspot off
       sendMessageToPlayCanvas(`hotspot:'off'`);
 
-
-      // For multiple pendants, send individual pendant messages
-      //   if (newAmount > 0) {
       newPendants.forEach((pendant, index) => {
-        const productId =
-          pendant.design === "bumble"
-            ? "product_1"
-            : pendant.design === "radial"
-            ? "product_2"
-            : pendant.design === "ico"
-            ? "product_4"
-            : pendant.design === "piko"
-            ? "product_5"
-            : "product_2";
-
+        const productId = getProductIdForDesign(pendant.design);
         sendMessageToPlayCanvas(`cable_${index}:${productId}`);
-        sendMessageToPlayCanvas(`cable_${index}:${pendant.size ? `size_${pendant.size}` : 'size_3'}`);
+        sendMessageToPlayCanvas(`cable_${index}:size_3`);
       });
-      // } else {
-      //   const productId = newPendants.design === 'bumble' ? 'product_1' :
-      //                    newPendants.design === 'radial' ? 'product_2' :
-      //                    newPendants.design === 'fina' ? 'product_3' : 'product_2';
-      //   sendMessageToPlayCanvas(`cable_design:${productId}`);
-      // }
     }, 0);
   };
 
@@ -672,8 +632,9 @@ useEffect(() => {
       setLastRoundBaseLightAmount(amount);
     }
 
-    // Generate random pendants for the new amount
-    const newPendants = generateRandomPendants(amount);
+    // Use deterministic default pendants and systems for the new amount
+    const newPendants = getDefaultPendantAssignments(amount);
+    const newSystems = getDefaultSystemAssignments(amount);
 
     // Filter selectedPendants to only include valid indices for the new amount
     const filteredSelectedPendants = config.selectedPendants
@@ -684,71 +645,30 @@ useEffect(() => {
       ...prev,
       lightAmount: amount,
       pendants: newPendants,
+      systemConfigurations: newSystems,
       selectedPendants: filteredSelectedPendants, // Update selectedPendants state
     }));
-    setCables([]);
-    newPendants.forEach((pendant, index) => {
-      const productId =
-        pendant.design === "bumble"
-          ? "product_1"
-          : pendant.design === "radial"
-          ? "product_2"
-         
-          : pendant.design === "ico"
-          ? "product_4"
-          : pendant.design === "piko"
-          ? "product_5"
-          : "product_2";
-      setCables((prev) => [
-        ...prev,
-        {
-          isSystem: false,
-          systemType: "",
-          design: pendant.design,
-          designId: productId,
-        },
-      ]);
-    });
+    setCables(
+      newSystems.map((system, idx) => ({
+        isSystem: true,
+        systemType: system.systemType,
+        design: system.design,
+        designId: system.designId,
+      }))
+    );
     // Send messages to iframe
     setTimeout(() => {
-      // Send light amount message
       sendMessageToPlayCanvas(`light_amount:${amount}`);
-
-      if (amount > 1) {
-        // For multiple pendants, send individual pendant messages
-        newPendants.forEach((pendant, index) => {
-          const productId =
-            pendant.design === "bumble"
-              ? "product_1"
-              : pendant.design === "radial"
-              ? "product_2"
-              
-              : pendant.design === "ico"
-              ? "product_4"
-              : pendant.design === "piko"
-              ? "product_5"
-              : "product_2";
-
-          sendMessageToPlayCanvas(`cable_${index}:${productId}`);
-          sendMessageToPlayCanvas(`cable_${index}:size_3`);
-        });
-      } else {
-        const productId =
-          newPendants.design === "bumble"
-            ? "product_1"
-            : newPendants.design === "radial"
-            ? "product_2"
-        
-            : newPendants.design === "ico"
-            ? "product_4"
-            : newPendants.design === "piko"
-            ? "product_5"
-            : "product_2";
-        sendMessageToPlayCanvas(`cable_0:${productId}`);
-        sendMessageToPlayCanvas(`cable_0:size_3`);
-      }
+      newSystems.forEach((system, index) => {
+        if(system.isSystem){
+          sendMessageToPlayCanvas(`system:${system.systemType}`);
+        }
+        sendMessageToPlayCanvas(`cable_${index}:${system.designId}`);
+        // sendMessageToPlayCanvas(`cable_${index}:size_3`);
+      });
     }, 0);
   };
+
 
   // Handle system type change
   const handleSystemTypeChange = (system) => {
@@ -1017,7 +937,17 @@ useEffect(() => {
       ...prev,
       selectedPendants: pendantIds,
     }));
+
   }, []);
+
+  // Add this useEffect in your component:
+useEffect(() => {
+  const cleanup = listenForSelectedCableMessages((indexes) => {
+    console.log("Selected pendants iframe message:", indexes);
+    handlePendantSelection(indexes);
+  });
+  return cleanup;
+}, [handlePendantSelection]);
 
   // Handle system base design change
   const handleSystemBaseDesignChange = useCallback(

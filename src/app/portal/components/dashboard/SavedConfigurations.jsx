@@ -218,6 +218,7 @@ export default function SavedConfigurations() {
   // View configuration details
   const viewConfigDetails = (config) => {
     setSelectedConfig(config);
+    console.log("configthumb", config.thumbnail.url);
   };
 
   // Close configuration details
@@ -332,7 +333,7 @@ export default function SavedConfigurations() {
               <div className="flex items-center h-[200px] w-full justify-center py-2 bg-[#292929] border-b border-gray-200">
                 <Image
                   src={
-                    config.thumbnail?.url ||
+                    `https://dev.api1.limitless-lighting.co.uk/${config.thumbnail?.url}` ||
                     `/images/homepage-products/${
                       Math.floor(Math.random() * 7) + 1
                     }-mobile.jpg`
@@ -444,15 +445,12 @@ export default function SavedConfigurations() {
                   <div className="bg-[#1a1a1a] rounded-xl p-4 border border-gray-800 shadow-lg">
                     <div className="relative w-full aspect-square mb-4 rounded-lg overflow-hidden bg-gradient-to-br from-gray-900 to-gray-800">
                       <Image
-                        src={
-                          selectedConfig.thumbnail?.url ||
-                          `/images/homepage-products/${
-                            Math.floor(Math.random() * 7) + 1
-                          }-mobile.jpg`
-                        }
+                       src={
+                       `https://dev.api1.limitless-lighting.co.uk${selectedConfig.thumbnail?.url}`
+                      }
                         alt={selectedConfig.name || "Configuration"}
                         fill
-                        style={{ objectFit: "contain" }}
+                        aspectRatio="1/1"
                         className="hover:scale-105 transition-transform duration-300"
                         priority
                       />

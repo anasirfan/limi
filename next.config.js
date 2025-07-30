@@ -11,7 +11,8 @@ const nextConfig = {
       'coverr.co',
       'media.istockphoto.com', // in case any fallback stock sources
       'media.pexels.com',
-      'mixkit.imgix.net'
+      'mixkit.imgix.net',
+      'dev.api1.limitless-lighting.co.uk',
     ],
     remotePatterns: [
       {
