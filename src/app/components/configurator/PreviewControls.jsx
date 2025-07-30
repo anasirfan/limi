@@ -1,5 +1,6 @@
 "use client";
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import Image from "next/image";
 import {
   FaEye,
   FaSave,
@@ -12,12 +13,14 @@ import {
   FaInfo,
   FaHeart,
   FaHandPaper,
+  FaLightbulb,
 } from "react-icons/fa";
 import { useSelector, useDispatch } from "react-redux";
 import {
   removeFromFavorites,
   clearFavorites,
 } from "../../redux/slices/favoritesSlice";
+import { motion, AnimatePresence } from "framer-motion";
 
 export const PreviewControls = ({
   isPreviewMode,
@@ -38,10 +41,15 @@ export const PreviewControls = ({
   const [currentSlide, setCurrentSlide] = useState(0);
   const [slidesToShow] = useState(3); // Number of items to show at once
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [isLightingPanelOpen, setIsLightingPanelOpen] = useState(false);
+  const [lightingOn, setLightingOn] = useState(true);
+  const [colorTemperature, setColorTemperature] = useState(50); // 0-100 (warm to cool)
+  const [brightness, setBrightness] = useState(75); // 0-100
 
   const wishlistRef = useRef(null);
   const carouselRef = useRef(null);
   const onboardingTimeoutRef = useRef(null);
+  const lightingRef = useRef(null);
 
   const dispatch = useDispatch();
   const favorites = useSelector((state) => state.favorites.items);
@@ -58,12 +66,16 @@ export const PreviewControls = ({
       if (wishlistRef.current && !wishlistRef.current.contains(event.target)) {
         setShowWishlistModal(false);
       }
+      if (lightingRef.current && !lightingRef.current.contains(event.target)) {
+        setIsLightingPanelOpen(false);
+      }
     }
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [wishlistRef]);
+  }, []);
 
   const guideRef = useRef(null);
 
@@ -211,6 +223,9 @@ export const PreviewControls = ({
           <FaInfo size={16} />
         </button>
 
+        {/* Lighting Control Button */}
+     
+
         {(isHovered || (isMobile && isHovered)) && (
           <div className="absolute -left-4 top-12 z-[101] w-64 p-4 bg-white rounded-lg shadow-xl border border-gray-200 animate-fadeIn">
             <h3 className="font-bold text-gray-800 mb-3">Navigation Guide</h3>
@@ -262,6 +277,91 @@ export const PreviewControls = ({
           </div>
         )}
       </div>
+
+      <div className="absolute top-40 left-8 z-50 flex gap-2" ref={lightingRef}>
+          <button
+            className="p-2 rounded-full bg-[#212121] text-white transition-all shadow-lg hover:scale-110 hover:bg-gray-600"
+            onClick={() => setIsLightingPanelOpen(!isLightingPanelOpen)}
+            title="Lighting Controls"
+          >
+            <FaLightbulb size={16} />
+          </button>
+
+          {/* Lighting Control Panel */}
+          <AnimatePresence>
+            {isLightingPanelOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                transition={{ duration: 0.2 }}
+                className="absolute top-12 bg-gray-900 border border-gray-700 rounded-lg shadow-xl p-4 w-64 z-50"
+              >
+                <h3 className="text-white font-medium mb-4">Lighting Controls</h3>
+                
+                {/* Power Toggle */}
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-gray-300 text-sm">Power</span>
+                  <button
+                    onClick={() => setLightingOn(!lightingOn)}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                      lightingOn ? 'bg-emerald-600' : 'bg-gray-600'
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        lightingOn ? 'translate-x-6' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                </div>
+
+                {/* Color Temperature Control */}
+                <div className="mb-4">
+                  <label className="block text-gray-300 text-sm mb-2">
+                    Color Temperature
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={colorTemperature}
+                      onChange={(e) => setColorTemperature(Number(e.target.value))}
+                      className="w-full h-2 bg-gradient-to-r from-orange-400 via-yellow-300 to-blue-400 rounded-lg appearance-none cursor-pointer"
+                      style={{
+                        background: 'linear-gradient(to right, #fb923c 0%, #fde047 50%, #60a5fa 100%)'
+                      }}
+                    />
+                    <div className="flex justify-between text-xs text-gray-400 mt-1">
+                      <span>Warm</span>
+                      <span>Cool</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Brightness Control */}
+                <div className="mb-2">
+                  <label className="block text-gray-300 text-sm mb-2">
+                    Brightness ({brightness}%)
+                  </label>
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={brightness}
+                    onChange={(e) => setBrightness(Number(e.target.value))}
+                    className="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer slider"
+                  />
+                  <div className="flex justify-between text-xs text-gray-400 mt-1">
+                    <span>Dim</span>
+                    <span>Bright</span>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       <div className="absolute top-24 right-8 z-50 flex gap-2">
         <button
           className="p-2 rounded-full bg-gray-800 text-gray-300 hover:opacity-90 transition-all"
