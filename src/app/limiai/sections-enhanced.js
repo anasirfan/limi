@@ -495,10 +495,11 @@ export const LearningLoopSection = () => {
     {
       icon: FaCloud,
       title: "Deepen Engagement",
-      description: "More use 3 better performance 3 more value 3 faster loop",
+      description: "More use → better performance → more value → faster loop",
       gradient: "from-[#54bb74] to-[#93cfa2]"
     },
     {
+      
       icon: FaCloud, //use repeat icon
       title: "Improve System",
       description: "OTA updates push better predictions, automation, and features",
