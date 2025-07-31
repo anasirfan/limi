@@ -577,8 +577,7 @@ export const LearningLoopSection = () => {
             Our Learning Loop: <span className="font-[Amenti] italic text-[#54bb74]">The Intelligence Flywheel</span>
           </h2>
           <p className="text-xl max-w-4xl mx-auto leading-relaxed">
-            Every LIMI installation becomes smarter, creating a compounding advantage that competitors can't replicate
-          </p>
+          A defensive tech company, not a system integrator.  </p>
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12 items-center">
@@ -697,7 +696,7 @@ export const TeamSection = () => {
     {
       name: "Dr. Karen Law",
       title: "COO", 
-      description: "PhD fluent in Mandarin, Cantonese & English. Runs our China factory4full ops control.",
+      description: "PhD fluent in Mandarin, Cantonese & English. Runs our China factory - full ops control.",
       linkedin: "https://www.linkedin.com/in/kwklaw/",
       icon: FaCloud
     },
@@ -757,7 +756,7 @@ export const TeamSection = () => {
           className="text-center mb-20"
         >
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-[Amenti] text-white leading-[1.2] tracking-tight mb-6">
-            The Team: <span className="font-[Amenti] italic text-[#54bb74]">Execution-Focused Founders</span>
+            Backed by Builders <span className="font-[Amenti] italic text-[#54bb74]">Proven at scale.</span>
           </h2>
           <p className="text-xl text-white/70 max-w-4xl mx-auto leading-relaxed">
             Three complementary skill sets, one unified vision: ambient AI infrastructure for every space
