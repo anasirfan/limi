@@ -1,6 +1,6 @@
 'use client';
 import { motion, useInView } from 'framer-motion';
-import { FaShieldAlt, FaBrain, FaCloud, FaArrowRight, FaTimes, FaLightbulb, FaMicrochip, FaStore, FaWifi, FaHome, FaBuilding } from 'react-icons/fa';
+import { FaShieldAlt, FaBrain, FaCloud, FaArrowRight, FaTimes, FaLightbulb, FaMicrochip, FaStore, FaWifi, FaHome, FaBuilding, FaLinkedin } from 'react-icons/fa';
 import { useRef, useState, useEffect } from 'react';
 import Link from 'next/link';
 
@@ -517,7 +517,7 @@ export const LearningLoopSection = () => {
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
           backgroundImage: 'url("https://images.unsplash.com/photo-1649190800938-05929836db2d?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D")',
-          filter: 'blur(2px)'
+          filter: 'blur(3px)'
         }}
       />
       {/* Gradient overlay */}
@@ -572,7 +572,7 @@ export const LearningLoopSection = () => {
           transition={{ duration: 1, delay: 0.2 }}
           className="text-center mb-20"
         >
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-[Amenti] text-[#292929] leading-[1.2] tracking-tight mb-6">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-[Amenti] text-[#EAE0DC] leading-[1.2] tracking-tight mb-6">
             Our Learning Loop: <span className="font-[Amenti] italic text-[#54bb74]">The Intelligence Flywheel</span>
           </h2>
           <p className="text-xl max-w-4xl mx-auto leading-relaxed">
@@ -690,19 +690,22 @@ export const TeamSection = () => {
       name: "Umer Asif",
       title: "Founder & CEO",
       description: "Bootstrapped LIMI to £57.5M LOI. Built factory + modular IP after top-tier R&D firms failed.",
-      linkedin: "LinkedIn"
+      linkedin: "https://www.linkedin.com/in/umer-asif-limi/",
+      icon: FaBuilding
     },
     {
       name: "Dr. Karen Law",
       title: "COO", 
-      description: "PhD fluent in Mandarin, Cantonese & English. Runs our China factory—full ops control.",
-      linkedin: "LinkedIn"
+      description: "PhD fluent in Mandarin, Cantonese & English. Runs our China factory4full ops control.",
+      linkedin: "https://www.linkedin.com/in/kwklaw/",
+      icon: FaCloud
     },
     {
-      name: "Anasim Asif",
+      name: "Shahrukh Ahmed",
       title: "CTO",
-      description: "Full-stack engineer. Built our entire platform from embedded firmware to cloud infrastructure.",
-      linkedin: "LinkedIn"
+      description: "Built UK's national COVID Pass platform for 60M users. Leads all backend and cloud architecture.",
+      linkedin: "https://www.linkedin.com/in/sahmed-limi",
+      icon: FaBrain
     }
   ];
 
@@ -771,19 +774,32 @@ export const TeamSection = () => {
               className="bg-white/5 backdrop-blur-sm rounded-3xl p-8 text-center border border-white/10 hover:border-[#54bb74]/30 transition-all duration-300"
             >
               <div className="relative mb-6">
-                {/* Professional avatar placeholder */}
-                <div className="w-24 h-24 bg-gradient-to-br from-[#54bb74] to-[#93cfa2] rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl">
-                  <span className="text-2xl font-[Amenti] font-bold text-white">
-                    {founder.name.split(' ').map(n => n[0]).join('')}
-                  </span>
+                {/* Professional role icon with LinkedIn */}
+                <div className="relative group">
+                  <motion.div 
+                    className="w-24 h-24 bg-gradient-to-br from-[#54bb74] to-[#93cfa2] rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl cursor-pointer"
+                    whileHover={{ scale: 1.1, rotate: 5 }}
+                    transition={{ duration: 0.3 }}
+                    onClick={() => window.open(founder.linkedin, '_blank')}
+                  >
+                    <founder.icon className="text-3xl text-white" />
+                  </motion.div>
+                  
+                  {/* LinkedIn overlay on hover */}
+                  <motion.div
+                    className="absolute inset-0 bg-[#0077b5] rounded-2xl flex items-center justify-center opacity-0 group-hover:opacity-90 transition-all duration-300 cursor-pointer"
+                    onClick={() => window.open(founder.linkedin, '_blank')}
+                  >
+                    <FaLinkedin className="text-3xl text-white" />
+                  </motion.div>
+                  
+                  {/* Glowing effect */}
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-[#54bb74]/10 to-[#93cfa2]/10 rounded-2xl blur-xl -z-10"
+                    animate={{ opacity: [0.3, 0.6, 0.3] }}
+                    transition={{ duration: 4, repeat: Infinity, delay: index }}
+                  />
                 </div>
-                
-                {/* Glowing effect */}
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-[#54bb74]/10 to-[#93cfa2]/10 rounded-2xl blur-xl"
-                  animate={{ opacity: [0.3, 0.6, 0.3] }}
-                  transition={{ duration: 4, repeat: Infinity, delay: index }}
-                />
               </div>
               
               <div className="space-y-4">
@@ -797,9 +813,21 @@ export const TeamSection = () => {
                   </p>
                 </div>
                 
-                <p className="text-white/70 leading-relaxed font-normal">
+                <p className="text-white/70 leading-relaxed font-normal mb-4">
                   {founder.description}
                 </p>
+                
+                {/* LinkedIn button */}
+                <motion.a
+                  href={founder.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-[#54bb74] hover:text-white transition-colors duration-300 text-sm font-medium"
+                  whileHover={{ x: 5 }}
+                >
+                  <FaLinkedin className="text-lg" />
+                  Connect on LinkedIn
+                </motion.a>
               </div>
             </motion.div>
           ))}
