@@ -11,8 +11,47 @@ export const TractionSection = () => {
   return (
     <motion.section
       ref={ref}
-      className="relative py-32 px-6 lg:px-12 bg-gradient-to-b from-[#f3ebe2] to-white/80"
+      className="relative py-32 px-6 lg:px-12 bg-gradient-to-b from-[#f3ebe2] to-white/80 overflow-hidden"
     >
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 pointer-events-none">
+        {/* Floating particles */}
+        {[...Array(12)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-2 h-2 bg-[#54bb74]/20 rounded-full"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+            }}
+            animate={{
+              y: [-20, 20, -20],
+              x: [-10, 10, -10],
+              opacity: [0.3, 0.8, 0.3],
+            }}
+            transition={{
+              duration: 4 + Math.random() * 4,
+              repeat: Infinity,
+              delay: Math.random() * 2,
+            }}
+          />
+        ))}
+        
+        {/* Geometric shapes */}
+        <motion.div
+          className="absolute top-20 right-20 w-32 h-32 border border-[#54bb74]/10 rounded-full"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+        />
+        <motion.div
+          className="absolute bottom-32 left-16 w-24 h-24 bg-gradient-to-br from-[#93cfa2]/5 to-[#54bb74]/5 rounded-2xl"
+          animate={{ 
+            rotate: [-5, 5, -5],
+            scale: [1, 1.1, 1]
+          }}
+          transition={{ duration: 6, repeat: Infinity }}
+        />
+      </div>
       <div className="max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
@@ -21,56 +60,75 @@ export const TractionSection = () => {
           className="text-center mb-20"
         >
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-[Amenti] text-[#292929] leading-[1.2] tracking-tight mb-6">
-            What We're <span className="font-[Amenti] italic text-[#54bb74]">Really</span> Building
+            The Inflection Point: <span className="font-[Amenti] italic text-[#54bb74]">Why LIMI Exists Now</span>
           </h2>
           <h3 className="text-2xl md:text-3xl font-[Amenti] text-[#292929]/80 mb-8">
-            From Light to Ubiquity
+            LIMI rides the convergence of three unstoppable trends
           </h3>
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
-          transition={{ duration: 1, delay: 0.4 }}
-          className="max-w-4xl mx-auto space-y-8"
-        >
-          <p className="text-xl md:text-2xl text-[#292929]/70 leading-relaxed text-center">
-            LIMI reimagines lighting as a modular, upgradable platform.
-          </p>
-          <p className="text-xl md:text-2xl text-[#292929]/70 leading-relaxed text-center">
-            Customers buy it for elegance and function—but what they're really installing is a plug-and-play AI port for the future.
-          </p>
-          
-          <div className="bg-white/50 backdrop-blur-sm rounded-3xl p-8 mt-12">
-            <h4 className="text-xl font-[Amenti] text-[#292929] mb-6 text-center">
-              With LIMI installed, upgrading a space becomes as simple as:
-            </h4>
-            <div className="space-y-4">
-              <div className="flex items-center gap-4">
-                <div className="w-2 h-2 bg-[#54bb74] rounded-full"></div>
-                <p className="text-lg text-[#292929]/80">Clicking in swappable sensors, cameras, mics, or speakers</p>
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="w-2 h-2 bg-[#54bb74] rounded-full"></div>
-                <p className="text-lg text-[#292929]/80">Running local AI on embedded edge processors</p>
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="w-2 h-2 bg-[#54bb74] rounded-full"></div>
-                <p className="text-lg text-[#292929]/80">Maintaining complete privacy and modular control</p>
-              </div>
-            </div>
-          </div>
-          
+        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto mb-12">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-            transition={{ duration: 1, delay: 0.8 }}
-            className="text-center pt-8"
+            initial={{ opacity: 0, y: 40 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+            transition={{ duration: 1, delay: 0.4 }}
+            className="bg-white/50 backdrop-blur-sm rounded-3xl p-8 text-center"
           >
-            <p className="text-2xl font-[Amenti] text-[#54bb74] leading-relaxed">
-              Zero rewiring. Zero disruption. Just seamless intelligence.
+            <div className="w-16 h-16 bg-gradient-to-r from-[#54bb74] to-[#93cfa2] rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <FaBrain className="text-white text-2xl" />
+            </div>
+            <h4 className="text-xl font-[Amenti] text-[#292929] mb-4">
+              AI Maturity
+            </h4>
+            <p className="text-[#292929]/70 leading-relaxed">
+              Edge AI chips + powerful local LLMs unlock real-time, ambient intelligence
             </p>
           </motion.div>
+          
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+            transition={{ duration: 1, delay: 0.6 }}
+            className="bg-white/50 backdrop-blur-sm rounded-3xl p-8 text-center"
+          >
+            <div className="w-16 h-16 bg-gradient-to-r from-[#54bb74] to-[#93cfa2] rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <FaMicrochip className="text-white text-2xl" />
+            </div>
+            <h4 className="text-xl font-[Amenti] text-[#292929] mb-4">
+              Sensor & Hardware Miniaturization
+            </h4>
+            <p className="text-[#292929]/70 leading-relaxed">
+              High-performance modules now embed invisibly into everyday objects
+            </p>
+          </motion.div>
+          
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+            transition={{ duration: 1, delay: 0.8 }}
+            className="bg-white/50 backdrop-blur-sm rounded-3xl p-8 text-center"
+          >
+            <div className="w-16 h-16 bg-gradient-to-r from-[#54bb74] to-[#93cfa2] rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <FaStore className="text-white text-2xl" />
+            </div>
+            <h4 className="text-xl font-[Amenti] text-[#292929] mb-4">
+              Market Readiness
+            </h4>
+            <p className="text-[#292929]/70 leading-relaxed">
+              Post-COVID home focus + device fatigue = demand for seamless, private tech
+            </p>
+          </motion.div>
+        </div>
+        
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+          transition={{ duration: 1, delay: 1 }}
+          className="text-center pt-8"
+        >
+          <p className="text-2xl font-[Amenti] text-[#54bb74] leading-relaxed">
+            LIMI is not early. It's right on time. The moment for infrastructure-led ambient AI is now.
+          </p>
         </motion.div>
       </div>
     </motion.section>
@@ -82,22 +140,34 @@ export const StrategySection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
+  const problemSolution = {
+    problem: [
+      "\"Smart\" devices are fragmented, cloud-dependent, and privacy-invasive",
+      "No unified, ambient interface exists in the built environment"
+    ],
+    solution: [
+      "Sensors, cameras, mics, speakers",
+      "Embedded AI processors running locally",
+      "Zero rewiring or disruption"
+    ]
+  };
+
   const metrics = [
     {
-      title: "£50M+ signed LOI with a national distributor",
-      description: "Multi-year partnership validation"
+      title: "£57.5M LOI Signed",
+      description: "Commercial Viability: De-risked"
     },
     {
-      title: "5-year profit-sharing model secured",
-      description: "Sustainable revenue framework"
+      title: "0% Churn from Beta Installs",
+      description: "Product-Market Fit: De-risked"
     },
     {
-      title: "0% customer churn from live beta installs",
-      description: "Proven product-market fit"
+      title: "55%+ Gross Margins",
+      description: "Scalable Profitability: De-risked"
     },
     {
-      title: "55%+ gross margins from launch",
-      description: "Software-like economics"
+      title: "<£200K Bootstrapped",
+      description: "Capital Efficiency: De-risked"
     }
   ];
 
@@ -133,45 +203,72 @@ export const StrategySection = () => {
           className="text-center mb-20"
         >
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-[Amenti] text-[#292929] leading-[1.2] tracking-tight mb-6">
-            Why Now? <span className="font-[Amenti] italic text-[#54bb74]">Why LIMI?</span>
+            The Smart Home is Still a <span className="font-[Amenti] italic text-[#54bb74]">Dumb House</span>
           </h2>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto mb-16">
           <motion.div
             initial={{ opacity: 0, x: -40 }}
             animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -40 }}
             transition={{ duration: 1, delay: 0.4 }}
-            className="space-y-6"
+            className="bg-red-50/50 backdrop-blur-sm rounded-3xl p-8"
           >
-            {metrics.map((metric, index) => (
-              <div key={index} className="flex items-start gap-4 p-4 bg-white/50 rounded-2xl">
-                <div className="w-2 h-2 bg-[#54bb74] rounded-full mt-3 flex-shrink-0"></div>
-                <div>
-                  <h4 className="text-lg font-medium text-[#292929] mb-1">{metric.title}</h4>
-                  <p className="text-[#292929]/60 text-sm">{metric.description}</p>
+            <h3 className="text-2xl font-[Amenti] text-red-600 mb-6">Problem:</h3>
+            <div className="space-y-4">
+              {problemSolution.problem.map((item, index) => (
+                <div key={index} className="flex items-start gap-4">
+                  <div className="w-2 h-2 bg-red-500 rounded-full mt-3 flex-shrink-0"></div>
+                  <p className="text-[#292929]/80 leading-relaxed">{item}</p>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0, x: 40 }}
             animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 40 }}
             transition={{ duration: 1, delay: 0.6 }}
-            className="space-y-6"
+            className="bg-green-50/50 backdrop-blur-sm rounded-3xl p-8"
           >
-            {advantages.map((advantage, index) => (
-              <div key={index} className="flex items-start gap-4 p-4 bg-white/50 rounded-2xl">
-                <div className="w-2 h-2 bg-[#54bb74] rounded-full mt-3 flex-shrink-0"></div>
-                <div>
-                  <h4 className="text-lg font-medium text-[#292929] mb-1">{advantage.title}</h4>
-                  <p className="text-[#292929]/60 text-sm">{advantage.description}</p>
+            <h3 className="text-2xl font-[Amenti] text-[#54bb74] mb-6">Solution:</h3>
+            <p className="text-[#292929]/80 leading-relaxed mb-6">
+              LIMI installs modular, upgradeable AI nodes in the one place that already touches every space: lighting. Each fixture becomes an AI port, enabling seamless intelligence via:
+            </p>
+            <div className="space-y-4">
+              {problemSolution.solution.map((item, index) => (
+                <div key={index} className="flex items-start gap-4">
+                  <div className="w-2 h-2 bg-[#54bb74] rounded-full mt-3 flex-shrink-0"></div>
+                  <p className="text-[#292929]/80 leading-relaxed">{item}</p>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </motion.div>
         </div>
+        
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+          transition={{ duration: 1, delay: 0.8 }}
+          className="text-center mb-16"
+        >
+          <h3 className="text-3xl font-[Amenti] text-[#292929] mb-12">
+            De-Risked at Every Level: <span className="text-[#54bb74]">The Foundation is Built</span>
+          </h3>
+          
+          <div className="grid md:grid-cols-4 gap-6 max-w-6xl mx-auto">
+            {metrics.map((metric, index) => (
+              <div key={index} className="bg-white/50 backdrop-blur-sm rounded-2xl p-6 text-center">
+                <h4 className="text-2xl font-[Amenti] font-bold text-[#54bb74] mb-2">{metric.title}</h4>
+                <p className="text-[#292929]/70 text-sm font-medium">{metric.description}</p>
+              </div>
+            ))}
+          </div>
+          
+          <p className="text-xl font-[Amenti] text-[#292929] mt-8">
+            We didn't build a pitch. We built a working company.
+          </p>
+        </motion.div>
       </div>
     </motion.section>
   );
@@ -185,21 +282,27 @@ export const OpportunitySection = () => {
   const layers = [
     {
       icon: FaLightbulb,
-      title: "Physical Layer — Modular Hardware",
-      description: "Patent-backed, elegant fixtures that retrofit into existing sockets—no rewiring required.",
+      title: "Lighting Infrastructure",
+      description: "The entry point that's already in every space",
       gradient: "from-[#54bb74] to-[#93cfa2]"
     },
     {
       icon: FaMicrochip,
-      title: "Intelligence Layer — On-Device AI",
-      description: "Localized edge AI built into every unit. Reflex-fast, private, and always-on—no cloud dependency.",
+      title: "Expanded Capabilities",
+      description: "Cameras that monitor posture, Sensors for health, security, air quality",
       gradient: "from-[#93cfa2] to-[#54bb74]"
     },
     {
-      icon: FaStore,
-      title: "Platform Layer — AI Distribution Gateway",
-      description: "A model-agnostic runtime for 3rd-party LLMs and assistants. LIMI becomes the ambient App Store.",
+      icon: FaWifi,
+      title: "Integration",
+      description: "Sensors for health, security, air quality",
       gradient: "from-[#54bb74] to-[#93cfa2]"
+    },
+    {
+      icon: FaBrain,
+      title: "Ambient Intelligence",
+      description: "Local LLMs powering real-world assistants",
+      gradient: "from-[#93cfa2] to-[#54bb74]"
     }
   ];
 
@@ -216,8 +319,11 @@ export const OpportunitySection = () => {
           className="text-center mb-20"
         >
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-[Amenti] text-[#292929] leading-[1.2] tracking-tight mb-6">
-            Our <span className="font-[Amenti] italic text-[#54bb74]">Three-Layered</span> Moat
+            Lighting Is Just the Wedge. <span className="font-[Amenti] italic text-[#54bb74]">The Real Play Is Infrastructure</span>
           </h2>
+          <p className="text-xl text-[#292929]/70 max-w-4xl mx-auto leading-relaxed">
+            LIMI uses lighting to earn permanent access to ceilings and walls—then expands horizontally:
+          </p>
         </motion.div>
 
         <div className="space-y-16">
@@ -258,6 +364,178 @@ export const OpportunitySection = () => {
               </div>
             </motion.div>
           ))}
+        </div>
+        
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+          transition={{ duration: 1, delay: 1.2 }}
+          className="text-center mt-20"
+        >
+          <p className="text-2xl font-[Amenti] text-[#292929] leading-relaxed max-w-4xl mx-auto">
+            This isn't participation in the smart lighting category. It's a full absorption toward owning the <span className="text-[#54bb74] font-semibold">OS layer for physical space.</span>
+          </p>
+        </motion.div>
+      </div>
+    </motion.section>
+  );
+};
+
+// Our Learning Loop: The Intelligence Flywheel Section
+export const LearningLoopSection = () => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+
+  const loopSteps = [
+    {
+      icon: FaBuilding,
+      title: "Deploy Infra",
+      description: "LIMI nodes gather unique occupancy, motion, air, and engagement data",
+      gradient: "from-[#54bb74] to-[#93cfa2]"
+    },
+    {
+      icon: FaBrain,
+      title: "Learn Patterns",
+      description: "Proprietary edge/cloud models extract behavioral insights",
+      gradient: "from-[#93cfa2] to-[#54bb74]"
+    },
+    {
+      icon: FaArrowRight,
+      title: "Improve System",
+      description: "OTA updates push better predictions, automation, and features",
+      gradient: "from-[#54bb74] to-[#93cfa2]"
+    },
+    {
+      icon: FaHome,
+      title: "Deepen Engagement",
+      description: "More use → better performance → more value → faster loop",
+      gradient: "from-[#93cfa2] to-[#54bb74]"
+    }
+  ];
+
+  return (
+    <motion.section
+      ref={ref}
+      className="relative py-32 px-6 lg:px-12 bg-white/80"
+    >
+      <div className="max-w-7xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+          transition={{ duration: 1, delay: 0.2 }}
+          className="text-center mb-20"
+        >
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-[Amenti] text-[#292929] leading-[1.2] tracking-tight mb-6">
+            Our Learning Loop: <span className="font-[Amenti] italic text-[#54bb74]">The Intelligence Flywheel</span>
+          </h2>
+          <p className="text-xl text-[#292929]/70 max-w-4xl mx-auto leading-relaxed mb-8">
+            A defensible tech company, not a system integrator.
+          </p>
+      
+        </motion.div>
+
+        <div className="max-w-7xl mx-auto">
+          {/* Desktop: 3-column layout, Mobile: stacked */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12 items-center">
+            
+            {/* Left Column - Content */}
+            <div className="order-2 lg:order-1 space-y-8">
+              {/* Deploy Infra */}
+              <motion.div
+                initial={{ opacity: 0, x: -40 }}
+                animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -40 }}
+                transition={{ duration: 1, delay: 0.8 }}
+                className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20"
+              >
+                <h4 className="text-lg font-[Amenti] font-bold text-[#292929] mb-3">
+                  Deploy Infra
+                </h4>
+                <p className="text-sm text-[#292929]/70 leading-relaxed">
+                  LIMI nodes gather unique occupancy, motion, air, and engagement data
+                </p>
+              </motion.div>
+              
+              {/* Deepen Engagement */}
+              <motion.div
+                initial={{ opacity: 0, x: -40 }}
+                animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -40 }}
+                transition={{ duration: 1, delay: 1.2 }}
+                className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20"
+              >
+                <h4 className="text-lg font-[Amenti] font-bold text-[#292929] mb-3">
+                  Deepen Engagement
+                </h4>
+                <p className="text-sm text-[#292929]/70 leading-relaxed">
+                  More use → better performance → more value → faster loop
+                </p>
+              </motion.div>
+            </div>
+            
+            {/* Center Column - Wheel Image */}
+            <div className="order-1 lg:order-2 flex justify-center">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
+                transition={{ duration: 1.2, delay: 0.6 }}
+                className="relative"
+              >
+                <div className="w-72 h-72 md:w-80 md:h-80 lg:w-96 lg:h-96">
+                  <img 
+                    src="/images/limiai/wheel.png" 
+                    alt="LIMI Intelligence Flywheel" 
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+              </motion.div>
+            </div>
+            
+            {/* Right Column - Content */}
+            <div className="order-3 lg:order-3 space-y-8">
+              {/* Learn Patterns */}
+              <motion.div
+                initial={{ opacity: 0, x: 40 }}
+                animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 40 }}
+                transition={{ duration: 1, delay: 1.0 }}
+                className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20"
+              >
+                <h4 className="text-lg font-[Amenti] font-bold text-[#292929] mb-3">
+                  Learn Patterns
+                </h4>
+                <p className="text-sm text-[#292929]/70 leading-relaxed">
+                  Proprietary edge/cloud models extract behavioral insights
+                </p>
+              </motion.div>
+              
+              {/* Improve System */}
+              <motion.div
+                initial={{ opacity: 0, x: 40 }}
+                animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 40 }}
+                transition={{ duration: 1, delay: 1.4 }}
+                className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20"
+              >
+                <h4 className="text-lg font-[Amenti] font-bold text-[#292929] mb-3">
+                  Improve System
+                </h4>
+                <p className="text-sm text-[#292929]/70 leading-relaxed">
+                  OTA updates push better predictions, automation, and features
+                </p>
+              </motion.div>
+            </div>
+          </div>
+          
+          {/* Bottom Quote */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            transition={{ duration: 1, delay: 1.6 }}
+            className="text-center max-w-2xl mx-auto mt-12"
+          >
+            <div className="bg-[#54bb74]/10 border-l-4 border-[#54bb74] rounded-r-2xl p-6">
+              <p className="text-xl font-[Amenti] text-[#54bb74] leading-relaxed">
+                Like Tesla, Waze, and Google—LIMI gets better the more it's used.
+              </p>
+            </div>
+          </motion.div>
         </div>
       </div>
     </motion.section>
@@ -393,18 +671,21 @@ export const TeamSection = () => {
   const founders = [
     {
       name: "Umer Asif",
-      title: "CEO & Founder",
-      description: "A first-principles engineer who took the company from idea to a £50M+ LOI by mastering the entire stack. Built our factory and modular IP stack from scratch."
+      title: "Founder & CEO",
+      description: "Bootstrapped LIMI to £57.5M LOI. Built factory + modular IP after top-tier R&D firms failed.",
+      linkedin: "LinkedIn"
     },
     {
       name: "Dr. Karen Law",
-      title: "Co-Founder & COO", 
-      description: "PhD and manufacturing lead who de-risks our entire China operation and scaled our manufacturing discipline."
+      title: "COO", 
+      description: "PhD fluent in Mandarin, Cantonese & English. Runs our China factory—full ops control.",
+      linkedin: "LinkedIn"
     },
     {
       name: "Shahrukh Ahmed",
-      title: "Co-Founder & CTO",
-      description: "Proven architect of national-scale, mission-critical software. Ensures our platform is robust, secure, and ready for global deployment."
+      title: "CTO",
+      description: "Built UK's national COVID Pass platform for 60M users. Leads all backend and cloud architecture.",
+      linkedin: "LinkedIn"
     }
   ];
 
@@ -421,7 +702,7 @@ export const TeamSection = () => {
           className="text-center mb-20"
         >
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-[Amenti] text-[#292929] leading-[1.2] tracking-tight mb-6">
-            Meet the <span className="font-[Amenti] italic text-[#54bb74]">Founders</span>
+            Backed by Builders. <span className="font-[Amenti] italic text-[#54bb74]">Proven at Scale.</span>
           </h2>
         </motion.div>
 
@@ -596,11 +877,11 @@ export const FinalCTASection = () => {
           >
             <div className="space-y-8">
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-[Amenti] text-[#292929] leading-[1.2] tracking-tight mb-8">
-                Want to <span className="font-[Amenti] italic text-[#54bb74]">explore</span> further?
+                Want to Explore the <span className="font-[Amenti] italic text-[#54bb74]">Full Infrastructure Play?</span>
               </h2>
               
               <p className="text-xl text-[#292929]/70 leading-relaxed mb-12">
-                Our full Data Room includes detailed financials, technical architecture, product demos, and commercial traction.
+                Our private Data Room includes technical architecture, product demos, financials, and commercial agreements.
               </p>
             </div>
             

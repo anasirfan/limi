@@ -4,7 +4,7 @@ import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 import { FaArrowRight, FaChevronDown, FaTimes } from 'react-icons/fa';
 import { HiCube } from 'react-icons/hi';
 import Link from 'next/link';
-import { TractionSection, StrategySection, OpportunitySection, MarketSection, TeamSection, RaisingSection, FinalCTASection } from './sections-light';
+import { TractionSection, StrategySection, OpportunitySection, LearningLoopSection, MarketSection, TeamSection, RaisingSection, FinalCTASection } from './sections-enhanced';
 
 const LimiAIPage = () => {
   const [mounted, setMounted] = useState(false);
@@ -203,9 +203,8 @@ const LimiAIPage = () => {
             className="space-y-8 mb-16"
           >
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-[Amenti] text-[#292929] leading-[1.1] tracking-tight">
-              <span className="block font-[Amenti] font-bold">LIMI: The Trojan Horse</span>
-              <span className="block bg-gradient-to-r from-[#54bb74] via-[#93cfa2] to-[#54bb74] bg-clip-text text-transparent font-[Amenti] font-bold">for AI</span>
-              <span className="block text-2xl md:text-3xl lg:text-4xl font-[Amenti] font-normal mt-4 text-[#292929]/80">in Every Space</span>
+              <span className="block font-[Amenti] font-bold">LIMI</span>
+              <span className="block text-2xl md:text-3xl lg:text-4xl font-[Amenti] font-normal mt-4 text-[#292929]/80">The Infrastructure OS for Ambient AI in Every Space.</span>
             </h1>
             
             <motion.p
@@ -214,9 +213,9 @@ const LimiAIPage = () => {
               transition={{ duration: 1, delay: 1 }}
               className="text-xl md:text-2xl text-[#292929]/70 max-w-4xl mx-auto leading-relaxed font-normal tracking-wide"
             >
-              LIMI is the modular infrastructure that installs AI into ceilings and walls—starting with the one
+             We're the modular infrastructure turning ceilings and walls into intelligent surfaces—starting with the one thing every
               <br className="hidden md:block" />
-              <span className="text-[#292929]/50">thing every space already needs: light.</span>
+              <span className="text-[#292929]/50">space already has: <span className="font-semibold text-[#54BB74]">light.</span></span>
             </motion.p>
           </motion.div>
 
@@ -431,9 +430,10 @@ const LimiAIPage = () => {
       <TractionSection />
       <StrategySection />
       <OpportunitySection />
-      <MarketSection />
+      <LearningLoopSection />
+      {/* <MarketSection /> */}
       <TeamSection />
-      <RaisingSection />
+      {/* <RaisingSection /> */}
       <FinalCTASection />
     </div>
   );
