@@ -331,6 +331,18 @@ export const StrategySection = () => {
             ))}
           </div>
         </motion.div>
+        
+        {/* Ending tagline */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+          transition={{ duration: 1, delay: 1.0 }}
+          className="text-center mt-20"
+        >
+          <p className="text-2xl md:text-3xl font-[Amenti] text-white leading-relaxed">
+            We didn't build a pitch. We built a <span className="text-[#54bb74] font-semibold italic">working company</span>.
+          </p>
+        </motion.div>
       </div>
     </motion.section>
   );
@@ -675,6 +687,18 @@ export const LearningLoopSection = () => {
             </motion.div>
           </div>
         </div>
+        
+        {/* Ending tagline */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+          transition={{ duration: 1, delay: 1.6 }}
+          className="text-center mt-20"
+        >
+          <p className="text-2xl md:text-3xl font-[Amenti] text-[#EAE0DC] leading-relaxed">
+            Like Tesla, Waze, and Google—<span className="text-[#54bb74] font-semibold italic">LIMI gets better the more it's used</span>.
+          </p>
+        </motion.div>
       </div>
     </motion.section>
   );
