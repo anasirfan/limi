@@ -282,7 +282,7 @@ const getDefaultSystemAssignments = (amount) => {
       return [
         { id: 0, systemType: "bar", baseDesign: "orbit" , designId: "system_base_1", isSystem: true},
         { id: 1, systemType: "", baseDesign: "bumble" , designId: "product_2", isSystem: false},
-        { id: 2, systemType: "", baseDesign: "ico" , designId: "product_4", isSystem: true},
+        { id: 2, systemType: "universal", baseDesign: "aurora" , designId: "system_base_6", isSystem: true},
       ];
     case 6:
       return [
@@ -290,8 +290,8 @@ const getDefaultSystemAssignments = (amount) => {
         { id: 1, systemType: "", baseDesign: "piko" , designId: "product_5", isSystem: false},
         { id: 2, systemType: "bar", baseDesign: "helix" , designId: "system_base_2", isSystem: true},
         { id: 3, systemType: "bar", baseDesign: "zenith" , designId: "system_base_4", isSystem: true},
-        { id: 4, systemType: "", baseDesign: "ico" , designId: "product_4", isSystem: false},
-        { id: 5, systemType: "bar", baseDesign: "helix" , designId: "system_base_2", isSystem: true},
+        { id: 4, systemType: "universal", baseDesign: "equinox" , designId: "system_base_12", isSystem: true},
+        { id: 5, systemType: "universal", baseDesign: "stellar" , designId: "system_base_4", isSystem: true},
       ];
     default:
       return Array.from({ length: amount }, (_, i) => ({ id: i, systemType: "universal", baseDesign: "stellar" , designId: `system_base_${i + 1}` ,isSystem:true}));
@@ -652,7 +652,6 @@ useEffect(() => {
       newSystems.map((system, idx) => ({
         isSystem: true,
         systemType: system.systemType,
-        design: system.design,
         designId: system.designId,
       }))
     );

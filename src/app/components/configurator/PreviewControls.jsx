@@ -50,6 +50,7 @@ export const PreviewControls = ({
   const carouselRef = useRef(null);
   const onboardingTimeoutRef = useRef(null);
   const lightingRef = useRef(null);
+  const debounceTimeout = useRef(null);
 
   const dispatch = useDispatch();
   const favorites = useSelector((state) => state.favorites.items);
@@ -69,13 +70,9 @@ export const PreviewControls = ({
       if (lightingRef.current && !lightingRef.current.contains(event.target)) {
         setIsLightingPanelOpen(false);
       }
-    }
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    }    
   }, []);
+  
 
   const guideRef = useRef(null);
 
@@ -90,6 +87,15 @@ export const PreviewControls = ({
     window.addEventListener("resize", checkIfMobile);
     return () => window.removeEventListener("resize", checkIfMobile);
   }, []);
+  
+  useEffect(() => {
+    // Debounce: Only send message after user stops changing brightness for 150ms
+    if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
+    debounceTimeout.current = setTimeout(() => {
+      sendMessageToPlayCanvas("brightness:" + brightness);
+    });
+    return () => clearTimeout(debounceTimeout.current);
+  }, [brightness]);
 
   // Onboarding animation logic
   useEffect(() => {
@@ -224,7 +230,6 @@ export const PreviewControls = ({
         </button>
 
         {/* Lighting Control Button */}
-     
 
         {(isHovered || (isMobile && isHovered)) && (
           <div className="absolute -left-4 top-12 z-[101] w-64 p-4 bg-white rounded-lg shadow-xl border border-gray-200 animate-fadeIn">
@@ -278,179 +283,220 @@ export const PreviewControls = ({
         )}
       </div>
 
-        <div className="absolute top-40 left-8 z-50 flex gap-2" ref={lightingRef}>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className={`p-3 rounded-full transition-all duration-300 shadow-lg backdrop-blur-sm border ${
-              isLightingPanelOpen 
-                ? 'bg-blue-600/90 border-blue-400 text-white' 
-                : 'bg-gray-900/80 border-gray-600 text-gray-300 hover:bg-gray-800/90 hover:border-gray-500'
-            }`}
-            onClick={() => setIsLightingPanelOpen(!isLightingPanelOpen)}
-            title="Lighting Controls"
+      <div className="absolute top-40 left-8 z-50 flex gap-2" ref={lightingRef}>
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className={`p-3 rounded-full transition-all duration-300 shadow-lg backdrop-blur-sm border ${
+            isLightingPanelOpen
+              ? "bg-blue-600/90 border-blue-400 text-white"
+              : "bg-gray-900/80 border-gray-600 text-gray-300 hover:bg-gray-800/90 hover:border-gray-500"
+          }`}
+          onClick={() => setIsLightingPanelOpen(!isLightingPanelOpen)}
+          title="Lighting Controls"
+        >
+          <motion.div
+            animate={{ rotate: isLightingPanelOpen ? 180 : 0 }}
+            transition={{ duration: 0.3 }}
           >
+            <FaLightbulb
+              size={18}
+              className={lightingOn ? "text-yellow-300" : ""}
+            />
+          </motion.div>
+        </motion.button>
+
+        {/* Lighting Control Panel */}
+        <AnimatePresence>
+          {isLightingPanelOpen && (
             <motion.div
-              animate={{ rotate: isLightingPanelOpen ? 180 : 0 }}
-              transition={{ duration: 0.3 }}
+              initial={{ opacity: 0, y: -20, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -20, scale: 0.9 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              className="absolute top-16 bg-gray-900/95 backdrop-blur-md border border-gray-600/50 rounded-xl shadow-2xl p-5 w-72 z-50"
             >
-              <FaLightbulb size={18} className={lightingOn ? 'text-yellow-300' : ''} />
-            </motion.div>
-          </motion.button>
-
-          {/* Lighting Control Panel */}
-          <AnimatePresence>
-            {isLightingPanelOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: -20, scale: 0.9 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -20, scale: 0.9 }}
-                transition={{ duration: 0.3, ease: "easeOut" }}
-                className="absolute top-16 bg-gray-900/95 backdrop-blur-md border border-gray-600/50 rounded-xl shadow-2xl p-5 w-72 z-50"
-              >
-                {/* Header */}
-                <div className="flex items-center justify-between mb-5">
-                  <div className="flex items-center gap-2">
-                    <FaLightbulb className={`${lightingOn ? 'text-yellow-400' : 'text-gray-400'} transition-colors`} />
-                    <h3 className="text-white font-semibold text-lg">Lighting</h3>
-                  </div>
-                  <div className={`w-2 h-2 rounded-full ${lightingOn ? 'bg-green-400' : 'bg-red-400'} animate-pulse`}></div>
+              {/* Header */}
+              <div className="flex items-center justify-between mb-5">
+                <div className="flex items-center gap-2">
+                  <FaLightbulb
+                    className={`${
+                      lightingOn ? "text-yellow-400" : "text-gray-400"
+                    } transition-colors`}
+                  />
+                  <h3 className="text-white font-semibold text-lg">Lighting</h3>
                 </div>
-                
-                {/* Power Toggle */}
-                <div className="flex items-center justify-between mb-6 p-3 bg-gray-800/50 rounded-lg">
-                  <div className="flex items-center gap-2">
-                    <span className="text-gray-200 font-medium">Power</span>
-                    <span className={`text-xs px-2 py-1 rounded-full ${
-                      lightingOn ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
-                    }`}>
-                      {lightingOn ? 'ON' : 'OFF'}
-                    </span>
-                  </div>
-                  <motion.button
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => setLightingOn(!lightingOn)}
-                    className={`relative inline-flex h-7 w-12 items-center rounded-full transition-all duration-300 ${
-                      lightingOn ? 'bg-emerald-500 shadow-emerald-500/30' : 'bg-gray-600'
-                    } shadow-lg`}
+                <div
+                  className={`w-2 h-2 rounded-full ${
+                    lightingOn ? "bg-green-400" : "bg-red-400"
+                  } animate-pulse`}
+                ></div>
+              </div>
+
+              {/* Power Toggle */}
+              <div className="flex items-center justify-between mb-6 p-3 bg-gray-800/50 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <span className="text-gray-200 font-medium">Power</span>
+                  <span
+                    className={`text-xs px-2 py-1 rounded-full ${
+                      lightingOn
+                        ? "bg-green-500/20 text-green-400"
+                        : "bg-red-500/20 text-red-400"
+                    } transition-colors duration-300`}
                   >
-                    <motion.span
-                      layout
-                      transition={{ type: "spring", stiffness: 700, damping: 30 }}
-                      className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ${
-                        lightingOn ? 'translate-x-6' : 'translate-x-1'
-                      }`}
-                    />
-                  </motion.button>
+                    {lightingOn ? "ON" : "OFF"}
+                  </span>
                 </div>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={lightingOn}
+                  onClick={() => {
+                    const newState = !lightingOn;
+                    setLightingOn(newState);
+                    // Send message to PlayCanvas when power state changes
+                    const message = newState ? 'lighting:on' : 'lighting:off';
+                    const iframe = document.getElementById("playcanvas-app");
+                    if (iframe && iframe.contentWindow) {
+                      console.log(`Sending message to PlayCanvas: ${message}`);
+                      iframe.contentWindow.postMessage(message, "*");
+                    }
+                  }}
+                  className={`relative inline-flex h-7 w-14 items-center rounded-full transition-colors duration-300 focus:outline-none ${
+                    lightingOn ? "bg-emerald-500" : "bg-gray-600"
+                  }`}
+                >
+                  <span
+                    className={`${
+                      lightingOn ? "translate-x-8" : "translate-x-1"
+                    } inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition-transform duration-300 ease-in-out`}
+                  />
+                </button>
+              </div>
 
-                {/* Color Temperature Control */}
-                <div className="mb-6">
-                  <div className="flex items-center justify-between mb-3">
-                    <label className="text-gray-200 font-medium">
-                      Color Temperature
-                    </label>
-                    <span className="text-xs  px-2 py-1 rounded text-white font-medium">
-                      {Math.round(2700 + (colorTemperature / 100) * (6500 - 2700))}K
-                    </span>
-                  </div>
-                  <div className="relative">
-                    <input
-                      type="range"
-                      min="0"
-                      max="100"
-                      value={colorTemperature}
-                      onChange={(e) => setColorTemperature(Number(e.target.value))}
-                      className="w-full h-3 rounded-lg appearance-none cursor-pointer slider-enhanced"
-                      style={{
-                        background: `linear-gradient(to right, 
+              {/* Color Temperature Control */}
+              <div className="mb-6">
+                <div className="flex items-center justify-between mb-3">
+                  <label className="text-gray-200 font-medium">
+                    Color Temperature
+                  </label>
+                  <span className="text-xs  px-2 py-1 rounded text-white font-medium">
+                    {Math.round(
+                      2700 + (colorTemperature / 100) * (6500 - 2700)
+                    )}
+                    K
+                  </span>
+                </div>
+                <div className="relative">
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={colorTemperature}
+                    onChange={(e) =>
+                      setColorTemperature(Number(e.target.value))
+                    }
+                    className="w-full h-3 rounded-lg appearance-none cursor-pointer slider-enhanced"
+                    style={{
+                      background: `linear-gradient(to right, 
                           #fb923c 0%, 
                           #fde047 50%, 
                           #60a5fa 100%
                         )`,
-                        boxShadow: '0 2px 4px rgba(0,0,0,0.3)'
-                      }}
-                    />
-                    <div className="flex justify-between text-xs text-gray-400 mt-2">
-                      <span>Warm</span>
-                      <span>Neutral</span>
-                      <span>Cool</span>
-                    </div>
+                      boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
+                    }}
+                  />
+                  <div className="flex justify-between text-xs text-gray-400 mt-2">
+                    <span>Warm</span>
+                    <span>Neutral</span>
+                    <span>Cool</span>
                   </div>
                 </div>
+              </div>
 
-                {/* Brightness Control */}
-                <div className="mb-3">
-                  <div className="flex items-center justify-between mb-3">
-                  <label className="text-gray-200 font-medium">
-                      Brightness
-                    </label>
-                    <span className="text-xs px-2 py-1 rounded text-white font-medium">
-                      {brightness}%
-                    </span>
-                  </div>
-                  <div className="relative">
-                    <input
-                      type="range"
-                      min="0"
-                      max="100"
-                      value={brightness}
-                      onChange={(e) => setBrightness(Number(e.target.value))}
-                      className="w-full h-3 rounded-lg appearance-none cursor-pointer slider-enhanced"
-                      style={{
-                        background: `linear-gradient(to right, 
-                          #374151 0%, 
-                          #fbbf24 ${brightness}%, 
-                          #374151 ${brightness}%
-                        )`,
-                        boxShadow: '0 2px 4px rgba(0,0,0,0.3)'
-                      }}
-                    />
-                    <div className="flex justify-between text-xs text-gray-400 mt-2">
-                      <span className="flex items-center gap-1">
-                        <span className="text-gray-500">🌙</span> Dim
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <span className="text-yellow-400">☀️</span> Bright
-                      </span>
-                    </div>
-                  </div>
-                </div>
+              {/* Brightness Control */}
+              <div className="mb-3">
+  <div className="flex items-center justify-between mb-3">
+    <label className="text-gray-200 font-medium">
+      Brightness
+    </label>
+    <span className="text-xs px-2 py-1 rounded text-white font-medium">
+      {brightness}%
+    </span>
+  </div>
+  <div className="relative">
+    <input
+      type="range"
+      min="0"
+      max="100"
+      value={brightness}
+      onChange={(e) => setBrightness(Number(e.target.value))}
+      className="w-full h-3 rounded-lg appearance-none cursor-pointer slider-enhanced"
+      style={{
+        background: `linear-gradient(to right, 
+            #374151 0%, 
+            #fbbf24 ${brightness}%, 
+            #374151 ${brightness}%
+          )`,
+        boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
+      }}
+    />
+    <div className="flex justify-between text-xs text-gray-400 mt-2">
+      <span className="flex items-center gap-1">
+        <span className="text-gray-500">🌙</span> Dim
+      </span>
+      <span className="flex items-center gap-1">
+        <span className="text-yellow-400">☀️</span> Bright
+      </span>
+    </div>
+  </div>
+</div>
 
-                {/* Quick Presets */}
-                <div className="mt-4 pt-4 border-t border-gray-700">
-                  <label className="text-gray-200 font-medium text-sm mb-2 block">Quick Presets</label>
-                  <div className="flex gap-2">
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => { setColorTemperature(20); setBrightness(80); }}
-                      className="flex-1 px-3 py-2 bg-orange-500/20 border border-orange-500/30 rounded-lg text-orange-300 text-xs font-medium hover:bg-orange-500/30 transition-all"
-                    >
-                      Cozy
-                    </motion.button>
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => { setColorTemperature(50); setBrightness(100); }}
-                      className="flex-1 px-3 py-2 bg-yellow-500/20 border border-yellow-500/30 rounded-lg text-yellow-300 text-xs font-medium hover:bg-yellow-500/30 transition-all"
-                    >
-                      Natural
-                    </motion.button>
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => { setColorTemperature(80); setBrightness(90); }}
-                      className="flex-1 px-3 py-2 bg-blue-500/20 border border-blue-500/30 rounded-lg text-blue-300 text-xs font-medium hover:bg-blue-500/30 transition-all"
-                    >
-                      Focus
-                    </motion.button>
-                  </div>
+              {/* Quick Presets */}
+              <div className="mt-4 pt-4 border-t border-gray-700">
+                <label className="text-gray-200 font-medium text-sm mb-2 block">
+                  Quick Presets
+                </label>
+                <div className="flex gap-2">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => {
+                      setColorTemperature(20);
+                      setBrightness(80);
+                    }}
+                    className="flex-1 px-3 py-2 bg-orange-500/20 border border-orange-500/30 rounded-lg text-orange-300 text-xs font-medium hover:bg-orange-500/30 transition-all"
+                  >
+                    Cozy
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => {
+                      setColorTemperature(50);
+                      setBrightness(100);
+                    }}
+                    className="flex-1 px-3 py-2 bg-yellow-500/20 border border-yellow-500/30 rounded-lg text-yellow-300 text-xs font-medium hover:bg-yellow-500/30 transition-all"
+                  >
+                    Natural
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => {
+                      setColorTemperature(80);
+                      setBrightness(90);
+                    }}
+                    className="flex-1 px-3 py-2 bg-blue-500/20 border border-blue-500/30 rounded-lg text-blue-300 text-xs font-medium hover:bg-blue-500/30 transition-all"
+                  >
+                    Focus
+                  </motion.button>
                 </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
       <div className="absolute top-24 right-8 z-50 flex gap-2">
         <button
           className="p-2 rounded-full bg-gray-800 text-gray-300 hover:opacity-90 transition-all"
