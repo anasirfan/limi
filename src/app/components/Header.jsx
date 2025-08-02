@@ -10,6 +10,7 @@ import { removeFromFavorites } from '../redux/slices/favoritesSlice';
 import { usePathname } from 'next/navigation';
 import gsap from 'gsap';
 import { FaUser, FaSignOutAlt, FaUserCircle, FaBell, FaPortrait, FaTachometerAlt, FaChevronDown, FaHeart, FaShoppingCart, FaTrash, FaTimes, FaSignInAlt, FaComments } from 'react-icons/fa';
+import CSSThemeToggle, { CompactCSSThemeToggle } from './ui/CSSThemeToggle';
 
 const Header = () => {
   const router = useRouter();
@@ -268,6 +269,11 @@ const Header = () => {
           </div>
 
           <div className="flex items-center gap-3">
+            {/* Theme Toggle - hidden on mobile, visible on desktop */}
+            <div className="hidden md:block">
+              <CSSThemeToggle />
+            </div>
+            
             {/* Hamburger button - hidden on desktop, visible on mobile */}
             <button
               className="md:hidden flex flex-col justify-center items-center w-10 h-10 z-50 relative"
@@ -444,6 +450,14 @@ const Header = () => {
                 </span>
               </button>
             )}
+
+            {/* Mobile Theme Toggle */}
+            <div className="flex items-center justify-center mt-8 mb-4">
+              <div className="flex items-center gap-3 px-6 py-3 rounded-xl bg-charleston-green-light border border-emerald">
+                <span className="text-emerald font-medium text-lg">Theme:</span>
+                <CompactCSSThemeToggle />
+              </div>
+            </div>
           </nav>
           )}
         </div>
