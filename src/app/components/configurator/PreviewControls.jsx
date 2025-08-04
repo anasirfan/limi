@@ -45,6 +45,8 @@ export const PreviewControls = ({
   const [lightingOn, setLightingOn] = useState(true);
   const [colorTemperature, setColorTemperature] = useState(50); // 0-100 (warm to cool)
   const [brightness, setBrightness] = useState(75); // 0-100
+  const brightnessDebounceTimeout = useRef();
+  const colorTempDebounceTimeout = useRef();
 
   const wishlistRef = useRef(null);
   const carouselRef = useRef(null);
@@ -70,9 +72,8 @@ export const PreviewControls = ({
       if (lightingRef.current && !lightingRef.current.contains(event.target)) {
         setIsLightingPanelOpen(false);
       }
-    }    
+    }
   }, []);
-  
 
   const guideRef = useRef(null);
 
@@ -87,15 +88,27 @@ export const PreviewControls = ({
     window.addEventListener("resize", checkIfMobile);
     return () => window.removeEventListener("resize", checkIfMobile);
   }, []);
-  
-  useEffect(() => {
-    // Debounce: Only send message after user stops changing brightness for 150ms
-    if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
-    debounceTimeout.current = setTimeout(() => {
-      sendMessageToPlayCanvas("brightness:" + brightness);
-    });
-    return () => clearTimeout(debounceTimeout.current);
-  }, [brightness]);
+
+// --- Replace your current brightness useEffect with this ---
+useEffect(() => {
+  if (brightnessDebounceTimeout.current) clearTimeout(brightnessDebounceTimeout.current);
+  brightnessDebounceTimeout.current = setTimeout(() => {
+    sendMessageToPlayCanvas("brightness:" + brightness);
+  });
+  return () => clearTimeout(brightnessDebounceTimeout.current);
+}, [brightness]);
+
+// --- Add this new useEffect for colorTemperature ---
+useEffect(() => {
+  if (colorTempDebounceTimeout.current) clearTimeout(colorTempDebounceTimeout.current);
+  colorTempDebounceTimeout.current = setTimeout(() => {
+    sendMessageToPlayCanvas("colorTemperature:" + Math.round(
+      2700 + (colorTemperature / 100) * (6500 - 2700)
+    ));
+  });
+  return () => clearTimeout(colorTempDebounceTimeout.current);
+}, [colorTemperature]);
+
 
   // Onboarding animation logic
   useEffect(() => {
@@ -355,7 +368,7 @@ export const PreviewControls = ({
                     const newState = !lightingOn;
                     setLightingOn(newState);
                     // Send message to PlayCanvas when power state changes
-                    const message = newState ? 'lighting:on' : 'lighting:off';
+                    const message = newState ? "lighting:on" : "lighting:off";
                     const iframe = document.getElementById("playcanvas-app");
                     if (iframe && iframe.contentWindow) {
                       console.log(`Sending message to PlayCanvas: ${message}`);
@@ -395,6 +408,7 @@ export const PreviewControls = ({
                     value={colorTemperature}
                     onChange={(e) =>
                       setColorTemperature(Number(e.target.value))
+
                     }
                     className="w-full h-3 rounded-lg appearance-none cursor-pointer slider-enhanced"
                     style={{
@@ -416,41 +430,41 @@ export const PreviewControls = ({
 
               {/* Brightness Control */}
               <div className="mb-3">
-  <div className="flex items-center justify-between mb-3">
-    <label className="text-gray-200 font-medium">
-      Brightness
-    </label>
-    <span className="text-xs px-2 py-1 rounded text-white font-medium">
-      {brightness}%
-    </span>
-  </div>
-  <div className="relative">
-    <input
-      type="range"
-      min="0"
-      max="100"
-      value={brightness}
-      onChange={(e) => setBrightness(Number(e.target.value))}
-      className="w-full h-3 rounded-lg appearance-none cursor-pointer slider-enhanced"
-      style={{
-        background: `linear-gradient(to right, 
+                <div className="flex items-center justify-between mb-3">
+                  <label className="text-gray-200 font-medium">
+                    Brightness
+                  </label>
+                  <span className="text-xs px-2 py-1 rounded text-white font-medium">
+                    {brightness}%
+                  </span>
+                </div>
+                <div className="relative">
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={brightness}
+                    onChange={(e) => setBrightness(Number(e.target.value))}
+                    className="w-full h-3 rounded-lg appearance-none cursor-pointer slider-enhanced"
+                    style={{
+                      background: `linear-gradient(to right, 
             #374151 0%, 
             #fbbf24 ${brightness}%, 
             #374151 ${brightness}%
           )`,
-        boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
-      }}
-    />
-    <div className="flex justify-between text-xs text-gray-400 mt-2">
-      <span className="flex items-center gap-1">
-        <span className="text-gray-500">🌙</span> Dim
-      </span>
-      <span className="flex items-center gap-1">
-        <span className="text-yellow-400">☀️</span> Bright
-      </span>
-    </div>
-  </div>
-</div>
+                      boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
+                    }}
+                  />
+                  <div className="flex justify-between text-xs text-gray-400 mt-2">
+                    <span className="flex items-center gap-1">
+                      <span className="text-gray-500">🌙</span> Dim
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <span className="text-yellow-400">☀️</span> Bright
+                    </span>
+                  </div>
+                </div>
+              </div>
 
               {/* Quick Presets */}
               <div className="mt-4 pt-4 border-t border-gray-700">
