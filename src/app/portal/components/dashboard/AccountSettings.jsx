@@ -282,9 +282,9 @@ export default function AccountSettings({ user, onUserUpdate }) {
 
       // Upload profile picture using PUT method
       const response = await fetch(
-        "https://dev.api1.limitless-lighting.co.uk/client/user/profile/picture",
+        "https://dev.api.limitless-lighting.co.uk/client/update_profile",
         {
-          method: "PUT",
+          method: "PATCH",
           body: formData,
           headers: {
             Authorization: token,
@@ -300,13 +300,13 @@ export default function AccountSettings({ user, onUserUpdate }) {
       }
 
       // Get the updated user data from the response
-      const updatedUser = await response.json();
-      if (!updatedUser || !updatedUser.profilePicture) {
-        throw new Error("Failed to update profile picture");
+      const updatedUser = await fetchUserData();
+      if (!updatedUser) {
+        throw new Error("Profile updated but failed to refresh user data");
       }
 
       // Update the avatar in Redux store and localStorage
-      dispatch(updateUserAvatar(updatedUser.profilePicture.url));
+      dispatch(updateUserAvatar(updatedUser.data.profilePicture.url));
 
       // Update parent component with new user data
       // if (onLogin) {
@@ -737,7 +737,7 @@ export default function AccountSettings({ user, onUserUpdate }) {
                     </>
                   )}
                 </button>
-
+{/* 
                 {user?.data?.profilePicture?.url && (
                   <button
                     type="button"
@@ -748,7 +748,7 @@ export default function AccountSettings({ user, onUserUpdate }) {
                     <FaTrash className="text-red-500" />
                     <span>Remove</span>
                   </button>
-                )}
+                )} */}
               </div>
 
               <div className="mt-4 space-y-2">

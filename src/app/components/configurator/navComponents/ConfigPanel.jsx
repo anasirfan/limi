@@ -553,7 +553,7 @@ export const ConfigPanel = ({
 
     // Home/Configuration Type Selection
     if (!configuringType) {
-      config.title = "Configuration Type";
+      config.title = "Cable Selected";
       config.showBreadcrumb = false;
       config.items = [
         {
@@ -1208,17 +1208,9 @@ export const ConfigPanel = ({
             ) : (
               <>
                 <div className="flex-1">
-                  <h3 className="text-xs sm:text-sm font-medium text-white font-['Amenti'] truncate">
-                    {panelConfig.showLocationLabel
-                      ? `Configure Cable${
-                          selectedPendants && selectedPendants.length > 1
-                            ? "s"
-                            : ""
-                        } ${formatSelectedLocations(
-                          selectedPendants || selectedLocation
-                        )}`
-                      : panelConfig.title}
-                  </h3>
+                <h3 className="text-xs sm:text-sm font-medium text-white font-['Amenti'] truncate">
+  {panelConfig.title}
+</h3>
                 </div>
                 {panelConfig.showCloseButton && (
                   <button

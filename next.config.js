@@ -13,6 +13,7 @@ const nextConfig = {
       'media.pexels.com',
       'mixkit.imgix.net',
       'dev.api1.limitless-lighting.co.uk',
+      'dev.api.limitless-lighting.co.uk',
     ],
     remotePatterns: [
       {

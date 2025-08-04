@@ -252,24 +252,22 @@ useEffect(() => {
 const getDefaultPendantAssignments = (amount) => {
   switch (amount) {
     case 1:
-      return [{ id: 0, design: "bumble" }];
+      return [{ id: 0, systemType: "bar", design: "helix" ,isSystem: true, designId: "system_base_2"}];
     case 3:
       return [
-        { id: 0, design: "radial" },
-        { id: 1, design: "radial" },
-        { id: 2, design: "radial" },
+        { id: 0, systemType: "bar", design: "orbit" , designId: "system_base_1", isSystem: true},
+        { id: 1, systemType: "", design: "bumble" , designId: "product_2", isSystem: false},
+        { id: 2, systemType: "universal", design: "aurora" , designId: "system_base_6", isSystem: true},
       ];
     case 6:
       return [
-        { id: 0, design: "bumble" },
-        { id: 1, design: "bumble" },
-        { id: 2, design: "bumble" },
-        { id: 3, design: "bumble" },
-        { id: 4, design: "bumble" },
-        { id: 5, design: "bumble" },
+        { id: 0, systemType: "", design: "bumble" , designId: "product_2", isSystem: false},
+        { id: 1, systemType: "", design: "piko" , designId: "product_5", isSystem: false},
+        { id: 2, systemType: "bar", design: "helix" , designId: "system_base_2", isSystem: true},
+        { id: 3, systemType: "bar", design: "zenith" , designId: "system_base_4", isSystem: true},
+        { id: 4, systemType: "universal", design: "equinox" , designId: "system_base_12", isSystem: true},
+        { id: 5, systemType: "universal", design: "stellar" , designId: "system_base_4", isSystem: true},
       ];
-    default:
-      return Array.from({ length: amount }, (_, i) => ({ id: i, design: "bumble" }));
   }
 };
 
@@ -277,25 +275,23 @@ const getDefaultPendantAssignments = (amount) => {
 const getDefaultSystemAssignments = (amount) => {
   switch (amount) {
     case 1:
-      return [{ id: 0, systemType: "bar", baseDesign: "helix" ,isSystem: true, designId: "system_base_2"}];
+      return [{ id: 0, systemType: "bar", design: "helix" ,isSystem: true, designId: "system_base_2"}];
     case 3:
       return [
-        { id: 0, systemType: "bar", baseDesign: "orbit" , designId: "system_base_1", isSystem: true},
-        { id: 1, systemType: "", baseDesign: "bumble" , designId: "product_2", isSystem: false},
-        { id: 2, systemType: "universal", baseDesign: "aurora" , designId: "system_base_6", isSystem: true},
+        { id: 0, systemType: "bar", design: "orbit" , designId: "system_base_1", isSystem: true},
+        { id: 1, systemType: "", design: "bumble" , designId: "product_2", isSystem: false},
+        { id: 2, systemType: "universal", design: "aurora" , designId: "system_base_6", isSystem: true},
       ];
     case 6:
       return [
-        { id: 0, systemType: "", baseDesign: "bumble" , designId: "product_2", isSystem: false},
-        { id: 1, systemType: "", baseDesign: "piko" , designId: "product_5", isSystem: false},
-        { id: 2, systemType: "bar", baseDesign: "helix" , designId: "system_base_2", isSystem: true},
-        { id: 3, systemType: "bar", baseDesign: "zenith" , designId: "system_base_4", isSystem: true},
-        { id: 4, systemType: "universal", baseDesign: "equinox" , designId: "system_base_12", isSystem: true},
-        { id: 5, systemType: "universal", baseDesign: "stellar" , designId: "system_base_4", isSystem: true},
+        { id: 0, systemType: "", design: "bumble" , designId: "product_2", isSystem: false},
+        { id: 1, systemType: "", design: "piko" , designId: "product_5", isSystem: false},
+        { id: 2, systemType: "bar", design: "helix" , designId: "system_base_2", isSystem: true},
+        { id: 3, systemType: "bar", design: "zenith" , designId: "system_base_4", isSystem: true},
+        { id: 4, systemType: "universal", design: "equinox" , designId: "system_base_12", isSystem: true},
+        { id: 5, systemType: "universal", design: "stellar" , designId: "system_base_4", isSystem: true},
       ];
-    default:
-      return Array.from({ length: amount }, (_, i) => ({ id: i, systemType: "universal", baseDesign: "stellar" , designId: `system_base_${i + 1}` ,isSystem:true}));
-  }
+   }
 };
 
 // Helper to map pendant design to productId for PlayCanvas
@@ -335,7 +331,14 @@ useEffect(() => {
       pendants: initialPendants,
       systemConfigurations: initialSystems
     }));
-    
+
+    setCables(prev => [...prev, { 
+      isSystem: false, 
+      systemType: system.systemType, 
+      design: system.design, 
+
+      designId: system.designId 
+    }]);
     setLastCeilingLightAmount(config.lightAmount);
     setLastRoundBaseLightAmount(config.lightAmount);
     
@@ -349,9 +352,9 @@ useEffect(() => {
       initialSystems.forEach((system, index) => {
         const productId = getProductIdForDesign(system.design);
         setCables(prev => [...prev, { 
-          isSystem: true, 
+          isSystem: false, 
           systemType: system.systemType, 
-          design: system.designId, 
+          design: system.design, 
           designId: system.designId 
         }]);
         sendMessageToPlayCanvas(`system:${system.systemType}`);
@@ -650,8 +653,9 @@ useEffect(() => {
     }));
     setCables(
       newSystems.map((system, idx) => ({
-        isSystem: true,
+        isSystem: system.isSystem,
         systemType: system.systemType,
+        design: system.design,
         designId: system.designId,
       }))
     );
@@ -672,7 +676,7 @@ useEffect(() => {
   // Handle system type change
   const handleSystemTypeChange = (system) => {
     // Update the global system type
-    setConfig((prev) => ({ ...prev, systemType: system }));
+    setConfig((prev) => ({ ...prev, systemType: system.systemType , design: system.design , designId: system.designId }));
 
     // Get the selected cable number(s)
     const selectedCables =
@@ -1109,7 +1113,7 @@ useEffect(() => {
             // Update this specific cable
             if (cableNo >= 0) {
               updatedCables[cableNo] = {
-                isSystem: true,
+                isSystem: cableSystemType,
                 systemType: cableSystemType,
                 design: design,
                 designId: baseId,

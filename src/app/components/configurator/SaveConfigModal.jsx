@@ -26,6 +26,7 @@ export const SaveConfigModal = ({
       }
     });
   };
+
   const [uploadSuccessData, setUploadSuccessData] = useState(null);
   const [modalIdString, setModalIdString] = useState("");
   const messageHandlerRef = useRef(null);
@@ -46,7 +47,7 @@ export const SaveConfigModal = ({
       if (cleanup) cleanup();
     };
   }, [fetchingModelId]);
-
+console.log("configSummary",configSummary)
   // Clean up on modal close (remove any lingering handler)
   useEffect(() => {
     if (isOpen) {
@@ -85,7 +86,7 @@ export const SaveConfigModal = ({
   const formatConfigSummary = () => {
     const { light_type, base_type, light_amount, cables, base_color } =
       configSummary;
-    console.log("cables size", configSummary);
+    console.log("configSummaryy", configSummary);
     let summaryText = `Light Type: ${light_type}\n`;
     if (light_type === "ceiling") {
       summaryText += `Base Type: ${base_type}\n`;
