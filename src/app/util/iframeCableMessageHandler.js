@@ -25,7 +25,17 @@ export function listenForOffconfigMessages(callback) {
   // Return cleanup
   return () => window.removeEventListener("message", handleMessage);
 }
-
+// Add to iframeCableMessageHandler.js
+export function listenForAppReady1(callback) {
+  function handleMessage(event) {
+    if (typeof event.data === "string" && event.data === "app:ready1") {
+      callback(event.data, event);
+    }
+  }
+  window.addEventListener("message", handleMessage);
+  // Return cleanup
+  return () => window.removeEventListener("message", handleMessage);
+}
 export function listenForSelectedCableMessages(callback) {
   function handleMessage(event) {
     if (

@@ -21,6 +21,7 @@ import {
   clearFavorites,
 } from "../../redux/slices/favoritesSlice";
 import { motion, AnimatePresence } from "framer-motion";
+import { listenForAppReady1 } from "../../util/iframeCableMessageHandler";
 
 export const PreviewControls = ({
   isPreviewMode,
@@ -62,7 +63,15 @@ export const PreviewControls = ({
     console.log("selectedPendants", selectedPendants);
     // No need for carousel state anymore
   }, [favorites, selectedPendants]);
-
+  useEffect(() => {
+    // Listen for "app:ready1" messages
+    const cleanup = listenForAppReady1(() => {
+      setShowOnboarding(true);
+      // Hide after 5s (adjust as needed)
+      setTimeout(() => setShowOnboarding(false), 5000);
+    });
+    return cleanup;
+  }, []);
   // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(event) {
@@ -89,44 +98,30 @@ export const PreviewControls = ({
     return () => window.removeEventListener("resize", checkIfMobile);
   }, []);
 
-// --- Replace your current brightness useEffect with this ---
-useEffect(() => {
-  if (brightnessDebounceTimeout.current) clearTimeout(brightnessDebounceTimeout.current);
-  brightnessDebounceTimeout.current = setTimeout(() => {
-    sendMessageToPlayCanvas("brightness:" + brightness);
-  });
-  return () => clearTimeout(brightnessDebounceTimeout.current);
-}, [brightness]);
-
-// --- Add this new useEffect for colorTemperature ---
-useEffect(() => {
-  if (colorTempDebounceTimeout.current) clearTimeout(colorTempDebounceTimeout.current);
-  colorTempDebounceTimeout.current = setTimeout(() => {
-    sendMessageToPlayCanvas("colorTemperature:" + Math.round(
-      2700 + (colorTemperature / 100) * (6500 - 2700)
-    ));
-  });
-  return () => clearTimeout(colorTempDebounceTimeout.current);
-}, [colorTemperature]);
-
-
-  // Onboarding animation logic
+  // --- Replace your current brightness useEffect with this ---
   useEffect(() => {
-    // Start animation after 1500ms delay
-    const startDelay = setTimeout(() => {
-      setShowOnboarding(true);
-    }, 3000);
+    if (brightnessDebounceTimeout.current)
+      clearTimeout(brightnessDebounceTimeout.current);
+    brightnessDebounceTimeout.current = setTimeout(() => {
+      sendMessageToPlayCanvas("brightness:" + brightness);
+    });
+    return () => clearTimeout(brightnessDebounceTimeout.current);
+  }, [brightness]);
 
-    // Hide animation after 3000ms of running (total 4500ms from page load)
-    const hideDelay = setTimeout(() => {
-      setShowOnboarding(false);
-    }, 8000);
+  // --- Add this new useEffect for colorTemperature ---
+  useEffect(() => {
+    if (colorTempDebounceTimeout.current)
+      clearTimeout(colorTempDebounceTimeout.current);
+    colorTempDebounceTimeout.current = setTimeout(() => {
+      sendMessageToPlayCanvas(
+        "colorTemperature:" +
+          Math.round(2700 + (colorTemperature / 100) * (6500 - 2700))
+      );
+    });
+    return () => clearTimeout(colorTempDebounceTimeout.current);
+  }, [colorTemperature]);
 
-    return () => {
-      clearTimeout(startDelay);
-      clearTimeout(hideDelay);
-    };
-  }, []);
+
 
   const handleMouseEnter = () => {
     if (!isMobile) {
@@ -148,8 +143,8 @@ useEffect(() => {
 
   return (
     <>
-      {/* Onboarding Animation */}
-      {showOnboarding && (
+     {/* Onboarding Animation */}
+     {showOnboarding && (
         <div className="absolute inset-0 pointer-events-none z-50 flex items-center justify-center">
           <div className="relative">
             {/* Horizontal Guide Line with Arrows and Sliding Hand */}
@@ -223,6 +218,7 @@ useEffect(() => {
           </div>
         </div>
       )}
+
 
       {/* Navigation Guide */}
       <div
@@ -408,7 +404,6 @@ useEffect(() => {
                     value={colorTemperature}
                     onChange={(e) =>
                       setColorTemperature(Number(e.target.value))
-
                     }
                     className="w-full h-3 rounded-lg appearance-none cursor-pointer slider-enhanced"
                     style={{
