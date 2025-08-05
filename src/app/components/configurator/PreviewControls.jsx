@@ -369,6 +369,14 @@ export const PreviewControls = ({
                     if (iframe && iframe.contentWindow) {
                       console.log(`Sending message to PlayCanvas: ${message}`);
                       iframe.contentWindow.postMessage(message, "*");
+                      if (newState) {
+                        // Also send brightness and color temperature when turning ON
+                        iframe.contentWindow.postMessage(`brightness:${brightness}`, "*");
+                        // iframe.contentWindow.postMessage(
+                        //   `colorTemperature:${Math.round(2700 + (colorTemperature / 100) * (6500 - 2700))}`,
+                        //   "*"
+                        // );
+                      }
                     }
                   }}
                   className={`relative inline-flex h-7 w-14 items-center rounded-full transition-colors duration-300 focus:outline-none ${
@@ -384,6 +392,7 @@ export const PreviewControls = ({
               </div>
 
               {/* Color Temperature Control */}
+              {lightingOn && (
               <div className="mb-6">
                 <div className="flex items-center justify-between mb-3">
                   <label className="text-gray-200 font-medium">
@@ -422,8 +431,10 @@ export const PreviewControls = ({
                   </div>
                 </div>
               </div>
+            )}
 
               {/* Brightness Control */}
+              {lightingOn && (
               <div className="mb-3">
                 <div className="flex items-center justify-between mb-3">
                   <label className="text-gray-200 font-medium">
@@ -460,6 +471,7 @@ export const PreviewControls = ({
                   </div>
                 </div>
               </div>
+            )}
 
               {/* Quick Presets */}
               <div className="mt-4 pt-4 border-t border-gray-700">
