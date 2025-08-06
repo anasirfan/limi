@@ -120,6 +120,9 @@ const saveToLocalStorage = (key, value) => {
       cableLength: "2mm",
       systemConfigurations: {},
       shades: {},
+      lighting: true,
+      colorTemperature: 50,
+      brightness: 50,
     });
     return savedConfig;
   });
@@ -137,6 +140,22 @@ const saveToLocalStorage = (key, value) => {
     ]);
   }); 
 
+
+  const [brightness, setBrightness] = useState(config.brightness ?? 50);
+  const [colorTemperature, setColorTemperature] = useState(config.colorTemperature ?? 50);
+  const [lighting, setLighting] = useState(
+    typeof config.lighting === "boolean" ? config.lighting : true
+  );
+
+  useEffect(() => {
+    setConfig(prev => ({
+      ...prev,
+      brightness,
+      colorTemperature,
+      lighting
+    }));
+  }, [brightness, colorTemperature, lighting]);
+
   useEffect(() => {
   if (mounted && config.pendants.length === 0) {
     const initialPendants = getDefaultPendantAssignments(config.lightAmount);
@@ -144,14 +163,16 @@ const saveToLocalStorage = (key, value) => {
     setConfig(prev => ({
       ...prev,
       pendants: initialPendants,
-      systemConfigurations: initialSystems
+      systemConfigurations: initialSystems,
     }));
   }
 }, [mounted, config.lightAmount]);
-
-
   // Save to localStorage whenever config or cables change
+ 
+
 useEffect(() => {
+  console.log("config",config);
+  console.log("cables",cables);
   saveToLocalStorage('lightConfig', config);
   saveToLocalStorage('lightCables', cables);
 }, [config, cables]);
@@ -447,6 +468,9 @@ useEffect(() => {
     const lightAmount = configData.config.light_amount || 1;
     const baseColor = configData.config.base_color || "black";
     const connectorColor = configData.config.connector_color || "black";
+    const brightness = configData.config.brightness || 75;
+    const colorTemperature = configData.config.colorTemperature || 50;
+    const lighting = configData.config.lighting || true;
     // Update the config state
     setConfig((prev) => ({
       ...prev,
@@ -455,6 +479,9 @@ useEffect(() => {
       lightAmount,
       baseColor,
       connectorColor,
+      brightness,
+      colorTemperature,
+      lighting,
       // We don't need to update pendants or other details as they will be handled by the iframe messages
     }));
     setCables(configData.config.cableConfig);
@@ -468,8 +495,10 @@ useEffect(() => {
 
       // Load saved configuration if available
       const savedConfig = loadFromLocalStorage('lightConfig', null);
+      console.log("savedConfig", savedConfig);
+
       const savedCables = loadFromLocalStorage('lightCables', null);
-      console.log(savedConfig, savedCables)
+      console.log("savedCables", savedCables)
       if (savedConfig && savedCables) {
         console.log("Loading saved configuration...");
         sendMessageToPlayCanvas(`light_type:${savedConfig.lightType}`);
@@ -478,6 +507,7 @@ useEffect(() => {
         sendMessageToPlayCanvas(`light_amount:${savedConfig.lightAmount}`);
         sendMessageToPlayCanvas(`base_color:${savedConfig.baseColor}`);
         sendMessageToPlayCanvas(`connector_color:${savedConfig.connectorColor}`);
+   
         
         savedCables.forEach((cable, index) => {
           if (cable.systemType) {
@@ -498,6 +528,14 @@ useEffect(() => {
             sendMessageToPlayCanvas(`cable_${index}:size_${cable.size}`);
           }
         });
+        sendMessageToPlayCanvas(`lighting:${savedConfig.lighting ? "on" : "off"}`);
+        if (savedConfig.lighting) {
+          sendMessageToPlayCanvas(`brightness:${savedConfig.brightness}`);
+          sendMessageToPlayCanvas(
+            "colorTemperature:" +
+              Math.round(2700 + (savedConfig.colorTemperature / 100) * (6500 - 2700))
+          );
+        }
       }
 
       // If we have a configuration from URL, load it now
@@ -1486,6 +1524,13 @@ useEffect(() => {
         onLoadConfig={handleLoadConfig}
         sendMessageToPlayCanvas={sendMessageToPlayCanvas}
         onPendantDesignChange={handlePendantDesignChange}
+        brightness={brightness}
+        setBrightness={setBrightness}
+        colorTemperature={colorTemperature}
+        setColorTemperature={setColorTemperature}
+        lighting={lighting}
+        setLighting={setLighting}
+      
       />
 
       {/* Only show UI elements when not in preview mode */}

@@ -27,6 +27,7 @@ export const PreviewControls = ({
   isPreviewMode,
   setIsPreviewMode,
   config,
+  
   cables,
   onSaveConfig,
   onLoadConfig,
@@ -35,6 +36,12 @@ export const PreviewControls = ({
   onPendantDesignChange,
   selectedPendants,
   selectedLocation,
+  brightness,
+  setBrightness,
+  colorTemperature,
+  setColorTemperature,
+  lighting,
+  setLighting,
 }) => {
   const [isMobile, setIsMobile] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -43,9 +50,6 @@ export const PreviewControls = ({
   const [slidesToShow] = useState(3); // Number of items to show at once
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [isLightingPanelOpen, setIsLightingPanelOpen] = useState(false);
-  const [lightingOn, setLightingOn] = useState(true);
-  const [colorTemperature, setColorTemperature] = useState(50); // 0-100 (warm to cool)
-  const [brightness, setBrightness] = useState(75); // 0-100
   const brightnessDebounceTimeout = useRef();
   const colorTempDebounceTimeout = useRef();
 
@@ -310,7 +314,7 @@ export const PreviewControls = ({
           >
             <FaLightbulb
               size={18}
-              className={lightingOn ? "text-yellow-300" : ""}
+              className={lighting ? "text-yellow-300" : ""}
             />
           </motion.div>
         </motion.button>
@@ -330,14 +334,14 @@ export const PreviewControls = ({
                 <div className="flex items-center gap-2">
                   <FaLightbulb
                     className={`${
-                      lightingOn ? "text-yellow-400" : "text-gray-400"
+                      lighting ? "text-yellow-400" : "text-gray-400"
                     } transition-colors`}
                   />
                   <h3 className="text-white font-semibold text-lg">Lighting</h3>
                 </div>
                 <div
                   className={`w-2 h-2 rounded-full ${
-                    lightingOn ? "bg-green-400" : "bg-red-400"
+                    lighting ? "bg-green-400" : "bg-red-400"
                   } animate-pulse`}
                 ></div>
               </div>
@@ -348,21 +352,21 @@ export const PreviewControls = ({
                   <span className="text-gray-200 font-medium">Power</span>
                   <span
                     className={`text-xs px-2 py-1 rounded-full ${
-                      lightingOn
+                      lighting
                         ? "bg-green-500/20 text-green-400"
                         : "bg-red-500/20 text-red-400"
                     } transition-colors duration-300`}
                   >
-                    {lightingOn ? "ON" : "OFF"}
+                    {lighting ? "ON" : "OFF"}
                   </span>
                 </div>
                 <button
                   type="button"
                   role="switch"
-                  aria-checked={lightingOn}
+                  aria-checked={lighting}
                   onClick={() => {
-                    const newState = !lightingOn;
-                    setLightingOn(newState);
+                    const newState = !lighting;
+                    setLighting(newState);
                     // Send message to PlayCanvas when power state changes
                     const message = newState ? "lighting:on" : "lighting:off";
                     const iframe = document.getElementById("playcanvas-app");
@@ -372,27 +376,27 @@ export const PreviewControls = ({
                       if (newState) {
                         // Also send brightness and color temperature when turning ON
                         iframe.contentWindow.postMessage(`brightness:${brightness}`, "*");
-                        // iframe.contentWindow.postMessage(
-                        //   `colorTemperature:${Math.round(2700 + (colorTemperature / 100) * (6500 - 2700))}`,
-                        //   "*"
-                        // );
+                        iframe.contentWindow.postMessage(
+                          `colorTemperature:${Math.round(2700 + (colorTemperature / 100) * (6500 - 2700))}`,
+                          "*"
+                        );
                       }
                     }
                   }}
                   className={`relative inline-flex h-7 w-14 items-center rounded-full transition-colors duration-300 focus:outline-none ${
-                    lightingOn ? "bg-emerald-500" : "bg-gray-600"
+                    lighting ? "bg-emerald-500" : "bg-gray-600"
                   }`}
                 >
                   <span
                     className={`${
-                      lightingOn ? "translate-x-8" : "translate-x-1"
+                      lighting ? "translate-x-8" : "translate-x-1"
                     } inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition-transform duration-300 ease-in-out`}
                   />
                 </button>
               </div>
 
               {/* Color Temperature Control */}
-              {lightingOn && (
+              {lighting && (
               <div className="mb-6">
                 <div className="flex items-center justify-between mb-3">
                   <label className="text-gray-200 font-medium">
@@ -434,7 +438,7 @@ export const PreviewControls = ({
             )}
 
               {/* Brightness Control */}
-              {lightingOn && (
+              {lighting && (
               <div className="mb-3">
                 <div className="flex items-center justify-between mb-3">
                   <label className="text-gray-200 font-medium">
