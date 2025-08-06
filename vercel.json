@@ -1,0 +1,39 @@
+{
+  "functions": {
+    "src/app/**/*.js": {
+      "runtime": "@vercel/node"
+    },
+    "src/app/**/*.ts": {
+      "runtime": "@vercel/node"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/limiai",
+      "has": [
+        {
+          "type": "host",
+          "value": "limiai.co"
+        }
+      ]
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Debug-Host",
+          "value": "limiai.co"
+        }
+      ],
+      "has": [
+        {
+          "type": "host",
+          "value": "limiai.co"
+        }
+      ]
+    }
+  ]
+}

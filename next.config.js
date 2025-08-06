@@ -1,6 +1,35 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  
+  // Add rewrites for domain-specific routing
+  async rewrites() {
+    return {
+      beforeFiles: [
+        // Handle limiai.co domain routing
+        {
+          source: '/',
+          destination: '/limiai',
+          has: [
+            {
+              type: 'host',
+              value: 'limiai.co',
+            },
+          ],
+        },
+        {
+          source: '/:path*',
+          destination: '/limiai',
+          has: [
+            {
+              type: 'host', 
+              value: 'limiai.co',
+            },
+          ],
+        },
+      ],
+    }
+  },
   images: {
     domains: [
       'ui-avatars.com',
