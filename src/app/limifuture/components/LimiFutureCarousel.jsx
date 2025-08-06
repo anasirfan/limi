@@ -107,7 +107,7 @@ const LimiFutureCarousel = () => {
       </div>
 
       {/* Navigation Controls */}
-      <div className="absolute inset-y-0 left-4 flex items-center">
+      <div className="absolute inset-y-0 left-4 flex items-center max-sm:inset-y-auto max-sm:bottom-[15%]">
         <button
           onClick={prevSlide}
           disabled={isTransitioning}
@@ -117,7 +117,7 @@ const LimiFutureCarousel = () => {
         </button>
       </div>
 
-      <div className="absolute inset-y-0 right-4 flex items-center">
+      <div className="absolute inset-y-0 right-4 flex items-center max-sm:inset-y-auto max-sm:bottom-[15%]">
         <button
           onClick={nextSlide}
           disabled={isTransitioning}
@@ -144,15 +144,17 @@ const LimiFutureCarousel = () => {
       </div>
 
       {/* Slide Counter */}
-      <div className="absolute top-8 right-8 bg-black/20 backdrop-blur-sm rounded-lg px-4 py-2 border border-[#54bb74]/30">
-        <span className="text-[#93cfa2] font-medium">
+      <div className="absolute top-8 right-8 bg-black/20 backdrop-blur-sm rounded-lg px-4 py-2 border border-[#54bb74]/30
+        max-sm:top-12 max-sm:right-2 max-sm:px-2 max-sm:py-1 max-sm:rounded-md">
+        <span className="text-[#93cfa2] font-medium text-base max-sm:text-sm">
           {currentSlide + 1} / {totalSlides}
         </span>
       </div>
 
       {/* Slide Title */}
-      <div className="absolute top-8 left-8 bg-black/20 backdrop-blur-sm rounded-lg px-4 py-2 border border-[#54bb74]/30 max-w-md">
-        <h2 className="text-[#f3ebe2] font-[Amenti] text-lg font-bold">
+      <div className="absolute top-8 left-8 bg-black/20 backdrop-blur-sm rounded-lg px-4 py-2 border border-[#54bb74]/30 max-w-md
+        max-sm:top-12 max-sm:left-2 max-sm:px-2 max-sm:py-1 max-sm:rounded-md max-sm:max-w-[80vw]">
+        <h2 className="text-[#f3ebe2] font-[Amenti] text-lg font-bold max-sm:text-base max-sm:truncate">
           {slides[currentSlide].title}
         </h2>
       </div>

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { trackPopupInteraction } from '../../../utils/umamiTracking';
+import { FaInfoCircle, FaChartLine, FaShoppingCart, FaCloudDownloadAlt, FaPuzzlePiece, FaCrown, FaSyncAlt, FaTimes, FaCheckCircle } from 'react-icons/fa';
 
 const Slide6 = ({ slideNumber }) => {
   const [activePopup, setActivePopup] = useState(null);
@@ -65,132 +66,131 @@ const Slide6 = ({ slideNumber }) => {
   };
 
   return (
-    <div className="relative w-full h-full bg-[#f3ebe2] overflow-hidden">
+    <div className="slide relative w-[1280px] min-h-[720px] mx-auto bg-[#f3ebe2] overflow-hidden max-sm:w-full max-sm:min-h-0 max-sm:h-[700px] max-sm:mx-0">
+      {/* Background Image */}
       {/* Background Image */}
       <div 
-        className="absolute inset-0 bg-cover bg-center opacity-30"
+        className="slide-background absolute inset-0 bg-cover bg-center opacity-30 z-[1]"
         style={{
           backgroundImage: "url('https://sfile.chatglm.cn/images-ppt/c53fe3094401.jpg')"
         }}
       />
-      
       {/* Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#f3ebe2]/90 to-[#f3ebe2]/70" />
-      
+      <div className="slide-overlay absolute inset-0 bg-gradient-to-br from-[#f3ebe2]/90 to-[#f3ebe2]/70 z-[2]" />
       {/* Content */}
-      <div className="relative z-10 flex flex-col h-full px-15 py-15">
+      <div className="slide-content relative z-10 flex flex-col h-full p-[60px] max-sm:p-4">
         {/* Headline */}
-        <h1 className="font-[Amenti] font-bold text-5xl mb-10 text-[#292929] relative drop-shadow-[1px_1px_3px_rgba(0,0,0,0.1)]">
+        <h1 className="headline font-[Amenti] font-bold text-[52px] mb-[40px] text-[#292929] relative drop-shadow-[1px_1px_3px_rgba(0,0,0,0.1)] max-sm:text-2xl max-sm:mb-6 max-sm:leading-snug">
           From Lighting to Ambient AI: Our Staged Approach
-          <div className="absolute -bottom-4 left-0 w-25 h-1.5 bg-gradient-to-r from-[#54bb74] to-[#93cfa2] rounded-full" />
+          <div className="absolute left-0 -bottom-[15px] w-[100px] h-[5px] rounded-[3px] bg-gradient-to-r from-[#54bb74] to-[#93cfa2] max-sm:w-[60px] max-sm:h-[3px]" />
         </h1>
         
         {/* Evolution Intro */}
-        <div className="flex items-center mb-10 bg-gradient-to-r from-[#54bb74]/20 to-[#54bb74]/10 p-5 rounded-xl border-l-4 border-[#54bb74] shadow-[0_5px_15px_rgba(0,0,0,0.05)]">
-          <i className="fas fa-chart-line text-4xl text-[#54bb74] mr-5" />
-          <div className="text-xl text-[#292929] leading-relaxed font-medium">
+        <div className="evolution-intro flex items-center mb-[40px] bg-gradient-to-r from-[#54bb74]/20 to-[#54bb74]/10 p-[20px] rounded-[12px] border-l-[5px] border-[#54bb74] shadow-[0_5px_15px_rgba(0,0,0,0.05)] max-sm:flex-col max-sm:items-start max-sm:mb-6 max-sm:p-3 max-sm:rounded-lg">
+          <FaChartLine className="evolution-intro-icon text-[36px] text-[#54bb74] mr-[20px] max-sm:text-xl max-sm:mr-2" />
+          <div className="evolution-intro-text text-[20px] text-[#292929] leading-[1.4] font-medium max-sm:text-sm">
             Our deliberate, <strong className="text-[#54bb74] font-bold">de-risked journey</strong> from current product to long-term vision, building value at each stage.
           </div>
         </div>
         
         {/* Stages Container */}
-        <div className="flex justify-between gap-5 flex-grow">
+        <div className="stages-container flex justify-between gap-[20px] flex-grow max-sm:flex-col max-sm:gap-4">
           <div 
-            className="flex-1 bg-white/85 backdrop-blur-sm rounded-2xl p-6 flex flex-col items-center text-center cursor-pointer transition-all duration-300 border border-[#54bb74]/20 shadow-[0_10px_25px_rgba(0,0,0,0.1)] hover:transform hover:-translate-y-3 hover:shadow-[0_15px_35px_rgba(0,0,0,0.15)] hover:border-[#54bb74] relative overflow-hidden group"
+            className="flex-1 bg-white/85 backdrop-blur-sm rounded-2xl p-3 flex flex-col items-center text-center cursor-pointer transition-all duration-300 border border-[#54bb74]/20 shadow-[0_6px_15px_rgba(0,0,0,0.08)] hover:transform hover:-translate-y-2 hover:shadow-[0_10px_25px_rgba(0,0,0,0.13)] hover:border-[#54bb74] relative overflow-hidden group min-h-[180px] max-h-[210px] max-sm:p-1 max-sm:rounded-lg max-sm:min-h-[70px] max-sm:max-h-[90px]"
             onClick={() => openPopup('popup1')}
           >
-            <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-[#54bb74] to-[#93cfa2]" />
-            <div className="absolute top-4 right-4 w-6 h-6 bg-[#54bb74]/20 rounded-full flex items-center justify-center text-[#54bb74] text-xs transition-all duration-300 group-hover:bg-[#54bb74] group-hover:text-white">
-              <i className="fas fa-info" />
+            <div className="absolute top-0 left-0 w-full h-[5px] bg-gradient-to-r from-[#54bb74] to-[#93cfa2]" />
+            <div className="info-badge absolute top-2 right-2 w-5 h-5 bg-[#54bb74]/20 rounded-full flex items-center justify-center text-[#54bb74] text-[10px] transition-all duration-300 group-hover:bg-[#54bb74] group-hover:text-white max-sm:w-4 max-sm:h-4">
+              <FaInfoCircle />
             </div>
-            <div className="font-[Amenti] font-bold text-3xl text-[#54bb74] mb-4 bg-gradient-to-r from-[#54bb74] to-[#93cfa2] bg-clip-text text-transparent">
+            <div className="stage-number absolute top-3 left-4 font-[Amenti] font-bold text-[22px] bg-gradient-to-r from-[#54bb74] to-[#93cfa2] bg-clip-text text-transparent max-sm:text-xs max-sm:top-1 max-sm:left-1">
               1
             </div>
-            <i className="fas fa-shopping-cart text-4xl text-[#54bb74] mb-4 bg-gradient-to-r from-[#54bb74] to-[#93cfa2] bg-clip-text text-transparent" />
-            <div className="font-[Amenti] font-bold text-xl mb-3 text-[#292929]">
+            <FaShoppingCart className="stage-icon text-[#66C081] text-[28px] mb-[8px] bg-gradient-to-r from-[#54bb74] to-[#93cfa2] bg-clip-text text-transparent max-sm:text-[10px] max-sm:mb-0.5" />
+            <div className="stage-title font-[Amenti] font-bold text-[16px] mb-[6px] text-[#292929] max-sm:text-[10px] max-sm:mb-0.5">
               Initial Purchase
             </div>
-            <div className="text-base leading-relaxed text-[#555]">
+            <div className="stage-desc text-[13px] leading-[1.3] text-[#555] max-sm:text-[10px] max-sm:leading-[1.1]">
               Lighting with embedded AI base
             </div>
           </div>
           
           <div 
-            className="flex-1 bg-white/85 backdrop-blur-sm rounded-2xl p-6 flex flex-col items-center text-center cursor-pointer transition-all duration-300 border border-[#54bb74]/20 shadow-[0_10px_25px_rgba(0,0,0,0.1)] hover:transform hover:-translate-y-3 hover:shadow-[0_15px_35px_rgba(0,0,0,0.15)] hover:border-[#54bb74] relative overflow-hidden group"
+            className="flex-1 bg-white/85 backdrop-blur-[10px] rounded-[16px] px-[15px] py-[25px] flex flex-col items-center text-center cursor-pointer transition-all duration-300 border border-[#54bb74]/20 shadow-[0_10px_25px_rgba(0,0,0,0.1)] relative overflow-hidden group hover:-translate-y-2.5 hover:shadow-lg hover:border-[#54bb74] max-sm:p-3 max-sm:rounded-lg"
             onClick={() => openPopup('popup2')}
           >
-            <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-[#54bb74] to-[#93cfa2]" />
-            <div className="absolute top-4 right-4 w-6 h-6 bg-[#54bb74]/20 rounded-full flex items-center justify-center text-[#54bb74] text-xs transition-all duration-300 group-hover:bg-[#54bb74] group-hover:text-white">
-              <i className="fas fa-info" />
+            <div className="absolute top-0 left-0 w-full h-[5px] bg-gradient-to-r from-[#54bb74] to-[#93cfa2]" />
+            <div className="info-badge absolute top-2 right-2 w-5 h-5 bg-[#54bb74]/20 rounded-full flex items-center justify-center text-[#54bb74] text-[10px] transition-all duration-300 group-hover:bg-[#54bb74] group-hover:text-white max-sm:w-4 max-sm:h-4">
+              <FaInfoCircle />
             </div>
-            <div className="font-[Amenti] font-bold text-3xl text-[#54bb74] mb-4 bg-gradient-to-r from-[#54bb74] to-[#93cfa2] bg-clip-text text-transparent">
+            <div className="stage-number absolute top-3 left-4 font-[Amenti] font-bold text-[22px] bg-gradient-to-r from-[#54bb74] to-[#93cfa2] bg-clip-text text-transparent max-sm:text-xs max-sm:top-1 max-sm:left-1">
               2
             </div>
-            <i className="fas fa-cloud-download-alt text-4xl text-[#54bb74] mb-4 bg-gradient-to-r from-[#54bb74] to-[#93cfa2] bg-clip-text text-transparent" />
-            <div className="font-[Amenti] font-bold text-xl mb-3 text-[#292929]">
+            <FaCloudDownloadAlt className="stage-icon text-[#66C081] text-[28px] max-sm:text-[10px]" />
+            <div className="stage-title font-[Amenti] font-bold text-[16px] text-[#292929] max-sm:text-[10px]">
               Software Activation
             </div>
-            <div className="text-base leading-relaxed text-[#555]">
+            <div className="stage-desc text-[13px] leading-[1.3] text-[#555] max-sm:text-[10px] max-sm:leading-[1.1]">
               OTA updates unlock AI capabilities
             </div>
           </div>
-          
+          {/* Stage 3 */}
           <div 
-            className="flex-1 bg-white/85 backdrop-blur-sm rounded-2xl p-6 flex flex-col items-center text-center cursor-pointer transition-all duration-300 border border-[#54bb74]/20 shadow-[0_10px_25px_rgba(0,0,0,0.1)] hover:transform hover:-translate-y-3 hover:shadow-[0_15px_35px_rgba(0,0,0,0.15)] hover:border-[#54bb74] relative overflow-hidden group"
+            className="flex-1 bg-white/85 backdrop-blur-[10px] rounded-[16px] px-[15px] py-[25px] flex flex-col items-center text-center cursor-pointer transition-all duration-300 border border-[#54bb74]/20 shadow-[0_10px_25px_rgba(0,0,0,0.1)] relative overflow-hidden group hover:-translate-y-2.5 hover:shadow-lg hover:border-[#54bb74] max-sm:p-3 max-sm:rounded-lg"
             onClick={() => openPopup('popup3')}
           >
-            <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-[#54bb74] to-[#93cfa2]" />
-            <div className="absolute top-4 right-4 w-6 h-6 bg-[#54bb74]/20 rounded-full flex items-center justify-center text-[#54bb74] text-xs transition-all duration-300 group-hover:bg-[#54bb74] group-hover:text-white">
-              <i className="fas fa-info" />
+            <div className="absolute top-0 left-0 w-full h-[5px] bg-gradient-to-r from-[#54bb74] to-[#93cfa2]" />
+            <div className="info-badge absolute top-2 right-2 w-5 h-5 bg-[#54bb74]/20 rounded-full flex items-center justify-center text-[#54bb74] text-[10px] transition-all duration-300 group-hover:bg-[#54bb74] group-hover:text-white max-sm:w-4 max-sm:h-4">
+              <FaInfoCircle />
             </div>
-            <div className="font-[Amenti] font-bold text-3xl text-[#54bb74] mb-4 bg-gradient-to-r from-[#54bb74] to-[#93cfa2] bg-clip-text text-transparent">
+            <div className="stage-number absolute top-3 left-4 font-[Amenti] font-bold text-[22px] bg-gradient-to-r from-[#54bb74] to-[#93cfa2] bg-clip-text text-transparent max-sm:text-xs max-sm:top-1 max-sm:left-1">
               3
             </div>
-            <i className="fas fa-puzzle-piece text-4xl text-[#54bb74] mb-4 bg-gradient-to-r from-[#54bb74] to-[#93cfa2] bg-clip-text text-transparent" />
-            <div className="font-[Amenti] font-bold text-xl mb-3 text-[#292929]">
+            <FaPuzzlePiece className="stage-icon text-[#66C081] text-[28px] max-sm:text-[10px]" />
+            <div className="stage-title font-[Amenti] font-bold text-[16px] text-[#292929] max-sm:text-[10px]">
               Ecosystem Expansion
             </div>
-            <div className="text-base leading-relaxed text-[#555]">
+            <div className="stage-desc text-[13px] leading-[1.3] text-[#555] max-sm:text-[10px] max-sm:leading-[1.1]">
               Add-on modules for enhanced functionality
             </div>
           </div>
-          
+          {/* Stage 4 */}
           <div 
-            className="flex-1 bg-white/85 backdrop-blur-sm rounded-2xl p-6 flex flex-col items-center text-center cursor-pointer transition-all duration-300 border border-[#54bb74]/20 shadow-[0_10px_25px_rgba(0,0,0,0.1)] hover:transform hover:-translate-y-3 hover:shadow-[0_15px_35px_rgba(0,0,0,0.15)] hover:border-[#54bb74] relative overflow-hidden group"
+            className="flex-1 bg-white/85 backdrop-blur-[10px] rounded-[16px] px-[15px] py-[25px] flex flex-col items-center text-center cursor-pointer transition-all duration-300 border border-[#54bb74]/20 shadow-[0_10px_25px_rgba(0,0,0,0.1)] relative overflow-hidden group hover:-translate-y-2.5 hover:shadow-lg hover:border-[#54bb74] max-sm:p-3 max-sm:rounded-lg"
             onClick={() => openPopup('popup4')}
           >
-            <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-[#54bb74] to-[#93cfa2]" />
-            <div className="absolute top-4 right-4 w-6 h-6 bg-[#54bb74]/20 rounded-full flex items-center justify-center text-[#54bb74] text-xs transition-all duration-300 group-hover:bg-[#54bb74] group-hover:text-white">
-              <i className="fas fa-info" />
+            <div className="absolute top-0 left-0 w-full h-[5px] bg-gradient-to-r from-[#54bb74] to-[#93cfa2]" />
+            <div className="info-badge absolute top-2 right-2 w-5 h-5 bg-[#54bb74]/20 rounded-full flex items-center justify-center text-[#54bb74] text-[10px] transition-all duration-300 group-hover:bg-[#54bb74] group-hover:text-white max-sm:w-4 max-sm:h-4">
+              <FaInfoCircle />
             </div>
-            <div className="font-[Amenti] font-bold text-3xl text-[#54bb74] mb-4 bg-gradient-to-r from-[#54bb74] to-[#93cfa2] bg-clip-text text-transparent">
+            <div className="stage-number absolute top-3 left-4 font-[Amenti] font-bold text-[22px] bg-gradient-to-r from-[#54bb74] to-[#93cfa2] bg-clip-text text-transparent max-sm:text-xs max-sm:top-1 max-sm:left-1">
               4
             </div>
-            <i className="fas fa-crown text-4xl text-[#54bb74] mb-4 bg-gradient-to-r from-[#54bb74] to-[#93cfa2] bg-clip-text text-transparent" />
-            <div className="font-[Amenti] font-bold text-xl mb-3 text-[#292929]">
+            <FaCrown className="stage-icon text-[28px] text-[#66C081] max-sm:text-[10px]" />
+            <div className="stage-title font-[Amenti] font-bold text-[16px] text-[#292929] max-sm:text-[10px]">
               Premium Services
             </div>
-            <div className="text-base leading-relaxed text-[#555]">
+            <div className="stage-desc text-[13px] leading-[1.3] text-[#555] max-sm:text-[10px] max-sm:leading-[1.1]">
               Subscription for advanced AI features
             </div>
           </div>
-          
+          {/* Stage 5 */}
           <div 
-            className="flex-1 bg-white/85 backdrop-blur-sm rounded-2xl p-6 flex flex-col items-center text-center cursor-pointer transition-all duration-300 border border-[#54bb74]/20 shadow-[0_10px_25px_rgba(0,0,0,0.1)] hover:transform hover:-translate-y-3 hover:shadow-[0_15px_35px_rgba(0,0,0,0.15)] hover:border-[#54bb74] relative overflow-hidden group"
+            className="flex-1 bg-white/85 backdrop-blur-[10px] rounded-[16px] px-[15px] py-[25px] flex flex-col items-center text-center cursor-pointer transition-all duration-300 border border-[#54bb74]/20 shadow-[0_10px_25px_rgba(0,0,0,0.1)] relative overflow-hidden group hover:-translate-y-2.5 hover:shadow-lg hover:border-[#54bb74] max-sm:p-3 max-sm:rounded-lg"
             onClick={() => openPopup('popup5')}
           >
-            <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-[#54bb74] to-[#93cfa2]" />
-            <div className="absolute top-4 right-4 w-6 h-6 bg-[#54bb74]/20 rounded-full flex items-center justify-center text-[#54bb74] text-xs transition-all duration-300 group-hover:bg-[#54bb74] group-hover:text-white">
-              <i className="fas fa-info" />
+            <div className="absolute top-0 left-0 w-full h-[5px] bg-gradient-to-r from-[#54bb74] to-[#93cfa2]" />
+            <div className="info-badge absolute top-2 right-2 w-5 h-5 bg-[#54bb74]/20 rounded-full flex items-center justify-center text-[#54bb74] text-[10px] transition-all duration-300 group-hover:bg-[#54bb74] group-hover:text-white max-sm:w-4 max-sm:h-4">
+              <FaInfoCircle />
             </div>
-            <div className="font-[Amenti] font-bold text-3xl text-[#54bb74] mb-4 bg-gradient-to-r from-[#54bb74] to-[#93cfa2] bg-clip-text text-transparent">
+            <div className="stage-number absolute top-3 left-4 font-[Amenti] font-bold text-[22px] bg-gradient-to-r from-[#54bb74] to-[#93cfa2] bg-clip-text text-transparent max-sm:text-xs max-sm:top-1 max-sm:left-1">
               5
             </div>
-            <i className="fas fa-sync-alt text-4xl text-[#54bb74] mb-4 bg-gradient-to-r from-[#54bb74] to-[#93cfa2] bg-clip-text text-transparent" />
-            <div className="font-[Amenti] font-bold text-xl mb-3 text-[#292929]">
+            <FaSyncAlt className="stage-icon text-[#66C081] text-[28px] max-sm:text-[10px]" />
+            <div className="stage-title font-[Amenti] font-bold text-[16px] text-[#292929] max-sm:text-[10px]">
               Data Flywheel
             </div>
-            <div className="text-base leading-relaxed text-[#555]">
+            <div className="stage-desc text-[13px] leading-[1.3] text-[#555] max-sm:text-[10px] max-sm:leading-[1.1]">
               AI network that continuously improves
             </div>
           </div>
@@ -200,30 +200,29 @@ const Slide6 = ({ slideNumber }) => {
       {/* Popup Overlays */}
       {activePopup && (
         <div 
-          className="fixed inset-0 bg-black/70 z-50 flex justify-center items-center"
+          className="popup-overlay fixed inset-0 bg-black/70 z-50 flex justify-center items-center max-sm:px-2"
           onClick={() => closePopup(activePopup)}
         >
           <div 
-            className="bg-white/95 backdrop-blur-md rounded-2xl p-8 w-[450px] border border-[#54bb74]/50 shadow-[0_15px_35px_rgba(0,0,0,0.2)] animate-[popupFadeIn_0.3s_ease] relative"
+            className="popup bg-white/95 backdrop-blur-[15px] rounded-[16px] p-[30px] w-[450px] border border-[#54bb74]/50 shadow-[0_15px_35px_rgba(0,0,0,0.2)] animate-[popupFadeIn_0.3s_ease] relative max-sm:w-full max-sm:p-4 max-sm:rounded-lg"
             onClick={(e) => e.stopPropagation()}
           >
-            <i 
-              className="fas fa-times absolute top-4 right-4 text-xl text-[#93cfa2] cursor-pointer hover:text-[#292929] transition-colors duration-300"
+            <FaTimes
+              className="popup-close absolute top-4 right-4 text-[20px] text-[#93cfa2] cursor-pointer hover:text-[#292929] transition-colors duration-300 max-sm:text-base max-sm:top-2 max-sm:right-2"
               onClick={() => closePopup(activePopup)}
             />
-            <div className="font-[Amenti] font-bold text-2xl text-[#54bb74] mb-4 text-center">
+            <div className="popup-title font-[Amenti] font-bold text-[24px] text-[#54bb74] mb-[15px] text-center max-sm:text-xs max-sm:mb-0.5">
               {popupData[activePopup]?.title}
             </div>
-            <div className="text-base leading-relaxed text-[#292929] text-center mb-4">
+            <div className="popup-content text-[16px] leading-[1.6] text-[#292929] text-center max-sm:text-xs max-sm:mb-2">
               {popupData[activePopup]?.content}
             </div>
-            
             {popupData[activePopup]?.keyPoints && (
-              <div className="mt-4 text-left">
+              <div className="key-points mt-[15px] text-left max-sm:mt-2">
                 {popupData[activePopup].keyPoints.map((point, index) => (
-                  <div key={index} className="flex items-start mb-2.5">
-                    <i className="fas fa-check-circle text-[#54bb74] mr-2.5 mt-0.5" />
-                    <span className="text-[#292929]">{point}</span>
+                  <div key={index} className="key-point flex items-start mb-[10px] max-sm:mb-1">
+                    <FaCheckCircle className="text-[#54bb74] mr-[10px] mt-[3px] max-sm:text-xs max-sm:mr-1 max-sm:mt-1" />
+                    <span className="text-[#292929] max-sm:text-xs">{point}</span>
                   </div>
                 ))}
               </div>
