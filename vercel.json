@@ -1,12 +1,22 @@
 {
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/",
       "destination": "/limiai",
       "has": [
         {
           "type": "host",
           "value": "limiai.co"
+        }
+      ]
+    },
+    {
+      "source": "/",
+      "destination": "/limiai",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.limiai.co"
         }
       ]
     }
