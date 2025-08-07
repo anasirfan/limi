@@ -52,7 +52,7 @@ const Slide7 = ({ slideNumber }) => {
   };
 
   return (
-    <div className="relative w-[1280px] h-[700px] mx-auto bg-[#292929] overflow-hidden max-sm:w-full max-sm:min-h-0 max-sm:h-[700px] max-sm:mx-0">
+    <div className="relative h-[75vh] mx-auto bg-[#292929] overflow-hidden">
       {/* Background Image */}
       <div 
         className="absolute inset-0 bg-cover bg-center opacity-40"
@@ -65,84 +65,84 @@ const Slide7 = ({ slideNumber }) => {
       <div className="absolute inset-0 bg-gradient-to-br from-[#292929]/90 to-[#292929]/80" />
       
       {/* Content */}
-      <div className="relative z-10 flex flex-col h-full px-[60px] py-[60px] max-sm:px-3 max-sm:py-3">
+      <div className="relative z-10 flex flex-col h-full px-[30px] py-[25px] max-sm:px-3 max-sm:py-2">
         {/* Headline */}
-        <h1 className="font-[Amenti] font-bold text-4xl mb-4 text-[#f3ebe2] relative drop-shadow-[1px_1px_3px_rgba(0,0,0,0.2)] max-sm:text-2xl max-sm:mb-4 max-sm:leading-snug">
+        <h1 className="font-[Amenti] font-bold text-[28px] mb-8 text-[#f3ebe2] relative drop-shadow-[1px_1px_3px_rgba(0,0,0,0.2)] max-sm:text-lg max-sm:mb-2 max-sm:leading-snug">
           Our Multi-Layered Business Model: Beyond Hardware
-          <div className="absolute -bottom-4 left-0 w-25 h-1.5 bg-gradient-to-r from-[#54bb74] to-[#93cfa2] rounded-full max-sm:w-[60px] max-sm:h-[3px]" />
+          <div className="absolute -bottom-3 left-0 w-20 h-1 bg-gradient-to-r from-[#54bb74] to-[#93cfa2] rounded-full max-sm:w-[50px] max-sm:h-[2px]" />
         </h1>
         
         {/* Business Model Intro */}
-        <div className="flex items-center  bg-gradient-to-r from-[#54bb74]/20 to-[#54bb74]/10 p-3 rounded-xl border-l-4 border-[#54bb74] shadow-[0_5px_15px_rgba(0,0,0,0.1)] max-sm:flex-col max-sm:items-start max-sm:mb-4 max-sm:p-2 max-sm:rounded-lg">
-          <FaCoins className="text-4xl text-[#54bb74] mr-5 max-sm:text-xl max-sm:mr-1" />
-          <div className="text-xl text-[#f3ebe2] leading-relaxed font-medium max-sm:text-xs">
+        <div className="flex items-center mb-4 p-6 bg-gradient-to-r from-[#54bb74]/20 to-[#54bb74]/10 rounded-lg border-l-3 border-[#54bb74] shadow-[0_3px_10px_rgba(0,0,0,0.1)] max-sm:flex-col max-sm:items-start max-sm:mb-3 max-sm:p-2 max-sm:rounded-lg">
+          <FaCoins className="text-[24px] text-[#54bb74] mr-3 max-sm:text-lg max-sm:mr-1" />
+          <div className="text-[18px] text-[#f3ebe2] leading-tight font-medium max-sm:text-xs">
             Like <strong className="text-[#54bb74] font-bold">Intel</strong> (90%+ margins on chips) and <strong className="text-[#54bb74] font-bold">Qualcomm</strong> (IP royalties), we're building a multi-layered revenue model that scales beyond hardware.
           </div>
         </div>
         
         {/* Revenue Layers */}
-        <div className="flex flex-col gap-6 flex-grow mt-4 max-sm:gap-2 max-sm:mt-3">
+        <div className="flex flex-col gap-3 flex-grow mt-4 max-sm:gap-2 max-sm:mt-2">
           <div 
-            className="bg-[#292929]/70 backdrop-blur-sm rounded-2xl p-6 py-8 flex items-center cursor-pointer transition-all duration-300 border border-[#54bb74]/20 shadow-[0_10px_25px_rgba(0,0,0,0.2)] hover:transform hover:-translate-y-2 hover:shadow-[0_15px_35px_rgba(0,0,0,0.3)] hover:border-[#54bb74] relative overflow-hidden group max-sm:p-2 max-sm:py-4 max-sm:rounded-lg max-sm:flex-col max-sm:items-start"
+            className="bg-[#292929]/70 backdrop-blur-sm rounded-xl p-4 py-4 flex items-center cursor-pointer transition-all duration-300 border border-[#54bb74]/20 shadow-[0_5px_15px_rgba(0,0,0,0.2)] hover:transform hover:-translate-y-1 hover:shadow-[0_10px_25px_rgba(0,0,0,0.3)] hover:border-[#54bb74] relative overflow-hidden group max-sm:p-2 max-sm:py-3 max-sm:rounded-lg max-sm:flex-col max-sm:items-start"
             onClick={() => openPopup('popup1')}
           >
-            <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-[#54bb74] to-[#93cfa2]" />
-            <div className="absolute top-2 right-2 w-5 h-5 bg-[#54bb74]/20 rounded-full flex items-center justify-center text-[#54bb74] text-[10px] transition-all duration-300 group-hover:bg-[#54bb74] group-hover:text-white max-sm:w-4 max-sm:h-4">
+            <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-[#54bb74] to-[#93cfa2]" />
+            <div className="absolute top-1 right-1 w-4 h-4 bg-[#54bb74]/20 rounded-full flex items-center justify-center text-[#54bb74] text-[8px] transition-all duration-300 group-hover:bg-[#54bb74] group-hover:text-white max-sm:w-3 max-sm:h-3">
               <FaInfoCircle />
             </div>
-            <FaBoxOpen className="text-5xl text-[#66C081] mr-6 bg-gradient-to-r from-[#54bb74] to-[#93cfa2] bg-clip-text text-transparent layer-icon max-sm:text-xl max-sm:mr-2" />
+            <FaBoxOpen className="text-[32px] text-[#66C081] mr-4 bg-gradient-to-r from-[#54bb74] to-[#93cfa2] bg-clip-text text-transparent layer-icon max-sm:text-lg max-sm:mr-2" />
             <div className="flex-grow">
-              <div className="font-[Amenti] font-bold text-2xl mb-2 text-[#f3ebe2] flex items-center max-sm:text-xs max-sm:mb-1">
+              <div className="font-[Amenti] font-bold text-[20px] mb-1 text-[#f3ebe2] flex items-center max-sm:text-xs max-sm:mb-1">
                 Profitable Hardware Sales
-                <span className="margin-badge bg-gradient-to-r from-[#54bb74] to-[#93cfa2] text-[#292929] font-[Amenti] font-bold text-lg px-3 py-1 rounded-full ml-4 max-sm:text-[10px] max-sm:px-2 max-sm:py-0.5 max-sm:ml-2">
+                <span className="margin-badge bg-gradient-to-r from-[#54bb74] to-[#93cfa2] text-[#292929] font-[Amenti] font-bold text-[16px] px-2 py-0.5 rounded-full ml-3 max-sm:text-[8px] max-sm:px-1 max-sm:py-0.5 max-sm:ml-2">
                   55%+ Margins
                 </span>
               </div>
-              <div className="text-base leading-relaxed text-[#93cfa2] max-sm:text-[10px] max-sm:leading-tight">
+              <div className="text-[16px] leading-tight text-[#93cfa2] max-sm:text-[16px] max-sm:leading-tight">
                 Lighting fixtures, modular bases, and add-on sensors with exceptional supply chain mastery
               </div>
             </div>
           </div>
           
           <div 
-            className="bg-[#292929]/70 backdrop-blur-sm rounded-2xl p-6 py-8 flex items-center cursor-pointer transition-all duration-300 border border-[#54bb74]/20 shadow-[0_10px_25px_rgba(0,0,0,0.2)] hover:transform hover:-translate-y-2 hover:shadow-[0_15px_35px_rgba(0,0,0,0.3)] hover:border-[#54bb74] relative overflow-hidden group max-sm:p-2 max-sm:py-4 max-sm:rounded-lg max-sm:flex-col max-sm:items-start"
+            className="bg-[#292929]/70 backdrop-blur-sm rounded-xl p-4 py-4 flex items-center cursor-pointer transition-all duration-300 border border-[#54bb74]/20 shadow-[0_5px_15px_rgba(0,0,0,0.2)] hover:transform hover:-translate-y-1 hover:shadow-[0_10px_25px_rgba(0,0,0,0.3)] hover:border-[#54bb74] relative overflow-hidden group max-sm:p-2 max-sm:py-3 max-sm:rounded-lg max-sm:flex-col max-sm:items-start"
             onClick={() => openPopup('popup2')}
           >
-            <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-[#54bb74] to-[#93cfa2]" />
-            <div className="absolute top-2 right-2 w-5 h-5 bg-[#54bb74]/20 rounded-full flex items-center justify-center text-[#54bb74] text-[10px] transition-all duration-300 group-hover:bg-[#54bb74] group-hover:text-white max-sm:w-4 max-sm:h-4">
+            <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-[#54bb74] to-[#93cfa2]" />
+            <div className="absolute top-1 right-1 w-4 h-4 bg-[#54bb74]/20 rounded-full flex items-center justify-center text-[#54bb74] text-[8px] transition-all duration-300 group-hover:bg-[#54bb74] group-hover:text-white max-sm:w-3 max-sm:h-3">
               <FaInfoCircle />
             </div>
-            <FaCrown className="text-5xl text-[#66C081] mr-6 bg-gradient-to-r from-[#54bb74] to-[#93cfa2] bg-clip-text text-transparent layer-icon max-sm:text-xl max-sm:mr-2" />
+            <FaCrown className="text-[32px] text-[#66C081] mr-4 bg-gradient-to-r from-[#54bb74] to-[#93cfa2] bg-clip-text text-transparent layer-icon max-sm:text-lg max-sm:mr-2" />
             <div className="flex-grow">
-              <div className="font-[Amenti] font-bold text-2xl mb-2 text-[#f3ebe2] flex items-center max-sm:text-xs max-sm:mb-1">
+              <div className="font-[Amenti] font-bold text-[20px] mb-1 text-[#f3ebe2] flex items-center max-sm:text-xs max-sm:mb-1">
                 Premium AI Subscriptions
-                <span className="margin-badge bg-gradient-to-r from-[#54bb74] to-[#93cfa2] text-[#292929] font-[Amenti] font-bold text-lg px-3 py-1 rounded-full ml-4 max-sm:text-[10px] max-sm:px-2 max-sm:py-0.5 max-sm:ml-2">
+                <span className="margin-badge bg-gradient-to-r from-[#54bb74] to-[#93cfa2] text-[#292929] font-[Amenti] font-bold text-[16px] px-2 py-0.5 rounded-full ml-3 max-sm:text-[8px] max-sm:px-1 max-sm:py-0.5 max-sm:ml-2">
                   70%+ Margins
                 </span>
               </div>
-              <div className="text-base leading-relaxed text-[#93cfa2] max-sm:text-[10px] max-sm:leading-tight">
+              <div className="text-[16px] leading-tight text-[#93cfa2] max-sm:text-[16px] max-sm:leading-tight">
                 Recurring revenue for advanced features like proactive assistance, security monitoring, and personalization
               </div>
             </div>
           </div>
           
           <div 
-            className="bg-[#292929]/70 backdrop-blur-sm rounded-2xl p-6 py-8 flex items-center cursor-pointer transition-all duration-300 border border-[#54bb74]/20 shadow-[0_10px_25px_rgba(0,0,0,0.2)] hover:transform hover:-translate-y-2 hover:shadow-[0_15px_35px_rgba(0,0,0,0.3)] hover:border-[#54bb74] relative overflow-hidden group max-sm:p-2 max-sm:py-4 max-sm:rounded-lg max-sm:flex-col max-sm:items-start"
+            className="bg-[#292929]/70 backdrop-blur-sm rounded-xl p-4 py-4 flex items-center cursor-pointer transition-all duration-300 border border-[#54bb74]/20 shadow-[0_5px_15px_rgba(0,0,0,0.2)] hover:transform hover:-translate-y-1 hover:shadow-[0_10px_25px_rgba(0,0,0,0.3)] hover:border-[#54bb74] relative overflow-hidden group max-sm:p-2 max-sm:py-3 max-sm:rounded-lg max-sm:flex-col max-sm:items-start"
             onClick={() => openPopup('popup3')}
           >
-            <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-[#54bb74] to-[#93cfa2]" />
-            <div className="absolute top-2 right-2 w-5 h-5 bg-[#54bb74]/20 rounded-full flex items-center justify-center text-[#54bb74] text-[10px] transition-all duration-300 group-hover:bg-[#54bb74] group-hover:text-white max-sm:w-4 max-sm:h-4">
+            <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-[#54bb74] to-[#93cfa2]" />
+            <div className="absolute top-1 right-1 w-4 h-4 bg-[#54bb74]/20 rounded-full flex items-center justify-center text-[#54bb74] text-[8px] transition-all duration-300 group-hover:bg-[#54bb74] group-hover:text-white max-sm:w-3 max-sm:h-3">
               <FaInfoCircle />
             </div>
-            <PiCertificateFill className="text-5xl text-[#66C081] mr-6 bg-gradient-to-r from-[#54bb74] to-[#93cfa2] bg-clip-text text-transparent layer-icon max-sm:text-xl max-sm:mr-2" />
+            <PiCertificateFill className="text-[32px] text-[#66C081] mr-4 bg-gradient-to-r from-[#54bb74] to-[#93cfa2] bg-clip-text text-transparent layer-icon max-sm:text-lg max-sm:mr-2" />
             <div className="flex-grow">
-              <div className="font-[Amenti] font-bold text-2xl mb-2 text-[#f3ebe2] flex items-center max-sm:text-xs max-sm:mb-1">
+              <div className="font-[Amenti] font-bold text-[20px] mb-1 text-[#f3ebe2] flex items-center max-sm:text-xs max-sm:mb-1">
                 Platform Licensing
-                <span className="margin-badge bg-gradient-to-r from-[#54bb74] to-[#93cfa2] text-[#292929] font-[Amenti] font-bold text-lg px-3 py-1 rounded-full ml-4 max-sm:text-[10px] max-sm:px-2 max-sm:py-0.5 max-sm:ml-2">
+                <span className="margin-badge bg-gradient-to-r from-[#54bb74] to-[#93cfa2] text-[#292929] font-[Amenti] font-bold text-[16px] px-2 py-0.5 rounded-full ml-3 max-sm:text-[8px] max-sm:px-1 max-sm:py-0.5 max-sm:ml-2">
                   80%+ Margins
                 </span>
               </div>
-              <div className="text-base leading-relaxed text-[#93cfa2] max-sm:text-[10px] max-sm:leading-tight">
+              <div className="text-[16px] leading-tight text-[#93cfa2] max-sm:text-[16px] max-sm:leading-tight">
                 "Intel Inside" model licensing our core technology to other manufacturers in the intelligent spaces ecosystem
               </div>
             </div>
@@ -150,13 +150,13 @@ const Slide7 = ({ slideNumber }) => {
         </div>
         
         {/* Margin Progression */}
-        <div className="flex items-center justify-center mt-8 gap-4 margin-progression max-sm:mt-3 max-sm:gap-1">
-          <span className="text-lg text-[#93cfa2] max-sm:text-xs">Margin Progression:</span>
-          <span className="font-[Amenti] font-bold text-2xl text-[#f3ebe2] max-sm:text-xs">55%</span>
-          <FaLongArrowAltRight className="text-2xl text-[#54bb74] margin-arrow max-sm:text-xs" />
-          <span className="font-[Amenti] font-bold text-2xl text-[#f3ebe2] max-sm:text-xs">70%</span>
-          <FaLongArrowAltRight className="text-2xl text-[#54bb74] margin-arrow max-sm:text-xs" />
-          <span className="font-[Amenti] font-bold text-2xl text-[#f3ebe2] max-sm:text-xs">80%+</span>
+        <div className="flex items-center justify-center mt-4 gap-2 margin-progression max-sm:mt-2 max-sm:gap-1">
+          <span className="text-[14px] text-[#93cfa2] max-sm:text-xs">Margin Progression:</span>
+          <span className="font-[Amenti] font-bold text-[16px] text-[#f3ebe2] max-sm:text-xs">55%</span>
+          <FaLongArrowAltRight className="text-[16px] text-[#54bb74] margin-arrow max-sm:text-xs" />
+          <span className="font-[Amenti] font-bold text-[16px] text-[#f3ebe2] max-sm:text-xs">70%</span>
+          <FaLongArrowAltRight className="text-[16px] text-[#54bb74] margin-arrow max-sm:text-xs" />
+          <span className="font-[Amenti] font-bold text-[16px] text-[#f3ebe2] max-sm:text-xs">80%+</span>
         </div>
       </div>
 
@@ -167,25 +167,25 @@ const Slide7 = ({ slideNumber }) => {
           onClick={() => closePopup(activePopup)}
         >
           <div 
-            className="popup bg-[#292929]/95 backdrop-blur-[15px] rounded-[16px] p-[30px] w-[450px] border border-[#54bb74]/50 shadow-[0_15px_35px_rgba(0,0,0,0.3)] animate-[popupFadeIn_0.3s_ease] relative max-sm:w-full max-sm:p-4 max-sm:rounded-lg"
+            className="popup bg-[#292929]/95 backdrop-blur-[15px] rounded-xl p-5 w-[400px] border border-[#54bb74]/50 shadow-[0_10px_25px_rgba(0,0,0,0.3)] animate-[popupFadeIn_0.3s_ease] relative max-sm:w-full max-sm:p-3 max-sm:rounded-lg"
             onClick={(e) => e.stopPropagation()}
           >
             <FaTimes
-              className="popup-close absolute top-[15px] right-[15px] text-[20px] text-[#93cfa2] cursor-pointer hover:text-[#f3ebe2] transition-colors duration-300"
+              className="popup-close absolute top-3 right-3 text-[16px] text-[#93cfa2] cursor-pointer hover:text-[#f3ebe2] transition-colors duration-300 max-sm:text-sm"
               onClick={() => closePopup(activePopup)}
             />
-            <div className="popup-title font-[Amenti] font-bold text-[24px] text-[#54bb74] mb-[15px] text-center max-sm:text-base max-sm:mb-2">
+            <div className="popup-title font-[Amenti] font-bold text-[18px] text-[#54bb74] mb-3 text-center max-sm:text-sm max-sm:mb-2">
               {popupData[activePopup]?.title}
             </div>
-            <div className="popup-content text-[16px] leading-[1.6] text-[#f3ebe2] text-center max-sm:text-xs max-sm:mb-2">
+            <div className="popup-content text-[13px] leading-[1.5] text-[#f3ebe2] text-center mb-3 max-sm:text-xs max-sm:mb-2">
               {popupData[activePopup]?.content}
             </div>
             {popupData[activePopup]?.keyPoints && (
-              <div className="key-points mt-[15px] text-left max-sm:mt-2">
+              <div className="key-points mt-3 text-left max-sm:mt-2">
                 {popupData[activePopup].keyPoints.map((point, index) => (
-                  <div key={index} className="key-point flex items-start mb-[10px] max-sm:mb-1">
-                    <FaCheckCircle className="text-[#54bb74] mr-[10px] mt-[3px] max-sm:text-xs max-sm:mr-1 max-sm:mt-1" />
-                    <span className="text-[#f3ebe2] max-sm:text-xs">{point}</span>
+                  <div key={index} className="key-point flex items-start mb-2 max-sm:mb-1">
+                    <FaCheckCircle className="text-[#54bb74] mr-2 mt-0.5 text-xs max-sm:mr-1 max-sm:mt-1" />
+                    <span className="text-[#f3ebe2] text-[12px] max-sm:text-xs">{point}</span>
                   </div>
                 ))}
               </div>

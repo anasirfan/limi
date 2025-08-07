@@ -19,9 +19,7 @@ export default function LimiFuture() {
     <main className="bg-[#292929] text-white min-h-screen">
       {/* <Header /> */}
       
-      <div className="pt-[0px]">
-        <LimiFutureCarousel />
-      </div>
+      <LimiFutureCarousel />
       
       {/* <Footer /> */}
     </main>
