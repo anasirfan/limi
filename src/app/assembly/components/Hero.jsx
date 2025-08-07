@@ -189,7 +189,7 @@ const Hero = () => {
             {/* Left Content - 7 columns */}
             <div className="lg:col-span-7 space-y-8">
               {/* Hero Title Carousel */}
-              <div className="relative h-64 overflow-hidden">
+              <div className="relative h-[32rem] overflow-hidden">
                 {slides.map((slide, index) => (
                   <motion.div
                     key={index}

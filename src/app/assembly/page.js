@@ -171,7 +171,7 @@ const AssemblyPage = () => {
             ? 'bg-white/20 text-[#292929] backdrop-blur-md' 
             : 'bg-black/20 text-white backdrop-blur-md'
         }`}>
-          {currentTheme === 'light' ? '☀️ Light Mode' : '🌙 Dark Mode'}
+          {/* {currentTheme === 'light' ? '☀️ Light Mode' : '🌙 Dark Mode'} */}
         </div>
       </div>
     </motion.div>
