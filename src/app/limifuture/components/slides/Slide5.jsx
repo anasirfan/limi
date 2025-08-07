@@ -58,7 +58,7 @@ const Slide5 = ({ slideNumber }) => {
   };
 
   return (
-    <div className="slide relative w-[1280px] min-h-[720px] mx-auto bg-[#292929] overflow-hidden max-sm:w-full max-sm:min-h-0 max-sm:h-[700px] max-sm:mx-0">
+    <div className="slide relative w-[1280px] h-[70vh] mx-auto bg-[#292929] overflow-hidden max-sm:w-full max-sm:min-h-0 max-sm:h-[700px] max-sm:mx-0">
       {/* Background Image */}
       <div 
         className="absolute inset-0 bg-cover bg-center opacity-40"
@@ -71,9 +71,9 @@ const Slide5 = ({ slideNumber }) => {
       <div className="absolute inset-0 bg-gradient-to-br from-[#292929]/90 to-[#292929]/80" />
       
       {/* Content */}
-      <div className="slide-content relative z-10 flex flex-col h-full p-[60px] max-sm:p-4">
+      <div className="slide-content relative z-10 flex flex-col h-full p-[40px] max-sm:p-4">
         {/* Headline */}
-        <h1 className="headline font-[Amenti] font-bold text-[52px] mb-[40px] text-[#f3ebe2] relative drop-shadow-[1px_1px_3px_rgba(0,0,0,0.2)] max-sm:text-2xl max-sm:mb-6 max-sm:leading-snug">
+        <h1 className="headline font-[Amenti] font-bold text-[42px] mb-[30px] text-[#f3ebe2] relative drop-shadow-[1px_1px_3px_rgba(0,0,0,0.2)] max-sm:text-2xl max-sm:mb-6 max-sm:leading-snug">
           Why Lighting: The Perfect Trojan Horse
           <div className="absolute left-0 -bottom-[15px] w-[100px] h-[5px] rounded-[3px] bg-gradient-to-r from-[#54bb74] to-[#93cfa2] max-sm:w-[60px] max-sm:h-[3px]" />
         </h1>
@@ -96,7 +96,7 @@ const Slide5 = ({ slideNumber }) => {
             <div className="info-badge absolute top-2 right-2 w-5 h-5 bg-[#54bb74]/20 rounded-full flex items-center justify-center text-[#54bb74] text-[10px] transition-all duration-300 group-hover:bg-[#54bb74] group-hover:text-white max-sm:w-4 max-sm:h-4">
               <FaInfoCircle />
             </div>
-            <FaThumbsUp className="advantage-icon text-[#66C081] text-[#66C081] text-[48px] mb-[20px] bg-gradient-to-r from-[#54bb74] to-[#93cfa2] bg-clip-text text-transparent max-sm:text-2xl max-sm:mb-2" />
+            <FaThumbsUp className="advantage-icon text-[#ffffff] text-[48px] mb-[20px] bg-gradient-to-r from-[#54bb74] to-[#93cfa2] bg-clip-text text-transparent max-sm:text-2xl max-sm:mb-2" />
             <div className="advantage-title font-[Amenti] font-bold text-[24px] mb-[15px] text-[#f3ebe2] max-sm:text-base max-sm:mb-2">
               Consumer Acceptance
             </div>
@@ -113,7 +113,7 @@ const Slide5 = ({ slideNumber }) => {
             <div className="info-badge absolute top-2 right-2 w-5 h-5 bg-[#54bb74]/20 rounded-full flex items-center justify-center text-[#54bb74] text-[10px] transition-all duration-300 group-hover:bg-[#54bb74] group-hover:text-white max-sm:w-4 max-sm:h-4">
               <FaInfoCircle />
             </div>
-            <FaEyeSlash className="advantage-icon text-[#66C081] text-[48px] mb-[20px] bg-gradient-to-r from-[#54bb74] to-[#93cfa2] bg-clip-text text-transparent max-sm:text-2xl max-sm:mb-2" />
+            <FaEyeSlash className="advantage-icon text-[#6fc488] text-[48px] mb-[20px] bg-gradient-to-r from-[#54bb74] to-[#93cfa2] bg-clip-text text-transparent max-sm:text-2xl max-sm:mb-2" />
             <div className="advantage-title font-[Amenti] font-bold text-[24px] mb-[15px] text-[#f3ebe2] max-sm:text-base max-sm:mb-2">
               Aesthetic Invisibility
             </div>
@@ -130,7 +130,7 @@ const Slide5 = ({ slideNumber }) => {
             <div className="info-badge absolute top-2 right-2 w-5 h-5 bg-[#54bb74]/20 rounded-full flex items-center justify-center text-[#54bb74] text-[10px] transition-all duration-300 group-hover:bg-[#54bb74] group-hover:text-white max-sm:w-4 max-sm:h-4">
               <FaInfoCircle />
             </div>
-            <PiCircleDashedBold className="advantage-icon text-[#66C081] text-[48px] mb-[20px] bg-gradient-to-r from-[#54bb74] to-[#93cfa2] bg-clip-text text-transparent max-sm:text-2xl max-sm:mb-2" />
+            <PiCircleDashedBold className="advantage-icon text-[#6fc488] text-[48px] mb-[20px] bg-gradient-to-r from-[#54bb74] to-[#93cfa2] bg-clip-text text-transparent max-sm:text-2xl max-sm:mb-2" />
             <div className="advantage-title font-[Amenti] font-bold text-[24px] mb-[15px] text-[#f3ebe2] max-sm:text-base max-sm:mb-2">
               Superior Sensor Location
             </div>
@@ -147,7 +147,7 @@ const Slide5 = ({ slideNumber }) => {
             <div className="info-badge absolute top-2 right-2 w-5 h-5 bg-[#54bb74]/20 rounded-full flex items-center justify-center text-[#54bb74] text-[10px] transition-all duration-300 group-hover:bg-[#54bb74] group-hover:text-white max-sm:w-4 max-sm:h-4">
               <FaInfoCircle />
             </div>
-            <FaLevelUpAlt className="advantage-icon text-[#66C081] text-[48px] mb-[20px] bg-gradient-to-r from-[#54bb74] to-[#93cfa2] bg-clip-text text-transparent max-sm:text-2xl max-sm:mb-2" />
+            <FaLevelUpAlt className="advantage-icon text-[#6fc488] text-[48px] mb-[20px] bg-gradient-to-r from-[#54bb74] to-[#93cfa2] bg-clip-text text-transparent max-sm:text-2xl max-sm:mb-2" />
             <div className="advantage-title font-[Amenti] font-bold text-[24px] mb-[15px] text-[#f3ebe2] max-sm:text-base max-sm:mb-2">
               Natural Upgrade Path
             </div>

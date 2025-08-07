@@ -52,7 +52,7 @@ const Slide7 = ({ slideNumber }) => {
   };
 
   return (
-    <div className="relative w-[1280px] min-h-[720px] mx-auto bg-[#292929] overflow-hidden max-sm:w-full max-sm:min-h-0 max-sm:h-[700px] max-sm:mx-0">
+    <div className="relative w-[1280px] h-[700px] mx-auto bg-[#292929] overflow-hidden max-sm:w-full max-sm:min-h-0 max-sm:h-[700px] max-sm:mx-0">
       {/* Background Image */}
       <div 
         className="absolute inset-0 bg-cover bg-center opacity-40"
@@ -67,13 +67,13 @@ const Slide7 = ({ slideNumber }) => {
       {/* Content */}
       <div className="relative z-10 flex flex-col h-full px-[60px] py-[60px] max-sm:px-3 max-sm:py-3">
         {/* Headline */}
-        <h1 className="font-[Amenti] font-bold text-5xl mb-10 text-[#f3ebe2] relative drop-shadow-[1px_1px_3px_rgba(0,0,0,0.2)] max-sm:text-2xl max-sm:mb-4 max-sm:leading-snug">
+        <h1 className="font-[Amenti] font-bold text-4xl mb-4 text-[#f3ebe2] relative drop-shadow-[1px_1px_3px_rgba(0,0,0,0.2)] max-sm:text-2xl max-sm:mb-4 max-sm:leading-snug">
           Our Multi-Layered Business Model: Beyond Hardware
           <div className="absolute -bottom-4 left-0 w-25 h-1.5 bg-gradient-to-r from-[#54bb74] to-[#93cfa2] rounded-full max-sm:w-[60px] max-sm:h-[3px]" />
         </h1>
         
         {/* Business Model Intro */}
-        <div className="flex items-center mb-10 bg-gradient-to-r from-[#54bb74]/20 to-[#54bb74]/10 p-5 rounded-xl border-l-4 border-[#54bb74] shadow-[0_5px_15px_rgba(0,0,0,0.1)] max-sm:flex-col max-sm:items-start max-sm:mb-4 max-sm:p-2 max-sm:rounded-lg">
+        <div className="flex items-center  bg-gradient-to-r from-[#54bb74]/20 to-[#54bb74]/10 p-3 rounded-xl border-l-4 border-[#54bb74] shadow-[0_5px_15px_rgba(0,0,0,0.1)] max-sm:flex-col max-sm:items-start max-sm:mb-4 max-sm:p-2 max-sm:rounded-lg">
           <FaCoins className="text-4xl text-[#54bb74] mr-5 max-sm:text-xl max-sm:mr-1" />
           <div className="text-xl text-[#f3ebe2] leading-relaxed font-medium max-sm:text-xs">
             Like <strong className="text-[#54bb74] font-bold">Intel</strong> (90%+ margins on chips) and <strong className="text-[#54bb74] font-bold">Qualcomm</strong> (IP royalties), we're building a multi-layered revenue model that scales beyond hardware.
@@ -81,7 +81,7 @@ const Slide7 = ({ slideNumber }) => {
         </div>
         
         {/* Revenue Layers */}
-        <div className="flex flex-col gap-6 flex-grow mt-8 max-sm:gap-2 max-sm:mt-3">
+        <div className="flex flex-col gap-6 flex-grow mt-4 max-sm:gap-2 max-sm:mt-3">
           <div 
             className="bg-[#292929]/70 backdrop-blur-sm rounded-2xl p-6 py-8 flex items-center cursor-pointer transition-all duration-300 border border-[#54bb74]/20 shadow-[0_10px_25px_rgba(0,0,0,0.2)] hover:transform hover:-translate-y-2 hover:shadow-[0_15px_35px_rgba(0,0,0,0.3)] hover:border-[#54bb74] relative overflow-hidden group max-sm:p-2 max-sm:py-4 max-sm:rounded-lg max-sm:flex-col max-sm:items-start"
             onClick={() => openPopup('popup1')}
