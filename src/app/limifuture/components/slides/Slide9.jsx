@@ -8,7 +8,7 @@ import { trackPopupInteraction } from '../../../utils/umamiTracking';
 const metrics = [
   {
     key: 'popup1',
-    icon: <FaHandshake className="metric-icon text-[64px] text-[#6FC488] mb-4 max-sm:text-2xl max-sm:mb-2" />,
+    icon: <FaHandshake className="metric-icon text-[40px] text-[#6FC488] mb-2 max-sm:text-xl max-sm:mb-1" />,
     value: '£50M+',
     label: '5-Year Platform Agreement',
     info: 'Signed with a leading UK distributor for our AI infrastructure platform, validating our business model at scale.',
@@ -20,7 +20,7 @@ const metrics = [
   },
   {
     key: 'popup2',
-    icon: <FaBox className="metric-icon text-[64px] text-[#6FC488] mb-4 max-sm:text-2xl max-sm:mb-2" />,
+    icon: <FaBox className="metric-icon text-[40px] text-[#6FC488] mb-2 max-sm:text-xl max-sm:mb-1" />,
     value: '£1M+',
     label: 'Confirmed Purchase Orders',
     info: 'Confirmed orders currently in production at our owned factory in China, proving immediate demand.',
@@ -32,7 +32,7 @@ const metrics = [
   },
   {
     key: 'popup3',
-    icon: <FaHeart className="metric-icon text-[64px] text-[#6FC488] mb-4 max-sm:text-2xl max-sm:mb-2" />,
+    icon: <FaHeart className="metric-icon text-[40px] text-[#6FC488] mb-2 max-sm:text-xl max-sm:mb-1" />,
     value: '0%',
     label: 'Customer Churn',
     info: 'Achieved 0% customer churn from our initial beta launch, demonstrating strong product-market fit.',
@@ -44,7 +44,7 @@ const metrics = [
   },
   {
     key: 'popup4',
-    icon: <FaRocket className="metric-icon text-[64px] text-[#6FC488] mb-4 max-sm:text-2xl max-sm:mb-2" />,
+    icon: <FaRocket className="metric-icon text-[40px] text-[#6FC488] mb-2 max-sm:text-xl max-sm:mb-1" />,
     value: '<£200k',
     label: 'Bootstrapped to Profitability',
     info: 'Achieved significant commercial agreements with less than £200k of bootstrapped capital.',
@@ -70,43 +70,43 @@ const Slide9 = ({ slideNumber }) => {
   };
 
   return (
-    <div className="relative w-full h-full bg-[#292929] overflow-hidden max-sm:min-h-0 max-sm:h-[700px]">
+    <div className="relative w-full h-[75vh] bg-[#292929]">
       {/* Background */}
       <div className="absolute inset-0 bg-cover bg-center opacity-40" style={{ backgroundImage: "url('https://sfile.chatglm.cn/images-ppt/6819f3815756.jpg')" }} />
       <div className="absolute inset-0 bg-gradient-to-br from-[#292929]/90 to-[#292929]/80" />
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col h-full px-16 py-12 max-sm:px-3 max-sm:py-3">
+      <div className="relative z-10 flex flex-col h-full px-8 py-6 max-sm:px-3 max-sm:py-2">
         {/* Headline */}
-        <h1 className="font-[Amenti] font-bold text-[52px] mb-10 text-[#f3ebe2] relative drop-shadow-[1px_1px_3px_rgba(0,0,0,0.2)] headline max-sm:text-2xl max-sm:mb-4 max-sm:leading-snug">
+        <h1 className="font-[Amenti] font-bold text-[32px] mb-6 text-[#f3ebe2] relative drop-shadow-[1px_1px_3px_rgba(0,0,0,0.2)] headline max-sm:text-xl max-sm:mb-3 max-sm:leading-snug">
           Traction: Proof Our Strategy Works
-          <div className="absolute -bottom-4 left-0 w-[60px] h-[3px] bg-gradient-to-r from-[#54bb74] to-[#93cfa2] rounded max-sm:w-[40px] max-sm:h-[2px]" />
+          <div className="absolute -bottom-3 left-0 w-[50px] h-[2px] bg-gradient-to-r from-[#54bb74] to-[#93cfa2] rounded max-sm:w-[30px] max-sm:h-[2px]" />
         </h1>
 
         {/* Traction Intro */}
-        <div className="flex items-center mb-10 bg-gradient-to-r from-[#54bb74]/20 to-[#54bb74]/10 p-5 rounded-xl border-l-[5px] border-[#54bb74] shadow-[0_5px_15px_rgba(0,0,0,0.1)] traction-intro max-sm:flex-col max-sm:items-start max-sm:mb-4 max-sm:p-2 max-sm:rounded-lg">
-          <FaChartLine className="text-[36px] text-[#54bb74] mr-5 traction-intro-icon max-sm:text-xl max-sm:mr-1" />
-          <div className="text-[20px] text-[#f3ebe2] leading-snug font-medium traction-intro-text max-sm:text-xs">
+        <div className="flex items-center mb-6 bg-gradient-to-r from-[#54bb74]/20 to-[#54bb74]/10 p-3 rounded-lg border-l-[4px] border-[#54bb74] shadow-[0_3px_10px_rgba(0,0,0,0.1)] traction-intro max-sm:flex-col max-sm:items-start max-sm:mb-3 max-sm:p-2 max-sm:rounded-lg">
+          <FaChartLine className="text-[24px] text-[#54bb74] mr-3 traction-intro-icon max-sm:text-lg max-sm:mr-1" />
+          <div className="text-[14px] text-[#f3ebe2] leading-tight font-medium traction-intro-text max-sm:text-xs">
             Our strategy isn't theoretical — we have <strong className="text-[#54bb74] font-bold">undeniable market validation</strong> and a proven business model.
           </div>
         </div>
 
         {/* Metrics Grid */}
-        <div className="grid grid-cols-2 gap-8 flex-grow metrics-grid max-sm:grid-cols-1 max-sm:gap-3">
+        <div className="grid grid-cols-2 gap-4 flex-grow metrics-grid max-sm:grid-cols-1 max-sm:gap-2">
           {metrics.map((metric) => (
             <div
               key={metric.key}
-              className="relative metric-card bg-[#292929]/70 backdrop-blur-lg rounded-2xl p-8 flex flex-col items-center text-center cursor-pointer border border-[#54bb74]/20 shadow-[0_10px_25px_rgba(0,0,0,0.2)] transition-all duration-300 overflow-hidden hover:-translate-y-2 hover:shadow-[0_15px_35px_rgba(0,0,0,0.3)] hover:border-[#54bb74] max-sm:p-3 max-sm:rounded-lg"
+              className="relative metric-card bg-[#292929]/70 backdrop-blur-lg rounded-xl p-4 flex flex-col items-center text-center cursor-pointer border border-[#54bb74]/20 shadow-[0_5px_15px_rgba(0,0,0,0.2)] transition-all duration-300 overflow-hidden hover:-translate-y-1 hover:shadow-[0_10px_25px_rgba(0,0,0,0.3)] hover:border-[#54bb74] max-sm:p-2 max-sm:rounded-lg"
               onClick={() => openPopup(metric.key)}
             >
-              <div className="info-badge absolute top-4 right-4 w-6 h-6 bg-[#54bb74]/20 rounded-full flex items-center justify-center text-[#54bb74] text-xs transition-all duration-300 hover:bg-[#54bb74] hover:text-white max-sm:w-4 max-sm:h-4">
+              <div className="info-badge absolute top-2 right-2 w-4 h-4 bg-[#54bb74]/20 rounded-full flex items-center justify-center text-[#54bb74] text-[8px] transition-all duration-300 hover:bg-[#54bb74] hover:text-white max-sm:w-3 max-sm:h-3">
                 <FaInfoCircle />
               </div>
               {metric.icon}
-              <div className="font-[Amenti] font-bold text-[48px] text-[#54bb74] mb-4 bg-gradient-to-tr from-[#54bb74] to-[#93cfa2] bg-clip-text text-transparent metric-value max-sm:text-2xl max-sm:mb-2">
+              <div className="font-[Amenti] font-bold text-[28px] text-[#54bb74] mb-2 bg-gradient-to-tr from-[#54bb74] to-[#93cfa2] bg-clip-text text-transparent metric-value max-sm:text-lg max-sm:mb-1">
                 {metric.value}
               </div>
-              <div className="text-[18px] leading-snug text-[#f3ebe2] metric-label max-sm:text-xs">
+              <div className="text-[13px] leading-tight text-[#f3ebe2] metric-label max-sm:text-xs">
                 {metric.label}
               </div>
             </div>
@@ -121,24 +121,24 @@ const Slide9 = ({ slideNumber }) => {
           onClick={() => closePopup(activePopup)}
         >
           <div
-            className="popup bg-[#292929]/95 backdrop-blur-[15px] rounded-2xl p-8 w-[450px] border border-[#54bb74]/50 shadow-[0_15px_35px_rgba(0,0,0,0.3)] animate-[popupFadeIn_0.3s_ease] relative max-sm:p-3 max-sm:w-full max-sm:rounded-xl max-sm:border max-sm:border-[#54bb74]/40"
+            className="popup bg-[#292929]/95 backdrop-blur-[15px] rounded-xl p-5 w-[380px] border border-[#54bb74]/50 shadow-[0_10px_25px_rgba(0,0,0,0.3)] animate-[popupFadeIn_0.3s_ease] relative max-sm:p-3 max-sm:w-full max-sm:rounded-lg max-sm:border max-sm:border-[#54bb74]/40"
             onClick={(e) => e.stopPropagation()}
           >
             <FaTimes
-              className="popup-close absolute top-4 right-4 text-xl text-[#93cfa2] cursor-pointer hover:text-[#f3ebe2] transition-colors duration-300"
+              className="popup-close absolute top-3 right-3 text-[16px] text-[#93cfa2] cursor-pointer hover:text-[#f3ebe2] transition-colors duration-300 max-sm:text-sm"
               onClick={() => closePopup(activePopup)}
             />
-            <div className="popup-title font-[Amenti] font-bold text-2xl text-[#54bb74] mb-4 text-center max-sm:text-lg max-sm:mb-2">
+            <div className="popup-title font-[Amenti] font-bold text-[18px] text-[#54bb74] mb-3 text-center max-sm:text-sm max-sm:mb-2">
               {metrics.find((m) => m.key === activePopup)?.label}
             </div>
-            <div className="popup-content text-base leading-relaxed text-[#f3ebe2] text-center mb-4 max-sm:text-xs max-sm:mb-2">
+            <div className="popup-content text-[13px] leading-tight text-[#f3ebe2] text-center mb-3 max-sm:text-xs max-sm:mb-2">
               {metrics.find((m) => m.key === activePopup)?.info}
             </div>
-            <div className="key-points mt-4 text-left max-sm:mt-2">
+            <div className="key-points mt-3 text-left max-sm:mt-2">
               {metrics.find((m) => m.key === activePopup)?.keyPoints.map((point, idx) => (
-                <div key={idx} className="key-point flex items-start mb-2.5 max-sm:mb-1">
-                  <FaCheckCircle className="text-[#6FC488] text-[22px] mr-2.5 mt-0.5 max-sm:text-base max-sm:mr-1 max-sm:mt-0" />
-                  <span className="text-[#f3ebe2] max-sm:text-xs">{point}</span>
+                <div key={idx} className="key-point flex items-start mb-2 max-sm:mb-1">
+                  <FaCheckCircle className="text-[#6FC488] text-[14px] mr-2 mt-0.5 max-sm:text-xs max-sm:mr-1 max-sm:mt-0" />
+                  <span className="text-[#f3ebe2] text-[12px] max-sm:text-xs">{point}</span>
                 </div>
               ))}
             </div>

@@ -94,7 +94,7 @@ const LimiFutureCarousel = () => {
   const CurrentSlideComponent = slides[currentSlide].component;
 
   return (
-    <div className="relative w-full h-screen  bg-[#292929]">
+    <div className="relative w-full h-screen bg-[#292929]">
       {/* Slide Container */}
       <div className="relative w-full h-full flex items-center justify-center">
         <div 
