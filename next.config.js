@@ -9,7 +9,7 @@ const nextConfig = {
         // Handle limiai.co domain routing - only for root path
         {
           source: '/',
-          destination: '/limiai',
+          destination: '/limifuture',
           has: [
             {
               type: 'host',
@@ -20,7 +20,7 @@ const nextConfig = {
         // Handle www.limiai.co domain routing - only for root path
         {
           source: '/',
-          destination: '/limiai',
+          destination: '/limifuture',
           has: [
             {
               type: 'host',

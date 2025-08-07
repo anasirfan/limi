@@ -19,8 +19,8 @@ try {
     Write-Host "❌ Error: $($_.Exception.Message)" -ForegroundColor Red
 }
 
-# Test 2: Simulated limiai.co request (should redirect to /limiai)
-Write-Host "`n2️⃣ Testing limiai.co simulation (should serve /limiai page):" -ForegroundColor Yellow
+# Test 2: Simulated limiai.co request (should redirect to /limifuture)
+Write-Host "`n2️⃣ Testing limiai.co simulation (should serve /limifuture page):" -ForegroundColor Yellow
 try {
     $response2 = Invoke-WebRequest -Uri "http://localhost:3002/" -Headers @{"Host"="limiai.co"} -Method GET -TimeoutSec 10
     Write-Host "✅ Status: $($response2.StatusCode)" -ForegroundColor Green
@@ -37,7 +37,7 @@ try {
 }
 
 # Test 3: Test a specific path on limiai.co
-Write-Host "`n3️⃣ Testing limiai.co/some-path (should also redirect to /limiai):" -ForegroundColor Yellow
+Write-Host "`n3️⃣ Testing limiai.co/some-path (should also redirect to /limifuture):" -ForegroundColor Yellow
 try {
     $response3 = Invoke-WebRequest -Uri "http://localhost:3002/some-random-path" -Headers @{"Host"="limiai.co"} -Method GET -TimeoutSec 10
     Write-Host "✅ Status: $($response3.StatusCode)" -ForegroundColor Green

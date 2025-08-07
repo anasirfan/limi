@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/",
-      "destination": "/limiai",
+      "destination": "/limifuture",
       "has": [
         {
           "type": "host",
@@ -12,7 +12,7 @@
     },
     {
       "source": "/",
-      "destination": "/limiai",
+      "destination": "/limifuture",
       "has": [
         {
           "type": "host",
