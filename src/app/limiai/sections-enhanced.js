@@ -331,6 +331,18 @@ export const StrategySection = () => {
             ))}
           </div>
         </motion.div>
+        
+        {/* Ending tagline */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+          transition={{ duration: 1, delay: 1.0 }}
+          className="text-center mt-20"
+        >
+          <p className="text-2xl md:text-3xl font-[Amenti] text-white leading-relaxed">
+            We didn't build a pitch. We built a <span className="text-[#54bb74] font-semibold italic">working company</span>.
+          </p>
+        </motion.div>
       </div>
     </motion.section>
   );
@@ -495,10 +507,11 @@ export const LearningLoopSection = () => {
     {
       icon: FaCloud,
       title: "Deepen Engagement",
-      description: "More use 3 better performance 3 more value 3 faster loop",
+      description: "More use → better performance → more value → faster loop",
       gradient: "from-[#54bb74] to-[#93cfa2]"
     },
     {
+      
       icon: FaCloud, //use repeat icon
       title: "Improve System",
       description: "OTA updates push better predictions, automation, and features",
@@ -576,8 +589,7 @@ export const LearningLoopSection = () => {
             Our Learning Loop: <span className="font-[Amenti] italic text-[#54bb74]">The Intelligence Flywheel</span>
           </h2>
           <p className="text-xl max-w-4xl mx-auto leading-relaxed">
-            Every LIMI installation becomes smarter, creating a compounding advantage that competitors can't replicate
-          </p>
+          A defensive tech company, not a system integrator.  </p>
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12 items-center">
@@ -675,6 +687,18 @@ export const LearningLoopSection = () => {
             </motion.div>
           </div>
         </div>
+        
+        {/* Ending tagline */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+          transition={{ duration: 1, delay: 1.6 }}
+          className="text-center mt-20"
+        >
+          <p className="text-2xl md:text-3xl font-[Amenti] text-[#EAE0DC] leading-relaxed">
+            Like Tesla, Waze, and Google—<span className="text-[#54bb74] font-semibold italic">LIMI gets better the more it's used</span>.
+          </p>
+        </motion.div>
       </div>
     </motion.section>
   );
@@ -696,7 +720,7 @@ export const TeamSection = () => {
     {
       name: "Dr. Karen Law",
       title: "COO", 
-      description: "PhD fluent in Mandarin, Cantonese & English. Runs our China factory4full ops control.",
+      description: "PhD fluent in Mandarin, Cantonese & English. Runs our China factory - full ops control.",
       linkedin: "https://www.linkedin.com/in/kwklaw/",
       icon: FaCloud
     },
@@ -756,7 +780,7 @@ export const TeamSection = () => {
           className="text-center mb-20"
         >
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-[Amenti] text-white leading-[1.2] tracking-tight mb-6">
-            The Team: <span className="font-[Amenti] italic text-[#54bb74]">Execution-Focused Founders</span>
+            Backed by Builders <span className="font-[Amenti] italic text-[#54bb74]">Proven at scale.</span>
           </h2>
           <p className="text-xl text-white/70 max-w-4xl mx-auto leading-relaxed">
             Three complementary skill sets, one unified vision: ambient AI infrastructure for every space
