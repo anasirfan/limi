@@ -33,7 +33,7 @@ const Slide1 = ({ slideNumber }) => {
   };
 
   return (
-    <div className="relative w-full h-[600px] max-sm:h-[700px] bg-[#292929] overflow-hidden max-sm:h-[480px]">
+    <div className="relative w-full h-[75vh] bg-[#292929] overflow-hidden ">
       {/* Background Image */}
       <div 
         className="absolute inset-0 bg-cover bg-center opacity-60"

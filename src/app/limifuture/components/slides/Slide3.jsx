@@ -48,7 +48,7 @@ const Slide3 = ({ slideNumber }) => {
   };
 
   return (
-    <div className="slide relative w-[1280px] min-h-[720px] mx-auto bg-[#292929] max-sm:h-[700px] overflow-hidden max-sm:w-full max-sm:min-h-0 max-sm:h-auto max-sm:mx-0">
+    <div className="slide relative h-[75vh] bg-[#292929] overflow-hidden">
       {/* Background Image */}
       <div 
         className="absolute inset-0 bg-cover bg-center opacity-40"

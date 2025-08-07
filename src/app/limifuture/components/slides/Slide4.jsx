@@ -48,7 +48,7 @@ const Slide4 = ({ slideNumber }) => {
   };
 
   return (
-    <div className="slide relative w-[1280px] min-h-[720px] mx-auto bg-[#f3ebe2] overflow-hidden max-sm:w-full max-sm:min-h-0 max-sm:h-[700px] max-sm:mx-0">
+    <div className="slide relative h-[75vh] mx-auto bg-[#f3ebe2]">
       {/* Background Image */}
       <div 
         className="absolute inset-0 bg-cover bg-center opacity-30"
@@ -63,7 +63,7 @@ const Slide4 = ({ slideNumber }) => {
       {/* Content */}
       <div className="slide-content relative z-10 flex flex-col h-full p-[60px] max-sm:p-4">
         {/* Headline */}
-        <h1 className="headline font-[Amenti] font-bold text-[52px] mb-[40px] text-[#292929] relative drop-shadow-[1px_1px_3px_rgba(0,0,0,0.1)] max-sm:text-2xl max-sm:mb-6 max-sm:leading-snug">
+        <h1 className="headline font-[Amenti] font-bold text-[38px] mb-[40px] text-[#292929] relative drop-shadow-[1px_1px_3px_rgba(0,0,0,0.1)] max-sm:text-2xl max-sm:mb-6 max-sm:leading-snug">
           Our Solution: The Intelligent Gateway is Hiding in Plain Sight
           <div className="absolute left-0 -bottom-[15px] w-[100px] h-[5px] rounded-[3px] bg-gradient-to-r from-[#54bb74] to-[#93cfa2] max-sm:w-[60px] max-sm:h-[3px]" />
         </h1>
