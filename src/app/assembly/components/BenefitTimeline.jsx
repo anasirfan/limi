@@ -58,85 +58,10 @@ const BenefitTimeline = () => {
     }
   ];
 
+  // Simplified without GSAP animations
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      gsap.registerPlugin(ScrollTrigger);
-
-      // Timeline progress animation
-      ScrollTrigger.create({
-        trigger: containerRef.current,
-        start: 'top center',
-        end: 'bottom center',
-        onUpdate: (self) => {
-          const progress = self.progress;
-          const currentStep = Math.floor(progress * benefits.length);
-          
-          if (currentStep !== activeStep && currentStep < benefits.length) {
-            setActiveStep(currentStep);
-            
-            // Add completed step
-            if (!completedSteps.includes(currentStep)) {
-              setCompletedSteps(prev => [...prev, currentStep]);
-              
-              // Trigger confetti for completed step
-              triggerConfetti();
-            }
-          }
-
-          // Animate timeline progress
-          gsap.to('.timeline-progress', {
-            scaleY: progress,
-            duration: 0.3,
-            ease: 'power2.out'
-          });
-        }
-      });
-
-      // Animate each benefit card
-      benefits.forEach((benefit, index) => {
-        gsap.fromTo(`.benefit-card-${index}`, 
-          { 
-            x: index % 2 === 0 ? -100 : 100, 
-            opacity: 0,
-            scale: 0.8
-          },
-          {
-            x: 0,
-            opacity: 1,
-            scale: 1,
-            duration: 1,
-            ease: 'back.out(1.7)',
-            scrollTrigger: {
-              trigger: `.benefit-card-${index}`,
-              start: 'top 80%',
-              end: 'bottom 20%',
-              toggleActions: 'play none none reverse'
-            }
-          }
-        );
-
-        // Animate benefit stats
-        gsap.fromTo(`.benefit-stats-${index}`, 
-          { scale: 0, rotation: -180 },
-          {
-            scale: 1,
-            rotation: 0,
-            duration: 0.8,
-            ease: 'back.out(2)',
-            scrollTrigger: {
-              trigger: `.benefit-card-${index}`,
-              start: 'top 70%',
-              toggleActions: 'play none none reverse'
-            }
-          }
-        );
-      });
-    }
-
-    return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-    };
-  }, [activeStep, completedSteps]);
+    // Simple initialization if needed
+  }, []);
 
   const triggerConfetti = () => {
     const colors = ['#54bb74', '#93cfa2', '#292929', '#f3ebe2'];
@@ -167,7 +92,7 @@ const BenefitTimeline = () => {
     setActiveStep(index);
     if (!completedSteps.includes(index)) {
       setCompletedSteps(prev => [...prev, index]);
-      triggerConfetti();
+   
     }
   };
 
