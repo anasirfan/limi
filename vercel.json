@@ -2,6 +2,16 @@
   "rewrites": [
     {
       "source": "/",
+      "destination": "/limiai",
+      "has": [
+        {
+          "type": "host",
+          "value": "limiai.co"
+        }
+      ]
+    },
+    {
+      "source": "/invest",
       "destination": "/limifuture",
       "has": [
         {
@@ -12,6 +22,16 @@
     },
     {
       "source": "/",
+      "destination": "/limiai",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.limiai.co"
+        }
+      ]
+    },
+    {
+      "source": "/invest",
       "destination": "/limifuture",
       "has": [
         {
