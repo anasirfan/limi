@@ -48,7 +48,7 @@ export const NavButton = ({
       };
     }
   }, []);
-  console.log("NavButton",step);
+  // console.log("NavButton",step);
   
   // Guard against undefined or null step
   if (!step) return null;

@@ -36,26 +36,6 @@ export function listenForAppReady1(callback) {
   // Return cleanup
   return () => window.removeEventListener("message", handleMessage);
 }
-export function listenForSelectedCableMessages(callback) {
-  function handleMessage(event) {
-    if (
-      typeof event.data === "string" &&
-      event.data.startsWith("selectedcable:")
-    ) {
-      const match = event.data.match(/^selectedcable:\s*([\d,\s]+);?/);
-      if (match) {
-        const indexes = match[1]
-          .split(",")
-          .map((x) => Number(x.trim()))
-          .filter((x) => !isNaN(x));
-        callback(indexes, event);
-      }
-    }
-  }
-  window.addEventListener("message", handleMessage);
-  return () => window.removeEventListener("message", handleMessage);
-}
-// Add this to the exports in iframeCableMessageHandler.js
 
 export function listenForScreenshotUploadMessages(callback) {
   function handleMessage(event) {
@@ -69,6 +49,21 @@ export function listenForScreenshotUploadMessages(callback) {
   window.addEventListener("message", handleMessage);
   // Return cleanup
   return () => window.removeEventListener("message", handleMessage);
+}
+// NEW: Listen for selected cable messages like 'selectedcable: 0, 1, 2;'
+export function listenForSelectedCableMessages(callback) {
+  console.log('[iframeCableMessageHandler] listening for selectedcable messages...');
+  function handleMessage(event) {
+    console.log('[iframeCableMessageHandler] received message:', event.data);
+    if (
+      typeof event.data === "string" &&
+      event.data.toLowerCase().startsWith("selectedcable:")
+    ) {
+      console.log('[iframeCableMessageHandler] selectedcable message received:', event.data);
+      callback(event.data, event);
+    }
+  }
+  window.addEventListener("message", handleMessage);
 }
 export function listenForModelIdMessages(callback) {
   function handleMessage(event) {

@@ -17,9 +17,8 @@ import { saveConfiguration } from "../../../app/redux/slices/userSlice.js";
 import { useRouter, useSearchParams } from "next/navigation";
 import ConfigurationSummary from "../lightConfigurator/ConfigurationSummary";
 import { fetchUserByToken } from "../../../app/redux/slices/userSlice.js";
-import { listenForCableMessages, listenForMouseOutMessages, listenForMouseOverMessages,listenForOffconfigMessages } from "../../util/iframeCableMessageHandler";
+import { listenForCableMessages,listenForSelectedCableMessages,listenForMouseOutMessages, listenForMouseOverMessages,listenForOffconfigMessages } from "../../util/iframeCableMessageHandler";
 import { listenForWallbaseColorMessages } from "../../util/iframeCableMessageHandler";
-import { listenForSelectedCableMessages } from "../../util/iframeCableMessageHandler";
 
 
 const ConfiguratorLayout = () => {
@@ -35,6 +34,7 @@ const ConfiguratorLayout = () => {
   const [hasConfigIdParam, setHasConfigIdParam] = useState(false);
   const [localSavedConfig,setLocalSavedConfig] = useState({});
   const [localSavedCables,setLocalSavedCables] = useState({});
+  const [selectedCableIndices, setSelectedCableIndices] = useState([]);
   const [cableMessage, setCableMessage] = useState('');
   const [mounted, setMounted] = useState(false);
 useEffect(() => setMounted(true), []);
@@ -218,6 +218,33 @@ useEffect(() => {
       sendMessageToPlayCanvas(`cable_${idx}:size_${size}`);
     });
   };
+
+  // Handler for selected cable messages
+  useEffect(() => {
+    const cleanup = listenForSelectedCableMessages((message) => {
+      // Remove the prefix and trailing semicolon, then split by any non-digit character
+      let valuesString = message.replace(/^selectedcable:/i, '').replace(/;/g, '').trim();
+  
+      // Split on any non-digit (comma, period, space, etc.), filter out empty strings
+      const parts = valuesString.split(/[^0-9]+/).filter(Boolean);
+  
+      // Convert to integers, de-duplicate while preserving order
+      const seen = new Set();
+      const uniqueOrdered = parts
+        .map((m) => parseInt(m, 10))
+        .filter((n) => !Number.isNaN(n) && !seen.has(n) && seen.add(n));
+      // Log for debugging
+      console.log('[ConfigPanel] selectedcable message:', message);
+      console.log('[ConfigPanel] Extracted cable indices:', uniqueOrdered);
+      // Save to state
+     setConfig((prev) => ({
+       ...prev,
+       selectedPendants: uniqueOrdered,
+     }));
+    });
+    return cleanup;
+  }, []);
+
 
   // Handler for shade selection
   const handleShadeSelect = (designId, shadeId, systemType, shadeIndex) => {
@@ -981,14 +1008,6 @@ useEffect(() => {
 
   }, []);
 
-  // Add this useEffect in your component:
-useEffect(() => {
-  const cleanup = listenForSelectedCableMessages((indexes) => {
-    console.log("Selected pendants iframe message:", indexes);
-    handlePendantSelection(indexes);
-  });
-  return cleanup;
-}, [handlePendantSelection]);
 
   // Handle system base design change
   const handleSystemBaseDesignChange = useCallback(
