@@ -1,11 +1,8 @@
 // Utility to listen for iframe messages starting with 'cable_'
 export function listenForCableMessages(callback) {
   function handleMessage(event) {
-    // console.log('[CableMsg] BEFORE FILTER:', event.data);
     if (typeof event.data === "string" && event.data.startsWith("cable_")) {
-      // console.log('[CableMsg] MATCHED cable_:', event.data);/
       callback(event.data, event);
-      // console.log('[CableMsg] AFTER CALLBACK:', event.data);
     }
   }
   window.addEventListener("message", handleMessage);
@@ -14,11 +11,8 @@ export function listenForCableMessages(callback) {
 }
 export function listenForOffconfigMessages(callback) {
   function handleMessage(event) {
-    // console.log('[OffconfigMsg] BEFORE FILTER:', event.data);
     if (typeof event.data === "string" && event.data.startsWith("offconfig")) {
-      // console.log('[OffconfigMsg] MATCHED offconfig:', event.data);
       callback(event.data, event);
-      // console.log('[OffconfigMsg] AFTER CALLBACK:', event.data);
     }
   }
   window.addEventListener("message", handleMessage);
@@ -52,14 +46,11 @@ export function listenForScreenshotUploadMessages(callback) {
 }
 // NEW: Listen for selected cable messages like 'selectedcable: 0, 1, 2;'
 export function listenForSelectedCableMessages(callback) {
-  console.log('[iframeCableMessageHandler] listening for selectedcable messages...');
   function handleMessage(event) {
-    console.log('[iframeCableMessageHandler] received message:', event.data);
     if (
       typeof event.data === "string" &&
       event.data.toLowerCase().startsWith("selectedcable:")
     ) {
-      console.log('[iframeCableMessageHandler] selectedcable message received:', event.data);
       callback(event.data, event);
     }
   }
@@ -67,12 +58,8 @@ export function listenForSelectedCableMessages(callback) {
 }
 export function listenForModelIdMessages(callback) {
   function handleMessage(event) {
-    // console.log(event)
-    // console.log('[ModelIdMsg] BEFORE FILTER:', event.data);
     if (typeof event.data === "string" && event.data.startsWith("model_id")) {
-      // console.log('[ModelIdMsg] MATCHED model_id:', event.data);
       callback(event.data, event);
-      // console.log('[ModelIdMsg] AFTER CALLBACK:', event.data);
     }
   }
   window.addEventListener("message", handleMessage);
@@ -82,15 +69,11 @@ export function listenForModelIdMessages(callback) {
 
 export function listenForMouseOverMessages(callback) {
   function handleMessage(event) {
-    // console.log(event)
-    // console.log('[MouseOverMsg] BEFORE FILTER:', event.data);
     if (
       typeof event.data === "string" &&
       event.data.startsWith("MousepointerChange")
     ) {
-      // console.log('[MouseOverMsg] MATCHED MousepointerChange:', event.data);
       callback(event.data, event);
-      // console.log('[MouseOverMsg] AFTER CALLBACK:', event.data);
     }
   }
   window.addEventListener("message", handleMessage);
@@ -99,29 +82,20 @@ export function listenForMouseOverMessages(callback) {
 }
 export function listenForMouseOutMessages(callback) {
   function handleMessage(event) {
-    // console.log(event)
-    // console.log('[MouseOutMsg] BEFORE FILTER:', event.data);
     if (
       typeof event.data === "string" &&
       event.data.startsWith("MousepointerNormal")
     ) {
-      // console.log('[MouseOutMsg] MATCHED MousepointerNormal:', event.data);
       callback(event.data, event);
-      // console.log('[MouseOutMsg] AFTER CALLBACK:', event.data);
     }
   }
   window.addEventListener("message", handleMessage);
-  // Return cleanup
-  // return () => window.removeEventListener('message', handleMessage);
 }
 
 export function listenForWallbaseColorMessages(callback) {
   function handleMessage(event) {
-    // console.log('[WallbaseColorMsg] BEFORE FILTER:', event.data);
     if (typeof event.data === "string" && event.data === "wallbaseColor") {
-      // console.log('[WallbaseColorMsg] MATCHED wallbaseColor:', event.data);
       callback(event.data, event);
-      // console.log('[WallbaseColorMsg] AFTER CALLBACK:', event.data);
     }
   }
   window.addEventListener("message", handleMessage);

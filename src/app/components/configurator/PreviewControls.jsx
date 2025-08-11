@@ -22,12 +22,14 @@ import {
 } from "../../redux/slices/favoritesSlice";
 import { motion, AnimatePresence } from "framer-motion";
 import { listenForAppReady1 } from "../../util/iframeCableMessageHandler";
+import { systemAssignments } from "./pendantSystemData";
 
 export const PreviewControls = ({
   isPreviewMode,
   setIsPreviewMode,
   config,
-  
+  isLightingPanelOpen,
+  setIsLightingPanelOpen,
   cables,
   onSaveConfig,
   onLoadConfig,
@@ -42,6 +44,7 @@ export const PreviewControls = ({
   setColorTemperature,
   lighting,
   setLighting,
+  setCables,
 }) => {
   const [isMobile, setIsMobile] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -49,7 +52,6 @@ export const PreviewControls = ({
   const [currentSlide, setCurrentSlide] = useState(0);
   const [slidesToShow] = useState(3); // Number of items to show at once
   const [showOnboarding, setShowOnboarding] = useState(false);
-  const [isLightingPanelOpen, setIsLightingPanelOpen] = useState(false);
   const brightnessDebounceTimeout = useRef();
   const colorTempDebounceTimeout = useRef();
 
@@ -125,8 +127,6 @@ export const PreviewControls = ({
     return () => clearTimeout(colorTempDebounceTimeout.current);
   }, [colorTemperature]);
 
-
-
   const handleMouseEnter = () => {
     if (!isMobile) {
       setIsHovered(true);
@@ -147,8 +147,8 @@ export const PreviewControls = ({
 
   return (
     <>
-     {/* Onboarding Animation */}
-     {showOnboarding && (
+      {/* Onboarding Animation */}
+      {showOnboarding && (
         <div className="absolute inset-0 pointer-events-none z-50 flex items-center justify-center">
           <div className="relative">
             {/* Horizontal Guide Line with Arrows and Sliding Hand */}
@@ -223,7 +223,6 @@ export const PreviewControls = ({
         </div>
       )}
 
-
       {/* Navigation Guide */}
       <div
         className="absolute top-24 left-8 z-50 flex gap-2"
@@ -233,8 +232,10 @@ export const PreviewControls = ({
         onTouchStart={handleTouch}
       >
         <button
-          className={`p-2 rounded-full bg-[#50C878] text-white transition-all shadow-lg ${
-            isHovered ? "bg-gray-700" : "hover:scale-110 hover:bg-gray-700"
+          className={`p-2 rounded-full bg-gray-700 text-white transition-all shadow-lg ${
+            isHovered
+              ? " hover:bg-[#50C878]"
+              : "hover:scale-110 hover:bg-[#50C878]"
           }`}
           title="View Navigation Guide"
           aria-expanded={isHovered}
@@ -296,11 +297,14 @@ export const PreviewControls = ({
         )}
       </div>
 
-      <div className="absolute top-40 left-8 z-50 flex gap-2" ref={lightingRef}>
+      <div
+        className="absolute left-[4.5rem] top-[5.94rem] z-50 flex gap-2"
+        ref={lightingRef}
+      >
         <motion.button
-          whileHover={{ scale: 1.05 }}
+          whileHover={{ scale: 0.95 }}
           whileTap={{ scale: 0.95 }}
-          className={`p-3 rounded-full transition-all duration-300 shadow-lg backdrop-blur-sm border ${
+          className={`p-2 rounded-full transition-all duration-300 shadow-lg backdrop-blur-sm border ${
             isLightingPanelOpen
               ? "bg-blue-600/90 border-blue-400 text-white"
               : "bg-gray-900/80 border-gray-600 text-gray-300 hover:bg-gray-800/90 hover:border-gray-500"
@@ -313,7 +317,7 @@ export const PreviewControls = ({
             transition={{ duration: 0.3 }}
           >
             <FaLightbulb
-              size={18}
+              size={15}
               className={lighting ? "text-yellow-300" : ""}
             />
           </motion.div>
@@ -375,9 +379,14 @@ export const PreviewControls = ({
                       iframe.contentWindow.postMessage(message, "*");
                       if (newState) {
                         // Also send brightness and color temperature when turning ON
-                        iframe.contentWindow.postMessage(`brightness:${brightness}`, "*");
                         iframe.contentWindow.postMessage(
-                          `colorTemperature:${Math.round(2700 + (colorTemperature / 100) * (6500 - 2700))}`,
+                          `brightness:${brightness}`,
+                          "*"
+                        );
+                        iframe.contentWindow.postMessage(
+                          `colorTemperature:${Math.round(
+                            2700 + (colorTemperature / 100) * (6500 - 2700)
+                          )}`,
                           "*"
                         );
                       }
@@ -397,85 +406,85 @@ export const PreviewControls = ({
 
               {/* Color Temperature Control */}
               {lighting && (
-              <div className="mb-6">
-                <div className="flex items-center justify-between mb-3">
-                  <label className="text-gray-200 font-medium">
-                    Color Temperature
-                  </label>
-                  <span className="text-xs  px-2 py-1 rounded text-white font-medium">
-                    {Math.round(
-                      2700 + (colorTemperature / 100) * (6500 - 2700)
-                    )}
-                    K
-                  </span>
-                </div>
-                <div className="relative">
-                  <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={colorTemperature}
-                    onChange={(e) =>
-                      setColorTemperature(Number(e.target.value))
-                    }
-                    className="w-full h-3 rounded-lg appearance-none cursor-pointer slider-enhanced"
-                    style={{
-                      background: `linear-gradient(to right, 
+                <div className="mb-6">
+                  <div className="flex items-center justify-between mb-3">
+                    <label className="text-gray-200 font-medium">
+                      Color Temperature
+                    </label>
+                    <span className="text-xs  px-2 py-1 rounded text-white font-medium">
+                      {Math.round(
+                        2700 + (colorTemperature / 100) * (6500 - 2700)
+                      )}
+                      K
+                    </span>
+                  </div>
+                  <div className="relative">
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={colorTemperature}
+                      onChange={(e) =>
+                        setColorTemperature(Number(e.target.value))
+                      }
+                      className="w-full h-3 rounded-lg appearance-none cursor-pointer slider-enhanced"
+                      style={{
+                        background: `linear-gradient(to right, 
                           #fb923c 0%, 
                           #fde047 50%, 
                           #60a5fa 100%
                         )`,
-                      boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
-                    }}
-                  />
-                  <div className="flex justify-between text-xs text-gray-400 mt-2">
-                    <span>Warm</span>
-                    <span>Neutral</span>
-                    <span>Cool</span>
+                        boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
+                      }}
+                    />
+                    <div className="flex justify-between text-xs text-gray-400 mt-2">
+                      <span>Warm</span>
+                      <span>Neutral</span>
+                      <span>Cool</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
 
               {/* Brightness Control */}
               {lighting && (
-              <div className="mb-3">
-                <div className="flex items-center justify-between mb-3">
-                  <label className="text-gray-200 font-medium">
-                    Brightness
-                  </label>
-                  <span className="text-xs px-2 py-1 rounded text-white font-medium">
-                    {brightness}%
-                  </span>
-                </div>
-                <div className="relative">
-                  <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={brightness}
-                    onChange={(e) => setBrightness(Number(e.target.value))}
-                    className="w-full h-3 rounded-lg appearance-none cursor-pointer slider-enhanced"
-                    style={{
-                      background: `linear-gradient(to right, 
+                <div className="mb-3">
+                  <div className="flex items-center justify-between mb-3">
+                    <label className="text-gray-200 font-medium">
+                      Brightness
+                    </label>
+                    <span className="text-xs px-2 py-1 rounded text-white font-medium">
+                      {brightness}%
+                    </span>
+                  </div>
+                  <div className="relative">
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={brightness}
+                      onChange={(e) => setBrightness(Number(e.target.value))}
+                      className="w-full h-3 rounded-lg appearance-none cursor-pointer slider-enhanced"
+                      style={{
+                        background: `linear-gradient(to right, 
             #374151 0%, 
             #fbbf24 ${brightness}%, 
             #374151 ${brightness}%
           )`,
-                      boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
-                    }}
-                  />
-                  <div className="flex justify-between text-xs text-gray-400 mt-2">
-                    <span className="flex items-center gap-1">
-                      <span className="text-gray-500">🌙</span> Dim
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <span className="text-yellow-400">☀️</span> Bright
-                    </span>
+                        boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
+                      }}
+                    />
+                    <div className="flex justify-between text-xs text-gray-400 mt-2">
+                      <span className="flex items-center gap-1">
+                        <span className="text-gray-500">🌙</span> Dim
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <span className="text-yellow-400">☀️</span> Bright
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
 
               {/* Quick Presets */}
               <div className="mt-4 pt-4 border-t border-gray-700">
@@ -588,77 +597,55 @@ export const PreviewControls = ({
                 ) : (
                   <div className="flex flex-nowrap overflow-x-auto pb-4 px-2">
                     {favorites.map((pendant) => {
-                      const barBaseIds = [
-                        "prism",
-                        "helix",
-                        "orbit",
-                        "zenith",
-                        "pulse",
-                        "vortex",
-                        "nexus",
-                        "quasar",
-                        "nova",
-                      ];
-                      const universalBaseIds = [
-                        "atom",
-                        "nebula",
-                        "cosmos",
-                        "stellar",
-                        "eclipse",
-                        "aurora",
-                        "solstice",
-                        "quantum",
-                        "vertex",
-                        "horizon",
-                        "zoneith",
-                        "equinox",
-                        "meridian",
-                        "polaris",
-                        "pulsar",
-                        "quasar",
-                        "supernova",
-                        "galaxy",
-                        "comet",
-                        "meteor",
-                        "asteroid",
-                        "celestial",
-                        "orbital",
-                        "lunar",
-                        "solar",
-                        "nova",
-                        "photon",
-                        "gravity",
-                        "spectrum",
-                        "infinity",
-                      ];
+                     
+                     // Find full pendant/system object from shared data (by id or designId)
+                     console.log("pendant", pendant);
+                     console.log("systemAssignments", systemAssignments);
+                     const assignment = systemAssignments.find(
+                        (item) => pendant.id == item.design
+                      );
+                      console.log("assignment", assignment);
                       return (
                         <div
                           key={pendant.id}
                           className="group relative p-2 "
                           onClick={() => {
-                            if (barBaseIds.includes(pendant.id)) {
-                              sendMessageToPlayCanvas(`system:bar`);
+                            if (assignment && assignment.isSystem) {
+                              // Bar or Universal system
+                              sendMessageToPlayCanvas(
+                                `system:${assignment.systemType || "bar"}`
+                              );
                               selectedPendants.forEach((idx) => {
                                 sendMessageToPlayCanvas(
-                                  `cable_${idx}:system_base_${
-                                    barBaseIds.indexOf(pendant.id) + 1
-                                  }`
+                                  `cable_${idx}:${assignment.designId}`
                                 );
+                                setCables((prev) => {
+                                  const updatedCables = [...prev];
+                                  updatedCables[idx] = {
+                                    isSystem: true,
+                                    systemType: assignment.systemType,
+                                    design: assignment.design,
+                                    designId: assignment.designId,
+                                  };
+                                  return updatedCables;
+                                });
                               });
-                            } else if (universalBaseIds.includes(pendant.id)) {
-                              sendMessageToPlayCanvas(`system:universal`);
+                            } else if (assignment) {
+                              // Pendant
                               selectedPendants.forEach((idx) => {
                                 sendMessageToPlayCanvas(
-                                  `cable_${idx}:system_base_${
-                                    universalBaseIds.indexOf(pendant.id) + 1
-                                  }`
+                                  `cable_${idx}:${assignment.designId}`
                                 );
-                              });
-                            } else {
-                              selectedPendants.forEach((idx) => {
-                                sendMessageToPlayCanvas(
-                                  `cable_${idx}:${pendant.message}`
-                                );
+                                setCables((prev) => {
+                                  const updatedCables = [...prev];
+                                  updatedCables[idx] = {
+                                    isSystem: false,
+                                    systemType: "",
+                                    design: assignment.design,
+                                    designId: assignment.designId,
+                                  };
+                                  return updatedCables;
+                                });
                               });
                             }
                           }}
@@ -688,7 +675,8 @@ export const PreviewControls = ({
                               </div>
                             )}
                             <p className="text-xs font-medium text-white line-clamp-2 h-8 flex items-center">
-                              {pendant.name}
+                              {/* Use assignment.design for pendant/system name */}
+                              {assignment ? assignment.design : pendant.name}
                             </p>
                           </div>
                         </div>

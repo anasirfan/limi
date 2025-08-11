@@ -36,6 +36,8 @@ const ConfiguratorLayout = () => {
   const [localSavedCables,setLocalSavedCables] = useState({});
   const [selectedCableIndices, setSelectedCableIndices] = useState([]);
   const [cableMessage, setCableMessage] = useState('');
+  const [isLightingPanelOpen, setIsLightingPanelOpen] = useState(false);
+  
   const [mounted, setMounted] = useState(false);
 useEffect(() => setMounted(true), []);
 
@@ -384,9 +386,9 @@ useEffect(() => {
       isSystem: false, 
       systemType: system.systemType, 
       design: system.design, 
-
       designId: system.designId 
     }]);
+
     setLastCeilingLightAmount(config.lightAmount);
     setLastRoundBaseLightAmount(config.lightAmount);
     
@@ -1549,7 +1551,9 @@ useEffect(() => {
         setColorTemperature={setColorTemperature}
         lighting={lighting}
         setLighting={setLighting}
-      
+        isLightingPanelOpen={isLightingPanelOpen}
+        setIsLightingPanelOpen={setIsLightingPanelOpen}
+        setCables={setCables}
       />
 
       {/* Only show UI elements when not in preview mode */}
@@ -1578,6 +1582,7 @@ useEffect(() => {
               onSystemBaseDesignChange={handleSystemBaseDesignChange}
               pendants={config.pendants}
               cableMessage={cableMessage}
+              setIsLightingPanelOpen={setIsLightingPanelOpen}
               selectedPendants={config.selectedPendants || []}
               setSelectedPendants={(pendantIds) =>
                 handlePendantSelection(pendantIds)

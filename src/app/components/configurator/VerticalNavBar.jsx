@@ -43,6 +43,7 @@ const VerticalNavBar = ({
   onSystemBaseDesignChange,
   pendants,
   selectedPendants,
+  setIsLightingPanelOpen,
   setSelectedPendants,
   onLocationSelection,
   configuringType,
@@ -132,6 +133,7 @@ const handleSetActiveTab = (tab) => {
       setOpenBase(false);
       setOpenDropdown(false);
       setActiveStep(null);
+      setIsLightingPanelOpen(false);
       setCableMessage('');
     })
     return cleanup;
@@ -163,6 +165,7 @@ const handleSetActiveTab = (tab) => {
           // 1. Open the pendant selection step
           setActiveStep('pendantSelection');
           setOpenDropdown('pendantSelection');
+          setIsLightingPanelOpen(true);
           // 2. Select the pendant with the extracted id
           setSelectedPendants([cableId]);
           // 3. Show the configuration type selector
