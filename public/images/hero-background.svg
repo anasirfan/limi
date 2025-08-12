@@ -1,0 +1,70 @@
+<svg viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Gradients for each blob layer -->
+    <linearGradient id="blob1Gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#54bb74;stop-opacity:0.7" />
+      <stop offset="50%" style="stop-color:#93cfa2;stop-opacity:0.5" />
+      <stop offset="100%" style="stop-color:#292929;stop-opacity:0.3" />
+    </linearGradient>
+    
+    <radialGradient id="blob2Gradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#93cfa2;stop-opacity:0.6" />
+      <stop offset="70%" style="stop-color:#54bb74;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#292929;stop-opacity:0.2" />
+    </radialGradient>
+    
+    <linearGradient id="blob3Gradient" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#292929;stop-opacity:0.5" />
+      <stop offset="40%" style="stop-color:#54bb74;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#93cfa2;stop-opacity:0.3" />
+    </linearGradient>
+
+    <!-- Blur filters for glass effect -->
+    <filter id="blur1" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="8"/>
+      <feOffset dx="2" dy="2" result="offset"/>
+      <feFlood flood-color="#54bb74" flood-opacity="0.1"/>
+      <feComposite in="SourceGraphic" in2="offset" operator="over"/>
+    </filter>
+    
+    <filter id="blur2" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="12"/>
+      <feOffset dx="-1" dy="3" result="offset"/>
+      <feFlood flood-color="#93cfa2" flood-opacity="0.08"/>
+      <feComposite in="SourceGraphic" in2="offset" operator="over"/>
+    </filter>
+    
+    <filter id="blur3" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="6"/>
+      <feOffset dx="1" dy="-2" result="offset"/>
+      <feFlood flood-color="#292929" flood-opacity="0.05"/>
+      <feComposite in="SourceGraphic" in2="offset" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Background Layer 1 - Large flowing blob (top-right) -->
+  <path id="heroBlob1" 
+        d="M1200,0 C1400,50 1600,150 1750,300 C1850,450 1800,650 1650,800 C1500,950 1300,1000 1100,950 C900,900 800,750 850,600 C900,450 1000,200 1200,0 Z" 
+        fill="url(#blob1Gradient)" 
+        filter="url(#blur1)" 
+        opacity="0.6"/>
+
+  <!-- Background Layer 2 - Medium organic shape (center-left) -->
+  <path id="heroBlob2" 
+        d="M200,200 C400,150 600,250 750,400 C850,550 800,750 650,900 C500,1050 300,1000 150,850 C0,700 50,500 100,350 C150,200 200,200 200,200 Z" 
+        fill="url(#blob2Gradient)" 
+        filter="url(#blur2)" 
+        opacity="0.5"/>
+
+  <!-- Background Layer 3 - Accent shape (bottom-center) -->
+  <path id="heroBlob3" 
+        d="M600,700 C800,650 1000,750 1150,900 C1250,1050 1200,1080 1050,1080 C900,1080 750,1050 600,1000 C450,950 400,850 450,750 C500,650 600,700 600,700 Z" 
+        fill="url(#blob3Gradient)" 
+        filter="url(#blur3)" 
+        opacity="0.4"/>
+
+  <!-- Additional subtle accent elements -->
+  <circle cx="300" cy="150" r="80" fill="#93cfa2" opacity="0.1" filter="url(#blur3)"/>
+  <circle cx="1600" cy="900" r="120" fill="#54bb74" opacity="0.08" filter="url(#blur2)"/>
+  <ellipse cx="1000" cy="100" rx="200" ry="60" fill="#292929" opacity="0.05" filter="url(#blur1)"/>
+</svg>
