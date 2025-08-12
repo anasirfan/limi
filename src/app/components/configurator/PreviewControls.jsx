@@ -24,6 +24,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { listenForAppReady1 } from "../../util/iframeCableMessageHandler";
 import { systemAssignments } from "./pendantSystemData";
+import { listenForOffconfigMessages } from "../../util/iframeCableMessageHandler";
 
 export const PreviewControls = ({
   isPreviewMode,
@@ -39,6 +40,7 @@ export const PreviewControls = ({
   onPendantDesignChange,
   selectedPendants,
   selectedLocation,
+  cableMessage,
   brightness,
   setBrightness,
   colorTemperature,
@@ -92,7 +94,14 @@ export const PreviewControls = ({
       }
     }
   }, []);
+  
 
+   useEffect(() => {
+      const cleanup = listenForOffconfigMessages((data, event) => {
+      setShowWishlistModal(false);
+      })
+      return cleanup;
+    }, [cableMessage]);
   const guideRef = useRef(null);
 
   useEffect(() => {

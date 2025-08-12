@@ -17,12 +17,16 @@ import { saveConfiguration } from "../../../app/redux/slices/userSlice.js";
 import { useRouter, useSearchParams } from "next/navigation";
 import ConfigurationSummary from "../lightConfigurator/ConfigurationSummary";
 import { fetchUserByToken } from "../../../app/redux/slices/userSlice.js";
-import { listenForCableMessages,listenForSelectedCableMessages,listenForMouseOutMessages, listenForMouseOverMessages,listenForOffconfigMessages } from "../../util/iframeCableMessageHandler";
+import {
+  listenForCableMessages,
+  listenForSelectedCableMessages,
+  listenForMouseOutMessages,
+  listenForMouseOverMessages,
+  listenForOffconfigMessages,
+} from "../../util/iframeCableMessageHandler";
 import { listenForWallbaseColorMessages } from "../../util/iframeCableMessageHandler";
 
-
 const ConfiguratorLayout = () => {
-  
   const router = useRouter();
   const dispatch = useDispatch();
   const { isLoggedIn, user } = useSelector((state) => state.user);
@@ -32,77 +36,75 @@ const ConfiguratorLayout = () => {
   const [isLoadingFromUrl, setIsLoadingFromUrl] = useState(false);
   const [configFromUrl, setConfigFromUrl] = useState(null);
   const [hasConfigIdParam, setHasConfigIdParam] = useState(false);
-  const [localSavedConfig,setLocalSavedConfig] = useState({});
-  const [localSavedCables,setLocalSavedCables] = useState({});
+  const [localSavedConfig, setLocalSavedConfig] = useState({});
+  const [localSavedCables, setLocalSavedCables] = useState({});
   const [selectedCableIndices, setSelectedCableIndices] = useState([]);
-  const [cableMessage, setCableMessage] = useState('');
+  const [cableMessage, setCableMessage] = useState("");
   const [isLightingPanelOpen, setIsLightingPanelOpen] = useState(false);
-  
+
   const [mounted, setMounted] = useState(false);
-useEffect(() => setMounted(true), []);
+  useEffect(() => setMounted(true), []);
 
-const handleOpenSaveModal = () => {
-  setConfiguringType("save");
-  setShowConfigurationTypeSelector(false);
-};
-// Helper functions for localStorage persistence
-const loadFromLocalStorage = (key, defaultValue) => {
-  if (typeof window === "undefined") return defaultValue;
-  try {
-    const item = window.localStorage.getItem(key);
-    return item ? JSON.parse(item) : defaultValue;
-  } catch (error) {
-    console.error("Error reading from localStorage", error);
-    return defaultValue;
-  }
-};
-const iframe = document.getElementById('playcanvas-app');
-// useEffect(() => {
-//   // Handler to set cursor to hand/grab/drag
-//   const handleMouseOver = () => {
+  const handleOpenSaveModal = () => {
+    setConfiguringType("save");
+    setShowConfigurationTypeSelector(false);
+  };
+  // Helper functions for localStorage persistence
+  const loadFromLocalStorage = (key, defaultValue) => {
+    if (typeof window === "undefined") return defaultValue;
+    try {
+      const item = window.localStorage.getItem(key);
+      return item ? JSON.parse(item) : defaultValue;
+    } catch (error) {
+      console.error("Error reading from localStorage", error);
+      return defaultValue;
+    }
+  };
+  const iframe = document.getElementById("playcanvas-app");
+  // useEffect(() => {
+  //   // Handler to set cursor to hand/grab/drag
+  //   const handleMouseOver = () => {
 
-  
-//     const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-//     if (iframeDoc) {
-//       iframeDoc.body.style.cursor = 'grab';
-//     }
-//   };
-//   const cleanup = listenForMouseOverMessages((message, event) => {
-//     console.log('[ConfigPanel] Received mouse over message:', message,event.data);
-//     handleMouseOver();
-//   });
- 
-//   return cleanup;
-// }, []);
-// useEffect(() => {
+  //     const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+  //     if (iframeDoc) {
+  //       iframeDoc.body.style.cursor = 'grab';
+  //     }
+  //   };
+  //   const cleanup = listenForMouseOverMessages((message, event) => {
+  //     console.log('[ConfigPanel] Received mouse over message:', message,event.data);
+  //     handleMouseOver();
+  //   });
 
-//   // Handler to revert cursor to default
-//   const handleMouseOut = () => {
-  
-//      const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-//     if (iframeDoc) {
-//       iframeDoc.body.style.cursor = 'default';
-//     }
-//   };
+  //   return cleanup;
+  // }, []);
+  // useEffect(() => {
 
-//   const cleanup2 = listenForMouseOutMessages((message, event) => {
-//     // Do something with the message, e.g. open UI, update state, etc.
-//     console.log('[ConfigPanel] Received mouse out message:', message,event.data);
-//     // Example: open a modal, update config, etc.
-//     handleMouseOut();
-//   });
-//   return cleanup2;
-// }, []);
+  //   // Handler to revert cursor to default
+  //   const handleMouseOut = () => {
 
+  //      const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+  //     if (iframeDoc) {
+  //       iframeDoc.body.style.cursor = 'default';
+  //     }
+  //   };
 
-const saveToLocalStorage = (key, value) => {
-  if (typeof window === "undefined") return;
-  try {
-    window.localStorage.setItem(key, JSON.stringify(value));
-  } catch (error) {
-    console.error("Error writing to localStorage", error);
-  }
-};
+  //   const cleanup2 = listenForMouseOutMessages((message, event) => {
+  //     // Do something with the message, e.g. open UI, update state, etc.
+  //     console.log('[ConfigPanel] Received mouse out message:', message,event.data);
+  //     // Example: open a modal, update config, etc.
+  //     handleMouseOut();
+  //   });
+  //   return cleanup2;
+  // }, []);
+
+  const saveToLocalStorage = (key, value) => {
+    if (typeof window === "undefined") return;
+    try {
+      window.localStorage.setItem(key, JSON.stringify(value));
+    } catch (error) {
+      console.error("Error writing to localStorage", error);
+    }
+  };
   // Main configuration state - load from localStorage or use defaults
   const [config, setConfig] = useState(() => {
     const savedConfig = loadFromLocalStorage("lightConfig", {
@@ -128,83 +130,84 @@ const saveToLocalStorage = (key, value) => {
     });
     return savedConfig;
   });
- console.log("cable selected", cableMessage);
+  console.log("cable selected", cableMessage);
   // Cables state with localStorage persistence
   const [cables, setCables] = useState(() => {
     return loadFromLocalStorage("lightCables", [
       {
         isSystem: false,
-        systemType: "", 
+        systemType: "",
         design: "Radial",
         designId: "product_2",
         size: "2mm",
       },
     ]);
-  }); 
-
+  });
 
   const [brightness, setBrightness] = useState(config.brightness ?? 50);
-  const [colorTemperature, setColorTemperature] = useState(config.colorTemperature ?? 50);
+  const [colorTemperature, setColorTemperature] = useState(
+    config.colorTemperature ?? 50
+  );
   const [lighting, setLighting] = useState(
     typeof config.lighting === "boolean" ? config.lighting : true
   );
 
   useEffect(() => {
-    setConfig(prev => ({
+    setConfig((prev) => ({
       ...prev,
       brightness,
       colorTemperature,
-      lighting
+      lighting,
     }));
   }, [brightness, colorTemperature, lighting]);
 
   useEffect(() => {
-  if (mounted && config.pendants.length === 0) {
-    const initialPendants = getDefaultPendantAssignments(config.lightAmount);
-    const initialSystems = getDefaultSystemAssignments(config.lightAmount);
-    setConfig(prev => ({
-      ...prev,
-      pendants: initialPendants,
-      systemConfigurations: initialSystems,
-    }));
-  }
-}, [mounted, config.lightAmount]);
+    if (mounted && config.pendants.length === 0) {
+      const initialPendants = getDefaultPendantAssignments(config.lightAmount);
+      const initialSystems = getDefaultSystemAssignments(config.lightAmount);
+      setConfig((prev) => ({
+        ...prev,
+        pendants: initialPendants,
+        systemConfigurations: initialSystems,
+      }));
+    }
+  }, [mounted, config.lightAmount]);
   // Save to localStorage whenever config or cables change
- 
 
-useEffect(() => {
-  console.log("config",config);
-  console.log("cables",cables);
-  saveToLocalStorage('lightConfig', config);
-  saveToLocalStorage('lightCables', cables);
-}, [config, cables]);
+  useEffect(() => {
+    console.log("config", config);
+    console.log("cables", cables);
+    saveToLocalStorage("lightConfig", config);
+    saveToLocalStorage("lightCables", cables);
+  }, [config, cables]);
 
-useEffect(() => {
-  // Set up cable message listener
-  const cleanup = listenForCableMessages((message, event) => {
-    // Do something with the message, e.g. open UI, update state, etc.
-    console.log('[ConfigPanel] Received cable message:', message,event.data);
-    // Example: open a modal, update config, etc.
-    // setIsCableModalOpen(true);
-    setCableMessage(message);
-  });
-  return cleanup;
-}, []);
+  useEffect(() => {
+    // Set up cable message listener
+    const cleanup = listenForCableMessages((message, event) => {
+      // Do something with the message, e.g. open UI, update state, etc.
+      console.log("[ConfigPanel] Received cable message:", message, event.data);
+      // Example: open a modal, update config, etc.
+      // setIsCableModalOpen(true);
+      setCableMessage(message);
+    });
+    return cleanup;
+  }, []);
 
-useEffect(() => {
-  // Set up cable message listener
-  const cleanup = listenForOffconfigMessages((message, event) => {
-    // Do something with the message, e.g. open UI, update state, etc.
-    console.log('[ConfigPanel] Received offconfig message:', message,event.data);
-    // Example: open a modal, update config, etc.
-    // setIsCableModalOpen(true);
-    setCableMessage(message);
-  });
-  return cleanup;
-}, []);
-
-
-
+  useEffect(() => {
+    // Set up cable message listener
+    const cleanup = listenForOffconfigMessages((message, event) => {
+      // Do something with the message, e.g. open UI, update state, etc.
+      console.log(
+        "[ConfigPanel] Received offconfig message:",
+        message,
+        event.data
+      );
+      // Example: open a modal, update config, etc.
+      // setIsCableModalOpen(true);
+      setCableMessage(message);
+    });
+    return cleanup;
+  }, []);
 
   // Handler for cable size change
   const handleCableSizeChange = (size, selectedCables) => {
@@ -225,28 +228,30 @@ useEffect(() => {
   useEffect(() => {
     const cleanup = listenForSelectedCableMessages((message) => {
       // Remove the prefix and trailing semicolon, then split by any non-digit character
-      let valuesString = message.replace(/^selectedcable:/i, '').replace(/;/g, '').trim();
-  
+      let valuesString = message
+        .replace(/^selectedcable:/i, "")
+        .replace(/;/g, "")
+        .trim();
+
       // Split on any non-digit (comma, period, space, etc.), filter out empty strings
       const parts = valuesString.split(/[^0-9]+/).filter(Boolean);
-  
+
       // Convert to integers, de-duplicate while preserving order
       const seen = new Set();
       const uniqueOrdered = parts
         .map((m) => parseInt(m, 10))
         .filter((n) => !Number.isNaN(n) && !seen.has(n) && seen.add(n));
       // Log for debugging
-      console.log('[ConfigPanel] selectedcable message:', message);
-      console.log('[ConfigPanel] Extracted cable indices:', uniqueOrdered);
+      console.log("[ConfigPanel] selectedcable message:", message);
+      console.log("[ConfigPanel] Extracted cable indices:", uniqueOrdered);
       // Save to state
-     setConfig((prev) => ({
-       ...prev,
-       selectedPendants: uniqueOrdered,
-     }));
+      setConfig((prev) => ({
+        ...prev,
+        selectedPendants: uniqueOrdered,
+      }));
     });
     return cleanup;
   }, []);
-
 
   // Handler for shade selection
   const handleShadeSelect = (designId, shadeId, systemType, shadeIndex) => {
@@ -289,7 +294,8 @@ useEffect(() => {
   const [configuringSystemType, setConfiguringSystemType] = useState(null); // 'bar', 'ball', 'universal'
   const [breadcrumbPath, setBreadcrumbPath] = useState([]);
   const [currentShade, setCurrentShade] = useState(null); // Currently selected shade
-  const [showConfigurationTypeSelector, setShowConfigurationTypeSelector] = useState(false);
+  const [showConfigurationTypeSelector, setShowConfigurationTypeSelector] =
+    useState(false);
   // Navigation state
   const [activeStep, setActiveStep] = useState("lightType");
   const [isLoading, setIsLoading] = useState(true);
@@ -299,138 +305,272 @@ useEffect(() => {
     setShowConfigurationTypeSelector(true);
   };
   // Deterministic pendant assignments for 1, 3, 6 lights
-const getDefaultPendantAssignments = (amount) => {
-  switch (amount) {
-    case 1:
-      return [{ id: 0, systemType: "bar", design: "helix" ,isSystem: true, designId: "system_base_2"}];
-    case 3:
-      return [
-        { id: 0, systemType: "bar", design: "orbit" , designId: "system_base_1", isSystem: true},
-        { id: 1, systemType: "", design: "bumble" , designId: "product_2", isSystem: false},
-        { id: 2, systemType: "universal", design: "aurora" , designId: "system_base_6", isSystem: true},
-      ];
-    case 6:
-      return [
-        { id: 0, systemType: "", design: "bumble" , designId: "product_2", isSystem: false},
-        { id: 1, systemType: "", design: "piko" , designId: "product_5", isSystem: false},
-        { id: 2, systemType: "bar", design: "helix" , designId: "system_base_2", isSystem: true},
-        { id: 3, systemType: "bar", design: "zenith" , designId: "system_base_4", isSystem: true},
-        { id: 4, systemType: "universal", design: "equinox" , designId: "system_base_12", isSystem: true},
-        { id: 5, systemType: "universal", design: "stellar" , designId: "system_base_4", isSystem: true},
-      ];
-  }
-};
+  const getDefaultPendantAssignments = (amount) => {
+    switch (amount) {
+      case 1:
+        return [
+          {
+            id: 0,
+            systemType: "bar",
+            design: "helix",
+            isSystem: true,
+            designId: "system_base_2",
+          },
+        ];
+      case 3:
+        return [
+          {
+            id: 0,
+            systemType: "bar",
+            design: "orbit",
+            designId: "system_base_1",
+            isSystem: true,
+          },
+          {
+            id: 1,
+            systemType: "",
+            design: "bumble",
+            designId: "product_2",
+            isSystem: false,
+          },
+          {
+            id: 2,
+            systemType: "universal",
+            design: "aurora",
+            designId: "system_base_6",
+            isSystem: true,
+          },
+        ];
+      case 6:
+        return [
+          {
+            id: 0,
+            systemType: "",
+            design: "bumble",
+            designId: "product_2",
+            isSystem: false,
+          },
+          {
+            id: 1,
+            systemType: "",
+            design: "piko",
+            designId: "product_5",
+            isSystem: false,
+          },
+          {
+            id: 2,
+            systemType: "bar",
+            design: "helix",
+            designId: "system_base_2",
+            isSystem: true,
+          },
+          {
+            id: 3,
+            systemType: "bar",
+            design: "zenith",
+            designId: "system_base_4",
+            isSystem: true,
+          },
+          {
+            id: 4,
+            systemType: "universal",
+            design: "equinox",
+            designId: "system_base_12",
+            isSystem: true,
+          },
+          {
+            id: 5,
+            systemType: "universal",
+            design: "stellar",
+            designId: "system_base_4",
+            isSystem: true,
+          },
+        ];
+    }
+  };
 
-// Deterministic system assignments for 1, 3, 6 lights
-const getDefaultSystemAssignments = (amount) => {
-  switch (amount) {
-    case 1:
-      return [{ id: 0, systemType: "bar", design: "helix" ,isSystem: true, designId: "system_base_2"}];
-    case 3:
-      return [
-        { id: 0, systemType: "bar", design: "orbit" , designId: "system_base_1", isSystem: true},
-        { id: 1, systemType: "", design: "bumble" , designId: "product_2", isSystem: false},
-        { id: 2, systemType: "universal", design: "aurora" , designId: "system_base_6", isSystem: true},
-      ];
-    case 6:
-      return [
-        { id: 0, systemType: "", design: "bumble" , designId: "product_2", isSystem: false},
-        { id: 1, systemType: "", design: "piko" , designId: "product_5", isSystem: false},
-        { id: 2, systemType: "bar", design: "helix" , designId: "system_base_2", isSystem: true},
-        { id: 3, systemType: "bar", design: "zenith" , designId: "system_base_4", isSystem: true},
-        { id: 4, systemType: "universal", design: "equinox" , designId: "system_base_12", isSystem: true},
-        { id: 5, systemType: "universal", design: "stellar" , designId: "system_base_4", isSystem: true},
-      ];
-   }
-};
+  // Deterministic system assignments for 1, 3, 6 lights
+  const getDefaultSystemAssignments = (amount) => {
+    switch (amount) {
+      case 1:
+        return [
+          {
+            id: 0,
+            systemType: "bar",
+            design: "helix",
+            isSystem: true,
+            designId: "system_base_2",
+          },
+        ];
+      case 3:
+        return [
+          {
+            id: 0,
+            systemType: "bar",
+            design: "orbit",
+            designId: "system_base_1",
+            isSystem: true,
+          },
+          {
+            id: 1,
+            systemType: "",
+            design: "bumble",
+            designId: "product_2",
+            isSystem: false,
+          },
+          {
+            id: 2,
+            systemType: "universal",
+            design: "aurora",
+            designId: "system_base_6",
+            isSystem: true,
+          },
+        ];
+      case 6:
+        return [
+          {
+            id: 0,
+            systemType: "",
+            design: "bumble",
+            designId: "product_2",
+            isSystem: false,
+          },
+          {
+            id: 1,
+            systemType: "",
+            design: "piko",
+            designId: "product_5",
+            isSystem: false,
+          },
+          {
+            id: 2,
+            systemType: "bar",
+            design: "helix",
+            designId: "system_base_2",
+            isSystem: true,
+          },
+          {
+            id: 3,
+            systemType: "bar",
+            design: "zenith",
+            designId: "system_base_4",
+            isSystem: true,
+          },
+          {
+            id: 4,
+            systemType: "universal",
+            design: "equinox",
+            designId: "system_base_12",
+            isSystem: true,
+          },
+          {
+            id: 5,
+            systemType: "universal",
+            design: "stellar",
+            designId: "system_base_4",
+            isSystem: true,
+          },
+        ];
+    }
+  };
 
-// Helper to map pendant design to productId for PlayCanvas
-const getProductIdForDesign = (design) => {
-  switch (design) {
-    case "bumble": return "product_1";
-    case "radial": return "product_2";
-    case "ico": return "product_4";
-    case "piko": return "product_5";
-    default: return "product_2";
-  }
-};
+  // Helper to map pendant design to productId for PlayCanvas
+  const getProductIdForDesign = (design) => {
+    switch (design) {
+      case "bumble":
+        return "product_1";
+      case "radial":
+        return "product_2";
+      case "ico":
+        return "product_4";
+      case "piko":
+        return "product_5";
+      default:
+        return "product_2";
+    }
+  };
 
   // Initialize pendants when component mounts
- // Initialize pendants when component mounts
-useEffect(() => {
-  // Check if we have a configId in the URL
-  if (hasConfigIdParam) return;
+  // Initialize pendants when component mounts
+  useEffect(() => {
+    // Check if we have a configId in the URL
+    if (hasConfigIdParam) return;
 
-  // Only initialize with defaults if we don't have saved state
-  const savedConfig = loadFromLocalStorage('lightConfig', null);
-  const savedCables = loadFromLocalStorage('lightCables', null);
-  setLocalSavedConfig(savedConfig);
-  setLocalSavedCables(savedCables);
-  console.log("localSavedConfig",localSavedConfig);
-  console.log("localSavedCables",localSavedCables); 
-  console.log("savedConfig",savedConfig);
-  console.log("savedCables",savedCables);
+    // Only initialize with defaults if we don't have saved state
+    const savedConfig = loadFromLocalStorage("lightConfig", null);
+    const savedCables = loadFromLocalStorage("lightCables", null);
+    setLocalSavedConfig(savedConfig);
+    setLocalSavedCables(savedCables);
+    console.log("localSavedConfig", localSavedConfig);
+    console.log("localSavedCables", localSavedCables);
+    console.log("savedConfig", savedConfig);
+    console.log("savedCables", savedCables);
 
-  if (!savedConfig || !savedCables) {
-    console.log("initializing with defaults");
-    const initialPendants = getDefaultPendantAssignments(config.lightAmount);
-    const initialSystems = getDefaultSystemAssignments(config.lightAmount);
-    
-    setConfig(prev => ({ 
-      ...prev, 
-      pendants: initialPendants,
-      systemConfigurations: initialSystems
-    }));
+    if (!savedConfig || !savedCables) {
+      console.log("initializing with defaults");
+      const initialPendants = getDefaultPendantAssignments(config.lightAmount);
+      const initialSystems = getDefaultSystemAssignments(config.lightAmount);
 
-    setCables(prev => [...prev, { 
-      isSystem: false, 
-      systemType: system.systemType, 
-      design: system.design, 
-      designId: system.designId 
-    }]);
+      setConfig((prev) => ({
+        ...prev,
+        pendants: initialPendants,
+        systemConfigurations: initialSystems,
+      }));
 
-    setLastCeilingLightAmount(config.lightAmount);
-    setLastRoundBaseLightAmount(config.lightAmount);
-    
-    // Send initial messages to PlayCanvas
-    if (playCanvasReadyRef.current) {
-      sendMessageToPlayCanvas(`light_type:${config.lightType}`);
-      sendMessageToPlayCanvas(`base_type:${config.baseType}`);
-      sendMessageToPlayCanvas(`light_amount:${config.lightAmount}`);
+      setCables((prev) => [
+        ...prev,
+        {
+          isSystem: false,
+          systemType: system.systemType,
+          design: system.design,
+          designId: system.designId,
+        },
+      ]);
 
-      // Send pendant messages
-      initialSystems.forEach((system, index) => {
-        const productId = getProductIdForDesign(system.design);
-        setCables(prev => [...prev, { 
-          isSystem: false, 
-          systemType: system.systemType, 
-          design: system.design, 
-          designId: system.designId 
-        }]);
-        sendMessageToPlayCanvas(`system:${system.systemType}`);
-        sendMessageToPlayCanvas(`cable_${index}:${system.designId}`);
+      setLastCeilingLightAmount(config.lightAmount);
+      setLastRoundBaseLightAmount(config.lightAmount);
+
+      // Send initial messages to PlayCanvas
+      if (playCanvasReadyRef.current) {
+        sendMessageToPlayCanvas(`light_type:${config.lightType}`);
+        sendMessageToPlayCanvas(`base_type:${config.baseType}`);
+        sendMessageToPlayCanvas(`light_amount:${config.lightAmount}`);
+
+        // Send pendant messages
+        initialSystems.forEach((system, index) => {
+          const productId = getProductIdForDesign(system.design);
+          setCables((prev) => [
+            ...prev,
+            {
+              isSystem: false,
+              systemType: system.systemType,
+              design: system.design,
+              designId: system.designId,
+            },
+          ]);
+          sendMessageToPlayCanvas(`system:${system.systemType}`);
+          sendMessageToPlayCanvas(`cable_${index}:${system.designId}`);
+        });
+      }
+    } else {
+      console.log("loading from saved state");
+      console.log("savedConfig", savedConfig);
+      console.log("savedCables", savedCables);
+
+      sendMessageToPlayCanvas(`light_type:${savedConfig.lightType}`);
+      console.log("light_type", savedConfig.lightType);
+      sendMessageToPlayCanvas(`light_amount:${savedConfig.lightAmount}`);
+      sendMessageToPlayCanvas(`base_type:${savedConfig.baseType}`);
+      savedCables.forEach((cable, index) => {
+        if (cable.systemType) {
+          sendMessageToPlayCanvas(`system:${cable.systemType}`);
+          sendMessageToPlayCanvas(`cable_${index}:${cable.designId}`);
+        } else {
+          sendMessageToPlayCanvas(`cable_${index}:${cable.designId}`);
+        }
       });
     }
-  } else {
-    console.log("loading from saved state");
-    console.log("savedConfig",savedConfig);
-    console.log("savedCables",savedCables);
-    
-    sendMessageToPlayCanvas(`light_type:${savedConfig.lightType}`);
-    console.log("light_type",savedConfig.lightType);
-    sendMessageToPlayCanvas(`light_amount:${savedConfig.lightAmount}`);
-    sendMessageToPlayCanvas(`base_type:${savedConfig.baseType}`);
-    savedCables.forEach((cable, index) => {
-      if(cable.systemType){
-        sendMessageToPlayCanvas(`system:${cable.systemType}`);
-        sendMessageToPlayCanvas(`cable_${index}:${cable.designId}`);
-      } else {
-        sendMessageToPlayCanvas(`cable_${index}:${cable.designId}`);
-      }
-    });
-    
-  }
-}, [hasConfigIdParam]);
+  }, [hasConfigIdParam]);
 
   // Update pendants when light amount changes
   // useEffect(() => {
@@ -449,7 +589,7 @@ useEffect(() => {
   //         });
   //         const productId = designOptions[Math.floor(Math.random() * designOptions.length)] === 'bumble' ? 'product_1' :
   //         designOptions[Math.floor(Math.random() * designOptions.length)] === 'radial' ? 'product_2' :
-         
+
   //         designOptions[Math.floor(Math.random() * designOptions.length)] === 'ico' ? 'product_4' :
   //         designOptions[Math.floor(Math.random() * designOptions.length)] === 'piko' ? 'product_5' : 'product_2';
   //         setCables(prev => [...prev, { isSystem: false, systemType: "", design: designOptions[Math.floor(Math.random() * designOptions.length)], designId: productId }]);
@@ -516,68 +656,73 @@ useEffect(() => {
     setCables(configData.config.cableConfig);
   };
   // Listen for app:ready1 message from PlayCanvas iframe
-useEffect(() => {
-  const handleMessage = (event) => {
-    if (event.data === "app:ready1") {
-      setIsLoading(false);
-      playCanvasReadyRef.current = true;
+  useEffect(() => {
+    const handleMessage = (event) => {
+      if (event.data === "app:ready1") {
+        setIsLoading(false);
+        playCanvasReadyRef.current = true;
 
-      // Load saved configuration if available
-      const savedConfig = loadFromLocalStorage('lightConfig', null);
-      console.log("savedConfig", savedConfig);
+        // Load saved configuration if available
+        const savedConfig = loadFromLocalStorage("lightConfig", null);
+        console.log("savedConfig", savedConfig);
 
-      const savedCables = loadFromLocalStorage('lightCables', null);
-      console.log("savedCables", savedCables)
-      if (savedConfig && savedCables) {
-        console.log("Loading saved configuration...");
-        sendMessageToPlayCanvas(`light_type:${savedConfig.lightType}`);
-        console.log("light_type", savedConfig.lightType);
-        sendMessageToPlayCanvas(`base_type:${savedConfig.baseType}`);
-        sendMessageToPlayCanvas(`light_amount:${savedConfig.lightAmount}`);
-        sendMessageToPlayCanvas(`base_color:${savedConfig.baseColor}`);
-        sendMessageToPlayCanvas(`connector_color:${savedConfig.connectorColor}`);
-   
-        
-        savedCables.forEach((cable, index) => {
-          if (cable.systemType) {
-            sendMessageToPlayCanvas(`system:${cable.systemType}`);
-            const parts = cable.designId.split('_'); // system_base_2_2
-            if (parts.length === 4) { // [system, base, 2, 2]
-              const baseDesign = parts.slice(0, 3).join('_'); // e.g., "system_base_2"
-              sendMessageToPlayCanvas(`cable_${index}:${baseDesign}`);
-              sendMessageToPlayCanvas(`cable_${index}:${cable.designId}`);
+        const savedCables = loadFromLocalStorage("lightCables", null);
+        console.log("savedCables", savedCables);
+        if (savedConfig && savedCables) {
+          console.log("Loading saved configuration...");
+          sendMessageToPlayCanvas(`light_type:${savedConfig.lightType}`);
+          console.log("light_type", savedConfig.lightType);
+          sendMessageToPlayCanvas(`base_type:${savedConfig.baseType}`);
+          sendMessageToPlayCanvas(`light_amount:${savedConfig.lightAmount}`);
+          sendMessageToPlayCanvas(`base_color:${savedConfig.baseColor}`);
+          sendMessageToPlayCanvas(
+            `connector_color:${savedConfig.connectorColor}`
+          );
+
+          savedCables.forEach((cable, index) => {
+            if (cable.systemType) {
+              sendMessageToPlayCanvas(`system:${cable.systemType}`);
+              const parts = cable.designId.split("_"); // system_base_2_2
+              if (parts.length === 4) {
+                // [system, base, 2, 2]
+                const baseDesign = parts.slice(0, 3).join("_"); // e.g., "system_base_2"
+                sendMessageToPlayCanvas(`cable_${index}:${baseDesign}`);
+                sendMessageToPlayCanvas(`cable_${index}:${cable.designId}`);
+              } else {
+                sendMessageToPlayCanvas(`cable_${index}:${cable.designId}`);
+              }
+              console.log("cable", cable.size);
+              sendMessageToPlayCanvas(`cable_${index}:size_${cable.size}`);
             } else {
               sendMessageToPlayCanvas(`cable_${index}:${cable.designId}`);
+              sendMessageToPlayCanvas(`cable_${index}:size_${cable.size}`);
             }
-            console.log("cable" , cable.size)
-            sendMessageToPlayCanvas(`cable_${index}:size_${cable.size}`);
-
-          } else {
-            sendMessageToPlayCanvas(`cable_${index}:${cable.designId}`);
-            sendMessageToPlayCanvas(`cable_${index}:size_${cable.size}`);
-          }
-        });
-        sendMessageToPlayCanvas(`lighting:${savedConfig.lighting ? "on" : "off"}`);
-        if (savedConfig.lighting) {
-          sendMessageToPlayCanvas(`brightness:${savedConfig.brightness}`);
+          });
           sendMessageToPlayCanvas(
-            "colorTemperature:" +
-              Math.round(2700 + (savedConfig.colorTemperature / 100) * (6500 - 2700))
+            `lighting:${savedConfig.lighting ? "on" : "off"}`
           );
+          if (savedConfig.lighting) {
+            sendMessageToPlayCanvas(`brightness:${savedConfig.brightness}`);
+            sendMessageToPlayCanvas(
+              "colorTemperature:" +
+                Math.round(
+                  2700 + (savedConfig.colorTemperature / 100) * (6500 - 2700)
+                )
+            );
+          }
+        }
+
+        // If we have a configuration from URL, load it now
+        if (configFromUrl) {
+          handleLoadSpecificConfig(configFromUrl);
+          setIsLoadingFromUrl(false);
         }
       }
+    };
 
-      // If we have a configuration from URL, load it now
-      if (configFromUrl) {
-        handleLoadSpecificConfig(configFromUrl);
-        setIsLoadingFromUrl(false);
-      }
-    }
-  };
-
-  window.addEventListener("message", handleMessage);
-  return () => window.removeEventListener("message", handleMessage);
-}, [configFromUrl, handleLoadSpecificConfig]); // Added handleLoadSpecificConfig to dependencies
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, [configFromUrl, handleLoadSpecificConfig]); // Added handleLoadSpecificConfig to dependencies
 
   // Handle light type change
   const handleLightTypeChange = (type) => {
@@ -730,7 +875,7 @@ useEffect(() => {
     setTimeout(() => {
       sendMessageToPlayCanvas(`light_amount:${amount}`);
       newSystems.forEach((system, index) => {
-        if(system.isSystem){
+        if (system.isSystem) {
           sendMessageToPlayCanvas(`system:${system.systemType}`);
         }
         sendMessageToPlayCanvas(`cable_${index}:${system.designId}`);
@@ -739,11 +884,15 @@ useEffect(() => {
     }, 0);
   };
 
-
   // Handle system type change
   const handleSystemTypeChange = (system) => {
     // Update the global system type
-    setConfig((prev) => ({ ...prev, systemType: system.systemType , design: system.design , designId: system.designId }));
+    setConfig((prev) => ({
+      ...prev,
+      systemType: system.systemType,
+      design: system.design,
+      designId: system.designId,
+    }));
 
     // Get the selected cable number(s)
     const selectedCables =
@@ -857,7 +1006,6 @@ useEffect(() => {
             ? "product_1"
             : design === "radial"
             ? "product_2"
-
             : design === "ico"
             ? "product_4"
             : design === "piko"
@@ -888,7 +1036,6 @@ useEffect(() => {
             ? "product_1"
             : design === "radial"
             ? "product_2"
-            
             : design === "ico"
             ? "product_4"
             : design === "piko"
@@ -932,7 +1079,7 @@ useEffect(() => {
       sendMessageToPlayCanvas(`system:bar`);
       sendMessageToPlayCanvas(`cable_1:system_base_2`);
       sendMessageToPlayCanvas(`cable_1:size_3`);
-      sendMessageToPlayCanvas(`cable_2:product_2`); 
+      sendMessageToPlayCanvas(`cable_2:product_2`);
       sendMessageToPlayCanvas(`cable_2:size_3`);
       setCables([
         {
@@ -1007,68 +1154,65 @@ useEffect(() => {
       ...prev,
       selectedPendants: pendantIds,
     }));
-
   }, []);
 
-
   // Handle system base design change
-  const handleSystemBaseDesignChange = useCallback(
-    (design) => {
-      // Update the system base design in the config
-      setConfig((prev) => ({ ...prev, systemBaseDesign: design }));
-    
+  const handleSystemBaseDesignChange = useCallback((design) => {
+    // Update the system base design in the config
+    setConfig((prev) => ({ ...prev, systemBaseDesign: design }));
+
     // Reset current shade when changing base design
     setCurrentShade(null);
-    
+
     // Send message to PlayCanvas iframe
     setTimeout(() => {
       // Map design names to product IDs for the iframe based on system type
       // Each system type (bar/ball/universal) has its own set of base designs with specific IDs
       const systemTypeBaseMap = {
-        'bar': {
+        bar: {
           // Bar system uses baseNumbers 0-8
-          'prism': 'system_base_1',
-          'helix': 'system_base_2',
-          'orbit': 'system_base_3',
-          'zenith': 'system_base_4',
-          'pulse': 'system_base_5',
-          'vortex': 'system_base_6',
-          'nexus': 'system_base_7',
-          'quasar': 'system_base_8',
-          'nova': 'system_base_9'
+          prism: "system_base_1",
+          helix: "system_base_2",
+          orbit: "system_base_3",
+          zenith: "system_base_4",
+          pulse: "system_base_5",
+          vortex: "system_base_6",
+          nexus: "system_base_7",
+          quasar: "system_base_8",
+          nova: "system_base_9",
         },
-        'universal': {
+        universal: {
           // Universal system uses baseNumbers 1-15
-          'atom': 'system_base_1',
-          'nebula': 'system_base_2',
-          'cosmos': 'system_base_3',
-          'stellar': 'system_base_4',
-          'eclipse': 'system_base_5',
-          'aurora': 'system_base_6',
-          'solstice': 'system_base_7',
-          'quantum': 'system_base_8',
-          'vertex': 'system_base_9',
-          'horizon': 'system_base_10',
-          'zoneith': 'system_base_11',
-          'equinox': 'system_base_12',
-          'meridian': 'system_base_13',
-          'polaris': 'system_base_14',
-          'pulsar': 'system_base_15',
-          'quasar': 'system_base_16',
-          'supernova': 'system_base_17',
-          'galaxy': 'system_base_18',
-          'comet': 'system_base_19',
-          'meteor': 'system_base_20',
-          'asteroid': 'system_base_21',
-          'celestial': 'system_base_22',
-          'orbital': 'system_base_23',
-          'lunar': 'system_base_24',
-          'solar': 'system_base_25',
-          'nova': 'system_base_26',
-          'photon': 'system_base_27',
-          'gravity': 'system_base_28',
-          'spectrum': 'system_base_29',
-          'infinity': 'system_base_30',
+          atom: "system_base_1",
+          nebula: "system_base_2",
+          cosmos: "system_base_3",
+          stellar: "system_base_4",
+          eclipse: "system_base_5",
+          aurora: "system_base_6",
+          solstice: "system_base_7",
+          quantum: "system_base_8",
+          vertex: "system_base_9",
+          horizon: "system_base_10",
+          zoneith: "system_base_11",
+          equinox: "system_base_12",
+          meridian: "system_base_13",
+          polaris: "system_base_14",
+          pulsar: "system_base_15",
+          quasar: "system_base_16",
+          supernova: "system_base_17",
+          galaxy: "system_base_18",
+          comet: "system_base_19",
+          meteor: "system_base_20",
+          asteroid: "system_base_21",
+          celestial: "system_base_22",
+          orbital: "system_base_23",
+          lunar: "system_base_24",
+          solar: "system_base_25",
+          nova: "system_base_26",
+          photon: "system_base_27",
+          gravity: "system_base_28",
+          spectrum: "system_base_29",
+          infinity: "system_base_30",
           // 'void': 'system_base_31',
           // 'blackhole': 'system_base_32',
           // 'singularity': 'system_base_33',
@@ -1076,10 +1220,8 @@ useEffect(() => {
           // 'wormhole': 'system_base_34',
           // 'black': 'system_base_35',
           // 'white': 'system_base_36',
-
-        }
+        },
       };
-
 
       // Send message to PlayCanvas iframe
       setTimeout(() => {
@@ -1137,9 +1279,6 @@ useEffect(() => {
             // wormhole: "system_base_34",
             // black: "system_base_35",
             // white: "system_base_36",
-            
-
-            
           },
         };
 
@@ -1205,10 +1344,8 @@ useEffect(() => {
           sendMessageToPlayCanvas(`cable_${cableNo}:${baseId}`);
         });
       }, 10);
-    },
-    [config.selectedPendants, config.systemType, config.cableSystemTypes]
-  );
-});
+    }, [config.selectedPendants, config.systemType, config.cableSystemTypes]);
+  });
 
   // Handle shade selection
 
@@ -1263,8 +1400,7 @@ useEffect(() => {
 
   // Handle final save after user enters configuration name
   const handleFinalSave = async (configName, thumbnail, modelId) => {
-
-   console.log("modelId", modelId)
+    console.log("modelId", modelId);
     if (!configToSave) {
       console.error("configToSave is null or undefined");
       return;
@@ -1284,7 +1420,7 @@ useEffect(() => {
       iframeMessagesArray.push(`base_type:${config.baseType}`);
     }
     iframeMessagesArray.push(`light_amount:${config.lightAmount}`);
-  
+
     if (configToSave.cables && Array.isArray(configToSave.cables)) {
       configToSave.cables.forEach((cable, i) => {
         if (cable.isSystem) {
@@ -1354,7 +1490,6 @@ useEffect(() => {
       });
     }
 
-   
     // Prepare data for API
     const apiPayload = {
       name: configName,
@@ -1431,7 +1566,6 @@ useEffect(() => {
   };
 
   // Handle loading a specific configuration
-  
 
   // Container ref for PlayCanvas viewer
   const containerRef = useRef(null);
@@ -1521,40 +1655,43 @@ useEffect(() => {
 
       {/* 3D Viewer */}
       {mounted && (
-      <div className="w-full h-full">
-        <PlayCanvasViewer
-          config={config}
-          isDarkMode={true}
-          className="w-full h-full"
-          loadcanvas={isLoading}
-          localSavedConfig={localSavedConfig}
-          localSavedCables={localSavedCables}
-        />
-      </div>
+        <div className="w-full h-full">
+          <PlayCanvasViewer
+            config={config}
+            isDarkMode={true}
+            className="w-full h-full"
+            loadcanvas={isLoading}
+            localSavedConfig={localSavedConfig}
+            localSavedCables={localSavedCables}
+          />
+        </div>
       )}
 
       {/* Preview Controls - Always visible */}
-      <PreviewControls
-        isPreviewMode={isPreviewMode}
-        setIsPreviewMode={setIsPreviewMode}
-        config={config}
-        cables={cables}
-        selectedPendants={config.selectedPendants || []}
-        onSaveConfig={handleSaveConfig}
-        handleOpenSaveModal={handleOpenSaveModal}
-        onLoadConfig={handleLoadConfig}
-        sendMessageToPlayCanvas={sendMessageToPlayCanvas}
-        onPendantDesignChange={handlePendantDesignChange}
-        brightness={brightness}
-        setBrightness={setBrightness}
-        colorTemperature={colorTemperature}
-        setColorTemperature={setColorTemperature}
-        lighting={lighting}
-        setLighting={setLighting}
-        isLightingPanelOpen={isLightingPanelOpen}
-        setIsLightingPanelOpen={setIsLightingPanelOpen}
-        setCables={setCables}
-      />
+      {!isLoading && (
+        <PreviewControls
+          isPreviewMode={isPreviewMode}
+          setIsPreviewMode={setIsPreviewMode}
+          config={config}
+          cables={cables}
+          selectedPendants={config.selectedPendants || []}
+          onSaveConfig={handleSaveConfig}
+          handleOpenSaveModal={handleOpenSaveModal}
+          onLoadConfig={handleLoadConfig}
+          sendMessageToPlayCanvas={sendMessageToPlayCanvas}
+          onPendantDesignChange={handlePendantDesignChange}
+          brightness={brightness}
+          setBrightness={setBrightness}
+          colorTemperature={colorTemperature}
+          setColorTemperature={setColorTemperature}
+          lighting={lighting}
+          setLighting={setLighting}
+          isLightingPanelOpen={isLightingPanelOpen}
+          setIsLightingPanelOpen={setIsLightingPanelOpen}
+          setCables={setCables}
+          cableMessage={cableMessage}
+        />
+      )}
 
       {/* Only show UI elements when not in preview mode */}
       {!isPreviewMode && (
@@ -1567,9 +1704,10 @@ useEffect(() => {
               setActiveStep={setActiveStep}
               config={config}
               cables={cables}
-              
               showConfigurationTypeSelector={showConfigurationTypeSelector}
-              setShowConfigurationTypeSelector={setShowConfigurationTypeSelector}
+              setShowConfigurationTypeSelector={
+                setShowConfigurationTypeSelector
+              }
               onLightTypeChange={handleLightTypeChange}
               onBaseTypeChange={handleBaseTypeChange}
               onBaseColorChange={handleBaseColorChange}
@@ -1596,7 +1734,6 @@ useEffect(() => {
               onCableSizeChange={handleCableSizeChange}
               onShadeSelect={handleShadeSelect}
               setCableMessage={setCableMessage}
-            
             />
           )}
 
