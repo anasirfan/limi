@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { pendantAssignments } from "../pendantSystemData";
 
 const LightDesignSelector = ({ selectedDesign, onDesignChange, pendantIndex = null, isDarkMode }) => {
   const scrollContainerRef = useRef(null);
@@ -13,13 +14,11 @@ const LightDesignSelector = ({ selectedDesign, onDesignChange, pendantIndex = nu
   const [showCursor, setShowCursor] = useState(false);
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
 
-  const designs = [
-    { id: "bumble", name: "Bumble", image: "/images/configOptions/1.png" },
-    { id: "radial", name: "Radial", image: "/images/configOptions/2.png" },
-    { id: "fina", name: "Fina", image: "/images/configOptions/3.png" },
-    { id: "ico", name: "Ico", image: "/images/configOptions/4.png" },
-    { id: "piko", name: "Piko", image: "/images/configOptions/5.png" },
-  ];
+  const designs = pendantAssignments.map((pendant) => ({
+    id: pendant.design,
+    name: pendant.name,
+    image: pendant.image,
+  }));
 
   useEffect(() => {
     if (scrollContainerRef.current) {

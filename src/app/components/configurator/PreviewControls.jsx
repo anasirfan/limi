@@ -19,6 +19,7 @@ import { useSelector, useDispatch } from "react-redux";
 import {
   removeFromFavorites,
   clearFavorites,
+  fetchFavorites,
 } from "../../redux/slices/favoritesSlice";
 import { motion, AnimatePresence } from "framer-motion";
 import { listenForAppReady1 } from "../../util/iframeCableMessageHandler";
@@ -64,6 +65,8 @@ export const PreviewControls = ({
   const dispatch = useDispatch();
   const favorites = useSelector((state) => state.favorites.items);
 
+  
+
   // Reset when favorites change
   useEffect(() => {
     console.log("selectedPendants", selectedPendants);
@@ -103,6 +106,10 @@ export const PreviewControls = ({
     window.addEventListener("resize", checkIfMobile);
     return () => window.removeEventListener("resize", checkIfMobile);
   }, []);
+
+  useEffect(() => {
+    dispatch(fetchFavorites());
+  }, [dispatch]);
 
   // --- Replace your current brightness useEffect with this ---
   useEffect(() => {
@@ -617,7 +624,7 @@ export const PreviewControls = ({
                               );
                               selectedPendants.forEach((idx) => {
                                 sendMessageToPlayCanvas(
-                                  `cable_${idx}:${assignment.designId}`
+                                  `cable_${idx}:${assignment.message}`
                                 );
                                 setCables((prev) => {
                                   const updatedCables = [...prev];
@@ -625,7 +632,7 @@ export const PreviewControls = ({
                                     isSystem: true,
                                     systemType: assignment.systemType,
                                     design: assignment.design,
-                                    designId: assignment.designId,
+                                    designId: assignment.message,
                                   };
                                   return updatedCables;
                                 });
@@ -634,7 +641,7 @@ export const PreviewControls = ({
                               // Pendant
                               selectedPendants.forEach((idx) => {
                                 sendMessageToPlayCanvas(
-                                  `cable_${idx}:${assignment.designId}`
+                                  `cable_${idx}:${assignment.message}`
                                 );
                                 setCables((prev) => {
                                   const updatedCables = [...prev];
@@ -642,7 +649,7 @@ export const PreviewControls = ({
                                     isSystem: false,
                                     systemType: "",
                                     design: assignment.design,
-                                    designId: assignment.designId,
+                                    designId: assignment.message,
                                   };
                                   return updatedCables;
                                 });
@@ -651,11 +658,11 @@ export const PreviewControls = ({
                           }}
                         >
                           <div className="flex flex-col items-center text-center">
-                            {pendant.image ? (
+                          {assignment.image ? (
                               <div className="relative h-14 w-14 rounded-full bg-gray-900 overflow-visible mb-1 group">
                                 <img
-                                  src={pendant.image}
-                                  alt={pendant.name}
+                                  src={assignment.image}
+                                  alt={assignment.name}
                                   className="h-full w-full object-cover"
                                 />
                                 <button
@@ -663,7 +670,7 @@ export const PreviewControls = ({
                                   title="Remove from Wishlist"
                                   onClick={(e) => {
                                     e.stopPropagation();
-                                    dispatch(removeFromFavorites(pendant.id));
+                                    dispatch(removeFromFavorites(assignment.id));
                                   }}
                                 >
                                   ×

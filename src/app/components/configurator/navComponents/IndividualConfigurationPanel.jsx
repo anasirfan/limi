@@ -89,13 +89,7 @@ export const IndividualConfigurationPanel = ({
             className="flex gap-2 overflow-x-auto scrollbar-hide py-1 px-6 max-w-full"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
-            {[
-              { id: 'bumble', name: 'Bumble', image: '/images/configOptions/1.png' },
-              { id: 'radial', name: 'Radial', image: '/images/configOptions/2.png' },
-              { id: 'fina', name: 'Fina', image: '/images/configOptions/3.png' },
-              { id: 'ico', name: 'Ico', image: '/images/configOptions/4.png' },
-              { id: 'piko', name: 'Piko', image: '/images/configOptions/5.png' },
-            ].map((design) => (
+            {[pendantAssignments].map((design) => (
               <motion.div
                 key={design.id}
                 className="flex-shrink-0 cursor-pointer"

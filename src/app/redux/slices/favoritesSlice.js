@@ -1,4 +1,28 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+
+const API_BASE = 'https://dev.api1.limitless-lighting.co.uk/admin/products/light-configs/wishlist';
+
+const getToken = () => localStorage.getItem('limiToken');
+
+// Thunk for fetching wishlist from API
+export const fetchFavorites = createAsyncThunk(
+  'favorites/fetchFavorites',
+  async (_, thunkAPI) => {
+    const token = getToken();
+    const res = await fetch(API_BASE, {
+      method: 'GET',
+      headers: {
+        'Authorization': `${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    if (!res.ok) throw new Error('Failed to fetch favorites');
+    const data = await res.json();
+    // API returns { wishlist: [...] }
+    // Return as array of { id }
+    return (data.wishlist || []).map(id => ({ id }));
+  }
+);
 
 const initialState = {
   items: [],
@@ -11,16 +35,12 @@ export const favoritesSlice = createSlice({
     addToFavorites: (state, action) => {
       const product = action.payload;
       const exists = state.items.some(item => item.id === product.id);
-    
+      
       if (!exists) {
         state.items.push({
           id: product.id,
-          name: product.name,
-          image: product.image,
-          type: product.type,
-          message: product.message,
         });
-      }   
+      }
       
       // Save to localStorage
       localStorage.setItem('limiFavorites', JSON.stringify(state));
@@ -48,6 +68,16 @@ export const favoritesSlice = createSlice({
       }
     }
   },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchFavorites.fulfilled, (state, action) => {
+        state.items = action.payload;
+        localStorage.setItem('limiFavorites', JSON.stringify(state));
+      })
+      .addCase(fetchFavorites.rejected, (state, action) => {
+        state.error = action.error.message;
+      });
+  }
 });
 
 export const { addToFavorites, removeFromFavorites, clearFavorites, loadFavorites } = favoritesSlice.actions;
