@@ -611,7 +611,6 @@ export const PreviewControls = ({
                      const assignment = systemAssignments.find(
                         (item) => pendant.id == item.design
                       );
-                      console.log("assignment", assignment);
                       return (
                         <div
                           key={pendant.id}

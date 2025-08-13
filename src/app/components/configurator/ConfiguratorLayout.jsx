@@ -527,6 +527,7 @@ useEffect(() => {
       console.log("savedConfig", savedConfig);
 
       const savedCables = loadFromLocalStorage('lightCables', null);
+      
       console.log("savedCables", savedCables)
       if (savedConfig && savedCables) {
         console.log("Loading saved configuration...");
@@ -770,7 +771,7 @@ useEffect(() => {
     // Send messages to iframe
     setTimeout(() => {
       // Send system type message to iframe
-      sendMessageToPlayCanvas(`system:${system}`);
+      // sendMessageToPlayCanvas(`system:${system}`);
 
       setShowTypeSelector(false);
     }, 10);
@@ -1165,9 +1166,13 @@ useEffect(() => {
             // Get the base design map for this system type
             const designMap =
               systemTypeBaseMap[cableSystemType] || systemTypeBaseMap.universal;
+             console.log("designMap",designMap,design)
+            //  console.log("design",)
 
             // Get the base ID for this design within the current system type
             const baseId = designMap[design] || "system_base_0";
+            console.log("designMap[design]",designMap[design])
+            // console.log("baseId",baseId)
 
             // Update this specific cable
             if (cableNo >= 0) {
@@ -1197,7 +1202,7 @@ useEffect(() => {
 
           // Get the base ID for this design within the current system type
           const baseId = designMap[design] || "system_base_0";
-
+          console.log("baseId",baseId)
           // Send system type message first for this cable
           sendMessageToPlayCanvas(`system:${cableSystemType}`);
 
