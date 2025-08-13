@@ -23,7 +23,22 @@ export const fetchFavorites = createAsyncThunk(
     return (data.wishlist || []).map(id => ({ id }));
   }
 );
-
+export const updateFavorites = createAsyncThunk(
+  'favorites/updateFavorites',
+  async (favoritesArray, thunkAPI) => {
+    const token = getToken();
+    const res = await fetch(API_BASE, {
+      method: 'POST', // Change to PATCH/PUT if your API expects it
+      headers: {
+        'Authorization': `${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ wishlist: favoritesArray.map(item => item.id) }),
+    });
+    if (!res.ok) throw new Error('Failed to update favorites');
+    return favoritesArray;
+  }
+);
 const initialState = {
   items: [],
 };
@@ -53,6 +68,8 @@ export const favoritesSlice = createSlice({
       // Update localStorage
       localStorage.setItem('limiFavorites', JSON.stringify(state));
     },
+
+    
     
     clearFavorites: (state) => {
       state.items = [];
@@ -79,6 +96,14 @@ export const favoritesSlice = createSlice({
       });
   }
 });
+
+export const removeFromFavoritesAndSync = (id) => (dispatch, getState) => {
+  dispatch(favoritesSlice.actions.removeFromFavorites(id));
+  const { items } = getState().favorites;
+  dispatch(updateFavorites(items));
+};
+
+
 
 export const { addToFavorites, removeFromFavorites, clearFavorites, loadFavorites } = favoritesSlice.actions;
 

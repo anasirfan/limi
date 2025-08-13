@@ -17,13 +17,14 @@ import {
 } from "react-icons/fa";
 import { useSelector, useDispatch } from "react-redux";
 import {
-  removeFromFavorites,
+  removeFromFavoritesAndSync,
   clearFavorites,
   fetchFavorites,
 } from "../../redux/slices/favoritesSlice";
 import { motion, AnimatePresence } from "framer-motion";
 import { listenForAppReady1 } from "../../util/iframeCableMessageHandler";
 import { systemAssignments } from "./pendantSystemData";
+import { listenForOffconfigMessages } from "../../util/iframeCableMessageHandler";
 
 export const PreviewControls = ({
   isPreviewMode,
@@ -39,6 +40,7 @@ export const PreviewControls = ({
   onPendantDesignChange,
   selectedPendants,
   selectedLocation,
+  cableMessage,
   brightness,
   setBrightness,
   colorTemperature,
@@ -55,6 +57,7 @@ export const PreviewControls = ({
   const [showOnboarding, setShowOnboarding] = useState(false);
   const brightnessDebounceTimeout = useRef();
   const colorTempDebounceTimeout = useRef();
+  const prevLightingPanelWasOpenRef = useRef(false);
 
   const wishlistRef = useRef(null);
   const carouselRef = useRef(null);
@@ -64,8 +67,6 @@ export const PreviewControls = ({
 
   const dispatch = useDispatch();
   const favorites = useSelector((state) => state.favorites.items);
-
-  
 
   // Reset when favorites change
   useEffect(() => {
@@ -93,6 +94,31 @@ export const PreviewControls = ({
     }
   }, []);
 
+  // Close lighting panel when navigation guide is hovered
+  useEffect(() => {
+    // If lighting panel is open and info is hovered, close the panel
+    
+    if (isLightingPanelOpen && isHovered) {
+      setIsLightingPanelOpen(false);
+    }
+    // If lighting panel was open and hover ends, reopen it
+    else if (!isHovered && prevLightingPanelWasOpenRef.current) {
+      setIsLightingPanelOpen(true);
+    }
+    // Track if the panel was open before hover
+    if (isHovered && isLightingPanelOpen) {
+      prevLightingPanelWasOpenRef.current = true;
+    } else if (!isHovered) {
+      prevLightingPanelWasOpenRef.current = false;
+    }
+  }, [isHovered, isLightingPanelOpen]);
+
+  useEffect(() => {
+    const cleanup = listenForOffconfigMessages((data, event) => {
+      setShowWishlistModal(false);
+    });
+    return cleanup;
+  }, [cableMessage]);
   const guideRef = useRef(null);
 
   useEffect(() => {
@@ -153,7 +179,7 @@ export const PreviewControls = ({
   };
 
   return (
-    <>
+    <div className="noselect">
       {/* Onboarding Animation */}
       {showOnboarding && (
         <div className="absolute inset-0 pointer-events-none z-50 flex items-center justify-center">
@@ -232,7 +258,7 @@ export const PreviewControls = ({
 
       {/* Navigation Guide */}
       <div
-        className="absolute top-24 left-8 z-50 flex gap-2"
+        className="absolute top-24 left-4 sm:left-8 z-50 flex gap-2"
         ref={guideRef}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
@@ -253,7 +279,7 @@ export const PreviewControls = ({
         {/* Lighting Control Button */}
 
         {(isHovered || (isMobile && isHovered)) && (
-          <div className="absolute -left-4 top-12 z-[101] w-64 p-4 bg-white rounded-lg shadow-xl border border-gray-200 animate-fadeIn">
+          <div className="absolute -left-2 sm:-left-4 top-10 sm:top-12 z-[101] w-64 p-4 bg-white rounded-lg shadow-xl border border-gray-200 animate-fadeIn">
             <h3 className="font-bold text-gray-800 mb-3">Navigation Guide</h3>
             <ul className="space-y-3 text-sm text-gray-600">
               {isMobile ? (
@@ -305,7 +331,7 @@ export const PreviewControls = ({
       </div>
 
       <div
-        className="absolute left-[4.5rem] top-[5.94rem] z-50 flex gap-2"
+        className="absolute left-14 sm:left-[4.5rem] top-[5.94rem] z-50 flex gap-2"
         ref={lightingRef}
       >
         <motion.button
@@ -324,7 +350,7 @@ export const PreviewControls = ({
             transition={{ duration: 0.3 }}
           >
             <FaLightbulb
-              size={15}
+              size={16}
               className={lighting ? "text-yellow-300" : ""}
             />
           </motion.div>
@@ -338,27 +364,78 @@ export const PreviewControls = ({
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -20, scale: 0.9 }}
               transition={{ duration: 0.3, ease: "easeOut" }}
-              className="absolute top-16 bg-gray-900/95 backdrop-blur-md border border-gray-600/50 rounded-xl shadow-2xl p-5 w-72 z-50"
+              className="absolute top-10 -left-12 sm:left-0 sm:top-16 
+                         bg-[#1d1e1f] sm:bg-gray-900/95 
+                         backdrop-blur-xl sm:backdrop-blur-md 
+                         border border-white/20 sm:border-gray-600/50 
+                         rounded-2xl sm:rounded-xl 
+                         shadow-2xl shadow-black/40 sm:shadow-2xl
+                         before:absolute before:inset-0 before:rounded-2xl sm:before:rounded-xl before:bg-gradient-to-br before:from-white/10 before:to-transparent before:pointer-events-none sm:before:hidden
+                         p-2 sm:p-5 w-56 sm:w-72 z-50"
             >
               {/* Header */}
-              <div className="flex items-center justify-between mb-5">
-                <div className="flex items-center gap-2">
+              <div className="flex items-center justify-between mb-2 sm:mb-5">
+                <div className="flex items-center gap-1 sm:gap-2">
                   <FaLightbulb
                     className={`${
                       lighting ? "text-yellow-400" : "text-gray-400"
-                    } transition-colors`}
+                    } transition-colors text-sm sm:text-base`}
+                    size={16}
                   />
-                  <h3 className="text-white font-semibold text-lg">Lighting</h3>
+                  <h3 className="text-white font-semibold text-sm sm:text-lg">Lighting</h3>
                 </div>
-                <div
-                  className={`w-2 h-2 rounded-full ${
-                    lighting ? "bg-green-400" : "bg-red-400"
-                  } animate-pulse`}
-                ></div>
+                
+                {/* Mobile: Toggle in header, Desktop: Status indicator */}
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={lighting}
+                    onClick={() => {
+                      const newState = !lighting;
+                      setLighting(newState);
+                      // Send message to PlayCanvas when power state changes
+                      const message = newState ? "lighting:on" : "lighting:off";
+                      const iframe = document.getElementById("playcanvas-app");
+                      if (iframe && iframe.contentWindow) {
+                        console.log(`Sending message to PlayCanvas: ${message}`);
+                        iframe.contentWindow.postMessage(message, "*");
+                        if (newState) {
+                          // Also send brightness and color temperature when turning ON
+                          iframe.contentWindow.postMessage(
+                            `brightness:${brightness}`,
+                            "*"
+                          );
+                          iframe.contentWindow.postMessage(
+                            `colorTemperature:${Math.round(
+                              2700 + (colorTemperature / 100) * (6500 - 2700)
+                            )}`,
+                            "*"
+                          );
+                        }
+                      }
+                    }}
+                    className={`sm:hidden relative inline-flex h-5 w-10 items-center rounded-full transition-colors duration-300 focus:outline-none ${
+                      lighting ? "bg-emerald-500" : "bg-gray-600"
+                    }`}
+                  >
+                    <span
+                      className={`${
+                        lighting ? "translate-x-6" : "translate-x-0.5"
+                      } inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow-lg ring-0 transition-transform duration-300 ease-in-out`}
+                    />
+                  </button>
+                  
+                  <div
+                    className={`hidden sm:block w-2 h-2 rounded-full ${
+                      lighting ? "bg-green-400" : "bg-red-400"
+                    } animate-pulse`}
+                  ></div>
+                </div>
               </div>
 
-              {/* Power Toggle */}
-              <div className="flex items-center justify-between mb-6 p-3 bg-gray-800/50 rounded-lg">
+              {/* Power Toggle - Desktop Only */}
+              <div className="hidden sm:flex items-center justify-between mb-6 p-3 bg-gray-800/50 rounded-lg">
                 <div className="flex items-center gap-2">
                   <span className="text-gray-200 font-medium">Power</span>
                   <span
@@ -413,12 +490,12 @@ export const PreviewControls = ({
 
               {/* Color Temperature Control */}
               {lighting && (
-                <div className="mb-6">
-                  <div className="flex items-center justify-between mb-3">
-                    <label className="text-gray-200 font-medium">
-                      Color Temperature
+                <div className="mb-3 sm:mb-6">
+                  <div className="flex items-center justify-between mb-1 sm:mb-3">
+                    <label className="text-gray-200 font-medium text-xs sm:text-base">
+                      Color Temp
                     </label>
-                    <span className="text-xs  px-2 py-1 rounded text-white font-medium">
+                    <span className="text-xs px-1.5 py-0.5 sm:px-2 sm:py-1 rounded text-white font-medium">
                       {Math.round(
                         2700 + (colorTemperature / 100) * (6500 - 2700)
                       )}
@@ -434,7 +511,7 @@ export const PreviewControls = ({
                       onChange={(e) =>
                         setColorTemperature(Number(e.target.value))
                       }
-                      className="w-full h-3 rounded-lg appearance-none cursor-pointer slider-enhanced"
+                      className="w-full h-2.5 sm:h-3 rounded-lg appearance-none cursor-pointer slider-enhanced"
                       style={{
                         background: `linear-gradient(to right, 
                           #fb923c 0%, 
@@ -444,7 +521,7 @@ export const PreviewControls = ({
                         boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
                       }}
                     />
-                    <div className="flex justify-between text-xs text-gray-400 mt-2">
+                    <div className="hidden sm:flex justify-between text-xs text-gray-400 mt-2">
                       <span>Warm</span>
                       <span>Neutral</span>
                       <span>Cool</span>
@@ -455,12 +532,12 @@ export const PreviewControls = ({
 
               {/* Brightness Control */}
               {lighting && (
-                <div className="mb-3">
-                  <div className="flex items-center justify-between mb-3">
-                    <label className="text-gray-200 font-medium">
+                <div className="mb-1 sm:mb-3">
+                  <div className="flex items-center justify-between mb-1 sm:mb-3">
+                    <label className="text-gray-200 font-medium text-xs sm:text-base">
                       Brightness
                     </label>
-                    <span className="text-xs px-2 py-1 rounded text-white font-medium">
+                    <span className="text-xs px-1.5 py-0.5 sm:px-2 sm:py-1 rounded text-white font-medium">
                       {brightness}%
                     </span>
                   </div>
@@ -471,7 +548,7 @@ export const PreviewControls = ({
                       max="100"
                       value={brightness}
                       onChange={(e) => setBrightness(Number(e.target.value))}
-                      className="w-full h-3 rounded-lg appearance-none cursor-pointer slider-enhanced"
+                      className="w-full h-2.5 sm:h-3 rounded-lg appearance-none cursor-pointer slider-enhanced"
                       style={{
                         background: `linear-gradient(to right, 
             #374151 0%, 
@@ -481,7 +558,7 @@ export const PreviewControls = ({
                         boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
                       }}
                     />
-                    <div className="flex justify-between text-xs text-gray-400 mt-2">
+                    <div className="hidden sm:flex justify-between text-xs text-gray-400 mt-2">
                       <span className="flex items-center gap-1">
                         <span className="text-gray-500">🌙</span> Dim
                       </span>
@@ -493,47 +570,49 @@ export const PreviewControls = ({
                 </div>
               )}
 
-              {/* Quick Presets */}
-              <div className="mt-4 pt-4 border-t border-gray-700">
-                <label className="text-gray-200 font-medium text-sm mb-2 block">
-                  Quick Presets
-                </label>
-                <div className="flex gap-2">
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => {
-                      setColorTemperature(20);
-                      setBrightness(80);
-                    }}
-                    className="flex-1 px-3 py-2 bg-orange-500/20 border border-orange-500/30 rounded-lg text-orange-300 text-xs font-medium hover:bg-orange-500/30 transition-all"
-                  >
-                    Cozy
-                  </motion.button>
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => {
-                      setColorTemperature(50);
-                      setBrightness(100);
-                    }}
-                    className="flex-1 px-3 py-2 bg-yellow-500/20 border border-yellow-500/30 rounded-lg text-yellow-300 text-xs font-medium hover:bg-yellow-500/30 transition-all"
-                  >
-                    Natural
-                  </motion.button>
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => {
-                      setColorTemperature(80);
-                      setBrightness(90);
-                    }}
-                    className="flex-1 px-3 py-2 bg-blue-500/20 border border-blue-500/30 rounded-lg text-blue-300 text-xs font-medium hover:bg-blue-500/30 transition-all"
-                  >
-                    Focus
-                  </motion.button>
+              {/* Quick Presets - Desktop Only */}
+              {lighting && (
+                <div className="hidden sm:block mt-4 pt-4 border-t border-gray-700">
+                  <label className="text-gray-200 font-medium text-sm mb-2 block">
+                    Quick Presets
+                  </label>
+                  <div className="flex gap-2">
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => {
+                        setColorTemperature(20);
+                        setBrightness(80);
+                      }}
+                      className="flex-1 px-3 py-2 bg-orange-500/20 border border-orange-500/30 rounded-lg text-orange-300 text-xs font-medium hover:bg-orange-500/30 transition-all"
+                    >
+                      Cozy
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => {
+                        setColorTemperature(50);
+                        setBrightness(100);
+                      }}
+                      className="flex-1 px-3 py-2 bg-yellow-500/20 border border-yellow-500/30 rounded-lg text-yellow-300 text-xs font-medium hover:bg-yellow-500/30 transition-all"
+                    >
+                      Natural
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => {
+                        setColorTemperature(80);
+                        setBrightness(90);
+                      }}
+                      className="flex-1 px-3 py-2 bg-blue-500/20 border border-blue-500/30 rounded-lg text-blue-300 text-xs font-medium hover:bg-blue-500/30 transition-all"
+                    >
+                      Focus
+                    </motion.button>
+                  </div>
                 </div>
-              </div>
+              )}
             </motion.div>
           )}
         </AnimatePresence>
@@ -591,7 +670,7 @@ export const PreviewControls = ({
                 )}
               </div>
 
-              <div className="max-h-80 flex">
+              <div className="max-h-80 relative">
                 {favorites.length === 0 ? (
                   <div className="p-6 text-center">
                     <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-rose-50 mb-3">
@@ -602,13 +681,26 @@ export const PreviewControls = ({
                     </p>
                   </div>
                 ) : (
-                  <div className="flex flex-nowrap overflow-x-auto pb-4 px-2">
+                  <div className="relative">
+                    {/* Left Navigation Button */}
+                    <button
+                      onClick={() => {
+                        const container = document.querySelector('.wishlist-scroll');
+                        container.scrollBy({ left: -100, behavior: 'smooth' });
+                      }}
+                      className="absolute left-1 top-[35%] -translate-y-1/2 z-10 w-8 h-8 bg-gray-800/80 hover:bg-gray-700 rounded-full flex items-center justify-center text-white transition-colors"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                      </svg>
+                    </button>
+                    
+                    <div className="wishlist-scroll flex flex-nowrap overflow-x-auto  px-2 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                     {favorites.map((pendant) => {
-                     
-                     // Find full pendant/system object from shared data (by id or designId)
-                     console.log("pendant", pendant);
-                     console.log("systemAssignments", systemAssignments);
-                     const assignment = systemAssignments.find(
+                      // Find full pendant/system object from shared data (by id or designId)
+                      console.log("pendant", pendant);
+                      console.log("systemAssignments", systemAssignments);
+                      const assignment = systemAssignments.find(
                         (item) => pendant.id == item.design
                       );
                       return (
@@ -657,7 +749,7 @@ export const PreviewControls = ({
                           }}
                         >
                           <div className="flex flex-col items-center text-center">
-                          {assignment.image ? (
+                            {assignment.image ? (
                               <div className="relative h-14 w-14 rounded-full bg-gray-900 overflow-visible mb-1 group">
                                 <img
                                   src={assignment.image}
@@ -669,7 +761,7 @@ export const PreviewControls = ({
                                   title="Remove from Wishlist"
                                   onClick={(e) => {
                                     e.stopPropagation();
-                                    dispatch(removeFromFavorites(assignment.id));
+                                    dispatch(removeFromFavoritesAndSync(assignment.design));
                                   }}
                                 >
                                   ×
@@ -688,6 +780,20 @@ export const PreviewControls = ({
                         </div>
                       );
                     })}
+                    </div>
+                    
+                    {/* Right Navigation Button */}
+                    <button
+                      onClick={() => {
+                        const container = document.querySelector('.wishlist-scroll');
+                        container.scrollBy({ left: 100, behavior: 'smooth' });
+                      }}
+                      className="absolute right-1 top-[35%] -translate-y-1/2 z-10 w-8 h-8 bg-gray-800/80 hover:bg-gray-700 rounded-full flex items-center justify-center text-white transition-colors"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
                   </div>
                 )}
               </div>
@@ -721,6 +827,22 @@ export const PreviewControls = ({
 
       {/* Onboarding CSS Animations */}
       <style jsx>{`
+      .noselect {
+          user-select: none;
+          -webkit-user-select: none;
+          -ms-user-select: none;
+          -moz-user-select: none;
+        }
+        
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+        
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+        
         @keyframes slideOnLine {
           0% {
             left: 50%;
@@ -775,7 +897,7 @@ export const PreviewControls = ({
           }
         }
       `}</style>
-    </>
+    </div>
   );
 };
 

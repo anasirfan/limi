@@ -352,8 +352,8 @@ const tourSteps = [
     clearSelections,
     applyDesignToSelected,
     applyToAllPendants,
-    getDesignImageNumber,
-    getPendantDesignImageNumber
+    getImageSrc,
+  
   } = usePendantSelection(pendants, selectedPendants, setSelectedPendants, onPendantDesignChange,setShowConfigurationTypeSelector,setOpenBase);
   
   // Handle pendant location selection to show configuration type selector
@@ -555,7 +555,6 @@ const tourSteps = [
                     setCurrentDesign={setCurrentDesign}
                     carouselRef={carouselRef}
                     onCableSizeChange={onCableSizeChange}
-                    getPendantDesignImageNumber={getPendantDesignImageNumber}
                     scrollCarousel={scrollCarousel}
                     togglePendantSelection={(locationIndex) => {
                       handlePendantLocationClick(locationIndex);
@@ -565,7 +564,7 @@ const tourSteps = [
                     clearSelections={clearSelections}
                     applyDesignToSelected={applyDesignToSelected}
                     applyToAllPendants={applyToAllPendants}
-                    getDesignImageNumber={getDesignImageNumber}
+                    getImageSrc={getImageSrc}
                     handleSaveConfig={handleSaveConfig}
                     configuringType={localConfiguringType}
                     configuringSystemType={configuringSystemType}

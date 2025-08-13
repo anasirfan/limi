@@ -12,27 +12,23 @@ export const usePendantSelection = (
   const [currentDesign, setCurrentDesign] = useState('radial');
   const carouselRef = useRef(null);
 
-  // Helper function to map pendant design names to their image path
-  const getPendantDesignImageNumber = (designName) => {
-    const assignment = pendantAssignments.find(a => a.design === designName);
-    return assignment ? assignment.image : "";
-  };
+  
 
   // Helper function to map system design names/types to their image path
-  const getDesignImageNumber = (designName, systemType) => {
+  const getImageSrc = (designName) => {
     if (!designName || typeof designName !== "string") return "";
-    if (systemType === "bar") {
-      const assignment = barAssignments.find(a => a.design === designName);
-      return assignment ? assignment.image : "";
+  
+    // Search all assignment arrays in order of priority
+    const sources = [pendantAssignments, barAssignments, universalAssignments];
+    for (const source of sources) {
+      const assignment = source.find(a => a.design === designName);
+      if (assignment) return `${assignment.image}`;
     }
-    if (systemType === "universal") {
-      const assignment = universalAssignments.find(a => a.design === designName);
-      return assignment ? assignment.image : "";
-    }
-    // Fallback to pendant if not bar/universal
-    const assignment = pendantAssignments.find(a => a.design === designName);
-    return assignment ? assignment.image : "";
+  
+    // If not found, return empty string
+    return "";
   };
+  console.log("getImageSrc", getImageSrc("zenith"));
 
   // Toggle pendant selection
   const togglePendantSelection = (pendantId) => {
@@ -84,7 +80,6 @@ export const usePendantSelection = (
     clearSelections,
     applyDesignToSelected,
     applyToAllPendants,
-    getDesignImageNumber,
-    getPendantDesignImageNumber
+    getImageSrc,
   };
 };

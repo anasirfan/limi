@@ -803,6 +803,7 @@ export const ConfigPanel = ({
               setLocalSelectedShade(null);
             }
             onSystemBaseDesignChange(itemId);
+            console.log("onSystemBaseDesignChange", itemId);
           };
           config.selectedItem = currentDesign;
           config.breadcrumbItems = [

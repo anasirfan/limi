@@ -19,8 +19,7 @@ export const PendantSelectionDropdown = ({
   clearSelections,
   applyDesignToSelected,
   applyToAllPendants,
-  getDesignImageNumber,
-  getPendantDesignImageNumber,
+  getImageSrc,
   handleSaveConfig,
   configuringType,
   configuringSystemType,
@@ -67,6 +66,7 @@ export const PendantSelectionDropdown = ({
   const handleCableSizeChange = (size, selectedCables) => {
     onCableSizeChange(size, selectedCables);
   };
+  console.log("cablessss", cables[0].design);
   
 
   return (
@@ -146,7 +146,8 @@ export const PendantSelectionDropdown = ({
               className="flex gap-3 overflow-x-auto scrollbar-hide py-2 px-8 max-w-full"
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
-              {cables && cables.length > 0 ? cables.map((pendant, index) => (
+              {cables && cables.length > 0 ? cables.map((cable, index) => (
+                console.log("cablesss", cable.design),
                 <motion.div 
                   key={index}
                   className="flex-shrink-0 cursor-pointer"
@@ -161,14 +162,15 @@ export const PendantSelectionDropdown = ({
                   : 'bg-gray-700 text-white hover:bg-gray-600'}`}
                   >
                     {/* Show pendant design as background if it has one */}
-                    {pendant.design && (
+
+                    {cable.design && (
                       <div className="absolute inset-0 opacity-30">
                         <Image 
-                          src={`/images/configOptions/${getDesignImageNumber(pendant.design , pendant.systemType)}`}
-                          alt={pendant.design}
+                          src={getImageSrc(cable.design)}
+                          alt={cable.design}
                           fill
                           className="object-cover"
-                        />
+                        />  
                       </div>
                     )}
                     <span className="relative z-10">{index + 1}</span>
@@ -192,8 +194,8 @@ export const PendantSelectionDropdown = ({
                     {pendant.design && (
                       <div className="absolute inset-0 opacity-30">
                         <Image 
-                          src={`/images/configOptions/${getPendantDesignImageNumber(pendant.design)}`}
-                          alt={pendant.design}
+                          src={``}
+                          alt={pendant.cable.design}
                           fill
                           className="object-cover"
                         />
