@@ -5,14 +5,18 @@ import { motion, useInView } from 'framer-motion';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import confetti from 'canvas-confetti';
-import { FaRocket, FaClock, FaCog, FaLock, FaCheck, FaStar } from 'react-icons/fa';
+import { FaRocket, FaClock, FaCog, FaLock, FaCheck, FaStar, FaTimes } from 'react-icons/fa';
 import { HiLightningBolt, HiCube, HiWifi, HiSparkles } from 'react-icons/hi';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const BenefitTimeline = () => {
   const containerRef = useRef(null);
   const timelineRef = useRef(null);
   const [activeStep, setActiveStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState([]);
+  const [showStartModal, setShowStartModal] = useState(false);
+  const [formData, setFormData] = useState({ name: '', email: '', company: '' });
   const isInView = useInView(containerRef, { once: true, margin: '-100px' });
 
   const benefits = [
@@ -92,8 +96,22 @@ const BenefitTimeline = () => {
     setActiveStep(index);
     if (!completedSteps.includes(index)) {
       setCompletedSteps(prev => [...prev, index]);
-   
     }
+  };
+
+  const handleInputChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleStartJourneySubmit = (e) => {
+    e.preventDefault();
+    if (!formData.name || !formData.email) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+    toast.success('Thank you! We\'ll be in touch soon.');
+    setShowStartModal(false);
+    setFormData({ name: '', email: '', company: '' });
   };
 
   return (
@@ -332,6 +350,7 @@ const BenefitTimeline = () => {
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
+                    onClick={() => setShowStartModal(true)}
                     className="px-8 py-4 bg-[#54bb74] text-white rounded-2xl font-semibold hover:bg-[#93cfa2] transition-colors duration-300"
                   >
                     Start Your Journey
@@ -399,6 +418,100 @@ const BenefitTimeline = () => {
           </div>
         </motion.div>
       </div>
+
+      {/* Start Journey Modal */}
+      {showStartModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl relative"
+          >
+            <button
+              onClick={() => setShowStartModal(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl"
+            >
+              <FaTimes />
+            </button>
+            
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 bg-gradient-to-br from-[#54bb74] to-[#93cfa2] rounded-full flex items-center justify-center mx-auto mb-4">
+                <HiLightningBolt className="text-2xl text-white" />
+              </div>
+              <h3 className="text-2xl font-bold text-[#292929] mb-2">Start Your Journey</h3>
+              <p className="text-gray-600">Tell us about yourself and we'll get you started</p>
+            </div>
+
+            <form onSubmit={handleStartJourneySubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Name *</label>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#54bb74] focus:border-transparent outline-none transition-all"
+                  placeholder="Your full name"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Email *</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#54bb74] focus:border-transparent outline-none transition-all"
+                  placeholder="your@email.com"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Company (Optional)</label>
+                <input
+                  type="text"
+                  name="company"
+                  value={formData.company}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#54bb74] focus:border-transparent outline-none transition-all"
+                  placeholder="Your company name"
+                />
+              </div>
+              
+              <button
+                type="submit"
+                className="w-full py-3 bg-gradient-to-r from-[#54bb74] to-[#93cfa2] text-white rounded-xl font-semibold hover:shadow-lg transition-all duration-300"
+              >
+                Submit
+              </button>
+            </form>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Toast Container */}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        toastStyle={{
+          background: 'white',
+          color: '#292929',
+          borderRadius: '12px',
+          border: '1px solid #54bb74'
+        }}
+      />
     </section>
   );
 };

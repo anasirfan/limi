@@ -126,15 +126,12 @@ const InteractiveViewer = () => {
             {/* PlayCanvas Placeholder */}
             <div className="w-full h-full relative">
               {/* This would be replaced with actual PlayCanvas canvas */}
-              <div className="w-full h-full bg-gradient-to-br from-[#292929] via-[#1a1a1a] to-[#292929] flex items-center justify-center">
-                <div className="text-center">
-                  <div className="w-32 h-32 bg-gradient-to-br from-[#54bb74] to-[#93cfa2] rounded-full flex items-center justify-center mb-6 mx-auto">
-                    <HiCube className="text-5xl text-white" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-white mb-2">3D Model Viewer</h3>
-                  <p className="text-gray-400">PlayCanvas Integration Ready</p>
-                </div>
-              </div>
+              <iframe
+                src="https://playcanv.as/e/p/LBV4KIS5/"
+                className="w-full h-full border-0 rounded-xl"
+                title="LIMI 3D Interactive Viewer"
+                allowFullScreen
+              />
 
               {/* Interactive Hotspots */}
               {hotspots.map((hotspot) => (
@@ -179,7 +176,7 @@ const InteractiveViewer = () => {
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center space-x-2 ${
                       currentView === mode.id
                         ? 'bg-[#54bb74] text-white shadow-lg'
-                        : 'bg-white/10 text-white hover:bg-white/20 backdrop-blur-md'
+                        : 'bg-black text-white backdrop-blur-md'
                     }`}
                   >
                     <mode.icon className="text-sm" />
@@ -197,7 +194,7 @@ const InteractiveViewer = () => {
                   className={`p-3 rounded-lg transition-all duration-300 ${
                     showWiring
                       ? 'bg-[#54bb74] text-white'
-                      : 'bg-white/10 text-white hover:bg-white/20'
+                      : 'bg-black text-white '
                   } backdrop-blur-md`}
                   title="Toggle Wiring View"
                 >
@@ -207,7 +204,7 @@ const InteractiveViewer = () => {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="p-3 bg-white/10 text-white hover:bg-white/20 rounded-lg transition-all duration-300 backdrop-blur-md"
+                  className="p-3 bg-black text-white rounded-lg transition-all duration-300 backdrop-blur-md"
                   title="Reset View"
                 >
                   <FaRedo />
@@ -217,7 +214,7 @@ const InteractiveViewer = () => {
                   onClick={toggleFullscreen}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="p-3 bg-white/10 text-white hover:bg-white/20 rounded-lg transition-all duration-300 backdrop-blur-md"
+                  className="p-3 bg-black text-white  rounded-lg transition-all duration-300 backdrop-blur-md"
                   title="Fullscreen"
                 >
                   <FaExpand />

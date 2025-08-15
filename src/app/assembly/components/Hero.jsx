@@ -199,7 +199,7 @@ const Hero = () => {
                       x: index === currentSlide ? '0%' : '-100%',
                       opacity: index === currentSlide ? 1 : 0
                     }}
-                    transition={{ duration: 0.8, ease: 'power3.out' }}
+                    transition={{ duration: 0.8}}
                   >
                     <h1 className="text-6xl md:text-8xl font-black text-[#292929] leading-none mb-4">
                       {slide.title}

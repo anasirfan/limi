@@ -4,16 +4,48 @@ import { useEffect, useRef, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { gsap } from 'gsap';
 import anime from 'animejs';
-import { FaArrowRight, FaPlay, FaDownload, FaPhone, FaEnvelope, FaTwitter, FaLinkedin, FaGithub } from 'react-icons/fa';
+import { FaArrowRight, FaPlay, FaDownload, FaPhone, FaEnvelope, FaTwitter, FaLinkedin, FaGithub, FaTimes } from 'react-icons/fa';
 import { HiSparkles, HiLightBulb, HiCube } from 'react-icons/hi';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const CTA = () => {
   const containerRef = useRef(null);
   const [mounted, setMounted] = useState(false);
+  const [showStartModal, setShowStartModal] = useState(false);
+  const [showDemoModal, setShowDemoModal] = useState(false);
+  const [showBrochureModal, setShowBrochureModal] = useState(false);
+  const [formData, setFormData] = useState({ name: '', email: '', company: '' });
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const handleInputChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleStartJourneySubmit = (e) => {
+    e.preventDefault();
+    if (!formData.name || !formData.email) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+    toast.success('Thank you! We\'ll be in touch soon.');
+    setShowStartModal(false);
+    setFormData({ name: '', email: '', company: '' });
+  };
+
+  const handleBrochureSubmit = (e) => {
+    e.preventDefault();
+    if (!formData.email) {
+      toast.error('Please enter your email address');
+      return;
+    }
+    toast.success('Brochure sent to your email!');
+    setShowBrochureModal(false);
+    setFormData({ name: '', email: '', company: '' });
+  };
 
   if (!mounted) return null;
 
@@ -81,6 +113,7 @@ const CTA = () => {
           <motion.button
             whileHover={{ scale: 1.05, y: -5 }}
             whileTap={{ scale: 0.95 }}
+            onClick={() => setShowStartModal(true)}
             className="inline-flex items-center space-x-4 px-12 py-6 bg-gradient-to-r from-[#54bb74] to-[#93cfa2] text-white rounded-full font-bold text-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 mb-8"
           >
             <HiLightBulb className="text-3xl" />
@@ -93,6 +126,7 @@ const CTA = () => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              onClick={() => setShowDemoModal(true)}
               className="px-8 py-4 bg-[#292929] text-white rounded-full font-semibold border-2 border-[#292929] hover:bg-transparent hover:text-[#292929] transition-all duration-300 flex items-center space-x-3"
             >
               <FaPlay className="text-lg" />
@@ -102,6 +136,7 @@ const CTA = () => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              onClick={() => setShowBrochureModal(true)}
               className="px-8 py-4 bg-transparent text-[#292929] rounded-full font-semibold border-2 border-[#292929] hover:bg-[#292929] hover:text-white transition-all duration-300 flex items-center space-x-3"
             >
               <FaDownload className="text-lg" />
@@ -271,6 +306,195 @@ const CTA = () => {
           </div>
         </motion.div>
       </div>
+
+      {/* Start Journey Modal */}
+      {showStartModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl relative"
+          >
+            <button
+              onClick={() => setShowStartModal(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl"
+            >
+              <FaTimes />
+            </button>
+            
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 bg-gradient-to-br from-[#54bb74] to-[#93cfa2] rounded-full flex items-center justify-center mx-auto mb-4">
+                <HiLightBulb className="text-2xl text-white" />
+              </div>
+              <h3 className="text-2xl font-bold text-[#292929] mb-2">Start Your Journey</h3>
+              <p className="text-gray-600">Tell us about yourself and we'll get you started</p>
+            </div>
+
+            <form onSubmit={handleStartJourneySubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Name *</label>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#54bb74] focus:border-transparent outline-none transition-all"
+                  placeholder="Your full name"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Email *</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#54bb74] focus:border-transparent outline-none transition-all"
+                  placeholder="your@email.com"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Company (Optional)</label>
+                <input
+                  type="text"
+                  name="company"
+                  value={formData.company}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#54bb74] focus:border-transparent outline-none transition-all"
+                  placeholder="Your company name"
+                />
+              </div>
+              
+              <button
+                type="submit"
+                className="w-full py-3 bg-gradient-to-r from-[#54bb74] to-[#93cfa2] text-white rounded-xl font-semibold hover:shadow-lg transition-all duration-300"
+              >
+                Submit
+              </button>
+            </form>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Demo Modal */}
+      {showDemoModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="bg-white rounded-3xl p-8 max-w-4xl w-full shadow-2xl relative"
+          >
+            <button
+              onClick={() => setShowDemoModal(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl z-10"
+            >
+              <FaTimes />
+            </button>
+            
+            <div className="text-center mb-6">
+              <h3 className="text-2xl font-bold text-[#292929] mb-2">Product Demo</h3>
+              <p className="text-gray-600">Watch how LIMI transforms your space</p>
+            </div>
+
+            <div className="aspect-video bg-gray-900 rounded-2xl overflow-hidden relative">
+              <video
+                className="w-full h-full object-cover"
+                controls
+                autoPlay
+                poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 450'%3E%3Crect width='800' height='450' fill='%23292929'/%3E%3Ctext x='400' y='225' text-anchor='middle' fill='%2354bb74' font-size='24' font-family='Arial'%3ELIMI Demo Video%3C/text%3E%3C/svg%3E"
+              >
+                <source src="/demo-video.mp4" type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+              
+              {/* Fallback content */}
+              <div className="absolute inset-0 flex items-center justify-center text-white">
+                <div className="text-center">
+                  <FaPlay className="text-6xl mb-4 text-[#54bb74]" />
+                  <p className="text-xl">Demo video will be available soon</p>
+                  <p className="text-gray-400 mt-2">Experience LIMI's modular lighting system</p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Brochure Modal */}
+      {showBrochureModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl relative"
+          >
+            <button
+              onClick={() => setShowBrochureModal(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl"
+            >
+              <FaTimes />
+            </button>
+            
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 bg-gradient-to-br from-[#54bb74] to-[#93cfa2] rounded-full flex items-center justify-center mx-auto mb-4">
+                <FaDownload className="text-2xl text-white" />
+              </div>
+              <h3 className="text-2xl font-bold text-[#292929] mb-2">Get Brochure</h3>
+              <p className="text-gray-600">Download our detailed product brochure</p>
+            </div>
+
+            <form onSubmit={handleBrochureSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#54bb74] focus:border-transparent outline-none transition-all"
+                  placeholder="your@email.com"
+                  required
+                />
+              </div>
+              
+              <button
+                type="submit"
+                className="w-full py-3 bg-gradient-to-r from-[#54bb74] to-[#93cfa2] text-white rounded-xl font-semibold hover:shadow-lg transition-all duration-300 flex items-center justify-center space-x-2"
+              >
+                <FaDownload />
+                <span>Send Brochure</span>
+              </button>
+            </form>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Toast Container */}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        toastStyle={{
+          background: 'white',
+          color: '#292929',
+          borderRadius: '12px',
+          border: '1px solid #54bb74'
+        }}
+      />
     </section>
   );
 };

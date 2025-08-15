@@ -6,6 +6,7 @@ import { FaRadar, FaMicrophone, FaCamera, FaInfoCircle } from 'react-icons/fa';
 import { HiWifi, HiMicrophone, HiCamera } from 'react-icons/hi';
 import anime from 'animejs';
 
+
 const SensorModuleCard = ({ title, description, icon, delay = 0 }) => {
   const cardRef = useRef(null);
   const [isHovered, setIsHovered] = useState(false);
