@@ -20,11 +20,7 @@
     "@studio-freight/lenis": "^1.0.42",
     "@tsparticles/react": "^3.0.0",
     "@tsparticles/slim": "^3.8.1",
-<<<<<<< HEAD
     "animejs": "^4.1.3",
-=======
-    "animejs": "^4.1.2",
->>>>>>> 137d18935f4de45e05b0a8c20a0066b184e20cef
     "aos": "^2.3.4",
     "canvas-confetti": "^1.9.3",
     "chart.js": "^4.5.0",
