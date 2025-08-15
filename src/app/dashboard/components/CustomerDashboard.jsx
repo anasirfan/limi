@@ -12,6 +12,7 @@ import DistributorDetailsModal from './DistributorDetailsModal';
 import SlideInsights from './SlideInsights';
 import { getSessionDataFromLocalStorage } from '../../utils/slideAnalytics';
 import MarketingTab from './MarketingTab';
+import LimiFutureAnalytics from './LimiFutureAnalytics';
 
 export default function CustomerDashboard({ token }) {
   const [slideshowTab, setSlideshowTab] = useState('edit');
@@ -1072,6 +1073,13 @@ export default function CustomerDashboard({ token }) {
           <FaBoxOpen className="mr-2" />
           Marketing
         </button>
+        <button
+          onClick={() => setActiveTab('limifuture')}
+          className={`px-4 py-2 rounded-md flex items-center ${activeTab === 'limifuture' ? 'bg-[#54BB74] text-[#1e1e1e] font-medium' : 'bg-[#333333] text-white hover:bg-[#444444]'}`}
+        >
+          <FaSlideshare className="mr-2" />
+          LimiFuture Analytics
+        </button>
       </div>
 
       {activeTab === 'marketing' && (
@@ -1082,6 +1090,18 @@ export default function CustomerDashboard({ token }) {
           </div>
           <div className="p-6">
             <MarketingTab />
+          </div>
+        </div>
+      )}
+      
+      {activeTab === 'limifuture' && (
+        <div className="bg-[#1e1e1e] rounded-lg shadow-lg overflow-hidden border border-[#3a3a3a] mt-6">
+          <div className="px-6 py-5 bg-[#1e1e1e] border-b border-[#3a3a3a]">
+            <h2 className="text-3xl font-bold text-white font-[Amenti]">LimiFuture Analytics Dashboard</h2>
+            <p className="text-gray-400 mt-2">Track slide interactions, user engagement, and carousel analytics</p>
+          </div>
+          <div className="p-6">
+            <LimiFutureAnalytics />
           </div>
         </div>
       )}
