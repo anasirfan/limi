@@ -145,19 +145,34 @@ function ModernHeroSection() {
                 />
               </Link>
 
-              {/* Navigation Links */}
-              <nav className="hidden md:flex items-center space-x-6">
-                {navigationLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className="text-[#292929] hover:text-[#54bb74] transition-colors duration-300 font-medium text-sm relative group"
-                  >
-                    {link.label}
-                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#54bb74] group-hover:w-full transition-all duration-300"></span>
-                  </Link>
-                ))}
-              </nav>
+              {/* Right Group: Nav + Inline 3D Viewer (md+) */}
+              <div className="hidden md:flex items-center gap-4">
+                {/* Navigation Links */}
+                <nav className="flex items-center space-x-6">
+                  {navigationLinks.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className="text-[#292929] hover:text-[#54bb74] transition-colors duration-300 font-medium text-sm relative group"
+                    >
+                      {link.label}
+                      <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#54bb74] group-hover:w-full transition-all duration-300"></span>
+                    </Link>
+                  ))}
+                </nav>
+
+                {/* Inline 3D Viewer */}
+                <div className="relative z-[60] flex-shrink-0">
+                  <div className="w-64 h-16 rounded-xl overflow-hidden bg-[#f3ebe2] border border-[#54bb74]/20 shadow-sm">
+                    <iframe
+                      src="https://playcanv.as/e/p/LBV4KIS5/"
+                      className="w-full h-full border-0"
+                      title="LIMI 3D Interactive Viewer"
+                      allowFullScreen
+                    />
+                  </div>
+                </div>
+              </div>
 
               {/* Mobile Menu Button */}
               <button className="md:hidden p-2">

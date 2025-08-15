@@ -7,11 +7,14 @@ import { FaPlay, FaArrowDown, FaArrowRight } from 'react-icons/fa';
 import { HiCube, HiLightBulb, HiWifi, HiCog, HiSparkles } from 'react-icons/hi';
 import Particles from '@tsparticles/react';
 import { loadSlim } from '@tsparticles/slim';
+import Link from 'next/link';
 
 const Hero = () => {
   const [mounted, setMounted] = useState(false);
   const heroRef = useRef(null);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+  const [prefersReduced, setPrefersReduced] = useState(false);
 
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -23,83 +26,124 @@ const Hero = () => {
 
   const slides = [
     {
-      title: "MODULAR",
-      subtitle: "ASSEMBLY",
-      description: "Revolutionary plug-and-play lighting system",
-      cta: "Watch Assembly",
-      background: "from-[#f3ebe2] to-[#93cfa2]",
+      title: 'Edge AI',
+      subtitle: 'Infrastructure',
+      description:
+        'The central nervous system for intelligent environments. Ceiling-mounted hubs transform spaces into proactive, empathetic ecosystems that understand and anticipate.',
+      ctaPrimary: { label: 'Experience Limi', href: '/configurator' },
+      ctaSecondary: { label: 'Learn More', href: '/products' },
+      background: 'from-[#f3ebe2] to-[#93cfa2]',
       features: [
-        { icon: HiCube, title: "Modular", desc: "Mix & Match" },
-        { icon: HiLightBulb, title: "Smart", desc: "AI Powered" },
-        { icon: HiCog, title: "Easy", desc: "Plug & Play" },
-        { icon: HiSparkles, title: "Premium", desc: "Quality Built" }
+        { icon: HiCube, title: 'Local Processing', desc: 'Edge Computing' },
+        { icon: HiWifi, title: 'Modular Design', desc: 'Scalable Hubs' },
+        { icon: HiCog, title: 'Privacy First', desc: 'Secure & Local' },
+        { icon: HiSparkles, title: 'AI Processing', desc: 'Instant Response' },
       ],
       showcase: {
-        title: "Experience the Future",
-        description: "Revolutionary modular lighting that adapts to your needs",
+        title: 'SENSORS ACTIVE',
+        description: 'Motion • Sound • Temperature',
         stats: [
-          { number: "5min", label: "Setup", color: "#54bb74" },
-          { number: "100+", label: "Configs", color: "#93cfa2" },
-          { number: "24/7", label: "Smart", color: "#54bb74" }
-        ]
-      }
+          { number: 'Local', label: 'Processing', color: '#54bb74' },
+          { number: 'Secure', label: 'Privacy', color: '#93cfa2' },
+          { number: 'Instant', label: 'Response', color: '#54bb74' },
+        ],
+      },
     },
     {
-      title: "SMART",
-      subtitle: "INTEGRATION",
-      description: "AI-powered sensors and intelligent automation",
-      cta: "Explore Intelligence",
-      background: "from-[#93cfa2] to-[#54bb74]",
+      title: 'Modular',
+      subtitle: 'Ecosystem',
+      description:
+        'Ceiling-mounted AI hubs that expand with your needs. Each module adds intelligence, creating a distributed network that grows smarter over time.',
+      ctaPrimary: { label: 'Build System', href: '/configurator' },
+      ctaSecondary: { label: 'View Modules', href: '/products' },
+      background: 'from-[#f8f6f3] to-[#93cfa2]',
       features: [
-        { icon: HiWifi, title: "Sensors", desc: "AI Detection" },
-        { icon: HiLightBulb, title: "Adaptive", desc: "Auto Adjust" },
-        { icon: HiCog, title: "Learning", desc: "Smart AI" },
-        { icon: HiSparkles, title: "Responsive", desc: "Real-time" }
+        { icon: HiCube, title: 'Expandable', desc: 'Add Modules' },
+        { icon: HiWifi, title: 'Connected', desc: 'Mesh Network' },
+        { icon: HiCog, title: 'Adaptive', desc: 'Self-Learning' },
+        { icon: HiSparkles, title: 'Scalable', desc: 'No Limits' },
       ],
       showcase: {
-        title: "Intelligent Automation",
-        description: "Advanced AI that learns and adapts to your lifestyle",
+        title: 'AI PROCESSING',
+        description: 'Local • Secure • Instant',
         stats: [
-          { number: "3", label: "Sensors", color: "#54bb74" },
-          { number: "AI", label: "Powered", color: "#93cfa2" },
-          { number: "∞", label: "Learning", color: "#54bb74" }
-        ]
-      }
+          { number: '∞', label: 'Modules', color: '#54bb74' },
+          { number: 'Mesh', label: 'Network', color: '#93cfa2' },
+          { number: 'Edge', label: 'Computing', color: '#54bb74' },
+        ],
+      },
     },
     {
-      title: "INFINITE",
-      subtitle: "POSSIBILITIES",
-      description: "Endless combinations for every space",
-      cta: "Discover Options",
-      background: "from-[#54bb74] to-[#f3ebe2]",
+      title: 'Intelligent',
+      subtitle: 'Environments',
+      description:
+        'Transform any space into a responsive ecosystem. AI-powered hubs understand occupancy, preferences, and patterns to create truly intelligent environments.',
+      ctaPrimary: { label: 'Get Started', href: '/configurator' },
+      ctaSecondary: { label: 'Contact', href: '/contact' },
+      background: 'from-[#faf9f7] to-[#54bb74]',
       features: [
-        { icon: HiCube, title: "Expand", desc: "Add More" },
-        { icon: HiLightBulb, title: "Customize", desc: "Your Way" },
-        { icon: HiCog, title: "Upgrade", desc: "Future Ready" },
-        { icon: HiSparkles, title: "Scale", desc: "No Limits" }
+        { icon: HiCube, title: 'Proactive', desc: 'Anticipates' },
+        { icon: HiWifi, title: 'Empathetic', desc: 'Understands' },
+        { icon: HiCog, title: 'Responsive', desc: 'Adapts' },
+        { icon: HiSparkles, title: 'Seamless', desc: 'Invisible Tech' },
       ],
       showcase: {
-        title: "Limitless Expansion",
-        description: "Scale your lighting system as your needs grow",
+        title: 'ECOSYSTEM ACTIVE',
+        description: 'Proactive • Empathetic • Intelligent',
         stats: [
-          { number: "∞", label: "Combos", color: "#54bb74" },
-          { number: "Easy", label: "Expand", color: "#93cfa2" },
-          { number: "Future", label: "Ready", color: "#54bb74" }
-        ]
-      }
-    }
+          { number: '24/7', label: 'Monitoring', color: '#54bb74' },
+          { number: 'AI', label: 'Powered', color: '#93cfa2' },
+          { number: 'Future', label: 'Ready', color: '#54bb74' },
+        ],
+      },
+    },
   ];
 
   useEffect(() => {
     setMounted(true);
 
-    // Auto-slide carousel
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 4000);
+    // env checks
+    if (typeof window !== 'undefined') {
+      const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+      const updateReduced = () => setPrefersReduced(mq.matches);
+      updateReduced();
+      mq.addEventListener?.('change', updateReduced);
 
-    // GSAP animations
-    gsap.fromTo('.hero-card', 
+      const onResize = () => setIsMobile(window.innerWidth < 768);
+      onResize();
+      window.addEventListener('resize', onResize);
+
+      return () => {
+        mq.removeEventListener?.('change', updateReduced);
+        window.removeEventListener('resize', onResize);
+      };
+    }
+  }, []);
+
+  // Auto-slide carousel (paused offscreen or when reduced motion)
+  useEffect(() => {
+    console.log('Carousel useEffect triggered:', {
+      prefersReduced,
+      mounted,
+      slidesLength: slides.length,
+    });
+    
+    if (prefersReduced || !mounted || slides.length <= 1) return;
+    
+    console.log('Starting carousel interval');
+    const interval = setInterval(() => {
+      console.log('Carousel advancing from slide:', currentSlide);
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [mounted, prefersReduced, slides.length]);
+
+  // Entrance and floating animations (skip if reduced motion)
+  useEffect(() => {
+    if (prefersReduced) return;
+
+    gsap.fromTo(
+      '.hero-card',
       { y: 100, opacity: 0, scale: 0.8 },
       { y: 0, opacity: 1, scale: 1, duration: 1.2, ease: 'back.out(1.7)', stagger: 0.2 }
     );
@@ -110,11 +154,32 @@ const Hero = () => {
       ease: 'power2.inOut',
       yoyo: true,
       repeat: -1,
-      stagger: 0.5
+      stagger: 0.5,
     });
+  }, [prefersReduced]);
 
-    return () => clearInterval(interval);
-  }, []);
+  // Keyboard navigation (only when in view)
+  useEffect(() => {
+    if (!mounted || prefersReduced || slides.length <= 1) return;
+    const onKey = (e) => {
+      if (e.key === 'ArrowRight') setCurrentSlide((p) => (p + 1) % slides.length);
+      if (e.key === 'ArrowLeft') setCurrentSlide((p) => (p - 1 + slides.length) % slides.length);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [mounted, prefersReduced, slides.length]);
+
+  // Touch swipe navigation
+  const touchStartX = useRef(null);
+  const handleTouchStart = (e) => (touchStartX.current = e.touches[0].clientX);
+  const handleTouchEnd = (e) => {
+    if (touchStartX.current == null || slides.length <= 1) return;
+    const delta = e.changedTouches[0].clientX - touchStartX.current;
+    const threshold = 40;
+    if (delta > threshold) setCurrentSlide((p) => (p - 1 + slides.length) % slides.length);
+    if (delta < -threshold) setCurrentSlide((p) => (p + 1) % slides.length);
+    touchStartX.current = null;
+  };
 
   const initParticles = async (engine) => {
     await loadSlim(engine);
@@ -154,34 +219,33 @@ const Hero = () => {
       </div>
 
       {/* Particles */}
-      <Particles
-        id="hero-particles"
-        init={initParticles}
-        className="absolute inset-0 z-0"
-        options={{
-          background: { color: { value: 'transparent' } },
-          fpsLimit: 60,
-          particles: {
-            color: { value: ['#292929', '#54bb74'] },
-            links: {
-              color: '#54bb74',
-              distance: 150,
-              enable: true,
-              opacity: 0.2,
-              width: 1,
+      {!prefersReduced && mounted && (
+        <Particles
+          id="hero-particles"
+          init={initParticles}
+          className="absolute inset-0 z-0"
+          options={{
+            background: { color: { value: 'transparent' } },
+            fpsLimit: 60,
+            particles: {
+              color: { value: ['#292929', '#54bb74'] },
+              links: {
+                color: '#54bb74',
+                distance: 150,
+                enable: true,
+                opacity: 0.2,
+                width: 1,
+              },
+              move: { enable: true, speed: isMobile ? 0.4 : 0.6 },
+              number: { value: isMobile ? 25 : 50 },
+              opacity: { value: 0.3 },
+              size: { value: { min: 1, max: 3 } },
             },
-            move: {
-              enable: true,
-              speed: 0.5,
-            },
-            number: { value: 50 },
-            opacity: { value: 0.3 },
-            size: { value: { min: 1, max: 3 } },
-          },
-        }}
-      />
+          }}
+        />
+      )}
 
-      <div className="relative z-10 min-h-screen flex items-center">
+      <div className="relative z-10 min-h-screen flex items-center" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
         <div className="max-w-7xl mx-auto px-4 w-full">
           {/* Main Grid Layout */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
@@ -211,30 +275,49 @@ const Hero = () => {
                     <p className="text-xl text-[#292929]/70 mb-8 max-w-lg">
                       {slide.description}
                     </p>
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="group inline-flex items-center px-8 py-4 bg-[#292929] text-white rounded-full font-semibold text-lg hover:bg-[#54bb74] transition-all duration-300"
-                    >
-                      <span>{slide.cta}</span>
-                      <FaArrowRight className="ml-3 group-hover:translate-x-1 transition-transform" />
-                    </motion.button>
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <Link href={slide.ctaPrimary.href} className="group inline-flex items-center px-8 py-4 bg-[#292929] text-white rounded-full font-semibold text-lg hover:bg-[#54bb74] transition-all duration-300">
+                        <span>{slide.ctaPrimary.label}</span>
+                        <FaArrowRight className="ml-3 group-hover:translate-x-1 transition-transform" />
+                      </Link>
+                      <Link href={slide.ctaSecondary.href} className="inline-flex items-center px-8 py-4 border-2 border-[#54bb74] text-[#54bb74] rounded-full font-semibold text-lg hover:bg-[#54bb74] hover:text-white transition-all duration-300">
+                        {slide.ctaSecondary.label}
+                      </Link>
+                    </div>
                   </motion.div>
                 ))}
               </div>
 
-              {/* Slide Indicators */}
-              <div className="flex space-x-3">
-                {slides.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentSlide(index)}
-                    className={`w-12 h-2 rounded-full transition-all duration-300 ${
-                      index === currentSlide ? 'bg-[#54bb74]' : 'bg-[#292929]/20'
-                    }`}
+              {/* 3D Interactive Viewer (iframe) */}
+              <div className="hero-card mb-20 -mt-16 relative w-[50%] max-w-2xl bg-[#f3ebe2] rounded-2xl overflow-hidden border border-[#54bb74]/20 shadow-lg">
+                {/* Maintain a clean proportion below the heading */}
+                <div className="aspect-[16/9] w-full">
+                  {/* Change bg-[#f3ebe2] to any solid color to match the iframe scene background */}
+                  <iframe
+                    src="https://playcanv.as/e/p/LBV4KIS5/"
+                    className="w-full h-full border-0"
+                    title="LIMI 3D Interactive Viewer"
+                    allowFullScreen
                   />
-                ))}
+                </div>
               </div>
+
+              {/* Slide Indicators */}
+              {slides.length > 1 && (
+                <div className="flex space-x-3">
+                  {/* Debug button for manual testing */}
+                 
+                  {slides.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentSlide(index)}
+                      className={`w-12 h-2 rounded-full transition-all duration-300 ${
+                        index === currentSlide ? 'bg-[#54bb74]' : 'bg-[#292929]/20'
+                      }`}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Right Content - 5 columns */}
