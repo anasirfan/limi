@@ -116,7 +116,7 @@ const AssemblyPage = () => {
       <AssemblyScroll />
 
       {/* Sensor Modules Grid */}
-      <section className="relative py-20 px-4">
+      <section className="relative bg-white py-20 px-4">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
@@ -124,10 +124,10 @@ const AssemblyPage = () => {
             transition={{ duration: 0.8 }}
             className="text-center mb-16"
           >
-            <h2 className="text-5xl font-bold text-white mb-6">
-              Smart Sensor Integration
+            <h2 className="text-5xl font-bold text-[#292929] mb-6">
+              Smart <span className="text-[#54bb74]">Sensor</span> Integration
             </h2>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-700 max-w-3xl mx-auto">
               Each module contains advanced sensors that transform your lighting into an intelligent ecosystem
             </p>
           </motion.div>

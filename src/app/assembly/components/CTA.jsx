@@ -286,9 +286,6 @@ const CTA = () => {
 
             {/* Tech Credits */}
             <div className="mt-8 pt-6 border-t border-white/20 text-center">
-              <p className="text-gray-400 text-sm">
-                Built with Next.js, GSAP, Framer Motion, Anime.js & PlayCanvas
-              </p>
               <motion.div
                 animate={{ opacity: [0.5, 1, 0.5] }}
                 transition={{ duration: 3, repeat: Infinity }}
