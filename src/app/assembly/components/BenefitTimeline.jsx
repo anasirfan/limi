@@ -16,6 +16,8 @@ const BenefitTimeline = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState([]);
   const [showStartModal, setShowStartModal] = useState(false);
+  const [showBenefitModal, setShowBenefitModal] = useState(false);
+  const [selectedBenefit, setSelectedBenefit] = useState(null);
   const [formData, setFormData] = useState({ name: '', email: '', company: '' });
   const isInView = useInView(containerRef, { once: true, margin: '-100px' });
 
@@ -93,10 +95,13 @@ const BenefitTimeline = () => {
   };
 
   const handleBenefitClick = (index) => {
-    setActiveStep(index);
-    if (!completedSteps.includes(index)) {
-      setCompletedSteps(prev => [...prev, index]);
-    }
+    setSelectedBenefit(benefits[index]);
+    setShowBenefitModal(true);
+  };
+
+  const closeBenefitModal = () => {
+    setShowBenefitModal(false);
+    setSelectedBenefit(null);
   };
 
   const handleInputChange = (e) => {
@@ -281,23 +286,10 @@ const BenefitTimeline = () => {
                       onClick={() => handleBenefitClick(index)}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className={`w-full py-3 px-6 rounded-2xl font-semibold transition-all duration-300 flex items-center justify-center space-x-2 ${
-                        completedSteps.includes(index)
-                          ? 'bg-[#54bb74] text-white shadow-lg'
-                          : 'bg-[#292929] text-white hover:bg-[#54bb74]'
-                      }`}
+                      className="w-full py-3 px-6 rounded-2xl font-semibold transition-all duration-300 flex items-center justify-center space-x-2 bg-[#292929] text-white hover:bg-[#54bb74]"
                     >
-                      {completedSteps.includes(index) ? (
-                        <>
-                          <FaCheck className="text-sm" />
-                          <span>Explored</span>
-                        </>
-                      ) : (
-                        <>
-                          <FaStar className="text-sm" />
-                          <span>Explore Benefit</span>
-                        </>
-                      )}
+                      <FaStar className="text-sm" />
+                      <span>Explore Benefit</span>
                     </motion.button>
                   </div>
 
@@ -489,6 +481,158 @@ const BenefitTimeline = () => {
                 Submit
               </button>
             </form>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Benefit Detail Modal */}
+      {showBenefitModal && selectedBenefit && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-6">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            className="bg-white rounded-3xl max-w-6xl w-full shadow-2xl relative overflow-hidden"
+          >
+            {/* Background Decoration */}
+            <div className="absolute inset-0 bg-gradient-to-br from-[#f3ebe2]/20 via-transparent to-[#93cfa2]/10"></div>
+            
+            <button
+              onClick={closeBenefitModal}
+              className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 text-2xl z-20 bg-white/80 backdrop-blur-sm rounded-full w-10 h-10 flex items-center justify-center hover:bg-white transition-all duration-200"
+            >
+              <FaTimes />
+            </button>
+            
+            <div className="relative z-10 h-full flex flex-col p-8">
+              {/* Enhanced Header */}
+              <div className="flex items-start justify-between mb-8">
+                <div className="flex items-center">
+                  <div 
+                    className="w-20 h-20 rounded-3xl flex items-center justify-center mr-6 shadow-xl relative overflow-hidden"
+                    style={{ backgroundColor: selectedBenefit.color }}
+                  >
+                    <selectedBenefit.icon className="text-3xl text-white relative z-10" />
+                    <div className="absolute inset-0 bg-white/10"></div>
+                  </div>
+                  <div>
+                    <span className="inline-block px-3 py-1 bg-[#54bb74]/10 text-[#54bb74] text-xs font-bold uppercase tracking-wider rounded-full mb-2">
+                      Benefit {selectedBenefit.id}
+                    </span>
+                    <h3 className="text-4xl font-black text-[#292929] leading-tight mb-2">
+                      {selectedBenefit.title}
+                    </h3>
+                    <p className="text-xl font-semibold text-[#54bb74]">
+                      {selectedBenefit.subtitle}
+                    </p>
+                  </div>
+                </div>
+                
+                {/* Stats Badge */}
+                <div className="text-right">
+                  <div className="bg-gradient-to-br from-[#54bb74] to-[#93cfa2] text-white px-6 py-4 rounded-2xl shadow-lg">
+                    <div className="text-3xl font-black mb-1">
+                      {selectedBenefit.stats[0]}
+                    </div>
+                    <div className="text-sm opacity-90 uppercase tracking-wide">
+                      {selectedBenefit.stats[1]}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Main Content Area */}
+              <div className="flex-1 grid grid-cols-1 lg:grid-cols-5 gap-8">
+                {/* Left: Description & Features */}
+                <div className="lg:col-span-3 flex flex-col">
+                  {/* Description Card */}
+                  <div className="bg-gradient-to-br from-white to-[#f3ebe2]/30 p-6 rounded-2xl border border-[#54bb74]/10 shadow-sm mb-4">
+                    <h4 className="text-lg font-bold text-[#292929] mb-3 flex items-center">
+                      <div className="w-2 h-2 bg-[#54bb74] rounded-full mr-3"></div>
+                      Overview
+                    </h4>
+                    <p className="text-base text-[#292929]/80 leading-relaxed">
+                      {selectedBenefit.description}
+                    </p>
+                  </div>
+
+                  {/* Features Grid */}
+                  <div className="flex-1">
+                    <h4 className="text-lg font-bold text-[#292929] mb-3 flex items-center">
+                      <div className="w-2 h-2 bg-[#54bb74] rounded-full mr-3"></div>
+                      Key Features
+                    </h4>
+                    <div className="grid grid-cols-1 gap-3">
+                      {selectedBenefit.features.map((feature, idx) => (
+                        <motion.div
+                          key={idx}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: idx * 0.1, duration: 0.4 }}
+                          className="group flex items-center p-4 bg-white rounded-xl border border-[#54bb74]/10 shadow-sm hover:shadow-md hover:border-[#54bb74]/20 transition-all duration-300"
+                        >
+                          <div className="w-8 h-8 bg-gradient-to-br from-[#54bb74] to-[#93cfa2] rounded-lg flex items-center justify-center mr-4 flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                            <div className="w-2 h-2 bg-white rounded-full"></div>
+                          </div>
+                          <span className="text-[#292929] font-medium">{feature}</span>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right: Interactive Demo */}
+                <div className="lg:col-span-2 flex flex-col">
+                  
+                  <div className="flex-1 bg-gradient-to-br from-[#f3ebe2]/40 to-[#93cfa2]/20 rounded-2xl border border-[#54bb74]/10 p-6 relative overflow-hidden">
+                    {/* Demo Area */}
+                    <div className="w-full h-64 bg-white/60 rounded-xl backdrop-blur-sm border border-white/40 flex items-center justify-center relative overflow-hidden shadow-inner">
+                      <div className="text-center">
+                        <motion.div
+                          animate={{ rotate: [0, 5, -5, 0] }}
+                          transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                        >
+                          <selectedBenefit.icon className="text-6xl mx-auto mb-4" style={{ color: selectedBenefit.color }} />
+                        </motion.div>
+                        <span className="text-sm font-semibold text-[#292929]/70 uppercase tracking-wide">
+                          {selectedBenefit.title} Demo
+                        </span>
+                      </div>
+                      
+                      {/* Enhanced floating elements */}
+                      <motion.div
+                        animate={{ x: [0, 25, 0], y: [0, -12, 0], scale: [1, 1.1, 1] }}
+                        transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                        className="absolute top-4 right-4 w-4 h-4 bg-[#54bb74]/50 rounded-full"
+                      />
+                      <motion.div
+                        animate={{ x: [0, -20, 0], y: [0, 18, 0], scale: [1, 0.9, 1] }}
+                        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
+                        className="absolute bottom-4 left-4 w-3 h-3 bg-[#93cfa2]/60 rounded-full"
+                      />
+                      <motion.div
+                        animate={{ x: [0, 15, 0], y: [0, -8, 0], scale: [1, 1.2, 1] }}
+                        transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
+                        className="absolute top-1/2 left-6 w-2 h-2 bg-[#54bb74]/40 rounded-full"
+                      />
+                      <motion.div
+                        animate={{ x: [0, -12, 0], y: [0, 10, 0], scale: [1, 0.8, 1] }}
+                        transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 1.5 }}
+                        className="absolute top-1/3 right-8 w-2 h-2 bg-[#93cfa2]/50 rounded-full"
+                      />
+                    </div>
+                    
+                    {/* Impact Statement */}
+                    <div className="mt-6 p-4 bg-gradient-to-r from-[#292929] to-[#1a1a1a] rounded-xl text-white">
+                      <p className="text-white/90 text-sm leading-relaxed text-center">
+                        <strong className="text-[#54bb74]">{selectedBenefit.title}</strong> delivers measurable improvements 
+                        to your lighting infrastructure with proven results.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </motion.div>
         </div>
       )}
