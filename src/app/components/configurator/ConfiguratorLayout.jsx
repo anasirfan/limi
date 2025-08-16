@@ -140,6 +140,7 @@ const ConfiguratorLayout = () => {
         systemType: "",
         design: "Radial",
         designId: "product_2",
+        connectorColor: "black",
         size: "2mm",
       },
     ]);
@@ -525,6 +526,7 @@ const ConfiguratorLayout = () => {
           systemType: system.systemType,
           design: system.design,
           designId: system.designId,
+          connectorColor: system.connectorColor,
         },
       ]);
 
@@ -547,6 +549,7 @@ const ConfiguratorLayout = () => {
               systemType: system.systemType,
               design: system.design,
               designId: system.designId,
+              connectorColor: system.connectorColor,
             },
           ]);
           sendMessageToPlayCanvas(`system:${system.systemType}`);
@@ -703,7 +706,7 @@ const ConfiguratorLayout = () => {
           sendMessageToPlayCanvas(
             `lighting:${savedConfig.lighting ? "on" : "off"}`
           );
-          if (savedConfig.lighting) {
+          if (savedConfig.lighting == "on") {
             sendMessageToPlayCanvas(`brightness:${savedConfig.brightness}`);
             sendMessageToPlayCanvas(
               "colorTemperature:" +
@@ -1144,128 +1147,11 @@ const ConfiguratorLayout = () => {
   const handleSystemBaseDesignChange = useCallback((design) => {
     // Update the system base design in the config
     setConfig((prev) => ({ ...prev, systemBaseDesign: design }));
-
-    // Reset current shade when changing base design
     setCurrentShade(null);
 
     // Send message to PlayCanvas iframe
     setTimeout(() => {
-      // Map design names to product IDs for the iframe based on system type
-      // Each system type (bar/ball/universal) has its own set of base designs with specific IDs
-      const systemTypeBaseMap = {
-        bar: {
-          // Bar system uses baseNumbers 0-8
-          prism: "system_base_1",
-          helix: "system_base_2",
-          orbit: "system_base_3",
-          zenith: "system_base_4",
-          pulse: "system_base_5",
-          vortex: "system_base_6",
-          nexus: "system_base_7",
-          quasar: "system_base_8",
-          nova: "system_base_9",
-        },
-        universal: {
-          // Universal system uses baseNumbers 1-15
-          atom: "system_base_1",
-          nebula: "system_base_2",
-          cosmos: "system_base_3",
-          stellar: "system_base_4",
-          eclipse: "system_base_5",
-          aurora: "system_base_6",
-          solstice: "system_base_7",
-          quantum: "system_base_8",
-          vertex: "system_base_9",
-          horizon: "system_base_10",
-          zoneith: "system_base_11",
-          equinox: "system_base_12",
-          meridian: "system_base_13",
-          polaris: "system_base_14",
-          pulsar: "system_base_15",
-          quasar: "system_base_16",
-          supernova: "system_base_17",
-          galaxy: "system_base_18",
-          comet: "system_base_19",
-          meteor: "system_base_20",
-          asteroid: "system_base_21",
-          celestial: "system_base_22",
-          orbital: "system_base_23",
-          lunar: "system_base_24",
-          solar: "system_base_25",
-          nova: "system_base_26",
-          photon: "system_base_27",
-          gravity: "system_base_28",
-          spectrum: "system_base_29",
-          infinity: "system_base_30",
-          // 'void': 'system_base_31',
-          // 'blackhole': 'system_base_32',
-          // 'singularity': 'system_base_33',
-          // 'supernav': 'system_base_34',
-          // 'wormhole': 'system_base_34',
-          // 'black': 'system_base_35',
-          // 'white': 'system_base_36',
-        },
-      };
-
-      // Send message to PlayCanvas iframe
       setTimeout(() => {
-        // Map design names to product IDs for the iframe based on system type
-        // Each system type (bar/ball/universal) has its own set of base designs with specific IDs
-        const systemTypeBaseMap = {
-          bar: {
-            // Bar system uses baseNumbers 0-8
-            prism: "system_base_1",
-            helix: "system_base_2",
-            orbit: "system_base_3",
-            zenith: "system_base_4",
-            pulse: "system_base_5",
-            vortex: "system_base_6",
-            nexus: "system_base_7",
-            quasar: "system_base_8",
-            nova: "system_base_9",
-          },
-          universal: {
-            // Universal system uses baseNumbers 1-15
-            atom: "system_base_1",
-            nebula: "system_base_2",
-            cosmos: "system_base_3",
-            stellar: "system_base_4",
-            eclipse: "system_base_5",
-            aurora: "system_base_6",
-            solstice: "system_base_7",
-            quantum: "system_base_8",
-            vertex: "system_base_9",
-            horizon: "system_base_10",
-            zoneith: "system_base_11",
-            equinox: "system_base_12",
-            meridian: "system_base_13",
-            polaris: "system_base_14",
-            pulsar: "system_base_15",
-            quasar: "system_base_16",
-            supernova: "system_base_17",
-            galaxy: "system_base_18",
-            comet: "system_base_19",
-            meteor: "system_base_20",
-            asteroid: "system_base_21",
-            celestial: "system_base_22",
-            orbital: "system_base_23",
-            lunar: "system_base_24",
-            solar: "system_base_25",
-            nova: "system_base_26",
-            photon: "system_base_27",
-            gravity: "system_base_28",
-            spectrum: "system_base_29",
-            infinity: "system_base_30",
-            // void: "system_base_31",
-            // blackhole: "system_base_32",
-            // singularity: "system_base_33",
-            // supernav: "system_base_34",
-            // wormhole: "system_base_34",
-            // black: "system_base_35",
-            // white: "system_base_36",
-          },
-        };
-
         // Get the selected cable number(s)
         const selectedCables =
           config.selectedPendants && config.selectedPendants.length > 0
@@ -1278,59 +1164,33 @@ const ConfiguratorLayout = () => {
 
           // Process each selected cable
           selectedCables.forEach((cableNo) => {
-            // Get the system type for this specific cable or use the default
-
-            const cableSystemType =
-              config.cableSystemTypes?.[cableNo] ||
-              config.systemType ||
-              "universal";
-
-            // Get the base design map for this system type
-            const designMap =
-              systemTypeBaseMap[cableSystemType] || systemTypeBaseMap.universal;
-
-            // Get the base ID for this design within the current system type
-            const baseId = designMap[design] || "system_base_0";
+            const system = systemAssignments.find(
+              (a) => a.design === design
+            );
 
             // Update this specific cable
             if (cableNo >= 0) {
               updatedCables[cableNo] = {
-                isSystem: cableSystemType,
-                systemType: cableSystemType,
-                design: design,
-                designId: baseId,
+                isSystem: system.isSystem,
+                systemType: system.systemType,
+                design: system.design,
+                designId: system.message,
               };
             }
           });
-
           return updatedCables;
         });
 
         // Send messages to iframe
         selectedCables.forEach((cableNo) => {
-          // Get the system type for this specific cable or use the default
-          const cableSystemType =
-            config.cableSystemTypes?.[cableNo] ||
-            config.systemType ||
-            "universal";
-
-          // Get the base design map for this system type
-          const designMap =
-            systemTypeBaseMap[cableSystemType] || systemTypeBaseMap.universal;
-
-          // Get the base ID for this design within the current system type
-          const baseId = designMap[design] || "system_base_0";
-
-          // Send system type message first for this cable
-          sendMessageToPlayCanvas(`system:${cableSystemType}`);
-
-          // Then send the cable base design message
-          sendMessageToPlayCanvas(`cable_${cableNo}:${baseId}`);
+          //New Logic
+          const system = systemAssignments.find((a) => a.design === design);
+          sendMessageToPlayCanvas(`system:${system.systemType}`);
+          sendMessageToPlayCanvas(`cable_${cableNo}:${system.message}`);
         });
       }, 10);
     }, [config.selectedPendants, config.systemType, config.cableSystemTypes]);
   });
-
 
   // Handle shade selection
 

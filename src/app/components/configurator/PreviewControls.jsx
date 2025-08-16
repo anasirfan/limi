@@ -139,16 +139,19 @@ export const PreviewControls = ({
 
   // --- Replace your current brightness useEffect with this ---
   useEffect(() => {
+    if(lighting == true){
     if (brightnessDebounceTimeout.current)
       clearTimeout(brightnessDebounceTimeout.current);
     brightnessDebounceTimeout.current = setTimeout(() => {
       sendMessageToPlayCanvas("brightness:" + brightness);
     });
     return () => clearTimeout(brightnessDebounceTimeout.current);
+    }
   }, [brightness]);
 
   // --- Add this new useEffect for colorTemperature ---
   useEffect(() => {
+    if(lighting == true){
     if (colorTempDebounceTimeout.current)
       clearTimeout(colorTempDebounceTimeout.current);
     colorTempDebounceTimeout.current = setTimeout(() => {
@@ -158,6 +161,7 @@ export const PreviewControls = ({
       );
     });
     return () => clearTimeout(colorTempDebounceTimeout.current);
+    }
   }, [colorTemperature]);
 
   const handleMouseEnter = () => {
