@@ -25,26 +25,70 @@ const CTA = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleStartJourneySubmit = (e) => {
+  const handleStartJourneySubmit = async (e) => {
     e.preventDefault();
     if (!formData.name || !formData.email) {
       toast.error('Please fill in all required fields');
       return;
     }
-    toast.success('Thank you! We\'ll be in touch soon.');
-    setShowStartModal(false);
-    setFormData({ name: '', email: '', company: '' });
+
+    try {
+      const response = await fetch('https://dev.api1.limitless-lighting.co.uk/client/user/brochure_email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          company: formData.company,
+        }),
+      });
+
+      if (response.ok) {
+        toast.success('Thank you! We\'ll be in touch soon.');
+        setShowStartModal(false);
+        setFormData({ name: '', email: '', company: '' });
+      } else {
+        const errorData = await response.json();
+        toast.error(errorData.error || 'Failed to submit form');
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      toast.error('Failed to submit form. Please try again.');
+    }
   };
 
-  const handleBrochureSubmit = (e) => {
+  const handleBrochureSubmit = async (e) => {
     e.preventDefault();
     if (!formData.email) {
       toast.error('Please enter your email address');
       return;
     }
-    toast.success('Brochure sent to your email!');
-    setShowBrochureModal(false);
-    setFormData({ name: '', email: '', company: '' });
+
+    try {
+      const response = await fetch('https://dev.api1.limitless-lighting.co.uk/client/user/brochure_email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+        }),
+      });
+
+      if (response.ok) {
+        toast.success('Brochure sent to your email!');
+        setShowBrochureModal(false);
+        setFormData({ name: '', email: '', company: '' });
+      } else {
+        const errorData = await response.json();
+        toast.error(errorData.error || 'Failed to send brochure');
+      }
+    } catch (error) {
+      console.error('Error sending brochure:', error);
+      toast.error('Failed to send brochure. Please try again.');
+    }
   };
 
   if (!mounted) return null;
