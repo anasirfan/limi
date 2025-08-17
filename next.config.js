@@ -6,7 +6,7 @@ const nextConfig = {
   async rewrites() {
     return {
       beforeFiles: [
-        // Handle limiai.co domain routing - only for root path
+        // Handle limiai.co root path - route to /limiai
         {
           source: '/',
           destination: '/limiai',
@@ -17,10 +17,32 @@ const nextConfig = {
             },
           ],
         },
-        // Handle www.limiai.co domain routing - only for root path
+        // Handle limiai.co/invest - route to /limifuture
+        {
+          source: '/invest',
+          destination: '/limifuture',
+          has: [
+            {
+              type: 'host',
+              value: 'limiai.co',
+            },
+          ],
+        },
+        // Handle www.limiai.co root path - route to /limiai
         {
           source: '/',
           destination: '/limiai',
+          has: [
+            {
+              type: 'host',
+              value: 'www.limiai.co',
+            },
+          ],
+        },
+        // Handle www.limiai.co/invest - route to /limifuture
+        {
+          source: '/invest',
+          destination: '/limifuture',
           has: [
             {
               type: 'host',
