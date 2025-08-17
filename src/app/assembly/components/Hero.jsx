@@ -198,24 +198,17 @@ const Hero = () => {
         style={{ y, opacity }}
       />
 
-      {/* Animated Grid Background */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="grid grid-cols-12 grid-rows-8 h-full w-full">
-          {[...Array(96)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="border border-[#292929]/20"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: [0, 0.5, 0] }}
-              transition={{
-                duration: 2,
-                delay: i * 0.02,
-                repeat: Infinity,
-                repeatDelay: 3
-              }}
-            />
-          ))}
-        </div>
+      {/* Background Video */}
+      <div className="absolute inset-0 z-0">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="w-full h-full object-cover opacity-30"
+        >
+          <source src="/limiai/hero.mp4" type="video/mp4" />
+        </video>
       </div>
 
       {/* Particles */}
