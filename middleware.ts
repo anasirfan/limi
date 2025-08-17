@@ -14,7 +14,6 @@ export function middleware(request: NextRequest) {
 
     // Handle limiai.co domain routing
     if (host === 'limiai.co' || host === 'www.limiai.co') {
-<<<<<<< HEAD
       console.log(`[MIDDLEWARE] limiai.co detected, routing to /assembly`)
       
       // If already on /assembly path, continue normally
@@ -26,33 +25,6 @@ export function middleware(request: NextRequest) {
       // Rewrite all other paths to /assembly
       console.log(`[MIDDLEWARE] Rewriting ${pathname} to /assembly`)
       url.pathname = '/assembly'
-=======
-      console.log(`[MIDDLEWARE] limiai.co detected, processing path: ${pathname}`)
-      
-      // Route /invest to /limifuture
-      if (pathname === '/invest') {
-        console.log(`[MIDDLEWARE] Routing /invest to /limifuture`)
-        url.pathname = '/limifuture'
-        return NextResponse.rewrite(url)
-      }
-      
-      // Route root path to /limiai
-      if (pathname === '/') {
-        console.log(`[MIDDLEWARE] Routing root to /limiai`)
-        url.pathname = '/limiai'
-        return NextResponse.rewrite(url)
-      }
-      
-      // If already on target paths, continue normally
-      if (pathname.startsWith('/limiai') || pathname.startsWith('/limifuture')) {
-        console.log(`[MIDDLEWARE] Already on target path: ${pathname}`)
-        return NextResponse.next()
-      }
-      
-      // For any other path on limiai.co, redirect to /limiai (main page)
-      console.log(`[MIDDLEWARE] Unknown path ${pathname}, redirecting to /limiai`)
-      url.pathname = '/limiai'
->>>>>>> 1075fedf53a34c7ca9ac0ee30361978a79f69713
       return NextResponse.rewrite(url)
     }
 
