@@ -39,7 +39,7 @@ try {
 # Test 3: Test a specific path on limiai.co
 Write-Host "`n3️⃣ Testing limiai.co/some-path (should also redirect to /assembly):" -ForegroundColor Yellow
 try {
-    $response3 = Invoke-WebRequest -Uri "http://localhost:3002/some-random-path" -Headers @{"Host"="limiai.co"} -Method GET -TimeoutSec 10
+    $response3 = Invoke-WebRequest -Uri "http://localhost:3002/invest" -Headers @{"Host"="limiai.co"} -Method GET -TimeoutSec 10
     Write-Host "✅ Status: $($response3.StatusCode)" -ForegroundColor Green
     Write-Host "📄 Content length: $($response3.Content.Length) characters"
     
