@@ -8,6 +8,7 @@ import { FaArrowRight, FaPlay, FaDownload, FaPhone, FaEnvelope, FaTwitter, FaLin
 import { HiSparkles, HiLightBulb, HiCube } from 'react-icons/hi';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { trackAssemblyEvent } from '../../utils/umamiTracking';
 
 const CTA = () => {
   const containerRef = useRef(null);
@@ -92,11 +93,11 @@ const CTA = () => {
   };
 
   const trackModalInteraction = (modalName, action) => {
-    // Add Umami tracking code here
+    trackAssemblyEvent(`Modal ${action}`, modalName);
   };
 
   const trackFormSubmission = (formName, success, formData) => {
-    // Add Umami tracking code here
+    trackAssemblyEvent(`Form Submission ${success ? 'Success' : 'Failure'}`, formName, formData);
   };
 
   if (!mounted) return null;
@@ -311,7 +312,7 @@ const CTA = () => {
                 <div className="text-[#54bb74] font-semibold text-lg">Modular Lighting System</div>
                 <motion.div
                   animate={{ rotate: [0, 5, -5, 0] }}
-                  transition={{ duration: 4, repeat: Infinity }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
                   className="w-12 h-12 bg-gradient-to-br from-[#54bb74] to-[#93cfa2] rounded-full mx-auto mt-4 flex items-center justify-center"
                 >
                   <HiLightBulb className="text-white text-2xl" />

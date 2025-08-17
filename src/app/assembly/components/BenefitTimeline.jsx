@@ -9,7 +9,8 @@ import confetti from 'canvas-confetti';
 import { 
   trackBenefitTimeline, 
   trackModalInteraction, 
-  trackVideoInteraction 
+  trackVideoInteraction,
+  trackAssemblyEvent 
 } from '../../utils/umamiTracking';
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // Import the CSS

@@ -10,7 +10,7 @@ import { loadSlim } from '@tsparticles/slim';
 import Link from 'next/link';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { trackPagePerformance, trackHeroCarousel } from '../../utils/umamiTracking';
+import { trackPagePerformance, trackHeroCarousel, trackAssemblyEvent } from '../../utils/umamiTracking';
 
 const Hero = () => {
   const [mounted, setMounted] = useState(false);
@@ -134,6 +134,7 @@ const Hero = () => {
         toast.success('Thank you! We\'ll be in touch soon.');
         setShowStartModal(false);
         setFormData({ name: '', email: '', company: '' });
+        trackAssemblyEvent('hero_form_submission', 'Hero Form Submission');
       } else {
         const errorData = await response.json();
         toast.error(errorData.error || 'Failed to submit form');
@@ -166,6 +167,7 @@ const Hero = () => {
         toast.success('Brochure sent to your email!');
         setShowBrochureModal(false);
         setFormData({ name: '', email: '', company: '' });
+        trackAssemblyEvent('hero_brochure_download', 'Hero Brochure Download');
       } else {
         const errorData = await response.json();
         toast.error(errorData.error || 'Failed to send brochure');
@@ -182,13 +184,16 @@ const Hero = () => {
       case 'Build System':
       case 'Get Started':
         setShowStartModal(true);
+        trackAssemblyEvent('hero_cta_click', 'Hero CTA Click');
         break;
       case 'Learn More':
       case 'View Modules':
         setShowBrochureModal(true);
+        trackAssemblyEvent('hero_learn_more_click', 'Hero Learn More Click');
         break;
       case 'Contact':
         setShowDemoModal(true);
+        trackAssemblyEvent('hero_contact_click', 'Hero Contact Click');
         break;
       default:
         setShowStartModal(true);
@@ -492,7 +497,10 @@ const Hero = () => {
             className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl relative"
           >
             <button
-              onClick={() => setShowStartModal(false)}
+              onClick={() => {
+                setShowStartModal(false);
+                trackAssemblyEvent('hero_modal_close', 'Hero Modal Close');
+              }}
               className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl"
             >
               <FaTimes />
@@ -566,7 +574,10 @@ const Hero = () => {
             className="bg-white rounded-3xl p-8 max-w-4xl w-full shadow-2xl relative"
           >
             <button
-              onClick={() => setShowDemoModal(false)}
+              onClick={() => {
+                setShowDemoModal(false);
+                trackAssemblyEvent('hero_modal_close', 'Hero Modal Close');
+              }}
               className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl z-10"
             >
               <FaTimes />
@@ -637,7 +648,10 @@ const Hero = () => {
             className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl relative"
           >
             <button
-              onClick={() => setShowBrochureModal(false)}
+              onClick={() => {
+                setShowBrochureModal(false);
+                trackAssemblyEvent('hero_modal_close', 'Hero Modal Close');
+              }}
               className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl"
             >
               <FaTimes />
