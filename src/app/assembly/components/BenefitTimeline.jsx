@@ -4,13 +4,15 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { FaTimes, FaPlay, FaPause, FaCheck, FaClock, FaCube, FaWifi, FaShield } from 'react-icons/fa';
+import { FaTimes ,FaStar, FaPlay, FaPause, FaCheck, FaClock, FaCube, FaWifi, FaShield } from 'react-icons/fa';
 import confetti from 'canvas-confetti';
 import { 
   trackBenefitTimeline, 
   trackModalInteraction, 
   trackVideoInteraction 
 } from '../../utils/umamiTracking';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; // Import the CSS
 
 const BenefitTimeline = () => {
   const containerRef = useRef(null);
@@ -62,7 +64,7 @@ const BenefitTimeline = () => {
       title: 'PREMIUM QUALITY',
       subtitle: 'Built to Last',
       description: 'Enterprise-grade components with rigorous testing ensure long-lasting performance.',
-      icon: FaShield,
+      icon: FaWifi,
       color: '#292929',
       stats: ['10 year', 'warranty'],
       features: ['Premium materials', 'Rigorous testing', 'Reliable performance'],

@@ -17,6 +17,17 @@ const nextConfig = {
             },
           ],
         },
+        // Handle limiai.co/dashboard - route to /assembly/dashboard
+        {
+          source: '/dashboard',
+          destination: '/assembly/dashboard',
+          has: [
+            {
+              type: 'host',
+              value: 'limiai.co',
+            },
+          ],
+        },
         // Handle limiai.co/invest - route to /limifuture
         {
           source: '/invest',
@@ -32,6 +43,17 @@ const nextConfig = {
         {
           source: '/',
           destination: '/assembly',
+          has: [
+            {
+              type: 'host',
+              value: 'www.limiai.co',
+            },
+          ],
+        },
+        // Handle www.limiai.co/dashboard - route to /assembly/dashboard
+        {
+          source: '/dashboard',
+          destination: '/assembly/dashboard',
           has: [
             {
               type: 'host',

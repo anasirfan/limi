@@ -10,6 +10,7 @@ import { loadSlim } from '@tsparticles/slim';
 import Link from 'next/link';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { trackPagePerformance, trackHeroCarousel } from '../../utils/umamiTracking';
 
 const Hero = () => {
   const [mounted, setMounted] = useState(false);
