@@ -3,11 +3,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { gsap } from 'gsap';
-import { FaPlay, FaArrowDown, FaArrowRight } from 'react-icons/fa';
+import { FaPlay, FaArrowDown, FaArrowRight, FaDownload, FaTimes } from 'react-icons/fa';
 import { HiCube, HiLightBulb, HiWifi, HiCog, HiSparkles } from 'react-icons/hi';
 import Particles from '@tsparticles/react';
 import { loadSlim } from '@tsparticles/slim';
 import Link from 'next/link';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Hero = () => {
   const [mounted, setMounted] = useState(false);
@@ -15,6 +17,10 @@ const Hero = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
   const [prefersReduced, setPrefersReduced] = useState(false);
+  const [showStartModal, setShowStartModal] = useState(false);
+  const [showDemoModal, setShowDemoModal] = useState(false);
+  const [showBrochureModal, setShowBrochureModal] = useState(false);
+  const [formData, setFormData] = useState({ name: '', email: '', company: '' });
 
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -31,7 +37,7 @@ const Hero = () => {
       description:
         'The central nervous system for intelligent environments. Ceiling-mounted hubs transform spaces into proactive, empathetic ecosystems that understand and anticipate.',
       ctaPrimary: { label: 'Experience Limi', href: '/configurator' },
-      ctaSecondary: { label: 'Learn More', href: '/products' },
+      ctaSecondary: { label: 'Learn More', href: '/configurator' },
       background: 'from-[#f3ebe2] to-[#93cfa2]',
       features: [
         { icon: HiCube, title: 'Local Processing', desc: 'Edge Computing' },
@@ -55,7 +61,7 @@ const Hero = () => {
       description:
         'Ceiling-mounted AI hubs that expand with your needs. Each module adds intelligence, creating a distributed network that grows smarter over time.',
       ctaPrimary: { label: 'Build System', href: '/configurator' },
-      ctaSecondary: { label: 'View Modules', href: '/products' },
+      ctaSecondary: { label: 'View Modules', href: '/configurator' },
       background: 'from-[#f8f6f3] to-[#93cfa2]',
       features: [
         { icon: HiCube, title: 'Expandable', desc: 'Add Modules' },
@@ -79,7 +85,7 @@ const Hero = () => {
       description:
         'Transform any space into a responsive ecosystem. AI-powered hubs understand occupancy, preferences, and patterns to create truly intelligent environments.',
       ctaPrimary: { label: 'Get Started', href: '/configurator' },
-      ctaSecondary: { label: 'Contact', href: '/contact' },
+      ctaSecondary: { label: 'Contact', href: '/configurator' },
       background: 'from-[#faf9f7] to-[#54bb74]',
       features: [
         { icon: HiCube, title: 'Proactive', desc: 'Anticipates' },
@@ -98,6 +104,95 @@ const Hero = () => {
       },
     },
   ];
+
+  const handleInputChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleStartJourneySubmit = async (e) => {
+    e.preventDefault();
+    if (!formData.name || !formData.email) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
+    try {
+      const response = await fetch('https://dev.api1.limitless-lighting.co.uk/client/user/brochure_email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          company: formData.company,
+        }),
+      });
+
+      if (response.ok) {
+        toast.success('Thank you! We\'ll be in touch soon.');
+        setShowStartModal(false);
+        setFormData({ name: '', email: '', company: '' });
+      } else {
+        const errorData = await response.json();
+        toast.error(errorData.error || 'Failed to submit form');
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      toast.error('Failed to submit form. Please try again.');
+    }
+  };
+
+  const handleBrochureSubmit = async (e) => {
+    e.preventDefault();
+    if (!formData.email) {
+      toast.error('Please enter your email address');
+      return;
+    }
+
+    try {
+      const response = await fetch('https://dev.api1.limitless-lighting.co.uk/client/user/brochure_email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+        }),
+      });
+
+      if (response.ok) {
+        toast.success('Brochure sent to your email!');
+        setShowBrochureModal(false);
+        setFormData({ name: '', email: '', company: '' });
+      } else {
+        const errorData = await response.json();
+        toast.error(errorData.error || 'Failed to send brochure');
+      }
+    } catch (error) {
+      console.error('Error sending brochure:', error);
+      toast.error('Failed to send brochure. Please try again.');
+    }
+  };
+
+  const handleCTAClick = (ctaType) => {
+    switch (ctaType) {
+      case 'Experience Limi':
+      case 'Build System':
+      case 'Get Started':
+        setShowStartModal(true);
+        break;
+      case 'Learn More':
+      case 'View Modules':
+        setShowBrochureModal(true);
+        break;
+      case 'Contact':
+        setShowDemoModal(true);
+        break;
+      default:
+        setShowStartModal(true);
+    }
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -269,23 +364,29 @@ const Hero = () => {
                       {slide.description}
                     </p>
                     <div className="flex flex-col sm:flex-row gap-3">
-                      <Link href={slide.ctaPrimary.href} className="group inline-flex items-center px-8 py-4 bg-[#292929] text-white rounded-full font-semibold text-lg hover:bg-[#54bb74] transition-all duration-300">
+                      <button 
+                        onClick={() => handleCTAClick(slide.ctaPrimary.label)}
+                        className="group inline-flex items-center px-8 py-4 bg-[#292929] text-white rounded-full font-semibold text-lg hover:bg-[#54bb74] transition-all duration-300"
+                      >
                         <span>{slide.ctaPrimary.label}</span>
                         <FaArrowRight className="ml-3 group-hover:translate-x-1 transition-transform" />
-                      </Link>
-                      <Link href={slide.ctaSecondary.href} className="inline-flex items-center px-8 py-4 border-2 border-[#54bb74] text-[#54bb74] rounded-full font-semibold text-lg hover:bg-[#54bb74] hover:text-white transition-all duration-300">
+                      </button>
+                      <button 
+                        onClick={() => handleCTAClick(slide.ctaSecondary.label)}
+                        className="inline-flex items-center px-8 py-4 border-2 border-[#54bb74] text-[#54bb74] rounded-full font-semibold text-lg hover:bg-[#54bb74] hover:text-white transition-all duration-300"
+                      >
                         {slide.ctaSecondary.label}
-                      </Link>
+                      </button>
                     </div>
                   </motion.div>
                 ))}
               </div>
 
-              {/* 3D Interactive Viewer (iframe) */}
-              <div className="hero-card mb-20 -mt-16 relative w-[50%] max-w-2xl bg-[#f3ebe2] rounded-2xl overflow-hidden border border-[#54bb74]/20 shadow-lg">
-                {/* Maintain a clean proportion below the heading */}
+         
+              {/* <div className="hero-card mb-20 -mt-16 relative w-[50%] max-w-2xl bg-[#f3ebe2] rounded-2xl overflow-hidden border border-[#54bb74]/20 shadow-lg">
+            
                 <div className="aspect-[16/9] w-full">
-                  {/* Change bg-[#f3ebe2] to any solid color to match the iframe scene background */}
+          
                   <iframe
                     src="https://playcanv.as/e/p/LBV4KIS5/"
                     className="w-full h-full border-0"
@@ -293,7 +394,7 @@ const Hero = () => {
                     allowFullScreen
                   />
                 </div>
-              </div>
+              </div> */}
 
               {/* Slide Indicators */}
               {slides.length > 1 && (
@@ -383,6 +484,221 @@ const Hero = () => {
           </motion.div>
         </div>
       </div>
+
+      {/* Start Journey Modal */}
+      {showStartModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl relative"
+          >
+            <button
+              onClick={() => setShowStartModal(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl"
+            >
+              <FaTimes />
+            </button>
+            
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 bg-gradient-to-br from-[#54bb74] to-[#93cfa2] rounded-full flex items-center justify-center mx-auto mb-4">
+                <HiLightBulb className="text-2xl text-white" />
+              </div>
+              <h3 className="text-2xl font-bold text-[#292929] mb-2">Start Your Journey</h3>
+              <p className="text-gray-600">Tell us about yourself and we'll get you started</p>
+            </div>
+
+            <form onSubmit={handleStartJourneySubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Name *</label>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#54bb74] focus:border-transparent outline-none transition-all"
+                  placeholder="Your full name"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Email *</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#54bb74] focus:border-transparent outline-none transition-all"
+                  placeholder="your@email.com"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Company (Optional)</label>
+                <input
+                  type="text"
+                  name="company"
+                  value={formData.company}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#54bb74] focus:border-transparent outline-none transition-all"
+                  placeholder="Your company name"
+                />
+              </div>
+              
+              <button
+                type="submit"
+                className="w-full py-3 bg-gradient-to-r from-[#54bb74] to-[#93cfa2] text-white rounded-xl font-semibold hover:shadow-lg transition-all duration-300"
+              >
+                Submit
+              </button>
+            </form>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Demo Modal */}
+      {showDemoModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="bg-white rounded-3xl p-8 max-w-4xl w-full shadow-2xl relative"
+          >
+            <button
+              onClick={() => setShowDemoModal(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl z-10"
+            >
+              <FaTimes />
+            </button>
+            
+            <div className="text-center mb-6">
+              <h3 className="text-2xl font-bold text-[#292929] mb-2">Contact Us</h3>
+              <p className="text-gray-600">Get in touch with our team</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div>
+                <h4 className="text-xl font-semibold text-[#292929] mb-4">Contact Information</h4>
+                <div className="space-y-4">
+                  <div className="flex items-center">
+                    <div className="w-10 h-10 bg-[#54bb74] rounded-full flex items-center justify-center mr-3">
+                      <span className="text-white text-sm">📧</span>
+                    </div>
+                    <span className="text-gray-700">hello@limilighting.com</span>
+                  </div>
+                  <div className="flex items-center">
+                    <div className="w-10 h-10 bg-[#54bb74] rounded-full flex items-center justify-center mr-3">
+                      <span className="text-white text-sm">📞</span>
+                    </div>
+                    <span className="text-gray-700">+1 (555) 123-4567</span>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <h4 className="text-xl font-semibold text-[#292929] mb-4">Quick Contact</h4>
+                <form onSubmit={handleStartJourneySubmit} className="space-y-3">
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#54bb74] focus:border-transparent outline-none"
+                    placeholder="Your name"
+                  />
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#54bb74] focus:border-transparent outline-none"
+                    placeholder="Your email"
+                  />
+                  <button
+                    type="submit"
+                    className="w-full py-2 bg-gradient-to-r from-[#54bb74] to-[#93cfa2] text-white rounded-lg font-semibold hover:shadow-lg transition-all duration-300"
+                  >
+                    Send Message
+                  </button>
+                </form>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Brochure Modal */}
+      {showBrochureModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl relative"
+          >
+            <button
+              onClick={() => setShowBrochureModal(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl"
+            >
+              <FaTimes />
+            </button>
+            
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 bg-gradient-to-br from-[#54bb74] to-[#93cfa2] rounded-full flex items-center justify-center mx-auto mb-4">
+                <FaDownload className="text-2xl text-white" />
+              </div>
+              <h3 className="text-2xl font-bold text-[#292929] mb-2">Get Brochure</h3>
+              <p className="text-gray-600">Download our detailed product brochure</p>
+            </div>
+
+            <form onSubmit={handleBrochureSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#54bb74] focus:border-transparent outline-none transition-all"
+                  placeholder="your@email.com"
+                  required
+                />
+              </div>
+              
+              <button
+                type="submit"
+                className="w-full py-3 bg-gradient-to-r from-[#54bb74] to-[#93cfa2] text-white rounded-xl font-semibold hover:shadow-lg transition-all duration-300 flex items-center justify-center space-x-2"
+              >
+                <FaDownload />
+                <span>Send Brochure</span>
+              </button>
+            </form>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Toast Container */}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        toastStyle={{
+          background: 'white',
+          color: '#292929',
+          borderRadius: '12px',
+          border: '1px solid #54bb74'
+        }}
+      />
     </section>
   );
 };

@@ -197,9 +197,9 @@ const CTA = () => {
           className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20"
         >
           {[
-            { title: "Assembly Demo", desc: "Watch the modular assembly process", icon: HiCube, color: "from-[#54bb74] to-[#93cfa2]" },
-            { title: "Smart Features", desc: "Experience AI-powered automation", icon: HiLightBulb, color: "from-[#93cfa2] to-[#54bb74]" },
-            { title: "Customization", desc: "Explore endless possibilities", icon: HiSparkles, color: "from-[#54bb74] to-[#292929]" }
+            { title: "Assembly Demo", desc: "Watch the modular assembly process", icon: HiCube, color: "from-[#54bb74] to-[#93cfa2]", video: "/limiai/transform1.mp4" },
+            { title: "Smart Features", desc: "Experience AI-powered automation", icon: HiLightBulb, color: "from-[#93cfa2] to-[#54bb74]", video: "/limiai/transform2.mp4" },
+            { title: "Customization", desc: "Explore endless possibilities", icon: HiSparkles, color: "from-[#54bb74] to-[#292929]", video: "/limiai/transform3.mp4" }
           ].map((feature, index) => (
             <motion.div
               key={index}
@@ -215,26 +215,22 @@ const CTA = () => {
               <h3 className="text-2xl font-bold text-[#292929] mb-4 text-center">{feature.title}</h3>
               <p className="text-[#292929]/70 text-center mb-6 leading-relaxed">{feature.desc}</p>
               
-              {/* Animation Placeholder */}
+              {/* Video Integration */}
               <div className="w-full h-32 bg-gradient-to-br from-[#f3ebe2]/50 to-[#93cfa2]/20 rounded-2xl border border-[#54bb74]/10 flex items-center justify-center relative overflow-hidden">
-                <span className="text-sm text-[#292929]/60 font-medium">{feature.title} Animation</span>
-                <motion.div
-                  animate={{ 
-                    scale: [1, 1.3, 1], 
-                    opacity: [0.4, 0.8, 0.4],
-                    rotate: [0, 180, 360]
-                  }}
-                  transition={{ duration: 3, repeat: Infinity, delay: index * 0.7 }}
-                  className="absolute top-3 right-3 w-3 h-3 bg-[#54bb74] rounded-full"
+                <video 
+                  className="w-full h-full object-cover rounded-xl"
+                  autoPlay={true}
+                  loop={true}
+                  muted={true}
+                  playsInline={true}
+                  src={feature.video}
                 />
-                <motion.div
-                  animate={{ 
-                    x: [0, 20, 0],
-                    y: [0, -10, 0]
-                  }}
-                  transition={{ duration: 4, repeat: Infinity, delay: index * 0.5 }}
-                  className="absolute bottom-3 left-3 w-2 h-2 bg-[#93cfa2] rounded-full"
-                />
+                {/* Video overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent rounded-xl flex items-end justify-center pb-2">
+                  <span className="text-xs font-medium text-white/90 bg-black/20 px-2 py-1 rounded backdrop-blur-sm">
+                    {feature.title}
+                  </span>
+                </div>
               </div>
             </motion.div>
           ))}
@@ -280,20 +276,21 @@ const CTA = () => {
               <div className="text-center md:text-left">
                 <h3 className="text-2xl font-bold text-white mb-4">Get in Touch</h3>
                 <div className="space-y-3">
-                  <div className="flex items-center justify-center md:justify-start text-gray-300">
-                    <FaPhone className="mr-3 text-[#54bb74] text-lg" />
-                    <span className="text-lg">+1 (555) 123-4567</span>
-                  </div>
+                 
                   <div className="flex items-center justify-center md:justify-start text-gray-300">
                     <FaEnvelope className="mr-3 text-[#54bb74] text-lg" />
-                    <span className="text-lg">hello@limi.lighting</span>
+                    <span className="text-lg">hello@limilighting.com</span>
                   </div>
                 </div>
               </div>
 
               {/* Logo/Brand */}
               <div className="text-center">
-                <div className="text-4xl font-black text-white mb-2">LIMI</div>
+                <img 
+                  src="/images/svgLogos/__Logo_Icon_Inverted.svg" 
+                  alt="LIMI Logo" 
+                  className="w-16 h-16 mx-auto mb-2"
+                />
                 <div className="text-[#54bb74] font-semibold text-lg">Modular Lighting System</div>
                 <motion.div
                   animate={{ rotate: [0, 5, -5, 0] }}

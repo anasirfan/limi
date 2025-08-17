@@ -30,7 +30,8 @@ const BenefitTimeline = () => {
       icon: HiLightningBolt,
       color: '#54bb74',
       stats: ['5 min', 'setup time'],
-      features: ['Auto-detection', 'Self-configuration', 'Instant activation']
+      features: ['Auto-detection', 'Self-configuration', 'Instant activation'],
+      video: '/limiai/benefit1.mp4'
     },
     {
       id: 2,
@@ -40,7 +41,8 @@ const BenefitTimeline = () => {
       icon: HiCube,
       color: '#93cfa2',
       stats: ['100+', 'combinations'],
-      features: ['Interchangeable parts', 'Scalable system', 'Future-proof design']
+      features: ['Interchangeable parts', 'Scalable system', 'Future-proof design'],
+      video: '/limiai/benefit2.mp4'
     },
     {
       id: 3,
@@ -50,7 +52,8 @@ const BenefitTimeline = () => {
       icon: HiWifi,
       color: '#54bb74',
       stats: ['24/7', 'monitoring'],
-      features: ['Real-time adaptation', 'Predictive behavior', 'Energy optimization']
+      features: ['Real-time adaptation', 'Predictive behavior', 'Energy optimization'],
+      video: '/limiai/benefit3.mp4'
     },
     {
       id: 4,
@@ -60,7 +63,8 @@ const BenefitTimeline = () => {
       icon: FaLock,
       color: '#292929',
       stats: ['10 year', 'warranty'],
-      features: ['Premium materials', 'Rigorous testing', 'Reliable performance']
+      features: ['Premium materials', 'Rigorous testing', 'Reliable performance'],
+      video: '/limiai/benefit4.mp4'
     }
   ];
 
@@ -239,30 +243,27 @@ const BenefitTimeline = () => {
                       ))}
                     </div>
 
-                    {/* Animation Placeholder */}
+                    {/* Interactive Demo */}
                     <div className="mb-6 p-6 bg-gradient-to-br from-[#f3ebe2]/30 to-[#93cfa2]/20 rounded-2xl border border-[#54bb74]/10">
                       <div className="flex items-center justify-between mb-4">
-                        <h4 className="text-sm font-semibold text-[#292929]/70 uppercase tracking-wide">Interactive Demo</h4>
+                        <h4 className="text-sm font-semibold text-[#292929]/70 uppercase tracking-wide"></h4>
                         <div className="w-2 h-2 bg-[#54bb74] rounded-full animate-pulse"></div>
                       </div>
-                      <div className="w-full h-32 bg-white/50 rounded-xl backdrop-blur-sm border border-white/30 flex items-center justify-center relative overflow-hidden">
-                        <div className="text-center">
-                          <benefit.icon className="text-3xl mx-auto mb-2" style={{ color: benefit.color }} />
-                          <span className="text-sm font-medium text-[#292929]/60">
-                            {benefit.title} Animation
+                      <div className="w-full  bg-white/50 rounded-xl backdrop-blur-sm border border-white/30 flex items-center justify-center relative overflow-hidden">
+                        <video 
+                          className="w-full h-full object-cover rounded-lg"
+                          autoPlay={true}
+                          loop={true}
+                          muted={true}
+                          playsInline={true}
+                          src={benefit.video}
+                        />
+                        {/* Video overlay with benefit info */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent rounded-lg flex items-end justify-center pb-2">
+                          <span className="text-xs font-medium text-white/90 bg-black/20 px-2 py-1 rounded backdrop-blur-sm">
+                            {benefit.title} 
                           </span>
                         </div>
-                        {/* Floating animation elements */}
-                        <motion.div
-                          animate={{ x: [0, 20, 0], y: [0, -10, 0] }}
-                          transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                          className="absolute top-2 right-2 w-3 h-3 bg-[#54bb74]/30 rounded-full"
-                        />
-                        <motion.div
-                          animate={{ x: [0, -15, 0], y: [0, 15, 0] }}
-                          transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-                          className="absolute bottom-2 left-2 w-2 h-2 bg-[#93cfa2]/40 rounded-full"
-                        />
                       </div>
                     </div>
 
@@ -587,38 +588,13 @@ const BenefitTimeline = () => {
                   <div className="flex-1 bg-gradient-to-br from-[#f3ebe2]/40 to-[#93cfa2]/20 rounded-2xl border border-[#54bb74]/10 p-6 relative overflow-hidden">
                     {/* Demo Area */}
                     <div className="w-full h-64 bg-white/60 rounded-xl backdrop-blur-sm border border-white/40 flex items-center justify-center relative overflow-hidden shadow-inner">
-                      <div className="text-center">
-                        <motion.div
-                          animate={{ rotate: [0, 5, -5, 0] }}
-                          transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-                        >
-                          <selectedBenefit.icon className="text-6xl mx-auto mb-4" style={{ color: selectedBenefit.color }} />
-                        </motion.div>
-                        <span className="text-sm font-semibold text-[#292929]/70 uppercase tracking-wide">
-                          {selectedBenefit.title} Demo
-                        </span>
-                      </div>
-                      
-                      {/* Enhanced floating elements */}
-                      <motion.div
-                        animate={{ x: [0, 25, 0], y: [0, -12, 0], scale: [1, 1.1, 1] }}
-                        transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                        className="absolute top-4 right-4 w-4 h-4 bg-[#54bb74]/50 rounded-full"
-                      />
-                      <motion.div
-                        animate={{ x: [0, -20, 0], y: [0, 18, 0], scale: [1, 0.9, 1] }}
-                        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-                        className="absolute bottom-4 left-4 w-3 h-3 bg-[#93cfa2]/60 rounded-full"
-                      />
-                      <motion.div
-                        animate={{ x: [0, 15, 0], y: [0, -8, 0], scale: [1, 1.2, 1] }}
-                        transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
-                        className="absolute top-1/2 left-6 w-2 h-2 bg-[#54bb74]/40 rounded-full"
-                      />
-                      <motion.div
-                        animate={{ x: [0, -12, 0], y: [0, 10, 0], scale: [1, 0.8, 1] }}
-                        transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 1.5 }}
-                        className="absolute top-1/3 right-8 w-2 h-2 bg-[#93cfa2]/50 rounded-full"
+                      <video 
+                        className="w-full h-full object-cover"
+                        autoPlay={true}
+                        loop={true}
+                        muted={true}
+                        playsInline={true}
+                        src={selectedBenefit.video}
                       />
                     </div>
                     
