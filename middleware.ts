@@ -14,17 +14,17 @@ export function middleware(request: NextRequest) {
 
     // Handle limiai.co domain routing
     if (host === 'limiai.co' || host === 'www.limiai.co') {
-      console.log(`[MIDDLEWARE] limiai.co detected, routing to /limifuture`)
+      console.log(`[MIDDLEWARE] limiai.co detected, routing to /assembly`)
       
-      // If already on /limifuture path, continue normally
-      if (pathname.startsWith('/limifuture')) {
-        console.log(`[MIDDLEWARE] Already on /limifuture path`)
+      // If already on /assembly path, continue normally
+      if (pathname.startsWith('/assembly')) {
+        console.log(`[MIDDLEWARE] Already on /assembly path`)
         return NextResponse.next()
       }
       
-      // Rewrite all other paths to /limifuture
-      console.log(`[MIDDLEWARE] Rewriting ${pathname} to /limifuture`)
-      url.pathname = '/limifuture'
+      // Rewrite all other paths to /assembly
+      console.log(`[MIDDLEWARE] Rewriting ${pathname} to /assembly`)
+      url.pathname = '/assembly'
       return NextResponse.rewrite(url)
     }
 
