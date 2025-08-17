@@ -383,7 +383,7 @@ const Hero = () => {
               </div>
 
          
-              {/* <div className="hero-card mb-20 -mt-16 relative w-[50%] max-w-2xl bg-[#f3ebe2] rounded-2xl overflow-hidden border border-[#54bb74]/20 shadow-lg">
+              <div className="hero-card mb-20 -mt-16 relative w-[50%] max-w-2xl bg-[#f3ebe2] rounded-2xl overflow-hidden border border-[#54bb74]/20 shadow-lg">
             
                 <div className="aspect-[16/9] w-full">
           
@@ -394,7 +394,7 @@ const Hero = () => {
                     allowFullScreen
                   />
                 </div>
-              </div> */}
+              </div>
 
               {/* Slide Indicators */}
               {slides.length > 1 && (

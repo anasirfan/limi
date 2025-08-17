@@ -11,8 +11,28 @@
       ]
     },
     {
+      "source": "/invest",
+      "destination": "/limifuture",
+      "has": [
+        {
+          "type": "host",
+          "value": "limiai.co"
+        }
+      ]
+    },
+    {
       "source": "/",
       "destination": "/assembly",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.limiai.co"
+        }
+      ]
+    },
+    {
+      "source": "/invest",
+      "destination": "/limifuture",
       "has": [
         {
           "type": "host",
