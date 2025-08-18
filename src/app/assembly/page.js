@@ -7,6 +7,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from '@studio-freight/lenis';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+import Script from 'next/script';
 
 // Import components
 import Hero from './components/Hero';
@@ -15,6 +16,14 @@ import SensorModuleCard from './components/SensorModuleCard';
 import InteractiveViewer from './components/InteractiveViewer';
 import BenefitTimeline from './components/BenefitTimeline';
 import CTA from './components/CTA';
+
+// Import Umami tracking utilities
+import { 
+  trackScrollInteraction, 
+  trackPagePerformance, 
+  trackSensorCard,
+  trackAssemblyEvent 
+} from '../utils/umamiTracking';
 
 // Register GSAP plugins
 if (typeof window !== 'undefined') {
@@ -85,7 +94,14 @@ const AssemblyPage = () => {
         } else {
           setCurrentTheme('light');
         }
+        trackScrollInteraction('assembly_page', progress);
       },
+    });
+
+    // Track page performance
+    trackPagePerformance({
+      page: 'assembly',
+      loadTime: performance.now()
     });
 
     return () => {
@@ -104,77 +120,89 @@ const AssemblyPage = () => {
   }
 
   return (
-    <motion.div
-      ref={containerRef}
-      className="relative overflow-hidden"
-      style={{ backgroundColor }}
-    >
-      {/* Hero Section */}
-      <Hero />
+    <>
+      {/* Umami Analytics Script for limiai.co */}
+      <Script
+        src="https://cloud.umami.is/script.js"
+        data-website-id="c2dbae41-29a3-457e-bcb6-5a6b68a53fe3"
+        strategy="afterInteractive"
+      />
+      
+      <motion.div
+        ref={containerRef}
+        className="relative overflow-hidden"
+        style={{ backgroundColor }}
+      >
+        {/* Hero Section */}
+        <Hero onVisible={() => trackAssemblyEvent('Hero Section')} />
 
-      {/* Assembly Scroll Storytelling */}
-      <AssemblyScroll />
+        {/* Assembly Scroll Storytelling */}
+        <AssemblyScroll onVisible={() => trackAssemblyEvent('Assembly Scroll Storytelling')} />
 
-      {/* Sensor Modules Grid */}
-      <section className="relative py-20 px-4">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-5xl font-bold text-white mb-6">
-              Smart Sensor Integration
-            </h2>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Each module contains advanced sensors that transform your lighting into an intelligent ecosystem
-            </p>
-          </motion.div>
+        {/* Sensor Modules Grid */}
+        <section className="relative bg-white py-20 px-4">
+          <div className="max-w-7xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="text-center mb-16"
+            >
+              <h2 className="text-5xl font-bold text-[#292929] mb-6">
+                Smart <span className="text-[#54bb74]">Sensor</span> Integration
+              </h2>
+              <p className="text-xl text-gray-700 max-w-3xl mx-auto">
+                Each module contains advanced sensors that transform your lighting into an intelligent ecosystem
+              </p>
+            </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <SensorModuleCard
-              title="Radar Detection"
-              description="Advanced motion sensing with precise occupancy detection"
-              icon="radar"
-              delay={0}
-            />
-            <SensorModuleCard
-              title="Audio Processing"
-              description="Voice commands and ambient sound analysis"
-              icon="microphone"
-              delay={0.2}
-            />
-            <SensorModuleCard
-              title="Computer Vision"
-              description="Visual recognition and gesture control"
-              icon="camera"
-              delay={0.4}
-            />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <SensorModuleCard
+                title="Radar Detection"
+                description="Advanced motion sensing with precise occupancy detection"
+                icon="radar"
+                delay={0}
+                onVisible={() => trackSensorCard('Radar Detection')}
+              />
+              <SensorModuleCard
+                title="Audio Processing"
+                description="Voice commands and ambient sound analysis"
+                icon="microphone"
+                delay={0.2}
+                onVisible={() => trackSensorCard('Audio Processing')}
+              />
+              <SensorModuleCard
+                title="Computer Vision"
+                description="Visual recognition and gesture control"
+                icon="camera"
+                delay={0.4}
+                onVisible={() => trackSensorCard('Computer Vision')}
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* Interactive 3D Viewer */}
+        <InteractiveViewer onVisible={() => trackAssemblyEvent('Interactive 3D Viewer')} />
+
+        {/* Benefits Timeline */}
+        <BenefitTimeline onVisible={() => trackAssemblyEvent('Benefits Timeline')} />
+
+        {/* CTA Section */}
+        <CTA onVisible={() => trackAssemblyEvent('CTA Section')} />
+
+        {/* Floating Theme Indicator */}
+        <div className="fixed top-4 right-4 z-50">
+          <div className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-500 ${
+            currentTheme === 'light' 
+              ? 'bg-white/20 text-[#292929] backdrop-blur-md' 
+              : 'bg-black/20 text-white backdrop-blur-md'
+          }`}>
+            {/* {currentTheme === 'light' ? '☀️ Light Mode' : '🌙 Dark Mode'} */}
           </div>
         </div>
-      </section>
-
-      {/* Interactive 3D Viewer */}
-      <InteractiveViewer />
-
-      {/* Benefits Timeline */}
-      <BenefitTimeline />
-
-      {/* CTA Section */}
-      <CTA />
-
-      {/* Floating Theme Indicator */}
-      <div className="fixed top-4 right-4 z-50">
-        <div className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-500 ${
-          currentTheme === 'light' 
-            ? 'bg-white/20 text-[#292929] backdrop-blur-md' 
-            : 'bg-black/20 text-white backdrop-blur-md'
-        }`}>
-          {/* {currentTheme === 'light' ? '☀️ Light Mode' : '🌙 Dark Mode'} */}
-        </div>
-      </div>
-    </motion.div>
+      </motion.div>
+    </>
   );
 };
 

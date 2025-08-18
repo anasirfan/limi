@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { FaExpand, FaRedo, FaEye, FaCog, FaPlay } from 'react-icons/fa';
 import { HiCube, HiLightBulb, HiWifi } from 'react-icons/hi';
+import { trackAssemblyEvent } from '../../utils/umamiTracking';
 
 const InteractiveViewer = () => {
   const containerRef = useRef(null);
@@ -16,7 +17,7 @@ const InteractiveViewer = () => {
 
   const viewModes = [
     { id: 'assembly', label: 'Assembly View', icon: HiCube },
-    { id: 'lighting', label: 'Lighting Demo', icon: HiLightBulb },
+    { id: 'lighting', label: 'Base Demo', icon: HiLightBulb },
     { id: 'sensors', label: 'Sensor Network', icon: HiWifi }
   ];
 
@@ -58,23 +59,34 @@ const InteractiveViewer = () => {
 
   const handleViewChange = (viewId) => {
     setCurrentView(viewId);
+    trackAssemblyEvent('View Mode Changed', viewId);
     // Here you would trigger PlayCanvas scene changes
     console.log(`Switching to ${viewId} view`);
   };
 
   const toggleWiring = () => {
     setShowWiring(!showWiring);
+    trackAssemblyEvent('Wiring View Toggled', showWiring ? 'On' : 'Off');
     // Here you would toggle wiring visibility in PlayCanvas
     console.log(`Wiring view: ${!showWiring}`);
   };
 
   const toggleFullscreen = () => {
     setIsFullscreen(!isFullscreen);
+    trackAssemblyEvent('Fullscreen Toggled', isFullscreen ? 'On' : 'Off');
     if (!isFullscreen) {
       viewerRef.current?.requestFullscreen?.();
     } else {
       document.exitFullscreen?.();
     }
+  };
+
+  const handleHotspotClick = (hotspotId) => {
+    trackAssemblyEvent('Hotspot Clicked', hotspotId);
+  };
+
+  const handleCTAClick = () => {
+    trackAssemblyEvent('CTA Clicked', 'Start Tour');
   };
 
   return (
@@ -126,15 +138,12 @@ const InteractiveViewer = () => {
             {/* PlayCanvas Placeholder */}
             <div className="w-full h-full relative">
               {/* This would be replaced with actual PlayCanvas canvas */}
-              <div className="w-full h-full bg-gradient-to-br from-[#292929] via-[#1a1a1a] to-[#292929] flex items-center justify-center">
-                <div className="text-center">
-                  <div className="w-32 h-32 bg-gradient-to-br from-[#54bb74] to-[#93cfa2] rounded-full flex items-center justify-center mb-6 mx-auto">
-                    <HiCube className="text-5xl text-white" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-white mb-2">3D Model Viewer</h3>
-                  <p className="text-gray-400">PlayCanvas Integration Ready</p>
-                </div>
-              </div>
+              <iframe
+                src="https://playcanv.as/e/p/LBV4KIS5/"
+                className="w-full h-full border-0 rounded-xl"
+                title="LIMI 3D Interactive Viewer"
+                allowFullScreen
+              />
 
               {/* Interactive Hotspots */}
               {hotspots.map((hotspot) => (
@@ -148,6 +157,7 @@ const InteractiveViewer = () => {
                   }}
                   whileHover={{ scale: 1.2 }}
                   whileTap={{ scale: 0.9 }}
+                  onClick={() => handleHotspotClick(hotspot.id)}
                 >
                   {/* Hotspot Marker */}
                   <div className="w-6 h-6 bg-[#54bb74] rounded-full border-2 border-white shadow-lg animate-pulse">
@@ -179,7 +189,7 @@ const InteractiveViewer = () => {
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center space-x-2 ${
                       currentView === mode.id
                         ? 'bg-[#54bb74] text-white shadow-lg'
-                        : 'bg-white/10 text-white hover:bg-white/20 backdrop-blur-md'
+                        : 'bg-black text-white backdrop-blur-md'
                     }`}
                   >
                     <mode.icon className="text-sm" />
@@ -197,7 +207,7 @@ const InteractiveViewer = () => {
                   className={`p-3 rounded-lg transition-all duration-300 ${
                     showWiring
                       ? 'bg-[#54bb74] text-white'
-                      : 'bg-white/10 text-white hover:bg-white/20'
+                      : 'bg-black text-white '
                   } backdrop-blur-md`}
                   title="Toggle Wiring View"
                 >
@@ -207,7 +217,7 @@ const InteractiveViewer = () => {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="p-3 bg-white/10 text-white hover:bg-white/20 rounded-lg transition-all duration-300 backdrop-blur-md"
+                  className="p-3 bg-black text-white rounded-lg transition-all duration-300 backdrop-blur-md"
                   title="Reset View"
                 >
                   <FaRedo />
@@ -217,7 +227,7 @@ const InteractiveViewer = () => {
                   onClick={toggleFullscreen}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="p-3 bg-white/10 text-white hover:bg-white/20 rounded-lg transition-all duration-300 backdrop-blur-md"
+                  className="p-3 bg-black text-white  rounded-lg transition-all duration-300 backdrop-blur-md"
                   title="Fullscreen"
                 >
                   <FaExpand />
@@ -247,6 +257,7 @@ const InteractiveViewer = () => {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     className="px-4 py-2 bg-[#54bb74] text-white rounded-lg text-sm font-medium hover:bg-[#54bb74]/80 transition-colors duration-300 flex items-center space-x-2"
+                    onClick={handleCTAClick}
                   >
                     <FaPlay className="text-xs" />
                     <span>Start Tour</span>

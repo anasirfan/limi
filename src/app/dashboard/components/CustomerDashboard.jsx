@@ -1221,6 +1221,7 @@ export default function CustomerDashboard({ token }) {
           </div>
         </div>
       )}
+ 
      
       {activeTab === "distributorQuery" && (
         <div className="bg-[#1e1e1e] rounded-lg shadow-lg overflow-hidden border border-[#3a3a3a]">
