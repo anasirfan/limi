@@ -45,7 +45,7 @@
                   </div>
                   <div className="flex items-center justify-center md:justify-start text-gray-300">
                     <FaEnvelope className="mr-3 text-[#54bb74] text-lg" />
-                    <span className="text-lg">hello@limi.lighting</span>
+                    <span className="text-lg">hello@limilighting.com</span>
                   </div>
                 </div>
               </div>
