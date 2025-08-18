@@ -17,7 +17,7 @@ const InteractiveViewer = () => {
 
   const viewModes = [
     { id: 'assembly', label: 'Assembly View', icon: HiCube },
-    { id: 'lighting', label: 'Lighting Demo', icon: HiLightBulb },
+    { id: 'lighting', label: 'Base Demo', icon: HiLightBulb },
     { id: 'sensors', label: 'Sensor Network', icon: HiWifi }
   ];
 
