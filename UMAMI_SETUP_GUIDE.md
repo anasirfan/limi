@@ -6,7 +6,7 @@ This guide explains how to set up and use Umami analytics for tracking investor 
 ## 🔧 Implementation Details
 
 ### 1. Umami Script Integration
-The Umami tracking script has been added to your Next.js layout:
+The Umami tracking script has been added to your Next.js layout:   
 
 ```html
 <script 
