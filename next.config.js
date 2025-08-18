@@ -41,13 +41,19 @@ const nextConfig = {
       'coverr.co',
       'media.istockphoto.com', // in case any fallback stock sources
       'media.pexels.com',
-      'mixkit.imgix.net'
+      'mixkit.imgix.net',
+      'dev.api.limitless-lighting.co.uk'
     ],
     remotePatterns: [
       {
         protocol: 'https',
         hostname: 'ui-avatars.com',
         pathname: '/api/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'dev.api.limitless-lighting.co.uk',
+        pathname: '/**',
       },
       {
         protocol: 'https',
