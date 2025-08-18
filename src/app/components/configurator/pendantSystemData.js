@@ -63,7 +63,7 @@ export const systemAssignments = [
   // Pendants
   { id: 39,baseNumber: 1, systemType: "", name: "Bumble", design: "bumble", message: "product_1", isSystem: false,image: "/images/configOptions/1.png" },
   { id: 40,baseNumber: 2, systemType: "", name: "Radial", design: "radial", message: "product_2", isSystem: false,image: "/images/configOptions/2.png" },
-  // { id: 41,baseNumber: 3, systemType: "",name: "Fina", design: "fina", message: "product_3", isSystem: false,image: "/images/configOptions/3.png" },
+  { id: 41,baseNumber: 3, systemType: "",name: "Fina", design: "fina", message: "product_3", isSystem: false,image: "/images/configOptions/3.png" },
   { id: 42,baseNumber: 4, systemType: "", name: "Ico", design: "ico", message: "product_4", isSystem: false,image: "/images/configOptions/4.png" },
   { id: 43,baseNumber: 5, systemType: "", name: "Piko", design: "piko", message: "product_5", isSystem: false,image: "/images/configOptions/5.png" }
 ];
