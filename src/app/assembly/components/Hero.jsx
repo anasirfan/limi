@@ -10,6 +10,7 @@ import { loadSlim } from '@tsparticles/slim';
 import Link from 'next/link';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { trackPagePerformance, trackHeroCarousel, trackAssemblyEvent } from '../../utils/umamiTracking';
 
 const Hero = () => {
   const [mounted, setMounted] = useState(false);
@@ -133,6 +134,7 @@ const Hero = () => {
         toast.success('Thank you! We\'ll be in touch soon.');
         setShowStartModal(false);
         setFormData({ name: '', email: '', company: '' });
+        trackAssemblyEvent('hero_form_submission', 'Hero Form Submission');
       } else {
         const errorData = await response.json();
         toast.error(errorData.error || 'Failed to submit form');
@@ -165,6 +167,7 @@ const Hero = () => {
         toast.success('Brochure sent to your email!');
         setShowBrochureModal(false);
         setFormData({ name: '', email: '', company: '' });
+        trackAssemblyEvent('hero_brochure_download', 'Hero Brochure Download');
       } else {
         const errorData = await response.json();
         toast.error(errorData.error || 'Failed to send brochure');
@@ -181,13 +184,16 @@ const Hero = () => {
       case 'Build System':
       case 'Get Started':
         setShowStartModal(true);
+        trackAssemblyEvent('hero_cta_click', 'Hero CTA Click');
         break;
       case 'Learn More':
       case 'View Modules':
         setShowBrochureModal(true);
+        trackAssemblyEvent('hero_learn_more_click', 'Hero Learn More Click');
         break;
       case 'Contact':
         setShowDemoModal(true);
+        trackAssemblyEvent('hero_contact_click', 'Hero Contact Click');
         break;
       default:
         setShowStartModal(true);
@@ -196,64 +202,60 @@ const Hero = () => {
 
   useEffect(() => {
     setMounted(true);
+    
+    // Track page load performance
+    const startTime = performance.now();
+    
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    const checkReducedMotion = () => {
+      setPrefersReduced(window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    };
 
-    // env checks
-    if (typeof window !== 'undefined') {
-      const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-      const updateReduced = () => setPrefersReduced(mq.matches);
-      updateReduced();
-      mq.addEventListener?.('change', updateReduced);
+    checkMobile();
+    checkReducedMotion();
+    
+    window.addEventListener('resize', checkMobile);
+    window.addEventListener('resize', checkReducedMotion);
 
-      const onResize = () => setIsMobile(window.innerWidth < 768);
-      onResize();
-      window.addEventListener('resize', onResize);
+    // Track performance metrics after component mount
+    setTimeout(() => {
+      const loadTime = performance.now() - startTime;
+      trackPagePerformance({
+        loadTime,
+        component: 'Hero',
+        isMobile: window.innerWidth < 768,
+        reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      });
+    }, 100);
 
-      return () => {
-        mq.removeEventListener?.('change', updateReduced);
-        window.removeEventListener('resize', onResize);
-      };
-    }
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+      window.removeEventListener('resize', checkReducedMotion);
+    };
   }, []);
 
-  // Auto-slide carousel (paused offscreen or when reduced motion)
-  useEffect(() => {
-    console.log('Carousel useEffect triggered:', {
-      prefersReduced,
-      mounted,
-      slidesLength: slides.length,
-    });
-    
-    if (prefersReduced || !mounted || slides.length <= 1) return;
-    
-    console.log('Starting carousel interval');
-    const interval = setInterval(() => {
-      console.log('Carousel advancing from slide:', currentSlide);
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 3000);
-    return () => clearInterval(interval);
-  }, [mounted, prefersReduced, slides.length]);
-
-  // Entrance and floating animations (skip if reduced motion)
+  // Auto-rotate slides with tracking
   useEffect(() => {
     if (prefersReduced) return;
+    
+    const interval = setInterval(() => {
+      setCurrentSlide(prev => {
+        const nextSlide = (prev + 1) % slides.length;
+        trackHeroCarousel('auto_rotate', nextSlide, slides[nextSlide].title, {
+          fromSlide: prev,
+          toSlide: nextSlide,
+          method: 'auto'
+        });
+        return nextSlide;
+      });
+    }, 3000);
 
-    gsap.fromTo(
-      '.hero-card',
-      { y: 100, opacity: 0, scale: 0.8 },
-      { y: 0, opacity: 1, scale: 1, duration: 1.2, ease: 'back.out(1.7)', stagger: 0.2 }
-    );
+    return () => clearInterval(interval);
+  }, [prefersReduced, slides.length]);
 
-    gsap.to('.floating-element', {
-      y: -20,
-      duration: 3,
-      ease: 'power2.inOut',
-      yoyo: true,
-      repeat: -1,
-      stagger: 0.5,
-    });
-  }, [prefersReduced]);
-
-  // Keyboard navigation (only when in view)
   useEffect(() => {
     if (!mounted || prefersReduced || slides.length <= 1) return;
     const onKey = (e) => {
@@ -495,7 +497,10 @@ const Hero = () => {
             className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl relative"
           >
             <button
-              onClick={() => setShowStartModal(false)}
+              onClick={() => {
+                setShowStartModal(false);
+                trackAssemblyEvent('hero_modal_close', 'Hero Modal Close');
+              }}
               className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl"
             >
               <FaTimes />
@@ -569,7 +574,10 @@ const Hero = () => {
             className="bg-white rounded-3xl p-8 max-w-4xl w-full shadow-2xl relative"
           >
             <button
-              onClick={() => setShowDemoModal(false)}
+              onClick={() => {
+                setShowDemoModal(false);
+                trackAssemblyEvent('hero_modal_close', 'Hero Modal Close');
+              }}
               className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl z-10"
             >
               <FaTimes />
@@ -640,7 +648,10 @@ const Hero = () => {
             className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl relative"
           >
             <button
-              onClick={() => setShowBrochureModal(false)}
+              onClick={() => {
+                setShowBrochureModal(false);
+                trackAssemblyEvent('hero_modal_close', 'Hero Modal Close');
+              }}
               className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl"
             >
               <FaTimes />

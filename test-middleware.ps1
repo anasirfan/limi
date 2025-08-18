@@ -36,17 +36,34 @@ try {
     Write-Host "❌ Error: $($_.Exception.Message)" -ForegroundColor Red
 }
 
-# Test 3: Test a specific path on limiai.co
-Write-Host "`n3️⃣ Testing limiai.co/some-path (should also redirect to /assembly):" -ForegroundColor Yellow
+# Test 3: Test limiai.co/dashboard (should redirect to /assembly/dashboard)
+Write-Host "`n3️⃣ Testing limiai.co/dashboard (should serve Assembly dashboard):" -ForegroundColor Yellow
 try {
-    $response3 = Invoke-WebRequest -Uri "http://localhost:3002/invest" -Headers @{"Host"="limiai.co"} -Method GET -TimeoutSec 10
+    $response3 = Invoke-WebRequest -Uri "http://localhost:3002/dashboard" -Headers @{"Host"="limiai.co"} -Method GET -TimeoutSec 10
     Write-Host "✅ Status: $($response3.StatusCode)" -ForegroundColor Green
     Write-Host "📄 Content length: $($response3.Content.Length) characters"
     
-    if ($response3.Content -match "Assembly|Edge AI Infrastructure") {
-        Write-Host "✅ Any path on limiai.co serves assembly content (expected)" -ForegroundColor Green
+    # Check if it contains assembly dashboard content
+    if ($response3.Content -match "Assembly Dashboard|Analytics, leads, and performance monitoring") {
+        Write-Host "✅ Serving Assembly dashboard content (expected)" -ForegroundColor Green
     } else {
-        Write-Host "⚠️  WARNING: limiai.co paths are NOT serving assembly content" -ForegroundColor Red
+        Write-Host "⚠️  WARNING: limiai.co/dashboard is NOT serving Assembly dashboard" -ForegroundColor Red
+    }
+} catch {
+    Write-Host "❌ Error: $($_.Exception.Message)" -ForegroundColor Red
+}
+
+# Test 4: Test a specific path on limiai.co
+Write-Host "`n4️⃣ Testing limiai.co/invest (should redirect to /limifuture):" -ForegroundColor Yellow
+try {
+    $response4 = Invoke-WebRequest -Uri "http://localhost:3002/invest" -Headers @{"Host"="limiai.co"} -Method GET -TimeoutSec 10
+    Write-Host "✅ Status: $($response4.StatusCode)" -ForegroundColor Green
+    Write-Host "📄 Content length: $($response4.Content.Length) characters"
+    
+    if ($response4.Content -match "LimiFuture|Investor") {
+        Write-Host "✅ limiai.co/invest serves LimiFuture content (expected)" -ForegroundColor Green
+    } else {
+        Write-Host "⚠️  WARNING: limiai.co/invest is NOT serving LimiFuture content" -ForegroundColor Red
     }
 } catch {
     Write-Host "❌ Error: $($_.Exception.Message)" -ForegroundColor Red
