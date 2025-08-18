@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import Link from 'next/link';
 import Sidebar from './Sidebar';
 import ActivityTracker from './ActivityTracker';
 import AssetGrid from './AssetGrid';
@@ -9,7 +10,7 @@ import AssetTable from './AssetTable';
 import SearchBar from './SearchBar';
 import UploadModal from './UploadModal';
 import { setViewMode } from '../../redux/slices/assetsSlice';
-import { FiGrid, FiList, FiPlus } from 'react-icons/fi';
+import { FiGrid, FiList, FiPlus, FiSettings } from 'react-icons/fi';
 
 export default function AssetDashboard() {
   const dispatch = useDispatch();
@@ -75,6 +76,15 @@ export default function AssetDashboard() {
                   <FiList className="w-4 h-4" />
                 </button>
               </div>
+
+              {/* System Admin Link */}
+              <Link
+                href="/admin"
+                className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+              >
+                <FiSettings className="w-4 h-4" />
+                <span>System Admin</span>
+              </Link>
 
               {/* Upload button */}
               <button

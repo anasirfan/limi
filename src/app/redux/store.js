@@ -8,6 +8,7 @@ import slidesReducer from './slices/slidesSlice';
 import slideAnalyticsReducer from './slices/slideAnalyticsSlice';
 import assetsReducer from './slices/assetsSlice';
 import activityReducer from './slices/activitySlice';
+import authReducer from './slices/authSlice';
 
 export const store = configureStore({
   reducer: {
@@ -20,6 +21,7 @@ export const store = configureStore({
     slideAnalytics: slideAnalyticsReducer,
     assets: assetsReducer,
     activity: activityReducer,
+    auth: authReducer,
   },
   // Add middleware or other store configuration here if needed
 });
