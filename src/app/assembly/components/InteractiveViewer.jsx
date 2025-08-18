@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { FaExpand, FaRedo, FaEye, FaCog, FaPlay } from 'react-icons/fa';
 import { HiCube, HiLightBulb, HiWifi } from 'react-icons/hi';
+import { trackAssemblyEvent } from '../../utils/umamiTracking';
 
 const InteractiveViewer = () => {
   const containerRef = useRef(null);
@@ -58,23 +59,34 @@ const InteractiveViewer = () => {
 
   const handleViewChange = (viewId) => {
     setCurrentView(viewId);
+    trackAssemblyEvent('View Mode Changed', viewId);
     // Here you would trigger PlayCanvas scene changes
     console.log(`Switching to ${viewId} view`);
   };
 
   const toggleWiring = () => {
     setShowWiring(!showWiring);
+    trackAssemblyEvent('Wiring View Toggled', showWiring ? 'On' : 'Off');
     // Here you would toggle wiring visibility in PlayCanvas
     console.log(`Wiring view: ${!showWiring}`);
   };
 
   const toggleFullscreen = () => {
     setIsFullscreen(!isFullscreen);
+    trackAssemblyEvent('Fullscreen Toggled', isFullscreen ? 'On' : 'Off');
     if (!isFullscreen) {
       viewerRef.current?.requestFullscreen?.();
     } else {
       document.exitFullscreen?.();
     }
+  };
+
+  const handleHotspotClick = (hotspotId) => {
+    trackAssemblyEvent('Hotspot Clicked', hotspotId);
+  };
+
+  const handleCTAClick = () => {
+    trackAssemblyEvent('CTA Clicked', 'Start Tour');
   };
 
   return (
@@ -145,6 +157,7 @@ const InteractiveViewer = () => {
                   }}
                   whileHover={{ scale: 1.2 }}
                   whileTap={{ scale: 0.9 }}
+                  onClick={() => handleHotspotClick(hotspot.id)}
                 >
                   {/* Hotspot Marker */}
                   <div className="w-6 h-6 bg-[#54bb74] rounded-full border-2 border-white shadow-lg animate-pulse">
@@ -244,6 +257,7 @@ const InteractiveViewer = () => {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     className="px-4 py-2 bg-[#54bb74] text-white rounded-lg text-sm font-medium hover:bg-[#54bb74]/80 transition-colors duration-300 flex items-center space-x-2"
+                    onClick={handleCTAClick}
                   >
                     <FaPlay className="text-xs" />
                     <span>Start Tour</span>

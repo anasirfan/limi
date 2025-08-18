@@ -8,6 +8,7 @@ import { FaArrowRight, FaPlay, FaDownload, FaPhone, FaEnvelope, FaTwitter, FaLin
 import { HiSparkles, HiLightBulb, HiCube } from 'react-icons/hi';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { trackAssemblyEvent } from '../../utils/umamiTracking';
 
 const CTA = () => {
   const containerRef = useRef(null);
@@ -91,6 +92,14 @@ const CTA = () => {
     }
   };
 
+  const trackModalInteraction = (modalName, action) => {
+    trackAssemblyEvent(`Modal ${action}`, modalName);
+  };
+
+  const trackFormSubmission = (formName, success, formData) => {
+    trackAssemblyEvent(`Form Submission ${success ? 'Success' : 'Failure'}`, formName, formData);
+  };
+
   if (!mounted) return null;
 
   return (
@@ -157,7 +166,10 @@ const CTA = () => {
           <motion.button
             whileHover={{ scale: 1.05, y: -5 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => setShowStartModal(true)}
+            onClick={() => {
+              setShowStartModal(true);
+              trackModalInteraction('start_journey', 'open');
+            }}
             className="inline-flex items-center space-x-4 px-12 py-6 bg-gradient-to-r from-[#54bb74] to-[#93cfa2] text-white rounded-full font-bold text-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 mb-8"
           >
             <HiLightBulb className="text-3xl" />
@@ -170,7 +182,10 @@ const CTA = () => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => setShowDemoModal(true)}
+              onClick={() => {
+                setShowDemoModal(true);
+                trackModalInteraction('demo', 'open');
+              }}
               className="px-8 py-4 bg-[#292929] text-white rounded-full font-semibold border-2 border-[#292929] hover:bg-transparent hover:text-[#292929] transition-all duration-300 flex items-center space-x-3"
             >
               <FaPlay className="text-lg" />
@@ -180,7 +195,10 @@ const CTA = () => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => setShowBrochureModal(true)}
+              onClick={() => {
+                setShowBrochureModal(true);
+                trackModalInteraction('brochure', 'open');
+              }}
               className="px-8 py-4 bg-transparent text-[#292929] rounded-full font-semibold border-2 border-[#292929] hover:bg-[#292929] hover:text-white transition-all duration-300 flex items-center space-x-3"
             >
               <FaDownload className="text-lg" />
@@ -294,7 +312,7 @@ const CTA = () => {
                 <div className="text-[#54bb74] font-semibold text-lg">Modular Lighting System</div>
                 <motion.div
                   animate={{ rotate: [0, 5, -5, 0] }}
-                  transition={{ duration: 4, repeat: Infinity }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
                   className="w-12 h-12 bg-gradient-to-br from-[#54bb74] to-[#93cfa2] rounded-full mx-auto mt-4 flex items-center justify-center"
                 >
                   <HiLightBulb className="text-white text-2xl" />
@@ -355,7 +373,10 @@ const CTA = () => {
             className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl relative"
           >
             <button
-              onClick={() => setShowStartModal(false)}
+              onClick={() => {
+                setShowStartModal(false);
+                trackModalInteraction('start_journey', 'close');
+              }}
               className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl"
             >
               <FaTimes />
@@ -369,7 +390,10 @@ const CTA = () => {
               <p className="text-gray-600">Tell us about yourself and we'll get you started</p>
             </div>
 
-            <form onSubmit={handleStartJourneySubmit} className="space-y-4">
+            <form onSubmit={(e) => {
+              handleStartJourneySubmit(e);
+              trackFormSubmission('start_journey', true, formData);
+            }} className="space-y-4">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">Name *</label>
                 <input
@@ -377,9 +401,9 @@ const CTA = () => {
                   name="name"
                   value={formData.name}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#54bb74] focus:border-transparent outline-none transition-all"
-                  placeholder="Your full name"
                   required
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#54bb74] focus:border-transparent"
+                  placeholder="Your full name"
                 />
               </div>
               
@@ -390,29 +414,29 @@ const CTA = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#54bb74] focus:border-transparent outline-none transition-all"
-                  placeholder="your@email.com"
                   required
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#54bb74] focus:border-transparent"
+                  placeholder="your@email.com"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Company (Optional)</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Company</label>
                 <input
                   type="text"
                   name="company"
                   value={formData.company}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#54bb74] focus:border-transparent outline-none transition-all"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#54bb74] focus:border-transparent"
                   placeholder="Your company name"
                 />
               </div>
               
               <button
                 type="submit"
-                className="w-full py-3 bg-gradient-to-r from-[#54bb74] to-[#93cfa2] text-white rounded-xl font-semibold hover:shadow-lg transition-all duration-300"
+                className="w-full py-4 bg-gradient-to-r from-[#54bb74] to-[#93cfa2] text-white rounded-xl font-semibold text-lg hover:shadow-lg transition-all duration-300"
               >
-                Submit
+                Start My Journey
               </button>
             </form>
           </motion.div>
@@ -421,43 +445,77 @@ const CTA = () => {
 
       {/* Demo Modal */}
       {showDemoModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
             className="bg-white rounded-3xl p-8 max-w-4xl w-full shadow-2xl relative"
           >
             <button
-              onClick={() => setShowDemoModal(false)}
+              onClick={() => {
+                setShowDemoModal(false);
+                trackModalInteraction('demo', 'close');
+              }}
               className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl z-10"
             >
               <FaTimes />
             </button>
-            
-            <div className="text-center mb-6">
-              <h3 className="text-2xl font-bold text-[#292929] mb-2">Product Demo</h3>
-              <p className="text-gray-600">Watch how LIMI transforms your space</p>
-            </div>
 
-            <div className="aspect-video bg-gray-900 rounded-2xl overflow-hidden relative">
-              <video
-                className="w-full h-full object-cover"
-                controls
-                autoPlay
-                poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 450'%3E%3Crect width='800' height='450' fill='%23292929'/%3E%3Ctext x='400' y='225' text-anchor='middle' fill='%2354bb74' font-size='24' font-family='Arial'%3ELIMI Demo Video%3C/text%3E%3C/svg%3E"
-              >
-                <source src="/demo-video.mp4" type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
-              
-              {/* Fallback content */}
-              <div className="absolute inset-0 flex items-center justify-center text-white">
-                <div className="text-center">
-                  <FaPlay className="text-6xl mb-4 text-[#54bb74]" />
-                  <p className="text-xl">Demo video will be available soon</p>
-                  <p className="text-gray-400 mt-2">Experience LIMI's modular lighting system</p>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div>
+                <h3 className="text-3xl font-bold text-[#292929] mb-4">Interactive Demo</h3>
+                <p className="text-gray-600 mb-6">Experience LIMI's capabilities with our interactive demonstration</p>
+                
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-[#54bb74] rounded-full flex items-center justify-center">
+                      <span className="text-white text-sm font-bold">1</span>
+                    </div>
+                    <span className="text-gray-700">Real-time sensor data visualization</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-[#54bb74] rounded-full flex items-center justify-center">
+                      <span className="text-white text-sm font-bold">2</span>
+                    </div>
+                    <span className="text-gray-700">AI-powered lighting adjustments</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-[#54bb74] rounded-full flex items-center justify-center">
+                      <span className="text-white text-sm font-bold">3</span>
+                    </div>
+                    <span className="text-gray-700">Modular configuration options</span>
+                  </div>
                 </div>
+              </div>
+              <div>
+                <h4 className="text-xl font-semibold text-[#292929] mb-4">Quick Contact</h4>
+                <form onSubmit={(e) => {
+                  handleStartJourneySubmit(e);
+                  trackFormSubmission('demo', true, formData);
+                }} className="space-y-3">
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    placeholder="Your name"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#54bb74] focus:border-transparent"
+                  />
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    placeholder="Your email"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#54bb74] focus:border-transparent"
+                  />
+                  <button
+                    type="submit"
+                    className="w-full py-3 bg-[#292929] text-white rounded-xl font-semibold hover:bg-[#54bb74] transition-all duration-300"
+                  >
+                    Request Demo Access
+                  </button>
+                </form>
               </div>
             </div>
           </motion.div>
@@ -466,29 +524,34 @@ const CTA = () => {
 
       {/* Brochure Modal */}
       {showBrochureModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
             className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl relative"
           >
             <button
-              onClick={() => setShowBrochureModal(false)}
+              onClick={() => {
+                setShowBrochureModal(false);
+                trackModalInteraction('brochure', 'close');
+              }}
               className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl"
             >
               <FaTimes />
             </button>
-            
+
             <div className="text-center mb-6">
-              <div className="w-16 h-16 bg-gradient-to-br from-[#54bb74] to-[#93cfa2] rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-gradient-to-br from-[#93cfa2] to-[#54bb74] rounded-full flex items-center justify-center mx-auto mb-4">
                 <FaDownload className="text-2xl text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-[#292929] mb-2">Get Brochure</h3>
+              <h3 className="text-2xl font-bold text-[#292929] mb-2">Download Brochure</h3>
               <p className="text-gray-600">Download our detailed product brochure</p>
             </div>
 
-            <form onSubmit={handleBrochureSubmit} className="space-y-4">
+            <form onSubmit={(e) => {
+              handleBrochureSubmit(e);
+              trackFormSubmission('brochure', true, formData);
+            }} className="space-y-4">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
                 <input
@@ -496,18 +559,16 @@ const CTA = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#54bb74] focus:border-transparent outline-none transition-all"
-                  placeholder="your@email.com"
                   required
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#54bb74] focus:border-transparent"
+                  placeholder="your@email.com"
                 />
               </div>
-              
               <button
                 type="submit"
-                className="w-full py-3 bg-gradient-to-r from-[#54bb74] to-[#93cfa2] text-white rounded-xl font-semibold hover:shadow-lg transition-all duration-300 flex items-center justify-center space-x-2"
+                className="w-full py-4 bg-gradient-to-r from-[#93cfa2] to-[#54bb74] text-white rounded-xl font-semibold text-lg hover:shadow-lg transition-all duration-300"
               >
-                <FaDownload />
-                <span>Send Brochure</span>
+                Send Brochure
               </button>
             </form>
           </motion.div>

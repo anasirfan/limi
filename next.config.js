@@ -6,10 +6,21 @@ const nextConfig = {
   async rewrites() {
     return {
       beforeFiles: [
-        // Handle limiai.co root path - route to /limiai
+        // Handle limiai.co root path - route to /assembly
         {
           source: '/',
-          destination: '/limiai',
+          destination: '/assembly',
+          has: [
+            {
+              type: 'host',
+              value: 'limiai.co',
+            },
+          ],
+        },
+        // Handle limiai.co/dashboard - route to /assembly/dashboard
+        {
+          source: '/dashboard',
+          destination: '/assembly/dashboard',
           has: [
             {
               type: 'host',
@@ -28,10 +39,21 @@ const nextConfig = {
             },
           ],
         },
-        // Handle www.limiai.co root path - route to /limiai
+        // Handle www.limiai.co root path - route to /assembly
         {
           source: '/',
-          destination: '/limiai',
+          destination: '/assembly',
+          has: [
+            {
+              type: 'host',
+              value: 'www.limiai.co',
+            },
+          ],
+        },
+        // Handle www.limiai.co/dashboard - route to /assembly/dashboard
+        {
+          source: '/dashboard',
+          destination: '/assembly/dashboard',
           has: [
             {
               type: 'host',

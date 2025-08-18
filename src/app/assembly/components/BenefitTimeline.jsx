@@ -1,14 +1,19 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { FaTimes ,FaStar, FaPlay, FaPause, FaCheck, FaClock, FaCube, FaWifi, FaShield } from 'react-icons/fa';
 import confetti from 'canvas-confetti';
-import { FaRocket, FaClock, FaCog, FaLock, FaCheck, FaStar, FaTimes } from 'react-icons/fa';
-import { HiLightningBolt, HiCube, HiWifi, HiSparkles } from 'react-icons/hi';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { 
+  trackBenefitTimeline, 
+  trackModalInteraction, 
+  trackVideoInteraction,
+  trackAssemblyEvent 
+} from '../../utils/umamiTracking';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; // Import the CSS
 
 const BenefitTimeline = () => {
   const containerRef = useRef(null);
@@ -27,7 +32,7 @@ const BenefitTimeline = () => {
       title: 'INSTANT SETUP',
       subtitle: 'Zero Configuration Required',
       description: 'Our plug-and-play system eliminates complex installation procedures. Simply connect and activate.',
-      icon: HiLightningBolt,
+      icon: FaCube,
       color: '#54bb74',
       stats: ['5 min', 'setup time'],
       features: ['Auto-detection', 'Self-configuration', 'Instant activation'],
@@ -38,7 +43,7 @@ const BenefitTimeline = () => {
       title: 'MODULAR DESIGN',
       subtitle: 'Infinite Possibilities',
       description: 'Mix and match components to create your perfect lighting solution. Expand anytime.',
-      icon: HiCube,
+      icon: FaCube,
       color: '#93cfa2',
       stats: ['100+', 'combinations'],
       features: ['Interchangeable parts', 'Scalable system', 'Future-proof design'],
@@ -49,7 +54,7 @@ const BenefitTimeline = () => {
       title: 'SMART INTEGRATION',
       subtitle: 'AI-Powered Intelligence',
       description: 'Advanced sensors and AI processing create an intelligent lighting ecosystem.',
-      icon: HiWifi,
+      icon: FaWifi,
       color: '#54bb74',
       stats: ['24/7', 'monitoring'],
       features: ['Real-time adaptation', 'Predictive behavior', 'Energy optimization'],
@@ -60,7 +65,7 @@ const BenefitTimeline = () => {
       title: 'PREMIUM QUALITY',
       subtitle: 'Built to Last',
       description: 'Enterprise-grade components with rigorous testing ensure long-lasting performance.',
-      icon: FaLock,
+      icon: FaWifi,
       color: '#292929',
       stats: ['10 year', 'warranty'],
       features: ['Premium materials', 'Rigorous testing', 'Reliable performance'],
@@ -101,11 +106,13 @@ const BenefitTimeline = () => {
   const handleBenefitClick = (index) => {
     setSelectedBenefit(benefits[index]);
     setShowBenefitModal(true);
+    trackBenefitTimeline(index);
   };
 
   const closeBenefitModal = () => {
     setShowBenefitModal(false);
     setSelectedBenefit(null);
+    trackModalInteraction('close');
   };
 
   const handleInputChange = (e) => {
@@ -121,6 +128,15 @@ const BenefitTimeline = () => {
     toast.success('Thank you! We\'ll be in touch soon.');
     setShowStartModal(false);
     setFormData({ name: '', email: '', company: '' });
+    trackModalInteraction('submit');
+  };
+
+  const handleVideoPlay = (index) => {
+    trackVideoInteraction(index, 'play');
+  };
+
+  const handleVideoPause = (index) => {
+    trackVideoInteraction(index, 'pause');
   };
 
   return (
@@ -251,12 +267,14 @@ const BenefitTimeline = () => {
                       </div>
                       <div className="w-full  bg-white/50 rounded-xl backdrop-blur-sm border border-white/30 flex items-center justify-center relative overflow-hidden">
                         <video 
-                          className="w-full h-full object-cover rounded-lg"
-                          autoPlay={true}
+                          className="w-full h-full object-cover"
+                          autoPlay={false}
                           loop={true}
                           muted={true}
                           playsInline={true}
                           src={benefit.video}
+                          onPlay={() => handleVideoPlay(index)}
+                          onPause={() => handleVideoPause(index)}
                         />
                         {/* Video overlay with benefit info */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent rounded-lg flex items-end justify-center pb-2">
@@ -361,9 +379,9 @@ const BenefitTimeline = () => {
               {/* Right Stats */}
               <div className="space-y-6">
                 {[
-                  { number: '10K+', label: 'Installations', icon: HiCube },
-                  { number: '99.9%', label: 'Uptime', icon: HiLightningBolt },
-                  { number: '24/7', label: 'Support', icon: HiSparkles }
+                  { number: '10K+', label: 'Installations', icon: FaCube },
+                  { number: '99.9%', label: 'Uptime', icon: FaClock },
+                  { number: '24/7', label: 'Support', icon: FaWifi }
                 ].map((stat, index) => (
                   <motion.div
                     key={index}
@@ -430,7 +448,7 @@ const BenefitTimeline = () => {
             
             <div className="text-center mb-6">
               <div className="w-16 h-16 bg-gradient-to-br from-[#54bb74] to-[#93cfa2] rounded-full flex items-center justify-center mx-auto mb-4">
-                <HiLightningBolt className="text-2xl text-white" />
+                <FaClock className="text-2xl text-white" />
               </div>
               <h3 className="text-2xl font-bold text-[#292929] mb-2">Start Your Journey</h3>
               <p className="text-gray-600">Tell us about yourself and we'll get you started</p>
@@ -590,11 +608,13 @@ const BenefitTimeline = () => {
                     <div className="w-full h-64 bg-white/60 rounded-xl backdrop-blur-sm border border-white/40 flex items-center justify-center relative overflow-hidden shadow-inner">
                       <video 
                         className="w-full h-full object-cover"
-                        autoPlay={true}
+                        autoPlay={false}
                         loop={true}
                         muted={true}
                         playsInline={true}
                         src={selectedBenefit.video}
+                        onPlay={() => handleVideoPlay(selectedBenefit.id - 1)}
+                        onPause={() => handleVideoPause(selectedBenefit.id - 1)}
                       />
                     </div>
                     
