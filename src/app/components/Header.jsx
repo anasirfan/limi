@@ -11,8 +11,11 @@ import { usePathname } from 'next/navigation';
 import gsap from 'gsap';
 import { FaUser, FaSignOutAlt, FaUserCircle, FaBell, FaPortrait, FaTachometerAlt, FaChevronDown, FaHeart, FaShoppingCart, FaTrash, FaTimes, FaSignInAlt, FaComments } from 'react-icons/fa';
 import CSSThemeToggle, { CompactCSSThemeToggle } from './ui/CSSThemeToggle';
+import { setDayNightTheme } from '../utils/dynamicThemeSwitcher';
+import { selectThemeMode } from '../redux/slices/themeSlice';
 
 const Header = () => {
+  const themeMode = useSelector(selectThemeMode);
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
@@ -20,7 +23,6 @@ const Header = () => {
   const [favoritesDropdownOpen, setFavoritesDropdownOpen] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const [mounted, setMounted] = useState(false);
-
 
   const menuRef = useRef(null);
   const menuContentRef = useRef(null);
@@ -33,14 +35,13 @@ const Header = () => {
   const cartData = useSelector((state) => state.cart);
   const favoritesData = useSelector((state) => state.favorites);
   const userData = useSelector((state) => state.user);
-  
 
   // Then use the data conditionally
   const cart = isClient ? cartData : { items: [], totalQuantity: 0, totalAmount: 0 };
   const favorites = isClient ? favoritesData : { items: [] };
 
   const { isLoggedIn, user } = userData || { isLoggedIn: false, user: null };
-  
+
   // Get current path to determine which navigation to show
   const pathname = usePathname();
   const isHomePage = pathname === '/';
@@ -55,6 +56,8 @@ const Header = () => {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -222,14 +225,24 @@ const Header = () => {
   }, []);
 
   return (
-    <header ref={headerRef} className={`fixed top-0 left-0 right-0 z-[9999] font-['Poppins'] transition-all duration-300 ${isScrolled ? 'py-1.5' : 'py-3'} ${isScrolled && scrollDirection === 'down' ? '-translate-y-1' : 'translate-y-0'}`}>
-      <div className="absolute inset-0 bg-[#2B2D2F] shadow-md"></div>
+    <header
+      ref={headerRef}
+      className={`fixed top-0 left-0 right-0 z-[9999] font-['Poppins'] transition-all duration-300 ${isScrolled ? 'py-1.5' : 'py-3'} ${isScrolled && scrollDirection === 'down' ? '-translate-y-1' : 'translate-y-0'} ${themeMode === 'light' ? 'bg-charleston-green text-alabaster' : 'bg-charleston-green text-alabaster'}`}
+      style={{
+        background: themeMode === 'light' ? 'var(--color-alabaster)' : 'var(--color-charleston-green)',
+        color: themeMode === 'light' ? 'var(--color-charleston-green)' : 'var(--color-alabaster)',
+      }}
+    >
+      <div className="absolute inset-0 bg-charleston-green shadow-md" style={{background: themeMode === 'light' ? 'var(--color-alabaster)' : 'var(--color-charleston-green)'}}></div>
       <div className="container mx-auto px-4 relative">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-6">
+            {/* Dynamic logo: colored for day, inverted for night */}
             <Link href="/" className={`${isScrolled ? 'w-10 py-1.5' : 'w-16 py-0'} transition-all duration-300 hover:scale-105`}>
               <Image
-                src="/images/svgLogos/__Logo_Icon_Inverted.svg"
+                src={themeMode === 'light'
+                  ? "/images/svgLogos/__Logo_Icon_Colored.svg"
+                  : "/images/svgLogos/__Logo_Icon_Inverted.svg"}
                 alt="Limi Logo"
                 width={isScrolled ? 80 : 100}
                 height={isScrolled ? 32 : 40}
@@ -244,11 +257,16 @@ const Header = () => {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="text-white hover:text-[#50C878] transition-all duration-300 relative group font-medium"
+                  className="transition-all duration-300 relative group font-medium"
+                  style={{
+                    color: themeMode === 'light' ? 'var(--color-charleston-green)' : 'var(--color-alabaster)',
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.color = themeMode === 'light' ? 'var(--color-eton-blue)' : 'var(--color-emerald)'}
+                  onMouseLeave={e => e.currentTarget.style.color = themeMode === 'light' ? 'var(--color-charleston-green)' : 'var(--color-alabaster)'}
                 >
                   <span className="relative inline-block">
                     {link.label}
-                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#50C878] group-hover:w-full transition-all duration-300 ease-in-out"></span>
+                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-emerald group-hover:w-full transition-all duration-300 ease-in-out"></span>
                   </span>
                 </Link>
               ))}
@@ -280,28 +298,26 @@ const Header = () => {
               onClick={toggleMenu}
               aria-label="Toggle menu"
             >
+              {/* Hamburger bars use semantic theme color (alabaster for light, emerald for dark) */}
               <span
-                className={`block w-7 h-0.5 bg-white mb-1.5 transition-all duration-300 ${menuOpen ? 'rotate-45 translate-y-2' : ''
-                  }`}
+                className={`block w-7 h-0.5 bg-alabaster mb-1.5 transition-all duration-300 ${menuOpen ? 'rotate-45 translate-y-2' : ''}`}
               ></span>
               <span
-                className={`block w-7 h-0.5 bg-white mb-1.5 transition-all duration-300 ${menuOpen ? 'opacity-0' : 'opacity-100'
-                  }`}
+                className={`block w-7 h-0.5 bg-alabaster mb-1.5 transition-all duration-300 ${menuOpen ? 'opacity-0' : 'opacity-100'}`}
               ></span>
               <span
-                className={`block w-7 h-0.5 bg-white transition-all duration-300 ${menuOpen ? '-rotate-45 -translate-y-2' : ''
-                  }`}
+                className={`block w-7 h-0.5 bg-alabaster transition-all duration-300 ${menuOpen ? '-rotate-45 -translate-y-2' : ''}`}
               ></span>
             </button>
 
             {/* Auth Button and User Menu - positioned at extreme right */}
             <div className="flex items-center">
               {!isClient ? (
-                <div className="w-[120px] h-[36px] bg-[#50C878] rounded-md"></div>
+                <div className="w-[120px] h-[36px] bg-emerald rounded-md"></div>
               ) : !isLoggedIn ? (
                 <Link
                   href="/portal"
-                  className={`${isScrolled ? 'px-2.5 py-1.5' : 'px-4 py-1.5'} text-charleston-green bg-[#50C878] hover:bg-[#87CEAB] transition-all duration-300 rounded-md ${isScrolled ? 'text-xs' : 'text-sm'} font-medium shadow-md hover:shadow-[#50C878]/40 flex items-center justify-center`}
+                  className={`${isScrolled ? 'px-2.5 py-1.5' : 'px-4 py-1.5'} text-charleston-green bg-emerald hover:bg-eton-blue transition-all duration-300 rounded-md ${isScrolled ? 'text-xs' : 'text-sm'} font-medium shadow-md hover:shadow-emerald/40 flex items-center justify-center`}
                 >
                   {isScrolled ? <FaSignInAlt size={16} /> : 'Login / Sign Up'}
                 </Link>
@@ -309,7 +325,7 @@ const Header = () => {
                 <div className="relative" ref={userDropdownRef}>
                   <button
                     onClick={toggleUserDropdown}
-                    className={`flex items-center ${isScrolled ? 'gap-1 px-2.5 py-1.5' : 'gap-2 px-3 py-1.5'} text-white hover:text-[#50C878] transition-all duration-300 bg-[#3a3d42] rounded-full border border-[#50C878]/20 hover:border-[#50C878]/40 shadow-md`}
+                    className={`flex items-center ${isScrolled ? 'gap-1 px-2.5 py-1.5' : 'gap-2 px-3 py-1.5'} text-alabaster hover:text-emerald transition-all duration-300 bg-charleston-green-light rounded-full border border-emerald/20 hover:border-emerald/40 shadow-md`}
                     aria-label="User menu"
                   >
                     <div className={`${isScrolled ? 'w-6 h-6' : 'w-7 h-7'} rounded-full bg-emerald flex items-center justify-center overflow-hidden transition-all duration-300`}>
@@ -322,7 +338,7 @@ const Header = () => {
                           className="object-cover w-full h-full"
                         />
                       ) : (
-                        <span className="text-xs font-bold text-charleston-green">
+                        <span className="text-xs font-bold" style={{color: themeMode === 'light' ? 'var(--color-alabaster)' : 'var(--color-charleston-green)'}}>
                           {(() => {
                             const username = user?.data?.username || '';
                             if (username) {
@@ -338,13 +354,19 @@ const Header = () => {
                         </span>
                       )}
                     </div>
-                    <span className={`${isScrolled ? 'hidden' : 'hidden sm:inline'} text-sm font-medium transition-all duration-300`}>{user?.data?.username || 'User'}</span>
-                    <FaChevronDown className={`text-xs transition-transform duration-300 ${userDropdownOpen ? 'rotate-180' : ''}`} />
+                    <span className={`${isScrolled ? 'hidden' : 'hidden sm:inline'} text-sm font-medium transition-all duration-300`} style={{color: themeMode === 'light' ? 'var(--color-charleston-green)' : 'var(--color-alabaster)'}}>{user?.data?.username || 'User'}</span>
+                    <FaChevronDown className={`text-xs transition-transform duration-300 ${userDropdownOpen ? 'rotate-180' : ''}`} style={{color: themeMode === 'light' ? 'var(--color-charleston-green)' : 'var(--color-alabaster)'}} />
                   </button>
 
                   {/* Dropdown menu */}
                   {isClient && userDropdownOpen && (
-                    <div className="absolute right-0 mt-2 w-56 bg-charleston-green-dark border border-charleston-green-light rounded-lg shadow-xl py-2 z-50 backdrop-blur-md">
+                    <div
+  className={`absolute right-0 mt-2 w-56 border rounded-lg shadow-xl py-2 z-50 backdrop-blur-md ${themeMode === 'light' ? 'bg-charleston-green-dark border-charleston-green-light' : 'bg-charleston-green-dark border-charleston-green-light'}`}
+  style={{
+    background: themeMode === 'light' ? 'var(--color-alabaster)' : 'var(--color-charleston-green)',
+    color: themeMode === 'light' ? 'var(--color-charleston-green)' : 'var(--color-alabaster)',
+  }}
+>
                       <div className="px-4 py-2 border-b border-charleston-green-light">
                         <p className="text-sm font-medium text-emerald">{user?.data?.username || 'User'}</p>
                         <p className="text-xs text-gray-400 truncate">{user?.data?.email || 'user@example.com'}</p>
@@ -352,7 +374,8 @@ const Header = () => {
 
                       <Link
                         href="/portal"
-                        className="flex items-center gap-3 px-4 py-2 text-sm text-white hover:bg-emerald/10 hover:text-emerald transition-colors duration-200"
+                        className={`flex items-center gap-3 px-4 py-2 text-sm transition-colors duration-200 ${themeMode === 'light' ? 'text-alabaster hover:bg-emerald/10 hover:text-emerald' : 'text-alabaster hover:bg-emerald/10 hover:text-emerald'}`}
+
                         onClick={() => setUserDropdownOpen(false)}
                       >
                         <FaPortrait className="text-emerald" />
@@ -362,7 +385,7 @@ const Header = () => {
                       <div className="border-t border-charleston-green-light mt-1 pt-1">
                         <button
                           onClick={handleLogout}
-                          className="flex items-center gap-3 px-4 py-2 text-sm text-white hover:bg-emerald/10 hover:text-emerald transition-colors duration-200 w-full text-left"
+                          className="flex items-center gap-3 px-4 py-2 text-sm text-alabaster hover:bg-emerald/10 hover:text-emerald transition-colors duration-200 w-full text-left"
                         >
                           <FaSignOutAlt className="text-emerald" />
                           Logout
@@ -378,9 +401,10 @@ const Header = () => {
       </div>
 
       {/* Paper rolling menu */}
+      {/* Paper rolling menu uses semantic theme classes for background */}
       <div
         ref={menuRef}
-        className={`fixed top-0 left-0 w-full bg-[#2B2D2F] overflow-hidden z-40 origin-top`}
+        className={`fixed top-0 left-0 w-full bg-charleston-green overflow-hidden z-40 origin-top`}
         style={{ height: 0, opacity: 0 }}
       >
         <div
@@ -388,7 +412,7 @@ const Header = () => {
           className="container mx-auto px-4 py-20 h-full flex flex-col justify-center items-center"
         >
           {mounted && (
-          <nav className=" flex flex-col items-center gap-6 text-softBeige">
+          <nav className=" flex flex-col items-center gap-6 text-alabaster">
             {/* Homepage section links - only shown on homepage */}
             {isHomePage && sections.map((section) => (
               <button
@@ -398,9 +422,9 @@ const Header = () => {
                 onClick={() => handleMobileNav(section.href)}
                 tabIndex={0}
               >
-                <span className="relative group inline-block pb-1 !text-white">
+                <span className="relative group inline-block pb-1 !text-alabaster">
                   {section.label}
-                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-emerald-600 to-white group-hover:w-full transition-all duration-1000 ease-in-out"></span>
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-emerald to-alabaster group-hover:w-full transition-all duration-1000 ease-in-out"></span>
                 </span>
               </button>
             ))}
@@ -414,9 +438,9 @@ const Header = () => {
                 onClick={() => handleMobileNav(link.href)}
                 tabIndex={0}
               >
-                <span className="relative group inline-block pb-1 !text-white">
+                <span className="relative group inline-block pb-1 !text-alabaster">
                   {link.label}
-                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-emerald-600 to-white group-hover:w-full transition-all duration-1000 ease-in-out"></span>
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-emerald to-alabaster group-hover:w-full transition-all duration-1000 ease-in-out"></span>
                 </span>
               </button>
             ))}
@@ -431,7 +455,7 @@ const Header = () => {
               >
                 <span className="relative group inline-block pb-1">
                   Dashboard
-                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-emerald-600 to-white group-hover:w-full transition-all duration-1000 ease-in-out"></span>
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-emerald to-alabaster group-hover:w-full transition-all duration-1000 ease-in-out"></span>
                 </span>
               </button>
             )}
@@ -446,7 +470,7 @@ const Header = () => {
               >
                 <span className="relative group inline-block pb-1">
                   Login / Sign Up
-                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-emerald-600 to-white group-hover:w-full transition-all duration-1000 ease-in-out"></span>
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-emerald to-alabaster group-hover:w-full transition-all duration-1000 ease-in-out"></span>
                 </span>
               </button>
             )}

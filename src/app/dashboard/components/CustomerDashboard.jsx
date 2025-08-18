@@ -1,5 +1,6 @@
 "use client";
 
+<<<<<<< HEAD
 import React, { useState, useEffect, Fragment } from "react";
 import Image from "next/image";
 import {
@@ -50,6 +51,19 @@ import SlideInsights from "./SlideInsights";
 import { getSessionDataFromLocalStorage } from "../../utils/slideAnalytics";
 import MarketingTab from "./MarketingTab";
 import InvestorDetails from "./InvestorDetails";
+=======
+import React, { useState, useEffect, Fragment } from 'react';
+import Image from 'next/image';
+import { FaSort, FaInbox, FaSpinner, FaEnvelope, FaSortUp, FaSortDown, FaSearch, FaEye, FaTimes, FaFilter, FaGlobe, FaClock, FaDesktop, FaTabletAlt, FaMobileAlt, FaUsers, FaBoxOpen, FaShoppingCart, FaBox, FaSlideshare, FaUserPlus, FaTrash } from 'react-icons/fa';
+import { BarChart,FaTimesCircle, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
+import ProductManagement from './ProductManagement';
+import SlideManagement from './SlideManagement';
+import AddCustomerModal from './SlideManagement/AddCustomerModal';
+import DistributorDetailsModal from './DistributorDetailsModal';
+import SlideInsights from './SlideInsights';
+import MarketingTab from './MarketingTab';
+import LimiFutureAnalytics from './LimiFutureAnalytics';
+>>>>>>> a97b8f890758de2b152ad2785045d13150923b5a
 
 export default function CustomerDashboard({ token }) {
   const [slideshowTab, setSlideshowTab] = useState("edit");
@@ -1224,6 +1238,13 @@ export default function CustomerDashboard({ token }) {
           <FaBoxOpen className="mr-2" />
           Marketing
         </button>
+        <button
+          onClick={() => setActiveTab('limifuture')}
+          className={`px-4 py-2 rounded-md flex items-center ${activeTab === 'limifuture' ? 'bg-[#54BB74] text-[#1e1e1e] font-medium' : 'bg-[#333333] text-white hover:bg-[#444444]'}`}
+        >
+          <FaSlideshare className="mr-2" />
+          LimiFuture Analytics
+        </button>
       </div>
 
       {activeTab === "marketing" && (
@@ -1241,9 +1262,45 @@ export default function CustomerDashboard({ token }) {
           </div>
         </div>
       )}
+<<<<<<< HEAD
       {activeTab === "limitless-ai" && (
         <div className="mt-6">
           <InvestorDetails />
+=======
+      
+      {activeTab === 'limifuture' && (
+        <div className="bg-[#1e1e1e] rounded-lg shadow-lg overflow-hidden border border-[#3a3a3a] mt-6">
+          <div className="px-6 py-5 bg-[#1e1e1e] border-b border-[#3a3a3a]">
+            <h2 className="text-3xl font-bold text-white font-[Amenti]">LimiFuture Analytics Dashboard</h2>
+            <p className="text-gray-400 mt-2">Track slide interactions, user engagement, and carousel analytics</p>
+          </div>
+          <div className="p-6">
+            <LimiFutureAnalytics />
+          </div>
+        </div>
+      )}
+      {activeTab === 'distributorQuery' && (
+      <div className="bg-[#1e1e1e] rounded-lg shadow-lg overflow-hidden border border-[#3a3a3a]">
+        {/* Header Section */}
+        <div className="px-6 py-5 bg-[#1e1e1e] border-b border-[#3a3a3a]">
+          <div className="flex flex-col space-y-4 md:space-y-0 md:flex-row md:items-center md:justify-between">
+            <div className="space-y-1">
+              <h2 className="text-3xl font-bold text-white">Distributor Applications</h2>
+            </div>
+            <div className="relative w-full md:w-96">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <FaSearch className="text-[#a0a0a0] h-4 w-4" />
+              </div>
+              <input
+                type="text"
+                placeholder="Search by company, contact name, or email..."
+                className="bg-[#292929] text-white pl-10 pr-4 py-3 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-[#54bb74] border border-[#3a3a3a] focus:border-[#54bb74] transition-colors text-base placeholder-gray-500"
+                value={searchDistributorQuery}
+                onChange={(e) => setSearchDistributorQuery(e.target.value)}
+              />
+            </div>
+          </div>
+>>>>>>> a97b8f890758de2b152ad2785045d13150923b5a
         </div>
       )}
       {activeTab === "distributorQuery" && (

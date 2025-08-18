@@ -1,33 +1,34 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { toggleTheme, getCurrentTheme, initThemeSwitcher } from '../../utils/forcefulThemeSwitcher';
+import { useDispatch, useSelector } from 'react-redux';
+import { toggleTheme, setTheme, selectThemeMode } from '../../redux/slices/themeSlice';
+import { getCurrentTheme, initThemeSwitcher } from '../../utils/forcefulThemeSwitcher';
+import { setDayNightTheme } from '../../utils/dynamicThemeSwitcher';
 
 /**
  * Beautiful CSS-based Theme Toggle Component
  * Matches the provided CSS design with smooth animations
+ * Now also triggers global day/night theme CSS variable update for full app consistency
  */
 export default function CSSThemeToggle({ className = '' }) {
-  const [currentTheme, setCurrentTheme] = useState('dark');
+  const dispatch = useDispatch();
+  const themeMode = useSelector(selectThemeMode);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    
-    // Initialize theme switcher
     initThemeSwitcher();
-    setCurrentTheme(getCurrentTheme());
-
-    // Listen for theme changes
-    const handleThemeChange = (event) => {
-      setCurrentTheme(event.detail.theme);
-    };
-
-    window.addEventListener('themeChanged', handleThemeChange);
-    return () => window.removeEventListener('themeChanged', handleThemeChange);
-  }, []);
+    // Sync CSS variables when redux state changes
+    if (themeMode === 'dark') {
+      setDayNightTheme(0);
+    } else {
+      setDayNightTheme(12);
+    }
+  }, [themeMode]);
 
   const handleToggle = () => {
-    toggleTheme();
+    dispatch(toggleTheme());
+    // setDayNightTheme will be called by useEffect above
   };
 
   if (!mounted) {
@@ -42,17 +43,17 @@ export default function CSSThemeToggle({ className = '' }) {
         type="checkbox" 
         className="checkbox opacity-0 absolute" 
         id="limi-theme-checkbox" 
-        checked={currentTheme === 'dark'}
+        checked={themeMode === 'dark'}
         onChange={handleToggle}
       />
       <label 
         htmlFor="limi-theme-checkbox" 
         className="label flex items-center justify-between p-2.5 rounded-full relative h-10 w-20 cursor-pointer transition-all duration-300 ease-out"
         style={{
-          boxShadow: currentTheme === 'dark' 
+          boxShadow: themeMode === 'dark' 
             ? '0px 0px 10px 3px rgba(0, 0, 0, 0.5) inset' 
             : '0px 0px 10px 3px rgba(0, 0, 0, 0.1) inset',
-          backgroundColor: currentTheme === 'dark' ? '#292639' : '#fff'
+          backgroundColor: themeMode === 'dark' ? '#292639' : '#fff'
         }}
       >
         {/* Moon Icon */}
@@ -73,7 +74,6 @@ export default function CSSThemeToggle({ className = '' }) {
             strokeLinejoin="round"
           />
         </svg>
-        
         {/* Sun Icon */}
         <svg 
           className="sun transition-all duration-500 ease-out hover:rotate-360" 
@@ -100,23 +100,20 @@ export default function CSSThemeToggle({ className = '' }) {
           <path d="M4 4L5 5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"/>
           <path d="M1 12L2 12" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
-        
         {/* Toggle Ball */}
         <div 
           className="ball absolute rounded-full top-1.5 left-1.5 h-7 w-7 transition-all duration-300 ease-out"
           style={{
-            backgroundColor: currentTheme === 'dark' ? '#ebeaf7' : '#303030',
-            transform: currentTheme === 'dark' ? 'translateX(40px)' : 'translateX(0)'
+            backgroundColor: themeMode === 'dark' ? '#ebeaf7' : '#303030',
+            transform: themeMode === 'dark' ? 'translateX(40px)' : 'translateX(0)'
           }}
         />
       </label>
-      
       <style jsx>{`
         .theme-switch .label:hover .moon,
         .theme-switch .label:hover .sun {
           transform: rotate(360deg);
         }
-        
         .hover\\:rotate-360:hover {
           transform: rotate(360deg);
         }
@@ -139,11 +136,21 @@ export function CompactCSSThemeToggle({ className = '' }) {
 
     const handleThemeChange = (event) => {
       setCurrentTheme(event.detail.theme);
+      if (event.detail.theme === 'dark') {
+        setDayNightTheme(0);
+      } else {
+        setDayNightTheme(12);
+      }
     };
 
     window.addEventListener('themeChanged', handleThemeChange);
     return () => window.removeEventListener('themeChanged', handleThemeChange);
   }, []);
+
+  const handleToggle = () => {
+    toggleTheme();
+    setDayNightTheme(currentTheme === 'dark' ? 12 : 0);
+  };
 
   if (!mounted) {
     return <div className="w-16 h-8 rounded-full bg-gray-200 animate-pulse"></div>;
@@ -156,7 +163,7 @@ export function CompactCSSThemeToggle({ className = '' }) {
         className="opacity-0 absolute" 
         id="limi-theme-checkbox-mobile" 
         checked={currentTheme === 'dark'}
-        onChange={toggleTheme}
+        onChange={handleToggle}
       />
       <label 
         htmlFor="limi-theme-checkbox-mobile" 
@@ -185,7 +192,6 @@ export function CompactCSSThemeToggle({ className = '' }) {
             strokeLinejoin="round"
           />
         </svg>
-        
         {/* Sun Icon */}
         <svg 
           className="transition-all duration-500 ease-out" 
@@ -211,7 +217,6 @@ export function CompactCSSThemeToggle({ className = '' }) {
           <path d="M4 4L5 5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"/>
           <path d="M1 12L2 12" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
-        
         {/* Toggle Ball */}
         <div 
           className="absolute rounded-full top-1 left-1 h-6 w-6 transition-all duration-300 ease-out"
