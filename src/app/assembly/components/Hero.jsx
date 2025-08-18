@@ -288,13 +288,13 @@ const Hero = () => {
       className="relative min-h-screen overflow-hidden bg-white"
     >
       {/* Dynamic Background */}
-      <motion.div 
+      {/* <motion.div 
         className={`absolute inset-0 bg-gradient-to-br ${slides[currentSlide].background} transition-all duration-1000`}
         style={{ y, opacity }}
-      />
+      /> */}
 
       {/* Background Video */}
-      <div className="absolute inset-0 z-0">
+      {/* <div className="absolute inset-0 z-0">
         <video
           autoPlay
           loop
@@ -304,7 +304,7 @@ const Hero = () => {
         >
           <source src="/limiai/hero.mp4" type="video/mp4" />
         </video>
-      </div>
+      </div> */}
 
       {/* Particles */}
       {!prefersReduced && mounted && (
@@ -333,7 +333,7 @@ const Hero = () => {
         />
       )}
 
-      <div className="relative z-10 min-h-screen flex items-center" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
+      <div className="relative bg-[#f3ebe2] z-10 min-h-screen flex items-center" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
         <div className="max-w-7xl mx-auto px-4 w-full">
           {/* Main Grid Layout */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
@@ -383,17 +383,24 @@ const Hero = () => {
               </div>
 
          
-              <div className="hero-card mb-20 -mt-16 relative w-[50%] max-w-2xl bg-[#f3ebe2] rounded-2xl overflow-hidden border border-[#54bb74]/20 shadow-lg">
-            
-                <div className="aspect-[16/9] w-full">
-          
-                  <iframe
-                    src="https://playcanv.as/e/p/LBV4KIS5/"
-                    className="w-full h-full border-0"
-                    title="LIMI 3D Interactive Viewer"
-                    allowFullScreen
-                  />
-                </div>
+              {/* Feature Cards Grid */}
+              <div className="grid grid-cols-2 gap-4">
+                {slides[currentSlide].features.map((feature, index) => (
+                  <motion.div
+                    key={`${currentSlide}-${index}`}
+                    className="hero-card group p-3 bg-white/80 backdrop-blur-md rounded-xl border border-[#54bb74]/20 hover:bg-white/90 transition-all duration-300 cursor-pointer"
+                    initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    whileHover={{ y: -5, scale: 1.02 }}
+                  >
+                    <div className="w-8 h-8 bg-gradient-to-br from-[#54bb74] to-[#93cfa2] rounded-lg flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                      <feature.icon className="text-base text-white" />
+                    </div>
+                    <h3 className="text-base font-bold text-[#292929] mb-0.5">{feature.title}</h3>
+                    <p className="text-xs text-[#292929]/60">{feature.desc}</p>
+                  </motion.div>
+                ))}
               </div>
 
               {/* Slide Indicators */}
@@ -416,24 +423,16 @@ const Hero = () => {
 
             {/* Right Content - 5 columns */}
             <div className="lg:col-span-5">
-              {/* Feature Cards Grid */}
-              <div className="grid grid-cols-2 gap-4">
-                {slides[currentSlide].features.map((feature, index) => (
-                  <motion.div
-                    key={`${currentSlide}-${index}`}
-                    className="hero-card group p-6 bg-white/80 backdrop-blur-md rounded-2xl border border-[#54bb74]/20 hover:bg-white/90 transition-all duration-300 cursor-pointer"
-                    initial={{ opacity: 0, scale: 0.8, y: 20 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                    whileHover={{ y: -5, scale: 1.02 }}
-                  >
-                    <div className="w-12 h-12 bg-gradient-to-br from-[#54bb74] to-[#93cfa2] rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                      <feature.icon className="text-xl text-white" />
-                    </div>
-                    <h3 className="text-lg font-bold text-[#292929] mb-1">{feature.title}</h3>
-                    <p className="text-sm text-[#292929]/60">{feature.desc}</p>
-                  </motion.div>
-                ))}
+              {/* 3D Interactive Viewer (iframe) */}
+              <div className="hero-card mb-6 relative w-full max-w-2xl rounded-2xl overflow-hidden">
+                <div className="aspect-[16/9] border-none w-full">
+                  <iframe
+                    src="https://playcanv.as/e/p/LBV4KIS5/"
+                    className="w-full h-full"
+                    title="LIMI 3D Interactive Viewer"
+                    allowFullScreen
+                  />
+                </div>
               </div>
 
               {/* Large Feature Showcase */}
