@@ -62,41 +62,6 @@ const ConfiguratorLayout = () => {
     }
   };
   const iframe = document.getElementById("playcanvas-app");
-  // useEffect(() => {
-  //   // Handler to set cursor to hand/grab/drag
-  //   const handleMouseOver = () => {
-
-  //     const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-  //     if (iframeDoc) {
-  //       iframeDoc.body.style.cursor = 'grab';
-  //     }
-  //   };
-  //   const cleanup = listenForMouseOverMessages((message, event) => {
-  //     console.log('[ConfigPanel] Received mouse over message:', message,event.data);
-  //     handleMouseOver();
-  //   });
-
-  //   return cleanup;
-  // }, []);
-  // useEffect(() => {
-
-  //   // Handler to revert cursor to default
-  //   const handleMouseOut = () => {
-
-  //      const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-  //     if (iframeDoc) {
-  //       iframeDoc.body.style.cursor = 'default';
-  //     }
-  //   };
-
-  //   const cleanup2 = listenForMouseOutMessages((message, event) => {
-  //     // Do something with the message, e.g. open UI, update state, etc.
-  //     console.log('[ConfigPanel] Received mouse out message:', message,event.data);
-  //     // Example: open a modal, update config, etc.
-  //     handleMouseOut();
-  //   });
-  //   return cleanup2;
-  // }, []);
 
   const saveToLocalStorage = (key, value) => {
     if (typeof window === "undefined") return;
@@ -113,17 +78,9 @@ const ConfiguratorLayout = () => {
       baseType: "round",
       configurationType: "pendant",
       lightAmount: 1,
-      systemType: "bar",
-      systemBaseDesign: "nexus",
       baseColor: "black",
-      connectorColor: "black",
-      pendants: [],
       selectedPendants: [],
-      lightDesign: "radial",
       hotspot: "off",
-      cableColor: "black",
-      cableLength: "2mm",
-      systemConfigurations: {},
       shades: {},
       lighting: true,
       colorTemperature: 50,
@@ -136,12 +93,13 @@ const ConfiguratorLayout = () => {
   const [cables, setCables] = useState(() => {
     return loadFromLocalStorage("lightCables", [
       {
-        isSystem: false,
-        systemType: "",
-        design: "Radial",
-        designId: "product_2",
+        isSystem: true,
+        systemType: "bar",
+        design: "Helix",
+        designId: "system_base_2",
         connectorColor: "black",
-        size: "2mm",
+        cableSize: "2mm",
+        cableColor: "black",
       },
     ]);
   });
@@ -162,18 +120,6 @@ const ConfiguratorLayout = () => {
       lighting,
     }));
   }, [brightness, colorTemperature, lighting]);
-
-  useEffect(() => {
-    if (mounted && config.pendants.length === 0) {
-      const initialPendants = getDefaultPendantAssignments(config.lightAmount);
-      const initialSystems = getDefaultSystemAssignments(config.lightAmount);
-      setConfig((prev) => ({
-        ...prev,
-        pendants: initialPendants,
-        systemConfigurations: initialSystems,
-      }));
-    }
-  }, [mounted, config.lightAmount]);
 
   // Save to localStorage whenever config or cables change
   useEffect(() => {
@@ -400,6 +346,7 @@ const ConfiguratorLayout = () => {
             design: "helix",
             isSystem: true,
             designId: "system_base_2",
+            connectorColor: 'gold',
           },
         ];
       case 3:
@@ -410,6 +357,7 @@ const ConfiguratorLayout = () => {
             design: "orbit",
             designId: "system_base_1",
             isSystem: true,
+            connectorColor: 'black',
           },
           {
             id: 1,
@@ -417,6 +365,7 @@ const ConfiguratorLayout = () => {
             design: "bumble",
             designId: "product_2",
             isSystem: false,
+            connectorColor: 'silver',
           },
           {
             id: 2,
@@ -424,6 +373,7 @@ const ConfiguratorLayout = () => {
             design: "aurora",
             designId: "system_base_6",
             isSystem: true,
+            connectorColor: 'midnight-blue',
           },
         ];
       case 6:
@@ -434,6 +384,7 @@ const ConfiguratorLayout = () => {
             design: "bumble",
             designId: "product_2",
             isSystem: false,
+            connectorColor: 'black',
           },
           {
             id: 1,
@@ -441,6 +392,7 @@ const ConfiguratorLayout = () => {
             design: "piko",
             designId: "product_5",
             isSystem: false,
+            connectorColor: 'gold',
           },
           {
             id: 2,
@@ -448,6 +400,7 @@ const ConfiguratorLayout = () => {
             design: "helix",
             designId: "system_base_2",
             isSystem: true,
+            connectorColor: 'silver',
           },
           {
             id: 3,
@@ -455,6 +408,7 @@ const ConfiguratorLayout = () => {
             design: "zenith",
             designId: "system_base_4",
             isSystem: true,
+            connectorColor: 'midnight-blue',
           },
           {
             id: 4,
@@ -462,6 +416,7 @@ const ConfiguratorLayout = () => {
             design: "equinox",
             designId: "system_base_12",
             isSystem: true,
+            connectorColor: 'midnight-blue',
           },
           {
             id: 5,
@@ -469,6 +424,7 @@ const ConfiguratorLayout = () => {
             design: "stellar",
             designId: "system_base_4",
             isSystem: true,
+            connectorColor: 'gold',
           },
         ];
     }
@@ -524,6 +480,7 @@ const ConfiguratorLayout = () => {
           systemType: system.systemType,
           design: system.design,
           designId: system.designId,
+          connectorColor: 'black',
         },
       ]);
 
@@ -546,6 +503,7 @@ const ConfiguratorLayout = () => {
               systemType: system.systemType,
               design: system.design,
               designId: system.designId,
+              connectorColor: 'black',
             },
           ]);
           sendMessageToPlayCanvas(`system:${system.systemType}`);
@@ -606,7 +564,7 @@ const ConfiguratorLayout = () => {
     const baseType = configData.config.base_type?.toLowerCase() || "round";
     const lightAmount = configData.config.light_amount || 1;
     const baseColor = configData.config.base_color || "black";
-    const connectorColor = configData.config.connector_color || "black";
+    // const connectorColor = configData.config.connector_color || "black";
     const brightness = configData.config.brightness || 75;
     const colorTemperature = configData.config.colorTemperature || 50;
     const lighting = configData.config.lighting || true;
@@ -617,13 +575,15 @@ const ConfiguratorLayout = () => {
       baseType,
       lightAmount,
       baseColor,
-      connectorColor,
+      // connectorColor,
       brightness,
       colorTemperature,
       lighting,
       // We don't need to update pendants or other details as they will be handled by the iframe messages
     }));
     setCables(configData.config.cableConfig);
+    console.log("cablessss", configData.config.cableConfig);
+
   };
   // Listen for app:ready1 message from PlayCanvas iframe
   useEffect(() => {
@@ -645,9 +605,12 @@ const ConfiguratorLayout = () => {
           sendMessageToPlayCanvas(`base_type:${savedConfig.baseType}`);
           sendMessageToPlayCanvas(`light_amount:${savedConfig.lightAmount}`);
           sendMessageToPlayCanvas(`base_color:${savedConfig.baseColor}`);
-          sendMessageToPlayCanvas(
-            `connector_color:${savedConfig.connectorColor}`
-          );
+          // sendMessageToPlayCanvas(
+          //   `connector_color:${savedConfig.connectorColor}`
+          // );
+          savedCables.forEach((cable, index) => {
+            sendMessageToPlayCanvas(`cable_${index}:connector_color:${cable.connectorColor}`);
+          });
       
           savedCables.forEach((cable, index) => {
             if (cable.systemType) {
@@ -747,6 +710,7 @@ const ConfiguratorLayout = () => {
           systemType: "",
           design: pendant.design,
           designId: productId,
+          connectorColor: 'black',
         },
       ]);
     });
@@ -801,8 +765,6 @@ const ConfiguratorLayout = () => {
     setConfig((prev) => ({
       ...prev,
       lightAmount: amount,
-      pendants: newPendants,
-      systemConfigurations: newSystems,
       selectedPendants: filteredSelectedPendants, // Update selectedPendants state
     }));
     setCables(
@@ -811,8 +773,11 @@ const ConfiguratorLayout = () => {
         systemType: system.systemType,
         design: system.design,
         designId: system.designId,
+        connectorColor: system.connectorColor,
       }))
     );
+    console.log("lightcables",cables)
+    
     // Send messages to iframe
     setTimeout(() => {
       sendMessageToPlayCanvas(`light_amount:${amount}`);
@@ -821,6 +786,7 @@ const ConfiguratorLayout = () => {
           sendMessageToPlayCanvas(`system:${system.systemType}`);
         }
         sendMessageToPlayCanvas(`cable_${index}:${system.designId}`);
+        sendMessageToPlayCanvas(`cable_${index}:connector_color_${system.connectorColor}`);
         // sendMessageToPlayCanvas(`cable_${index}:size_3`);
       });
     }, 0);
@@ -1058,22 +1024,20 @@ const ConfiguratorLayout = () => {
     // Move to next step
     setActiveStep("systemType");
   }, []);
-  const handleConnectorColorChange = useCallback((connectorColor) => {
-    // Update Cables state
-    // setCables((prev) => ({
-    //   ...prev,
-    //   connectorColor,
-    // }));
-    setConfig((prev) => ({
-      ...prev,
-      connectorColor,
-    }));
-    console.log("connectorColor",cables);
 
-    // Send message to PlayCanvas iframe
+  const handleConnectorColorChange = useCallback((connectorColor) => {
+    // setCables((prev) =>
+    //   prev.map((cable, idx) =>
+    //     selectedPendants.includes(idx)
+    //       ? { ...cable, connectorColor }
+    //       : cable
+    //   )
+    // );
+    // Send message for each selected cable
     sendMessageToPlayCanvas(`connector_color:${connectorColor}`);
 
-    // Move to next step
+  
+    // Move to next step if needed
     setActiveStep("systemType");
   }, []);
 
@@ -1170,7 +1134,7 @@ const ConfiguratorLayout = () => {
       light_type: config.lightType,
       light_amount: config.lightAmount,
       base_color: config.baseColor,
-      connector_color: config.connectorColor,
+      // connector_color: config.connectorColor,
       cables: cables,
       shades: config.shades || {}, // Include shade selections
     };

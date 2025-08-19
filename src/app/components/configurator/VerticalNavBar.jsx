@@ -414,7 +414,7 @@ const tourSteps = [
     // Return the image path if it exists, otherwise null to use the React icon
     return step?.image || null;
   };
-
+  
   // Determine if we should show the vertical nav bar
   const showVerticalNav = !configuringType;
   
@@ -472,10 +472,10 @@ const tourSteps = [
                 console.log("working if")
                 return false;
               }
-              if ((step.id === 'baseColor') && (config.baseType !== 'round')) {
-                console.log("working if")
-                return false;
-              }
+              // if ((step.id === 'baseColor') && (config.baseType === 'rectangular')) {
+              //   console.log("working if")
+              //   return false;
+              // }
               return true;
             }).map((step, index) => (
               <div className="relative" key={step.id}>
