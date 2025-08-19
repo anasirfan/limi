@@ -166,7 +166,7 @@ export const LoadConfigModal = ({
                           <p>Light Type: {config.config.light_type}</p>
                           <p>Light Amount: {config.config.light_amount}</p>
                           <p>Base Color: {config.config.cable_color}</p>
-                          <p>Cable Length: {config.config.cable_length}</p>
+                          {/* <p>Cable Length: {config.config.cable_length}</p> */}
                           {config.config.base_type && (
                             <p>Base Type: {config.config.base_type}</p>
                           )}

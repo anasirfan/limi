@@ -66,7 +66,9 @@ const CableItem = ({ designName, cableType, cableSize, additionalDetails }) => (
             <div className="space-y-2">
               {additionalDetails.map(({ key, value }, idx) => (
                 <div key={idx} className="flex justify-between text-sm py-1">
-                  <span className="text-gray-400">{key.replace(/_/g, " ")}:</span>
+                  <span className="text-gray-400">
+                    {key.replace(/_/g, " ")}:
+                  </span>
                   <span className="text-white">{value}</span>
                 </div>
               ))}
@@ -333,16 +335,15 @@ export default function SavedConfigurations() {
               <div className="flex items-center h-[200px] w-full justify-center py-2 bg-[#292929] border-b border-gray-200">
                 <Image
                   src={
-                    `https://dev.api1.limitless-lighting.co.uk/${config.thumbnail?.url}` ||
+                    // `https://dev.api1.limitless-lighting.co.uk/${config.thumbnail?.url}` ||
                     `/images/homepage-products/${
                       Math.floor(Math.random() * 7) + 1
                     }-mobile.jpg`
                   }
                   alt={config.name || "Configuration"}
-                height={1000}
-                width={1000}
-              
-                   className="w-full h-full object-contain"
+                  height={1000}
+                  width={1000}
+                  className="w-full h-full object-cover"
                   priority
                 />
               </div>
@@ -445,9 +446,7 @@ export default function SavedConfigurations() {
                   <div className="bg-[#1a1a1a] rounded-xl p-4 border border-gray-800 shadow-lg">
                     <div className="relative w-full aspect-square mb-4 rounded-lg overflow-hidden bg-gradient-to-br from-gray-900 to-gray-800">
                       <Image
-                       src={
-                       `https://dev.api1.limitless-lighting.co.uk${selectedConfig.thumbnail?.url}`
-                      }
+                        src={`https://dev.api1.limitless-lighting.co.uk${selectedConfig.thumbnail?.url}`}
                         alt={selectedConfig.name || "Configuration"}
                         fill
                         aspectRatio="1/1"
@@ -589,19 +588,41 @@ export default function SavedConfigurations() {
                                     }, {});
 
                                   const cableNumber = parseInt(key) + 1;
-                                  const designName = cableData.design_name || `Cable ${cableNumber}`;
+                                  const designName =
+                                    cableData.design_name ||
+                                    `Cable ${cableNumber}`;
                                   const cableType = cableData.type;
-                                  let cableSize = selectedConfig.config?.cableConfig[cableNumber - 1]?.size;
-                                  if (typeof cableSize === "string" && cableSize.trim().toLowerCase().endsWith("mm")) {
-                                    cableSize = cableSize.replace(/mm$/i, "").trim();
+                                  let cableSize =
+                                    selectedConfig.config?.cableConfig[
+                                      cableNumber - 1
+                                    ]?.size;
+                                  if (
+                                    typeof cableSize === "string" &&
+                                    cableSize
+                                      .trim()
+                                      .toLowerCase()
+                                      .endsWith("mm")
+                                  ) {
+                                    cableSize = cableSize
+                                      .replace(/mm$/i, "")
+                                      .trim();
                                   }
 
-                                  const additionalDetails = Object.entries(cableData)
-                                    .filter(([k]) => !["design_name", "type", "size"].includes(k))
+                                  const additionalDetails = Object.entries(
+                                    cableData
+                                  )
+                                    .filter(
+                                      ([k]) =>
+                                        ![
+                                          "design_name",
+                                          "type",
+                                          "size",
+                                        ].includes(k)
+                                    )
                                     .map(([k, v]) => ({ key: k, value: v }));
 
                                   return (
-                                    <CableItem 
+                                    <CableItem
                                       key={key}
                                       designName={designName}
                                       cableType={cableType}
@@ -626,19 +647,41 @@ export default function SavedConfigurations() {
                                     }, {});
 
                                   const cableNumber = parseInt(key) + 1;
-                                  const designName = cableData.design_name || `Cable ${cableNumber}`;
+                                  const designName =
+                                    cableData.design_name ||
+                                    `Cable ${cableNumber}`;
                                   const cableType = cableData.type;
-                                  let cableSize = selectedConfig.config?.cableConfig[cableNumber - 1]?.size;
-                                  if (typeof cableSize === "string" && cableSize.trim().toLowerCase().endsWith("mm")) {
-                                    cableSize = cableSize.replace(/mm$/i, "").trim();
+                                  let cableSize =
+                                    selectedConfig.config?.cableConfig[
+                                      cableNumber - 1
+                                    ]?.size;
+                                  if (
+                                    typeof cableSize === "string" &&
+                                    cableSize
+                                      .trim()
+                                      .toLowerCase()
+                                      .endsWith("mm")
+                                  ) {
+                                    cableSize = cableSize
+                                      .replace(/mm$/i, "")
+                                      .trim();
                                   }
 
-                                  const additionalDetails = Object.entries(cableData)
-                                    .filter(([k]) => !["design_name", "type", "size"].includes(k))
+                                  const additionalDetails = Object.entries(
+                                    cableData
+                                  )
+                                    .filter(
+                                      ([k]) =>
+                                        ![
+                                          "design_name",
+                                          "type",
+                                          "size",
+                                        ].includes(k)
+                                    )
                                     .map(([k, v]) => ({ key: k, value: v }));
 
                                   return (
-                                    <CableItem 
+                                    <CableItem
                                       key={key}
                                       designName={designName}
                                       cableType={cableType}

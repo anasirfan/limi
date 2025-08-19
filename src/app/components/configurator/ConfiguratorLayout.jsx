@@ -174,11 +174,9 @@ const ConfiguratorLayout = () => {
       }));
     }
   }, [mounted, config.lightAmount]);
-  // Save to localStorage whenever config or cables change
 
+  // Save to localStorage whenever config or cables change
   useEffect(() => {
-    console.log("config", config);
-    console.log("cables", cables);
     saveToLocalStorage("lightConfig", config);
     saveToLocalStorage("lightCables", cables);
   }, [config, cables]);
@@ -526,7 +524,6 @@ const ConfiguratorLayout = () => {
           systemType: system.systemType,
           design: system.design,
           designId: system.designId,
-          connectorColor: system.connectorColor,
         },
       ]);
 
@@ -549,7 +546,6 @@ const ConfiguratorLayout = () => {
               systemType: system.systemType,
               design: system.design,
               designId: system.designId,
-              connectorColor: system.connectorColor,
             },
           ]);
           sendMessageToPlayCanvas(`system:${system.systemType}`);
@@ -576,37 +572,6 @@ const ConfiguratorLayout = () => {
       });
     }
   }, [hasConfigIdParam]);
-
-  // Update pendants when light amount changes
-  // useEffect(() => {
-  //   // Only update if we already have pendants initialized
-  //   if (config.pendants.length > 0) {
-  //     let updatedPendants = [...config.pendants];
-
-  //     if (config.lightAmount > config.pendants.length) {
-  //       // Add new pendants
-  //       const designOptions = ['bumble', 'radial', 'fina', 'ico', 'piko'];
-
-  //       for (let i = config.pendants.length; i < config.lightAmount; i++) {
-  //         updatedPendants.push({
-  //           id: i,
-  //           design: designOptions[Math.floor(Math.random() * designOptions.length)],
-  //         });
-  //         const productId = designOptions[Math.floor(Math.random() * designOptions.length)] === 'bumble' ? 'product_1' :
-  //         designOptions[Math.floor(Math.random() * designOptions.length)] === 'radial' ? 'product_2' :
-
-  //         designOptions[Math.floor(Math.random() * designOptions.length)] === 'ico' ? 'product_4' :
-  //         designOptions[Math.floor(Math.random() * designOptions.length)] === 'piko' ? 'product_5' : 'product_2';
-  //         setCables(prev => [...prev, { isSystem: false, systemType: "", design: designOptions[Math.floor(Math.random() * designOptions.length)], designId: productId }]);
-  //       }
-  //     } else if (config.lightAmount < config.pendants.length) {
-  //       // Remove excess pendants
-  //       updatedPendants = updatedPendants.slice(0, config.lightAmount);
-  //     }
-
-  //     setConfig(prev => ({ ...prev, pendants: updatedPendants }));
-  //   }
-  // }, [config.lightAmount]);
 
   // Listen for app:ready1 message from PlayCanvas iframe
   const handleLoadSpecificConfig = (configData) => {
@@ -683,7 +648,7 @@ const ConfiguratorLayout = () => {
           sendMessageToPlayCanvas(
             `connector_color:${savedConfig.connectorColor}`
           );
-
+      
           savedCables.forEach((cable, index) => {
             if (cable.systemType) {
               sendMessageToPlayCanvas(`system:${cable.systemType}`);
@@ -810,34 +775,6 @@ const ConfiguratorLayout = () => {
   const handleConfigurationTypeChange = useCallback((type) => {
     setConfig((prev) => {
       const newConfig = { ...prev, configurationType: type };
-
-      // Send message to iframe
-      // setTimeout(() => {
-      //   if (type === 'system') {
-      //     // For system configuration, send base type and system type
-      //     sendMessageToPlayCanvas(`base_type:${newConfig.baseType}`);
-      //     sendMessageToPlayCanvas(`system:${newConfig.systemType}`);
-
-      //     // Check if base is round, then send light_amount:1 message
-      //     if (newConfig.baseType === 'round') {
-      //       sendMessageToPlayCanvas('light_amount:1');
-      //     }
-      //   } else {
-      //     // For pendant configuration, send light type and amount
-      //     sendMessageToPlayCanvas(`light_type:${newConfig.lightType}`);
-      //     sendMessageToPlayCanvas(`light_amount:${newConfig.lightAmount}`);
-
-      //     // Send individual pendant messages
-      //     newConfig.pendants.forEach((pendant, index) => {
-      //       const productId = pendant.design === 'bumble' ? 'product_1' :
-      //                      pendant.design === 'radial' ? 'product_2' :
-      //                      pendant.design === 'fina' ? 'product_3' : 'product_2';
-
-      //       sendMessageToPlayCanvas(`cable_${index}:${productId}`);
-      //     });
-      //   }
-      // }, 0);
-
       return newConfig;
     });
   }, []);
@@ -1122,11 +1059,16 @@ const ConfiguratorLayout = () => {
     setActiveStep("systemType");
   }, []);
   const handleConnectorColorChange = useCallback((connectorColor) => {
-    // Update config state
+    // Update Cables state
+    // setCables((prev) => ({
+    //   ...prev,
+    //   connectorColor,
+    // }));
     setConfig((prev) => ({
       ...prev,
       connectorColor,
     }));
+    console.log("connectorColor",cables);
 
     // Send message to PlayCanvas iframe
     sendMessageToPlayCanvas(`connector_color:${connectorColor}`);
@@ -1164,9 +1106,7 @@ const ConfiguratorLayout = () => {
 
           // Process each selected cable
           selectedCables.forEach((cableNo) => {
-            const system = systemAssignments.find(
-              (a) => a.design === design
-            );
+            const system = systemAssignments.find((a) => a.design === design);
 
             // Update this specific cable
             if (cableNo >= 0) {

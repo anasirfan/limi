@@ -166,7 +166,7 @@ export const PendantSelectionDropdown = ({
                     {cable.design && (
                       <div className="absolute inset-0 opacity-30">
                         <Image 
-                          src={getImageSrc(cable.design)}
+                          src={getImageSrc(cable.design) || `/images/configOptions/2.png`}
                           alt={cable.design}
                           fill
                           className="object-cover"
@@ -194,8 +194,8 @@ export const PendantSelectionDropdown = ({
                     {pendant.design && (
                       <div className="absolute inset-0 opacity-30">
                         <Image 
-                          src={``}
-                          alt={pendant.cable.design}
+                          src={getImageSrc(pendant.design) || `/images/configOptions/2.png`}
+                          alt={pendant.design}
                           fill
                           className="object-cover"
                         />
