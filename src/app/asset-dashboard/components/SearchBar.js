@@ -78,7 +78,7 @@ export default function SearchBar() {
           value={localSearchQuery}
           onChange={(e) => setLocalSearchQuery(e.target.value)}
           placeholder="Search assets by name, tags, or context..."
-          className="block w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+          className="block w-full pl-10 text-black pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
         />
         {localSearchQuery && (
           <button
@@ -94,7 +94,7 @@ export default function SearchBar() {
       <div className="relative">
         <button
           onClick={() => setShowSortDropdown(!showSortDropdown)}
-          className="flex items-center space-x-2 px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm"
+          className="flex items-center text-black space-x-2 px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm"
         >
           <FiFilter className="w-4 h-4" />
           <span>Sort: {getCurrentSortLabel()}</span>
@@ -129,7 +129,7 @@ export default function SearchBar() {
           </span>
           <button
             onClick={() => handleBulkActions('delete')}
-            className="px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+            className="px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors text-black"
           >
             Delete
           </button>
