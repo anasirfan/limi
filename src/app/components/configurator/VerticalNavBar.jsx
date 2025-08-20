@@ -354,7 +354,7 @@ const tourSteps = [
     applyToAllPendants,
     getImageSrc,
   
-  } = usePendantSelection(pendants, selectedPendants, setSelectedPendants, onPendantDesignChange,setShowConfigurationTypeSelector,setOpenBase);
+  } = usePendantSelection(pendants,cables, selectedPendants, setSelectedPendants, onPendantDesignChange,setShowConfigurationTypeSelector,setOpenBase);
   
   // Handle pendant location selection to show configuration type selector
   const handlePendantLocationClick = (locationIndex) => {

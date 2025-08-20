@@ -3,6 +3,7 @@ import { pendantAssignments, barAssignments, universalAssignments } from "../pen
 
 export const usePendantSelection = (
   pendants,
+  cables,
   selectedPendants,
   setSelectedPendants,
   onPendantDesignChange,
@@ -41,7 +42,7 @@ export const usePendantSelection = (
 
   // Select all pendants
   const selectAllPendants = () => {
-    const allPendants = pendants.map((_, index) => index);
+    const allPendants = cables.map((_, index) => index);
     setSelectedPendants(allPendants);
   };
 
