@@ -156,7 +156,7 @@ function AddUserForm() {
                     type="text"
                     value={formData.name}
                     onChange={(e) => handleInputChange('name', e.target.value)}
-                    className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                    className={`w-full pl-10 pr-4 py-3 text-black border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                       errors.name ? 'border-red-300' : 'border-gray-300'
                     }`}
                     placeholder="Enter full name"
@@ -180,7 +180,7 @@ function AddUserForm() {
                     type="email"
                     value={formData.email}
                     onChange={(e) => handleInputChange('email', e.target.value)}
-                    className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                    className={`w-full pl-10 pr-4 py-3 text-black border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                       errors.email ? 'border-red-300' : 'border-gray-300'
                     }`}
                     placeholder="Enter email address"
@@ -210,7 +210,7 @@ function AddUserForm() {
                     type="password"
                     value={formData.password}
                     onChange={(e) => handleInputChange('password', e.target.value)}
-                    className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                    className={`w-full pl-10 pr-4 py-3 text-black border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                       errors.password ? 'border-red-300' : 'border-gray-300'
                     }`}
                     placeholder="Enter password"
@@ -234,7 +234,7 @@ function AddUserForm() {
                     type="password"
                     value={formData.confirmPassword}
                     onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                    className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                    className={`w-full pl-10 pr-4 py-3 text-black border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                       errors.confirmPassword ? 'border-red-300' : 'border-gray-300'
                     }`}
                     placeholder="Confirm password"
