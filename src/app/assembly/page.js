@@ -32,6 +32,7 @@ if (typeof window !== 'undefined') {
 
 const AssemblyPage = () => {
   const [mounted, setMounted] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [currentTheme, setCurrentTheme] = useState('light');
   const containerRef = useRef(null);
   const { scrollYProgress } = useScroll();
@@ -50,8 +51,48 @@ const AssemblyPage = () => {
     ]
   );
 
+  // Listen for app:ready message
+  const listenForAppReady = (callback) => {
+    function handleMessage(event) {
+      if (typeof event.data === "string" && event.data.startsWith("app:ready")) {
+        callback(event.data, event);
+      }
+    }
+    window.addEventListener("message", handleMessage);
+    // Return cleanup
+    return () => window.removeEventListener("message", handleMessage);
+  };
+
+  const handleLoadingComplete = () => {
+    setLoading(false);
+  };
+
+  // Function to send message to PlayCanvas iframe
+  const sendMessageToPlayCanvas = (message) => {
+    const iframe = document.getElementById("playcanvas-app");
+    if (iframe && iframe.contentWindow) {
+      iframe.contentWindow.postMessage(message, "*");
+      console.log("Message sent to PlayCanvas: " + message);
+    }
+  };
+
   useEffect(() => {
     setMounted(true);
+
+    // Listen for app:ready message
+    const cleanup = listenForAppReady((data, event) => {
+      console.log('Received app:ready message:', data);
+      handleLoadingComplete();
+      sendMessageToPlayCanvas('view all');
+    });
+
+
+    return () => {
+      cleanup();
+    };
+  }, []);
+
+  useEffect(() => {
 
     // Initialize Lenis smooth scroll
     const lenis = new Lenis({
@@ -109,7 +150,7 @@ const AssemblyPage = () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
       AOS.refresh();
     };
-  }, []);
+  }, [mounted]);
 
   if (!mounted) {
     return (
@@ -133,6 +174,70 @@ const AssemblyPage = () => {
         className="relative overflow-hidden"
         style={{ backgroundColor }}
       >
+        {/* Loading Screen Overlay */}
+        {loading && (
+          <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#f3ebe2]">
+            <div className="relative mb-16">
+              {/* Animated circles */}
+              <div className="w-48 h-48">
+                <svg className="w-full h-full animate-spin" viewBox="0 0 200 200">
+                  <circle
+                    cx="100"
+                    cy="100"
+                    r="95"
+                    fill="none"
+                    stroke="#54bb74"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeDasharray="20 10"
+                    opacity="0.8"
+                  />
+                  <circle
+                    cx="100"
+                    cy="100"
+                    r="75"
+                    fill="none"
+                    stroke="#54bb74"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeDasharray="15 5"
+                    opacity="0.6"
+                  />
+                  <circle
+                    cx="100"
+                    cy="100"
+                    r="55"
+                    fill="none"
+                    stroke="#54bb74"
+                    strokeWidth="1"
+                    strokeLinecap="round"
+                    strokeDasharray="10 5"
+                    opacity="0.4"
+                  />
+                </svg>
+              </div>
+
+              {/* LIMI text in center */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <h1 className="text-6xl font-light tracking-wider text-[#54bb74] animate-pulse">
+                  LIMI
+                </h1>
+              </div>
+            </div>
+
+            {/* Loading text */}
+            <p className="text-lg font-light text-[#292929] animate-pulse">
+              Waiting for application to load...
+            </p>
+
+            {/* Pulsing dots */}
+            <div className="flex space-x-2 mt-8">
+              <div className="w-3 h-3 bg-[#54bb74] rounded-full animate-bounce" style={{animationDelay: '0ms'}}></div>
+              <div className="w-3 h-3 bg-[#54bb74] rounded-full animate-bounce" style={{animationDelay: '150ms'}}></div>
+              <div className="w-3 h-3 bg-[#54bb74] rounded-full animate-bounce" style={{animationDelay: '300ms'}}></div>
+            </div>
+          </div>
+        )}
         {/* Hero Section */}
         <Hero onVisible={() => trackAssemblyEvent('Hero Section')} />
 
