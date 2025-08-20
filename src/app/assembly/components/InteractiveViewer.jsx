@@ -6,14 +6,35 @@ import { FaExpand, FaRedo, FaEye, FaCog, FaPlay } from 'react-icons/fa';
 import { HiCube, HiLightBulb, HiWifi } from 'react-icons/hi';
 import { trackAssemblyEvent } from '../../utils/umamiTracking';
 
+
 const InteractiveViewer = () => {
-  const containerRef = useRef(null);
+    const containerRef = useRef(null);
   const viewerRef = useRef(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [currentView, setCurrentView] = useState('assembly');
   const [showWiring, setShowWiring] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const isInView = useInView(containerRef, { once: true, margin: '-100px' });
+  const isInView = useInView(containerRef, { once: false, margin: '-100px' });
+
+  // Send PlayCanvas message when InteractiveViewer is visible
+
+  const sendMessageToPlayCanvas = (message) => {
+    const iframe = document.getElementById("playcanvas-app");
+    if (iframe && iframe.contentWindow) {
+      iframe.contentWindow.postMessage(message, "*");
+      console.log("Message sent to PlayCanvas: " + message);
+    }
+  };
+  const prevInView = useRef(false);
+  useEffect(() => {
+    if (isInView && !prevInView.current) {
+      sendMessageToPlayCanvas('hide all');
+    }
+    if (!isInView && prevInView.current) {
+      sendMessageToPlayCanvas('view all');
+    }
+    prevInView.current = isInView;
+  }, [isInView]);
 
   const viewModes = [
     { id: 'assembly', label: 'Assembly View', icon: HiCube },

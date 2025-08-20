@@ -34,7 +34,7 @@ const AssemblyScroll = () => {
       icon: HiOutlineWifi,
       color: '#93cfa2',
       highlights: ['Automatic detection', 'Smart power distribution', 'Flexible cable management'],
-      video: '/limiai/step2.m4v'
+      video: '/limiai/step2.mp4'
     },
     {
       id: 3,
