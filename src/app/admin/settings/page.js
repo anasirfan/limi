@@ -107,7 +107,7 @@ function SystemSettings() {
                     type="text"
                     value={settings.general.siteName}
                     onChange={(e) => handleSettingChange('general', 'siteName', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 text-black border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
                 <div>
@@ -115,7 +115,7 @@ function SystemSettings() {
                   <select
                     value={settings.general.timezone}
                     onChange={(e) => handleSettingChange('general', 'timezone', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 text-black border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="UTC">UTC</option>
                     <option value="America/New_York">Eastern Time</option>
@@ -150,7 +150,7 @@ function SystemSettings() {
                     type="number"
                     value={settings.security.sessionTimeout}
                     onChange={(e) => handleSettingChange('security', 'sessionTimeout', parseInt(e.target.value))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 text-black rounded-lg focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
                 <div>
@@ -159,7 +159,7 @@ function SystemSettings() {
                     type="number"
                     value={settings.security.passwordMinLength}
                     onChange={(e) => handleSettingChange('security', 'passwordMinLength', parseInt(e.target.value))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 text-black rounded-lg focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
               </div>
@@ -176,7 +176,7 @@ function SystemSettings() {
                     type="number"
                     value={settings.storage.maxFileSize}
                     onChange={(e) => handleSettingChange('storage', 'maxFileSize', parseInt(e.target.value))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 text-black rounded-lg focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
                 <div>
@@ -185,7 +185,7 @@ function SystemSettings() {
                     type="number"
                     value={settings.storage.storageQuota}
                     onChange={(e) => handleSettingChange('storage', 'storageQuota', parseInt(e.target.value))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 text-black rounded-lg focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
               </div>
@@ -211,13 +211,13 @@ function SystemSettings() {
                     type={showApiKey ? 'text' : 'password'}
                     value={settings.api.apiKey}
                     readOnly
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 font-mono text-sm"
+                    className="flex-1 px-3 py-2 border text-black border-gray-300 rounded-lg bg-gray-50 font-mono text-sm"
                   />
                   <button
                     onClick={() => setShowApiKey(!showApiKey)}
                     className="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
                   >
-                    {showApiKey ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
+                    {showApiKey ? <FiEyeOff className="w-4 h-4 text-gray-900" /> : <FiEye className="w-4 h-4 text-gray-900" />}
                   </button>
                   <button className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
                     <FiRefreshCw className="w-4 h-4" />
