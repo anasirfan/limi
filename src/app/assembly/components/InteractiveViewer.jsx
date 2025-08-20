@@ -167,7 +167,7 @@ const InteractiveViewer = () => {
               />
 
               {/* Interactive Hotspots */}
-              {hotspots.map((hotspot) => (
+              {/* {hotspots.map((hotspot) => (
                 <motion.div
                   key={hotspot.id}
                   className="absolute group cursor-pointer"
@@ -178,15 +178,15 @@ const InteractiveViewer = () => {
                   }}
                   whileHover={{ scale: 1.2 }}
                   whileTap={{ scale: 0.9 }}
-                  onClick={() => handleHotspotClick(hotspot.id)}
-                >
+                  onClick={() => handleHotspotClick(hotspot.id)} */}
+                {/* > */}
                   {/* Hotspot Marker */}
-                  <div className="w-6 h-6 bg-[#54bb74] rounded-full border-2 border-white shadow-lg animate-pulse">
+                  {/* <div className="w-6 h-6 bg-[#54bb74] rounded-full border-2 border-white shadow-lg animate-pulse">
                     <div className="w-full h-full bg-[#54bb74] rounded-full animate-ping"></div>
-                  </div>
+                  </div> */}
 
                   {/* Tooltip */}
-                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                  {/* <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
                     <div className="bg-[#292929] text-white px-3 py-2 rounded-lg text-sm whitespace-nowrap shadow-xl border border-[#54bb74]/20">
                       <div className="font-semibold">{hotspot.title}</div>
                       <div className="text-gray-300 text-xs">{hotspot.description}</div>
@@ -194,7 +194,7 @@ const InteractiveViewer = () => {
                     </div>
                   </div>
                 </motion.div>
-              ))}
+              ))} */}
             </div>
 
             {/* Control Panel */}
