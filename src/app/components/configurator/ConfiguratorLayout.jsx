@@ -886,28 +886,9 @@ const ConfiguratorLayout = () => {
   // Handle pendant design change
   const handlePendantDesignChange = useCallback(
     (pendantIds, design) => {
-      // First update the config state with the new design
-
-      setConfig((prev) => {
-        const updatedPendants = [...prev.pendants];
-
-        // Update designs for selected pendants
-        pendantIds.forEach((id) => {
-          if (id >= 0 && id < updatedPendants.length) {
-            updatedPendants[id] = {
-              ...updatedPendants[id],
-              design: design,
-            };
-          }
-        });
-
-        return { ...prev, pendants: updatedPendants };
-      });
-
       // Update cables state in a single operation
       setCables((prev) => {
         const updatedCables = [...prev];
-
         // Find the pendant assignment for the selected design
         const pendantAssignment = systemAssignments.find(
           (a) => a.design === design && !a.isSystem
@@ -927,7 +908,6 @@ const ConfiguratorLayout = () => {
         return updatedCables;
       });
 
-      // Then send messages to iframe in a separate operation
       // This ensures we don't have race conditions between state updates and messaging
       setTimeout(() => {
         const pendantAssignment = systemAssignments.find(
@@ -936,7 +916,6 @@ const ConfiguratorLayout = () => {
         // Check if we have only 1 pendant or multiple pendants
         if (config.lightAmount === 1) {
           // For single pendant, send a global pendant design message
-
           sendMessageToPlayCanvas(`cable_0:${pendantAssignment.message}`);
         } else {
           // For multiple pendants, send individual pendant messages
@@ -1035,8 +1014,6 @@ const ConfiguratorLayout = () => {
     // );
     // Send message for each selected cable
     sendMessageToPlayCanvas(`connector_color:${connectorColor}`);
-
-  
     // Move to next step if needed
     setActiveStep("systemType");
   }, []);
