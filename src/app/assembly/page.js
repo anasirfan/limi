@@ -8,8 +8,6 @@ import Lenis from "@studio-freight/lenis";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import Script from "next/script";
-import HeroNew from "./components/HeroNew";
-import Plasma from "./ui/Plasma";
 
 // Import components
 import Hero from "./components/Hero";

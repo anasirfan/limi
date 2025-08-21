@@ -20,6 +20,7 @@ const InteractiveViewer = () => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showSensorOptions, setShowSensorOptions] = useState(false);
   const [selectedSensor, setSelectedSensor] = useState(null);
+  const [appReady, setAppReady] = useState(false);
   const isInView = useInView(containerRef, { once: false, margin: '-100px' });
 
   // Send PlayCanvas message when InteractiveViewer is visible
@@ -34,31 +35,35 @@ const InteractiveViewer = () => {
 
 
   const prevInView = useRef(false);
+  // Only send configuration messages after receiving 'app:ready' and in-view
   useEffect(() => {
-    if (isInView && !prevInView.current) {
-      // Send configuration messages when entering the section
-      const messages = [
-        'light_type:ceiling',
-        'light_amount:3',
-        'base_type:round',
-        'system:bar',
-        'cable_0:system_base_2',
-        'system:bar',
-        'cable_1:system_base_2',
-        'system:bar',
-        'cable_2:system_base_2'
-      ];
-      
-      messages.forEach((message, index) => {
-        setTimeout(() => {
-          sendMessageToPlayCanvas(message);
-        }, index * 100); // Small delay between messages
-      });
+    let appReady = false;
+    let sent = false;
+    const messages = [
+      'light_type:ceiling',
+      'light_amount:3',
+      'base_type:round',
+      'system:bar',
+      'cable_0:system_base_2',
+      'system:bar',
+      'cable_1:system_base_2',
+      'system:bar',
+      'cable_2:system_base_2'
+    ];
+    function handleAppReady(event) {
+      if (typeof event.data === 'string' && event.data.startsWith('app:ready1')) {
+        setAppReady(true);
+          messages.forEach((message, index) => {
+            setTimeout(() => {
+              sendMessageToPlayCanvas(message);
+            }, index * 100);
+          });
+      }
     }
-    // if (!isInView && prevInView.current) {
-    //   sendMessageToPlayCanvas('view all');
-    // }
-    prevInView.current = isInView;
+    window.addEventListener('message', handleAppReady);
+    return () => {
+      window.removeEventListener('message', handleAppReady);
+    };
   }, [isInView]);
 
   const viewModes = [
@@ -160,6 +165,7 @@ const InteractiveViewer = () => {
             setSelectedSensor={setSelectedSensor}
             sendMessageToPlayCanvas={sendMessageToPlayCanvas}
             trackAssemblyEvent={trackAssemblyEvent}
+            appReady={appReady}
           />
           <SensorOptionsPanel
             showSensorOptions={showSensorOptions}

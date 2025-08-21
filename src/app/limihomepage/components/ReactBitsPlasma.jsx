@@ -84,7 +84,7 @@ void main() {
 }`;
 
 export const Plasma = ({
-  color = "#ffffff",
+  color = "#50C878", // LIMI Emerald color by default
   speed = 1,
   direction = "forward",
   scale = 1,

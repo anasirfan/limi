@@ -3,18 +3,36 @@ import { useState } from 'react';
 
 const SensorOptionsPanel = ({ showSensorOptions, sendMessageToPlayCanvas, trackAssemblyEvent }) => {
   const [sensorStates, setSensorStates] = useState({
-    'sensor:1': true,
-    'sensor:2': true,
-    'sensor:3': true,
+    'sensor:1': false,
+    'sensor:2': false,
+    'sensor:3': false,
   });
 
   const handleSensorClick = (sensor) => {
     setSensorStates((prev) => {
-      const toggled = !prev[sensor];
-      // Send the appropriate message
-      sendMessageToPlayCanvas(toggled ? `${sensor}` : `${sensor}-off`);
-      trackAssemblyEvent('Sensor Selected', toggled ? sensor : `${sensor}-off`);
-      return { ...prev, [sensor]: toggled };
+      const isCurrentlySelected = prev[sensor];
+      let newStates;
+      if (isCurrentlySelected) {
+        // Deselect all if clicking the already selected sensor
+        newStates = {
+          'sensor:1': false,
+          'sensor:2': false,
+          'sensor:3': false,
+        };
+        sendMessageToPlayCanvas(`${sensor}-off`);
+        trackAssemblyEvent('Sensor Selected', `${sensor}-off`);
+      } else {
+        // Select only the clicked sensor, deselect others
+        newStates = {
+          'sensor:1': false,
+          'sensor:2': false,
+          'sensor:3': false,
+          [sensor]: true,
+        };
+        sendMessageToPlayCanvas(`${sensor}`);
+        trackAssemblyEvent('Sensor Selected', sensor);
+      }
+      return newStates;
     });
   };
 
