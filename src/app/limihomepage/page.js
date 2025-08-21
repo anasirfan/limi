@@ -11,6 +11,8 @@ import GradientMeshBackground from "./components/GradientMeshBackground";
 import ThreadsBackground from "./components/ThreadsBackground";
 import OrbBackground from "./components/OrbBackground";
 import BeamsBackground from "./components/BeamsBackground";
+import FireBackground from "./components/FireBackground";
+import FluidBackground from "./components/FluidBackground";
 
 const LimiHomepage = () => {
   const [currentBackground, setCurrentBackground] = useState(0);
@@ -25,6 +27,8 @@ const LimiHomepage = () => {
     { name: "Threads", component: ThreadsBackground },
     { name: "Orb", component: OrbBackground },
     { name: "Beams", component: BeamsBackground },
+    { name: "Fire Effect", component: FireBackground },
+    { name: "Fluid Simulation", component: FluidBackground },
   ];
 
   const nextBackground = () => {

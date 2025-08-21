@@ -53,11 +53,11 @@ const InteractiveViewer = () => {
     function handleAppReady(event) {
       if (typeof event.data === 'string' && event.data.startsWith('app:ready1')) {
         setAppReady(true);
-          messages.forEach((message, index) => {
-            setTimeout(() => {
-              sendMessageToPlayCanvas(message);
-            }, index * 100);
-          });
+        messages.forEach((message, index) => {
+          setTimeout(() => {
+            sendMessageToPlayCanvas(message);
+          }, index * 100);
+        });
       }
     }
     window.addEventListener('message', handleAppReady);
@@ -65,6 +65,23 @@ const InteractiveViewer = () => {
       window.removeEventListener('message', handleAppReady);
     };
   }, [isInView]);
+
+  // Listen for iframe messages to toggle SensorOptionsPanel
+  useEffect(() => {
+    function handleSensorPanelToggle(event) {
+      if (typeof event.data === 'string') {
+        if (event.data.startsWith('offconfig')) {
+          setShowSensorOptions(false);
+        } else if (event.data.includes('cable_')) {
+          setShowSensorOptions(true);
+        }
+      }
+    }
+    window.addEventListener('message', handleSensorPanelToggle);
+    return () => {
+      window.removeEventListener('message', handleSensorPanelToggle);
+    };
+  }, []);
 
   const viewModes = [
     { id: 'assembly', label: 'Assembly View', icon: HiCube },
