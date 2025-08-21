@@ -1,39 +1,41 @@
-'use client';
+"use client";
 
-import { useEffect, useRef, useState } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import Lenis from '@studio-freight/lenis';
-import AOS from 'aos';
-import 'aos/dist/aos.css';
-import Script from 'next/script';
+import { useEffect, useRef, useState } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Lenis from "@studio-freight/lenis";
+import AOS from "aos";
+import "aos/dist/aos.css";
+import Script from "next/script";
+import HeroNew from "./components/HeroNew";
+import Plasma from "./ui/Plasma";
 
 // Import components
-import Hero from './components/Hero';
-import AssemblyScroll from './components/AssemblyScroll';
-import SensorModuleCard from './components/SensorModuleCard';
-import InteractiveViewer from './components/InteractiveViewer';
-import BenefitTimeline from './components/BenefitTimeline';
-import CTA from './components/CTA';
+import Hero from "./components/Hero";
+import AssemblyScroll from "./components/AssemblyScroll";
+import SensorModuleCard from "./components/SensorModuleCard";
+import InteractiveViewer from "./components/InteractiveViewer";
+import BenefitTimeline from "./components/BenefitTimeline";
+import CTA from "./components/CTA";
 
 // Import Umami tracking utilities
-import { 
-  trackScrollInteraction, 
-  trackPagePerformance, 
+import {
+  trackScrollInteraction,
+  trackPagePerformance,
   trackSensorCard,
-  trackAssemblyEvent 
-} from '../utils/umamiTracking';
+  trackAssemblyEvent,
+} from "../utils/umamiTracking";
 
 // Register GSAP plugins
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
 const AssemblyPage = () => {
   const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [currentTheme, setCurrentTheme] = useState('light');
+  const [currentTheme, setCurrentTheme] = useState("light");
   const containerRef = useRef(null);
   const { scrollYProgress } = useScroll();
 
@@ -42,19 +44,22 @@ const AssemblyPage = () => {
     scrollYProgress,
     [0, 0.2, 0.4, 0.6, 0.8, 1],
     [
-      '#f3ebe2', // Soft Beige
-      '#292929', // Charleston Green
-      '#54bb74', // Emerald
-      '#93cfa2', // Eton
-      '#292929', // Charleston Green
-      '#f3ebe2'  // Soft Beige
+      "#f3ebe2", // Soft Beige
+      "#292929", // Charleston Green
+      "#54bb74", // Emerald
+      "#93cfa2", // Eton
+      "#292929", // Charleston Green
+      "#f3ebe2", // Soft Beige
     ]
   );
 
   // Listen for app:ready message
   const listenForAppReady = (callback) => {
     function handleMessage(event) {
-      if (typeof event.data === "string" && event.data.startsWith("app:ready2")) {
+      if (
+        typeof event.data === "string" &&
+        event.data.startsWith("app:ready2")
+      ) {
         callback(event.data, event);
       }
     }
@@ -67,18 +72,15 @@ const AssemblyPage = () => {
     setLoading(false);
   };
 
-  
-
   useEffect(() => {
     setMounted(true);
 
     // Listen for app:ready message
     const cleanup = listenForAppReady((data, event) => {
-      console.log('Received app:ready message:', data);
+      console.log("Received app:ready message:", data);
       handleLoadingComplete();
       // sendMessageToPlayCanvas('view all');
     });
-
 
     return () => {
       cleanup();
@@ -86,13 +88,12 @@ const AssemblyPage = () => {
   }, []);
 
   useEffect(() => {
-
     // Initialize Lenis smooth scroll
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      direction: 'vertical',
-      gestureDirection: 'vertical',
+      direction: "vertical",
+      gestureDirection: "vertical",
       smooth: true,
       mouseMultiplier: 1,
       smoothTouch: false,
@@ -109,7 +110,7 @@ const AssemblyPage = () => {
     // Initialize AOS
     AOS.init({
       duration: 1000,
-      easing: 'ease-out-cubic',
+      easing: "ease-out-cubic",
       once: true,
       offset: 100,
     });
@@ -117,30 +118,30 @@ const AssemblyPage = () => {
     // GSAP ScrollTrigger setup
     ScrollTrigger.create({
       trigger: containerRef.current,
-      start: 'top top',
-      end: 'bottom bottom',
+      start: "top top",
+      end: "bottom bottom",
       onUpdate: (self) => {
         const progress = self.progress;
         if (progress < 0.3) {
-          setCurrentTheme('light');
+          setCurrentTheme("light");
         } else if (progress < 0.7) {
-          setCurrentTheme('dark');
+          setCurrentTheme("dark");
         } else {
-          setCurrentTheme('light');
+          setCurrentTheme("light");
         }
-        trackScrollInteraction('assembly_page', progress);
+        trackScrollInteraction("assembly_page", progress);
       },
     });
 
     // Track page performance
     trackPagePerformance({
-      page: 'assembly',
-      loadTime: performance.now()
+      page: "assembly",
+      loadTime: performance.now(),
     });
 
     return () => {
       lenis.destroy();
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
       AOS.refresh();
     };
   }, [mounted]);
@@ -161,7 +162,7 @@ const AssemblyPage = () => {
         data-website-id="c2dbae41-29a3-457e-bcb6-5a6b68a53fe3"
         strategy="afterInteractive"
       />
-      
+
       <motion.div
         ref={containerRef}
         className="relative overflow-hidden"
@@ -173,7 +174,10 @@ const AssemblyPage = () => {
             <div className="relative mb-16">
               {/* Animated circles */}
               <div className="w-48 h-48">
-                <svg className="w-full h-full animate-spin" viewBox="0 0 200 200">
+                <svg
+                  className="w-full h-full animate-spin"
+                  viewBox="0 0 200 200"
+                >
                   <circle
                     cx="100"
                     cy="100"
@@ -225,17 +229,28 @@ const AssemblyPage = () => {
 
             {/* Pulsing dots */}
             <div className="flex space-x-2 mt-8">
-              <div className="w-3 h-3 bg-[#54bb74] rounded-full animate-bounce" style={{animationDelay: '0ms'}}></div>
-              <div className="w-3 h-3 bg-[#54bb74] rounded-full animate-bounce" style={{animationDelay: '150ms'}}></div>
-              <div className="w-3 h-3 bg-[#54bb74] rounded-full animate-bounce" style={{animationDelay: '300ms'}}></div>
+              <div
+                className="w-3 h-3 bg-[#54bb74] rounded-full animate-bounce"
+                style={{ animationDelay: "0ms" }}
+              ></div>
+              <div
+                className="w-3 h-3 bg-[#54bb74] rounded-full animate-bounce"
+                style={{ animationDelay: "150ms" }}
+              ></div>
+              <div
+                className="w-3 h-3 bg-[#54bb74] rounded-full animate-bounce"
+                style={{ animationDelay: "300ms" }}
+              ></div>
             </div>
           </div>
         )}
         {/* Hero Section */}
-        <Hero onVisible={() => trackAssemblyEvent('Hero Section')} />
-
+        <Hero onVisible={() => trackAssemblyEvent("Hero Section")} />
+        
         {/* Assembly Scroll Storytelling */}
-        <AssemblyScroll onVisible={() => trackAssemblyEvent('Assembly Scroll Storytelling')} />
+        <AssemblyScroll
+          onVisible={() => trackAssemblyEvent("Assembly Scroll Storytelling")}
+        />
 
         {/* Sensor Modules Grid */}
         <section className="relative bg-white py-20 px-4">
@@ -250,7 +265,8 @@ const AssemblyPage = () => {
                 Smart <span className="text-[#54bb74]">Sensor</span> Integration
               </h2>
               <p className="text-xl text-gray-700 max-w-3xl mx-auto">
-                Each module contains advanced sensors that transform your lighting into an intelligent ecosystem
+                Each module contains advanced sensors that transform your
+                lighting into an intelligent ecosystem
               </p>
             </motion.div>
 
@@ -260,42 +276,48 @@ const AssemblyPage = () => {
                 description="Advanced motion sensing with precise occupancy detection"
                 icon="radar"
                 delay={0}
-                onVisible={() => trackSensorCard('Radar Detection')}
+                onVisible={() => trackSensorCard("Radar Detection")}
               />
               <SensorModuleCard
                 title="Audio Processing"
                 description="Voice commands and ambient sound analysis"
                 icon="microphone"
                 delay={0.2}
-                onVisible={() => trackSensorCard('Audio Processing')}
+                onVisible={() => trackSensorCard("Audio Processing")}
               />
               <SensorModuleCard
                 title="Computer Vision"
                 description="Visual recognition and gesture control"
                 icon="camera"
                 delay={0.4}
-                onVisible={() => trackSensorCard('Computer Vision')}
+                onVisible={() => trackSensorCard("Computer Vision")}
               />
             </div>
           </div>
         </section>
 
         {/* Interactive 3D Viewer */}
-        <InteractiveViewer onVisible={() => trackAssemblyEvent('Interactive 3D Viewer')} />
+        <InteractiveViewer
+          onVisible={() => trackAssemblyEvent("Interactive 3D Viewer")}
+        />
 
         {/* Benefits Timeline */}
-        <BenefitTimeline onVisible={() => trackAssemblyEvent('Benefits Timeline')} />
+        <BenefitTimeline
+          onVisible={() => trackAssemblyEvent("Benefits Timeline")}
+        />
 
         {/* CTA Section */}
-        <CTA onVisible={() => trackAssemblyEvent('CTA Section')} />
+        <CTA onVisible={() => trackAssemblyEvent("CTA Section")} />
 
         {/* Floating Theme Indicator */}
         <div className="fixed top-4 right-4 z-50">
-          <div className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-500 ${
-            currentTheme === 'light' 
-              ? 'bg-white/20 text-[#292929] backdrop-blur-md' 
-              : 'bg-black/20 text-white backdrop-blur-md'
-          }`}>
+          <div
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-500 ${
+              currentTheme === "light"
+                ? "bg-white/20 text-[#292929] backdrop-blur-md"
+                : "bg-black/20 text-white backdrop-blur-md"
+            }`}
+          >
             {/* {currentTheme === 'light' ? '☀️ Light Mode' : '🌙 Dark Mode'} */}
           </div>
         </div>
