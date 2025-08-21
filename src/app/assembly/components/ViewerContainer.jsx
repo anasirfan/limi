@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 
-const ViewerContainer = ({ isLoaded, viewerRef, showSensorOptions, setShowSensorOptions, selectedSensor, setSelectedSensor, sendMessageToPlayCanvas, trackAssemblyEvent }) => (
+const ViewerContainer = ({ isLoaded, viewerRef, showSensorOptions, setShowSensorOptions, selectedSensor, setSelectedSensor, sendMessageToPlayCanvas, trackAssemblyEvent, appReady }) => (
   <div 
     ref={viewerRef}
     className="relative w-full h-[600px] bg-gradient-to-br from-[#292929] to-[#1a1a1a] rounded-2xl overflow-hidden shadow-2xl border border-[#54bb74]/20"
@@ -14,6 +14,22 @@ const ViewerContainer = ({ isLoaded, viewerRef, showSensorOptions, setShowSensor
           <p className="text-gray-400 text-sm mt-2">Initializing PlayCanvas Engine</p>
         </div>
       </div>
+    )}
+    
+    {/* App Ready Overlay */}
+    {isLoaded && !appReady && (
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="absolute inset-0 flex items-center justify-center bg-black/80 backdrop-blur-sm z-10"
+      >
+        <div className="text-center">
+          <div className="w-12 h-12 border-3 border-[#54bb74]/50 border-t-[#54bb74] rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-white text-xl font-semibold">Initializing Experience...</p>
+          <p className="text-gray-300 text-sm mt-2">Preparing interactive components</p>
+        </div>
+      </motion.div>
     )}
     <div className="w-full h-full relative">
       <iframe
