@@ -54,7 +54,7 @@ const AssemblyPage = () => {
   // Listen for app:ready message
   const listenForAppReady = (callback) => {
     function handleMessage(event) {
-      if (typeof event.data === "string" && event.data.startsWith("app:ready")) {
+      if (typeof event.data === "string" && event.data.startsWith("app:ready2")) {
         callback(event.data, event);
       }
     }
@@ -67,14 +67,7 @@ const AssemblyPage = () => {
     setLoading(false);
   };
 
-  // Function to send message to PlayCanvas iframe
-  const sendMessageToPlayCanvas = (message) => {
-    const iframe = document.getElementById("playcanvas-app");
-    if (iframe && iframe.contentWindow) {
-      iframe.contentWindow.postMessage(message, "*");
-      console.log("Message sent to PlayCanvas: " + message);
-    }
-  };
+  
 
   useEffect(() => {
     setMounted(true);
@@ -83,7 +76,7 @@ const AssemblyPage = () => {
     const cleanup = listenForAppReady((data, event) => {
       console.log('Received app:ready message:', data);
       handleLoadingComplete();
-      sendMessageToPlayCanvas('view all');
+      // sendMessageToPlayCanvas('view all');
     });
 
 
