@@ -21,8 +21,7 @@ import SignupForm from "./SignupForm";
 import PortalCTA from "../../components/PortalCTA";
 import { useRef } from "react";
 import { fetchUserByToken } from '../../../app/redux/slices/userSlice.js';
-
-
+import { useHideNavFooter } from '../../components/context/HideNavFooterContext';
 export default function PortalLogin({ onLogin }) {
   const [isFetchingByToken, setIsFetchingByToken] = useState(false);
   const [loginMethod, setLoginMethod] = useState("email"); // 'email' or 'otp'
@@ -45,23 +44,25 @@ export default function PortalLogin({ onLogin }) {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [resetStatus, setResetStatus] = useState({ type: "", message: "" });
+  const { hideNavFooter, setHideNavFooter } = useHideNavFooter();
 
   const dispatch =  useDispatch();
   const { loginStatus, error, isLoggedIn, user } = useSelector(
     (state) => state?.user || {}
   );
-
   // Auto-login via token in URL
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const urlToken = urlParams.get('token');
     if (urlToken) {
+      setHideNavFooter(false);
+      console.log("hideNavFooterPortal", hideNavFooter);
       setIsFetchingByToken(true);
       dispatch(fetchUserByToken(urlToken)).finally(() => {
         setIsFetchingByToken(false);
       });
     }
-  }, [dispatch]);
+  }, [dispatch, hideNavFooter]);
 
   // Clear auth status when component unmounts
   useEffect(() => {

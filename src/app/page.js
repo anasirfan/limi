@@ -30,6 +30,7 @@ import ScrollToTop from './components/ScrollToTop';
 import SplashScreen from './components/SplashScreen';
 import CookieConsent from './components/CookieConsent';
 import { useEffect, useState, Suspense } from 'react';
+import { useHideNavFooter } from './components/context/HideNavFooterContext';
 import { initTracking, sendTrackingData, cleanupTracking } from './services/trackingService';
 // Dynamically import CubeAnimation with SSR disabled
 const CubeAnimation = dynamic(() => import('./components/CubeAnimation'), { 
@@ -48,7 +49,8 @@ export default function Home() {
   const [userType, setUserType] = useState(null);
   const [showSplash, setShowSplash] = useState(true);
   const [showUserSelection, setShowUserSelection] = useState(false);
-  const [hideNavFooter, setHideNavFooter] = useState(false);
+  const { hideNavFooter, setHideNavFooter } = useHideNavFooter();
+  console.log("hideNavFooterHeader", hideNavFooter);
 
   useEffect(() => {
     // Check if device is mobile
@@ -64,13 +66,7 @@ export default function Home() {
       window.removeEventListener('resize', checkMobile);
     };
   }, []);
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const urlToken = urlParams.get('token');
-    if (urlToken) {
-      setHideNavFooter(true);
-    }
-  }, []);
+ 
   // Custom hook to handle splash screen completion
   useEffect(() => {
     // Listen for splash screen completion
