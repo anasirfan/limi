@@ -38,11 +38,11 @@ const InteractiveViewer = () => {
         'light_amount:3',
         'base_type:round',
         'system:bar',
-        'cable_0:system_base_3',
+        'cable_0:system_base_2',
         'system:bar',
-        'cable_1:system_base_3',
+        'cable_1:system_base_2',
         'system:bar',
-        'cable_2:system_base_3'
+        'cable_2:system_base_2'
       ];
       
       messages.forEach((message, index) => {
