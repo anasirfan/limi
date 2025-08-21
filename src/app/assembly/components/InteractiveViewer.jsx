@@ -14,25 +14,46 @@ const InteractiveViewer = () => {
   const [currentView, setCurrentView] = useState('assembly');
   const [showWiring, setShowWiring] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [showSensorOptions, setShowSensorOptions] = useState(false);
+  const [selectedSensor, setSelectedSensor] = useState(null);
   const isInView = useInView(containerRef, { once: false, margin: '-100px' });
 
   // Send PlayCanvas message when InteractiveViewer is visible
 
   const sendMessageToPlayCanvas = (message) => {
-    const iframe = document.getElementById("playcanvas-app");
+    const iframe = document.getElementById("assembly-playcanvas-app");
     if (iframe && iframe.contentWindow) {
       iframe.contentWindow.postMessage(message, "*");
       console.log("Message sent to PlayCanvas: " + message);
     }
   };
+
+
   const prevInView = useRef(false);
   useEffect(() => {
     if (isInView && !prevInView.current) {
-      sendMessageToPlayCanvas('hide all');
+      // Send configuration messages when entering the section
+      const messages = [
+        'light_type:ceiling',
+        'light_amount:3',
+        'base_type:round',
+        'system:bar',
+        'cable_0:system_base_3',
+        'system:bar',
+        'cable_1:system_base_3',
+        'system:bar',
+        'cable_2:system_base_3'
+      ];
+      
+      messages.forEach((message, index) => {
+        setTimeout(() => {
+          sendMessageToPlayCanvas(message);
+        }, index * 100); // Small delay between messages
+      });
     }
-    if (!isInView && prevInView.current) {
-      sendMessageToPlayCanvas('view all');
-    }
+    // if (!isInView && prevInView.current) {
+    //   sendMessageToPlayCanvas('view all');
+    // }
     prevInView.current = isInView;
   }, [isInView]);
 
@@ -160,7 +181,8 @@ const InteractiveViewer = () => {
             <div className="w-full h-full relative">
               {/* This would be replaced with actual PlayCanvas canvas */}
               <iframe
-                src="https://playcanv.as/e/p/LBV4KIS5/"
+                id='assembly-playcanvas-app'
+                src="https://playcanv.as/e/p/7c2273a2/"
                 className="w-full h-full border-0 rounded-xl"
                 title="LIMI 3D Interactive Viewer"
                 allowFullScreen
@@ -197,95 +219,63 @@ const InteractiveViewer = () => {
               ))} */}
             </div>
 
-            {/* Control Panel */}
-            <div className="absolute top-4 left-4 right-4 flex justify-between items-start">
-              {/* View Mode Selector */}
-              <div className="flex space-x-2">
-                {viewModes.map((mode) => (
-                  <motion.button
-                    key={mode.id}
-                    onClick={() => handleViewChange(mode.id)}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center space-x-2 ${
-                      currentView === mode.id
-                        ? 'bg-[#54bb74] text-white shadow-lg'
-                        : 'bg-black text-white backdrop-blur-md'
-                    }`}
-                  >
-                    <mode.icon className="text-sm" />
-                    <span>{mode.label}</span>
-                  </motion.button>
-                ))}
-              </div>
 
-              {/* Control Buttons */}
-              <div className="flex space-x-2">
-                <motion.button
-                  onClick={toggleWiring}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className={`p-3 rounded-lg transition-all duration-300 ${
-                    showWiring
-                      ? 'bg-[#54bb74] text-white'
-                      : 'bg-black text-white '
-                  } backdrop-blur-md`}
-                  title="Toggle Wiring View"
-                >
-                  <FaEye />
-                </motion.button>
-
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="p-3 bg-black text-white rounded-lg transition-all duration-300 backdrop-blur-md"
-                  title="Reset View"
-                >
-                  <FaRedo />
-                </motion.button>
-
-                <motion.button
-                  onClick={toggleFullscreen}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="p-3 bg-black text-white  rounded-lg transition-all duration-300 backdrop-blur-md"
-                  title="Fullscreen"
-                >
-                  <FaExpand />
-                </motion.button>
-              </div>
+            {/* Main Control Button - Right Center */}
+            <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setShowSensorOptions(!showSensorOptions)}
+                className="w-16 h-16 bg-black/70 backdrop-blur-md text-white rounded-full flex items-center justify-center shadow-xl border border-[#54bb74]/30 hover:border-[#54bb74] transition-all duration-300"
+              >
+                <FaCog className={`text-xl transition-transform duration-300 ${showSensorOptions ? 'rotate-45' : ''}`} />
+              </motion.button>
             </div>
 
-            {/* Instructions */}
-            <div className="absolute bottom-4 left-4 right-4">
-              <div className="bg-black/50 backdrop-blur-md rounded-lg p-4 text-white">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4 text-sm">
-                    <span className="flex items-center">
-                      <span className="w-2 h-2 bg-[#54bb74] rounded-full mr-2"></span>
-                      Click & Drag to Rotate
-                    </span>
-                    <span className="flex items-center">
-                      <span className="w-2 h-2 bg-[#93cfa2] rounded-full mr-2"></span>
-                      Scroll to Zoom
-                    </span>
-                    <span className="flex items-center">
-                      <span className="w-2 h-2 bg-white rounded-full mr-2"></span>
-                      Click Hotspots for Details
-                    </span>
-                  </div>
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="px-4 py-2 bg-[#54bb74] text-white rounded-lg text-sm font-medium hover:bg-[#54bb74]/80 transition-colors duration-300 flex items-center space-x-2"
-                    onClick={handleCTAClick}
-                  >
-                    <FaPlay className="text-xs" />
-                    <span>Start Tour</span>
-                  </motion.button>
+            {/* Sensor Options Panel - Bottom */}
+            {showSensorOptions && (
+              <motion.div
+                initial={{ opacity: 0, y: 100 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 100 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+                className="absolute bottom-2 left-[39%] transform -translate-x-1/2 bg-black/80 backdrop-blur-md border-t border-[#54bb74]/30 px-6 py-4 rounded-2xl shadow-2xl"
+                style={{ minWidth: 'auto', width: 'auto', maxWidth: '100vw' }}
+              >
+                <div className="flex justify-center space-x-6">
+                  {['sensor:1', 'sensor:2', 'sensor:3'].map((sensor, index) => (
+                    <motion.button
+                      key={sensor}
+                      initial={{ opacity: 0, scale: 0 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: index * 0.1 }}
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      className="w-16 h-16 bg-[#54bb74] text-white rounded-full flex items-center justify-center text-sm font-medium shadow-lg hover:bg-[#54bb74]/80 transition-colors duration-300"
+                      onClick={() => {
+                        sendMessageToPlayCanvas(`${sensor}`);
+                        trackAssemblyEvent('Sensor Selected', sensor);
+                        setSelectedSensor(sensor);
+                      }}
+                    >
+                      <span className="relative flex items-center justify-center w-full h-full">
+                        S{index + 1}
+                        {selectedSensor === sensor && (
+                          <span className="absolute top-1 right-1">
+                            <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                          </span>
+                        )}
+                      </span>
+                    </motion.button>
+                  ))}
                 </div>
-              </div>
-            </div>
+                {/* <div className="text-center mt-4">
+                  <p className="text-white/70 text-sm">Select a sensor to view details</p>
+                </div> */}
+              </motion.div>
+            )}
           </div>
 
           {/* Feature Cards */}
