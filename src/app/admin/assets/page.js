@@ -20,30 +20,85 @@ import {
   FiPlus,
   FiX,
   FiHardDrive,
-  FiClock
+  FiClock,
+  FiFilter,
+  FiSliders
 } from 'react-icons/fi';
+import AdvancedFilterPanel from '../../components/AdvancedFilterPanel';
 
-// Mock asset data
+// Enhanced mock asset data with more properties for filtering
 const mockAssets = [
   {
     id: 1,
     name: 'Product_Showcase_Video.mp4',
     type: 'video',
     size: '45.2 MB',
+    sizeInMB: 45.2,
     status: 'approved',
     uploadedBy: 'John Doe',
     uploadedAt: '2024-01-15T10:30:00Z',
-    category: 'Marketing'
+    category: 'Marketing',
+    tags: ['product', 'showcase', 'video']
   },
   {
     id: 2,
     name: 'Brand_Guidelines.pdf',
     type: 'document',
     size: '2.1 MB',
+    sizeInMB: 2.1,
     status: 'pending',
     uploadedBy: 'Jane Smith',
     uploadedAt: '2024-01-14T15:45:00Z',
-    category: 'Design'
+    category: 'Design',
+    tags: ['brand', 'guidelines', 'design']
+  },
+  {
+    id: 3,
+    name: 'Hero_Banner_Image.jpg',
+    type: 'image',
+    size: '8.5 MB',
+    sizeInMB: 8.5,
+    status: 'approved',
+    uploadedBy: 'Mike Johnson',
+    uploadedAt: '2024-01-13T09:20:00Z',
+    category: 'Marketing',
+    tags: ['banner', 'hero', 'marketing']
+  },
+  {
+    id: 4,
+    name: 'Background_Music.mp3',
+    type: 'audio',
+    size: '12.3 MB',
+    sizeInMB: 12.3,
+    status: 'rejected',
+    uploadedBy: 'Sarah Wilson',
+    uploadedAt: '2024-01-12T14:15:00Z',
+    category: 'Media',
+    tags: ['music', 'background', 'audio']
+  },
+  {
+    id: 5,
+    name: 'Technical_Specs.docx',
+    type: 'document',
+    size: '1.8 MB',
+    sizeInMB: 1.8,
+    status: 'pending',
+    uploadedBy: 'John Doe',
+    uploadedAt: '2024-01-11T11:30:00Z',
+    category: 'Technical',
+    tags: ['specs', 'technical', 'documentation']
+  },
+  {
+    id: 6,
+    name: 'Product_Demo_Video.mp4',
+    type: 'video',
+    size: '78.9 MB',
+    sizeInMB: 78.9,
+    status: 'approved',
+    uploadedBy: 'Jane Smith',
+    uploadedAt: '2024-01-10T16:45:00Z',
+    category: 'Marketing',
+    tags: ['demo', 'product', 'video']
   }
 ];
 
@@ -70,13 +125,98 @@ export default function AssetsPage() {
   const [showBulkUpload, setShowBulkUpload] = useState(false);
   const [bulkFiles, setBulkFiles] = useState([]);
   const [activeMenu, setActiveMenu] = useState(null);
-
-  const filteredAssets = assets.filter(asset => {
-    const matchesSearch = asset.name.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesType = selectedType === 'all' || asset.type === selectedType;
-    const matchesStatus = selectedStatus === 'all' || asset.status === selectedStatus;
-    return matchesSearch && matchesType && matchesStatus;
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [advancedFilters, setAdvancedFilters] = useState({
+    search: '',
+    type: [],
+    status: [],
+    category: [],
+    uploadedBy: [],
+    dateRange: { start: '', end: '' },
+    sizeRange: { min: '', max: '' },
+    tags: []
   });
+
+  // Enhanced filtering logic that supports advanced filters
+  const filteredAssets = assets.filter(asset => {
+    // Basic search
+    const basicSearch = searchQuery === '' || asset.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const basicType = selectedType === 'all' || asset.type === selectedType;
+    const basicStatus = selectedStatus === 'all' || asset.status === selectedStatus;
+
+    // Advanced filters
+    const advancedSearch = advancedFilters.search === '' || asset.name.toLowerCase().includes(advancedFilters.search.toLowerCase());
+    const advancedType = advancedFilters.type.length === 0 || advancedFilters.type.includes(asset.type);
+    const advancedStatus = advancedFilters.status.length === 0 || advancedFilters.status.includes(asset.status);
+    const advancedCategory = advancedFilters.category.length === 0 || advancedFilters.category.includes(asset.category);
+    const advancedUploader = advancedFilters.uploadedBy.length === 0 || advancedFilters.uploadedBy.includes(asset.uploadedBy);
+    
+    // Date range filter
+    let advancedDateRange = true;
+    if (advancedFilters.dateRange.start || advancedFilters.dateRange.end) {
+      const assetDate = new Date(asset.uploadedAt);
+      const startDate = advancedFilters.dateRange.start ? new Date(advancedFilters.dateRange.start) : null;
+      const endDate = advancedFilters.dateRange.end ? new Date(advancedFilters.dateRange.end) : null;
+      
+      if (startDate && assetDate < startDate) advancedDateRange = false;
+      if (endDate && assetDate > endDate) advancedDateRange = false;
+    }
+
+    // Size range filter
+    let advancedSizeRange = true;
+    if (advancedFilters.sizeRange.min || advancedFilters.sizeRange.max) {
+      const minSize = advancedFilters.sizeRange.min ? parseFloat(advancedFilters.sizeRange.min) : 0;
+      const maxSize = advancedFilters.sizeRange.max ? parseFloat(advancedFilters.sizeRange.max) : Infinity;
+      
+      if (asset.sizeInMB < minSize || asset.sizeInMB > maxSize) advancedSizeRange = false;
+    }
+
+    // Tags filter
+    const advancedTags = advancedFilters.tags.length === 0 || 
+      advancedFilters.tags.some(tag => asset.tags && asset.tags.includes(tag));
+
+    // Check if any advanced filters are active
+    const hasAdvancedFilters = 
+      advancedFilters.search !== '' ||
+      advancedFilters.type.length > 0 ||
+      advancedFilters.status.length > 0 ||
+      advancedFilters.category.length > 0 ||
+      advancedFilters.uploadedBy.length > 0 ||
+      advancedFilters.dateRange.start !== '' ||
+      advancedFilters.dateRange.end !== '' ||
+      advancedFilters.sizeRange.min !== '' ||
+      advancedFilters.sizeRange.max !== '' ||
+      advancedFilters.tags.length > 0;
+
+    // Use advanced filters if any are active, otherwise use basic filters
+    if (hasAdvancedFilters) {
+      return advancedSearch && advancedType && advancedStatus && advancedCategory && 
+             advancedUploader && advancedDateRange && advancedSizeRange && advancedTags;
+    } else {
+      return basicSearch && basicType && basicStatus;
+    }
+  });
+
+  const handleAdvancedFiltersApply = (filters) => {
+    setAdvancedFilters(filters);
+    // Clear basic filters when advanced filters are applied
+    setSearchQuery('');
+    setSelectedType('all');
+    setSelectedStatus('all');
+  };
+
+  const getActiveAdvancedFilterCount = () => {
+    let count = 0;
+    if (advancedFilters.search) count++;
+    if (advancedFilters.type.length > 0) count++;
+    if (advancedFilters.status.length > 0) count++;
+    if (advancedFilters.category.length > 0) count++;
+    if (advancedFilters.uploadedBy.length > 0) count++;
+    if (advancedFilters.dateRange.start || advancedFilters.dateRange.end) count++;
+    if (advancedFilters.sizeRange.min || advancedFilters.sizeRange.max) count++;
+    if (advancedFilters.tags.length > 0) count++;
+    return count;
+  };
 
   const handleSelectAsset = (assetId) => {
     setSelectedAssets(prev => 
@@ -250,6 +390,22 @@ export default function AssetsPage() {
                 <option value="pending">Pending</option>
                 <option value="rejected">Rejected</option>
               </select>
+              <button
+                onClick={() => setShowAdvancedFilters(true)}
+                className={`flex items-center space-x-2 px-3 py-2 rounded-lg border transition-colors ${
+                  getActiveAdvancedFilterCount() > 0 
+                    ? 'bg-blue-100 border-blue-300 text-blue-700' 
+                    : 'border-gray-300 text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                <FiSliders className="w-4 h-4" />
+                <span>Advanced</span>
+                {getActiveAdvancedFilterCount() > 0 && (
+                  <span className="bg-blue-600 text-white px-2 py-1 rounded-full text-xs font-medium">
+                    {getActiveAdvancedFilterCount()}
+                  </span>
+                )}
+              </button>
             </div>
           </div>
           <div className="flex items-center space-x-2">
@@ -267,6 +423,37 @@ export default function AssetsPage() {
             </button>
           </div>
         </div>
+
+        {/* Advanced Filters Summary */}
+        {getActiveAdvancedFilterCount() > 0 && (
+          <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <FiFilter className="w-4 h-4 text-blue-600" />
+                <span className="text-sm text-blue-700 font-medium">
+                  {getActiveAdvancedFilterCount()} advanced filter{getActiveAdvancedFilterCount() !== 1 ? 's' : ''} active
+                </span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => setShowAdvancedFilters(true)}
+                  className="text-sm text-blue-600 hover:text-blue-800 underline"
+                >
+                  Edit Filters
+                </button>
+                <button
+                  onClick={() => setAdvancedFilters({
+                    search: '', type: [], status: [], category: [], uploadedBy: [],
+                    dateRange: { start: '', end: '' }, sizeRange: { min: '', max: '' }, tags: []
+                  })}
+                  className="text-sm text-blue-600 hover:text-blue-800 underline"
+                >
+                  Clear All
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Bulk Actions */}
         {selectedAssets.length > 0 && (
@@ -291,6 +478,29 @@ export default function AssetsPage() {
               </div>
             </div>
           </div>
+        )}
+      </div>
+
+      {/* Results Summary */}
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-gray-600">
+          Showing {filteredAssets.length} of {assets.length} assets
+        </p>
+        {filteredAssets.length !== assets.length && (
+          <button
+            onClick={() => {
+              setSearchQuery('');
+              setSelectedType('all');
+              setSelectedStatus('all');
+              setAdvancedFilters({
+                search: '', type: [], status: [], category: [], uploadedBy: [],
+                dateRange: { start: '', end: '' }, sizeRange: { min: '', max: '' }, tags: []
+              });
+            }}
+            className="text-sm text-blue-600 hover:text-blue-800 underline"
+          >
+            Clear all filters
+          </button>
         )}
       </div>
 
@@ -424,6 +634,15 @@ export default function AssetsPage() {
           </div>
         </div>
       )}
+
+      {/* Advanced Filter Panel */}
+      <AdvancedFilterPanel
+        isOpen={showAdvancedFilters}
+        onClose={() => setShowAdvancedFilters(false)}
+        onApplyFilters={handleAdvancedFiltersApply}
+        currentFilters={advancedFilters}
+        assets={assets}
+      />
     </div>
   );
 }
