@@ -19,7 +19,7 @@ const SensorOptionsPanel = ({ showSensorOptions, sendMessageToPlayCanvas, trackA
           'sensor:2': false,
           'sensor:3': false,
         };
-        sendMessageToPlayCanvas(`${sensor}-off`);
+        sendMessageToPlayCanvas(`sensor-4`);
         trackAssemblyEvent('Sensor Selected', `${sensor}-off`);
       } else {
         // Select only the clicked sensor, deselect others
@@ -43,8 +43,8 @@ const SensorOptionsPanel = ({ showSensorOptions, sendMessageToPlayCanvas, trackA
       'sensor:2': false,
       'sensor:3': false,
     });
-    ['sensor:1', 'sensor:2', 'sensor:3'].forEach(sensor => {
-      sendMessageToPlayCanvas(`${sensor}-off`);
+    ['sensor', 'sensor:2', 'sensor:3'].forEach(sensor => {
+      sendMessageToPlayCanvas(`sensor:4`);
       trackAssemblyEvent('Sensor Deselected', `${sensor}-off`);
     });
   };

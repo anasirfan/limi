@@ -12,7 +12,9 @@ import ThreadsBackground from "./components/ThreadsBackground";
 import OrbBackground from "./components/OrbBackground";
 import BeamsBackground from "./components/BeamsBackground";
 import FireBackground from "./components/FireBackground";
-import FluidBackground from "./components/FluidBackground";
+import dynamic from "next/dynamic";
+const FluidAnimation = dynamic(() => import("./components/Fluid"), { ssr: false });
+// import FluidBackground from "./components/FluidBackground"; // (remove if not needed)
 
 const LimiHomepage = () => {
   const [currentBackground, setCurrentBackground] = useState(0);
@@ -28,7 +30,7 @@ const LimiHomepage = () => {
     { name: "Orb", component: OrbBackground },
     { name: "Beams", component: BeamsBackground },
     { name: "Fire Effect", component: FireBackground },
-    { name: "Fluid Simulation", component: FluidBackground },
+    { name: "Fluid Simulation", component: FluidAnimation },
   ];
 
   const nextBackground = () => {

@@ -1,13 +1,22 @@
 "use client";
+"use client";
 import { useEffect, useRef } from "react";
-import { WebGLFluid } from "webgl-fluid";
 
-export default function Fluid() {
+export default function FluidAnimation() {
   const canvasRef = useRef(null);
 
   useEffect(() => {
-    WebGLFluid(canvasRef.current);
+    import("./fluid-sim").then(({ default: startSimulation }) => {
+      startSimulation(canvasRef.current);
+    });
   }, []);
 
-  return <canvas ref={canvasRef} className="w-full h-screen" />;
+  return (
+    <canvas
+      ref={canvasRef}
+      id="fluid-canvas"
+      className="w-full h-screen"
+    />
+  );
 }
+
