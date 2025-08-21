@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { useSelector, useDispatch } from "react-redux";
-import { pendantAssignments, barAssignments, universalAssignments } from "../pendantSystemData";
+import { pendantAssignments, barAssignments, ballAssignments, universalAssignments } from "../pendantSystemData";
 import {
   FaHeart,
   FaTimes,
@@ -688,6 +688,7 @@ export const ConfigPanel = ({
         // Map of base IDs to names and image numbers based on available files
         const baseOptions = {
           bar: barAssignments,
+          ball: ballAssignments,
           universal: universalAssignments,
         };
 
@@ -902,6 +903,7 @@ export const ConfigPanel = ({
   };
 
   const panelConfig = getPanelConfig();
+  console.log("panelConfig", panelConfig);
 
   // Determine if we're in mobile view based on the className prop
   const isMobileView = className.includes("max-sm:static");

@@ -10,6 +10,11 @@ export const universalBaseIds = [
   "asteroid", "celestial", "orbital", "lunar", "solar", "nova", "photon", "gravity", "spectrum", "infinity"
 ];
 
+// Ball system base IDs
+export const ballBaseIds = [
+  "solari", "lumina",
+ ];
+
 // Pendant types
 export const pendantTypes = [
   "bumble", "fina", "ico", "pico", "radial"
@@ -59,17 +64,24 @@ export const systemAssignments = [
   { id: 36,baseNumber: 28, systemType: "universal", name: "Gravity", design: "gravity", message: "system_base_28", isSystem: true,image: "/images/configOptions/universal/28.png" },
   { id: 37,baseNumber: 29, systemType: "universal", name: "Spectrum", design: "spectrum", message: "system_base_29", isSystem: true,image: "/images/configOptions/universal/29.png" },
   { id: 38,baseNumber: 30, systemType: "universal", name: "Infinity", design: "infinity", message: "system_base_30", isSystem: true,image: "/images/configOptions/universal/30.png" },
+  
+  // Ball systems
+  { id: 39,baseNumber: 1, systemType: "ball", name: "Solari", design: "solari", message: "system_base_1", isSystem: true,image: "" },
+  { id: 40,baseNumber: 2, systemType: "ball", name: "Lumina", design: "lumina", message: "system_base_2", isSystem: true,image: "" },
 
   // Pendants
-  { id: 39,baseNumber: 1, systemType: "", name: "Bumble", design: "bumble", message: "product_1", isSystem: false,image: "/images/configOptions/1.png" },
-  { id: 40,baseNumber: 2, systemType: "", name: "Radial", design: "radial", message: "product_2", isSystem: false,image: "/images/configOptions/2.png" },
-  { id: 41,baseNumber: 3, systemType: "",name: "Fina", design: "fina", message: "product_3", isSystem: false,image: "/images/configOptions/3.png" },
-  { id: 42,baseNumber: 4, systemType: "", name: "Ico", design: "ico", message: "product_4", isSystem: false,image: "/images/configOptions/4.png" },
-  { id: 43,baseNumber: 5, systemType: "", name: "Piko", design: "piko", message: "product_5", isSystem: false,image: "/images/configOptions/5.png" }
+  { id: 41,baseNumber: 1, systemType: "", name: "Bumble", design: "bumble", message: "product_1", isSystem: false,image: "/images/configOptions/1.png" },
+  { id: 42,baseNumber: 2, systemType: "", name: "Radial", design: "radial", message: "product_2", isSystem: false,image: "/images/configOptions/2.png" },
+  { id: 43,baseNumber: 3, systemType: "",name: "Fina", design: "fina", message: "product_3", isSystem: false,image: "/images/configOptions/3.png" },
+  { id: 44,baseNumber: 4, systemType: "", name: "Ico", design: "ico", message: "product_4", isSystem: false,image: "/images/configOptions/4.png" },
+  { id: 45,baseNumber: 5, systemType: "", name: "Piko", design: "piko", message: "product_5", isSystem: false,image: "/images/configOptions/5.png" }
 ];
 
 // All pendants (isSystem: false)
 export const pendantAssignments = systemAssignments.filter(a => !a.isSystem);
+
+// All ball systems (isSystem: true, systemType: "ball")
+export const ballAssignments = systemAssignments.filter(a => a.isSystem && a.systemType === "ball");
 
 // All bar systems (isSystem: true, systemType: "bar")
 export const barAssignments = systemAssignments.filter(a => a.isSystem && a.systemType === "bar");

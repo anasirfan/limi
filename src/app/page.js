@@ -48,7 +48,8 @@ export default function Home() {
   const [userType, setUserType] = useState(null);
   const [showSplash, setShowSplash] = useState(true);
   const [showUserSelection, setShowUserSelection] = useState(false);
-  
+  const [hideNavFooter, setHideNavFooter] = useState(false);
+
   useEffect(() => {
     // Check if device is mobile
     const checkMobile = () => {
@@ -63,7 +64,13 @@ export default function Home() {
       window.removeEventListener('resize', checkMobile);
     };
   }, []);
-
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlToken = urlParams.get('token');
+    if (urlToken) {
+      setHideNavFooter(true);
+    }
+  }, []);
   // Custom hook to handle splash screen completion
   useEffect(() => {
     // Listen for splash screen completion
@@ -109,7 +116,7 @@ export default function Home() {
     <main>
       <SplashScreen onComplete={() => window.dispatchEvent(new Event('splashComplete'))} />
       {/* <UserSelectionPopup isVisible={showUserSelection} onSelect={handleUserTypeSelect} /> */}
-      <Header />
+      { !hideNavFooter && <Header /> }
       
         <HeroSection />
         <ProductShowcase />
@@ -131,7 +138,7 @@ export default function Home() {
         */}
   
       {/* {!isMobile && <MouseTrail />} */}
-      <Footer />
+      { !hideNavFooter && <Footer /> }
       <SectionNavigation />
       {/* <ScrollToTop /> */}
       <CookieConsent onAccept={handleTrackingConsent} onDecline={() => {}} />

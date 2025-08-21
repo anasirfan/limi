@@ -495,7 +495,6 @@ const ConfiguratorLayout = () => {
 
         // Send pendant messages
         initialSystems.forEach((system, index) => {
-          const productId = getProductIdForDesign(system.design);
           setCables((prev) => [
             ...prev,
             {
