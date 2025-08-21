@@ -36,6 +36,19 @@ const SensorOptionsPanel = ({ showSensorOptions, sendMessageToPlayCanvas, trackA
     });
   };
 
+  // Handler for deselecting all sensors
+  const handleDeselectAll = () => {
+    setSensorStates({
+      'sensor:1': false,
+      'sensor:2': false,
+      'sensor:3': false,
+    });
+    ['sensor:1', 'sensor:2', 'sensor:3'].forEach(sensor => {
+      sendMessageToPlayCanvas(`${sensor}-off`);
+      trackAssemblyEvent('Sensor Deselected', `${sensor}-off`);
+    });
+  };
+
   return (
     showSensorOptions && (
       <motion.div
@@ -43,9 +56,21 @@ const SensorOptionsPanel = ({ showSensorOptions, sendMessageToPlayCanvas, trackA
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 100 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
-        className="absolute bottom-2 left-[39%] transform -translate-x-1/2 bg-black/80 backdrop-blur-md border-t border-[#54bb74]/30 px-6 py-4 rounded-2xl shadow-2xl"
-        style={{ minWidth: 'auto', width: 'auto', maxWidth: '100vw' }}
+        className="absolute bottom-2 left-[39%] transform -translate-x-1/2 bg-black/80 backdrop-blur-md border-t border-[#54bb74]/30 px-10 py-4 rounded-2xl shadow-2xl"
+        style={{ minWidth: 'auto', width: 'auto', maxWidth: '100vw'}}
       >
+        {/* Cross button top right */}
+        <button
+          aria-label="Deselect all sensors"
+          onClick={handleDeselectAll}
+          className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-full bg-gray-700 hover:bg-red-500 text-white transition-colors duration-200 shadow-lg z-10"
+          style={{ lineHeight: 0 }}
+        >
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2">
+            <line x1="5" y1="5" x2="15" y2="15" strokeLinecap="round" />
+            <line x1="15" y1="5" x2="5" y2="15" strokeLinecap="round" />
+          </svg>
+        </button>
         <div className="flex justify-center space-x-6">
           {['sensor:1', 'sensor:2', 'sensor:3'].map((sensor, index) => (
             <motion.button
