@@ -3,11 +3,11 @@
 import { useState } from 'react';
 import { useDrag } from 'react-dnd';
 import { 
-  BarChart3, 
+  BarChart, 
   Upload, 
   HardDrive, 
   Activity, 
-  FolderTree, 
+  Folder, 
   Zap, 
   PieChart, 
   TrendingUp,
@@ -34,7 +34,7 @@ const WidgetLibrary = ({ onWidgetAdd }) => {
       id: 'asset-stats',
       name: 'Asset Statistics',
       description: 'Display key asset metrics and counts',
-      icon: BarChart3,
+      icon: BarChart,
       category: 'analytics',
       size: { w: 4, h: 3 },
       preview: '/images/widgets/asset-stats.png'
@@ -70,7 +70,7 @@ const WidgetLibrary = ({ onWidgetAdd }) => {
       id: 'folder-tree',
       name: 'Folder Structure',
       description: 'Navigate folder hierarchy',
-      icon: FolderTree,
+      icon: Folder,
       category: 'navigation',
       size: { w: 3, h: 6 },
       preview: '/images/widgets/folder-tree.png'

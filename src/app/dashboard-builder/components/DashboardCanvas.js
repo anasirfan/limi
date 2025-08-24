@@ -6,6 +6,10 @@ import { Responsive, WidthProvider } from 'react-grid-layout';
 import { Edit3, Trash2, Copy, Move, Settings } from 'react-feather';
 import WidgetRenderer from './WidgetRenderer';
 
+// Import required CSS for react-grid-layout
+import 'react-grid-layout/css/styles.css';
+import 'react-resizable/css/styles.css';
+
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 const DashboardCanvas = ({
