@@ -6,12 +6,16 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 // Import all section components
+import Header from './components/Header';
+import BackgroundShader from './components/BackgroundShader';
 import ProgressBar from './components/ProgressBar';
 import HeroSection from './components/HeroSection';
 import ParallaxSection from './components/ParallaxSection';
 import PinnedSection from './components/PinnedSection';
 import ScrollRevealsSection from './components/ScrollRevealsSection';
 import HorizontalScrollSection from './components/HorizontalScrollSection';
+import InteractiveFeaturesSection from './components/InteractiveFeaturesSection';
+import JsonHeroSection from './components/JsonHeroSection';
 import SpeedControlSections from './components/SpeedControlSections';
 import TextMorphingSection from './components/TextMorphingSection';
 import CharacterRevealSection from './components/CharacterRevealSection';
@@ -25,6 +29,8 @@ export default function LimiAINew() {
   const lenisRef = useRef();
   const progressBarRef = useRef();
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [selectedBackground, setSelectedBackground] = useState(null);
+  const scrollProgressRef = useRef(0);
 
   useEffect(() => {
     // Initialize Lenis
@@ -49,10 +55,18 @@ export default function LimiAINew() {
     }
     requestAnimationFrame(raf);
 
-    // Progress tracking
+    // Progress tracking with throttling
+    let lastProgressUpdate = 0;
     lenis.on('scroll', ({ scroll, limit }) => {
+      const now = Date.now();
       const progress = scroll / limit;
-      setScrollProgress(progress);
+      
+      // Only update state if progress changed significantly and enough time passed
+      if (now - lastProgressUpdate > 16 && Math.abs(progress - scrollProgressRef.current) > 0.001) {
+        scrollProgressRef.current = progress;
+        setScrollProgress(progress);
+        lastProgressUpdate = now;
+      }
     });
 
     // Hero animations
@@ -223,22 +237,22 @@ export default function LimiAINew() {
     });
 
     // Color transition based on scroll
-    ScrollTrigger.create({
-      trigger: '.color-transition-section',
-      start: 'top bottom',
-      end: 'bottom top',
-      scrub: true,
-      onUpdate: (self) => {
-        const progress = self.progress;
-        const colors = ['#f3ebe2', '#54bb74', '#93cfa2', '#292929'];
-        const colorIndex = Math.floor(progress * (colors.length - 1));
-        const nextColorIndex = Math.min(colorIndex + 1, colors.length - 1);
-        const localProgress = (progress * (colors.length - 1)) % 1;
+    // ScrollTrigger.create({
+    //   trigger: '.color-transition-section',
+    //   start: 'top bottom',
+    //   end: 'bottom top',
+    //   scrub: true,
+    //   onUpdate: (self) => {
+    //     const progress = self.progress;
+    //     const colors = ['#f3ebe2', '#54bb74', '#93cfa2', '#292929'];
+    //     const colorIndex = Math.floor(progress * (colors.length - 1));
+    //     const nextColorIndex = Math.min(colorIndex + 1, colors.length - 1);
+    //     const localProgress = (progress * (colors.length - 1)) % 1;
         
-        document.querySelector('.color-transition-section').style.backgroundColor = 
-          `color-mix(in srgb, ${colors[colorIndex]} ${(1 - localProgress) * 100}%, ${colors[nextColorIndex]} ${localProgress * 100}%)`;
-      },
-    });
+    //     document.querySelector('.color-transition-section').style.backgroundColor = 
+    //       `color-mix(in srgb, ${colors[colorIndex]} ${(1 - localProgress) * 100}%, ${colors[nextColorIndex]} ${localProgress * 100}%)`;
+    //   },
+    // });
 
     // Text reveal character by character
     gsap.utils.toArray('.char-reveal').forEach((element) => {
@@ -457,19 +471,27 @@ export default function LimiAINew() {
     };
   }, []);
 
+  const handleBackgroundChange = (background) => {
+    setSelectedBackground(background);
+  };
+
   return (
     <div className="lenis-showcase">
       <ProgressBar scrollProgress={scrollProgress} />
-      <HeroSection />
+      <HeroSection 
+        backgroundShader={selectedBackground && <BackgroundShader backgroundConfig={selectedBackground} />}
+      />
       <ParallaxSection />
       <PinnedSection />
       <ScrollRevealsSection />
       <HorizontalScrollSection />
+      <InteractiveFeaturesSection />
+      {/* <JsonHeroSection /> */}
       <SpeedControlSections />
       <TextMorphingSection />
       <CharacterRevealSection />
-      <ColorTransitionSection />
-      <VirtualScrollingSection />
+      {/* <ColorTransitionSection /> */}
+      {/* <VirtualScrollingSection /> */}
       <FinalSection />
     </div>
   );
