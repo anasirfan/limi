@@ -126,34 +126,57 @@ const handleSetActiveTab = (tab) => {
   },[activeStep])
 
   useEffect(() => {
-   
-    if (cableMessage && cableMessage.startsWith('cable_')) {
+    const cleanup = listenForOffconfigMessages((data, event) => {
+    // if (cableMessage && cableMessage.startsWith('offconfig')) {
       setShowConfigurationTypeSelector(false);
       setOpenBase(false);
-      // Extract the cable id (e.g., cable_2 → id = 2)
+      setOpenDropdown(false);
+      setActiveStep(null);
+      setCableMessage('');
+    })
+    return cleanup;
+  }, [cableMessage]);
+
+ 
+  
+  useEffect(() => {
+    if (cableMessage && cableMessage.startsWith('cable_')) {
       const match = cableMessage.match(/^cable_(\d+)/);
       if (match) {
         const cableId = Number(match[1]);
-        // 1. Open the pendant selection step
-        setActiveStep('pendantSelection');
-        setOpenDropdown('pendantSelection');
-        // 2. Select the pendant with the extracted id
-        setSelectedPendants([cableId]);
-        // 3. Show the configuration type selector
-      setTimeout(()=> {
-        setShowConfigurationTypeSelector(true);
-        setLocalConfiguringType(null)
-      },200)
-
-  
-        // 4. Optionally clear the cable message to avoid repeated triggers
+        if (config.lightAmount === 1) {
+          setShowConfigurationTypeSelector(false);
+          setOpenBase(false);
+          // 1. Open the pendant selection step
+          setActiveStep('pendantSelection');
+          // 2. Select the pendant with the extracted id
+          setSelectedPendants([cableId]);
+          // 3. Show the configuration type selector
+          setTimeout(()=> {
+            setShowConfigurationTypeSelector(true);
+            setLocalConfiguringType(null)
+          },200)
+       
+        } else {
+          setShowConfigurationTypeSelector(false);
+          setOpenBase(false);
+          // 1. Open the pendant selection step
+          setActiveStep('pendantSelection');
+          setOpenDropdown('pendantSelection');
+          // 2. Select the pendant with the extracted id
+          setSelectedPendants([cableId]);
+          // 3. Show the configuration type selector
+          setTimeout(()=> {
+            setShowConfigurationTypeSelector(true);
+            setLocalConfiguringType(null)
+          },200)
+        }
         setCableMessage('');
       }
     }
   }, [cableMessage, setActiveStep, setSelectedPendants, setCableMessage]);
+ 
 
-
-  console.log("config in vertical:",config)
 // Define tour steps
 const tourSteps = [
   {
@@ -656,7 +679,7 @@ const tourSteps = [
 
 // GuidedTourOverlay component
 import { useLayoutEffect } from 'react';
-import { listenForConnectorColorMessages, listenForWallbaseColorMessages } from '../../util/iframeCableMessageHandler';
+import { listenForConnectorColorMessages, listenForWallbaseColorMessages, listenForOffconfigMessages } from '../../util/iframeCableMessageHandler';
 
 function GuidedTourOverlay({ isActive, step, stepIndex, totalSteps, targetSelector, onNext, onPrev, onClose }) {
   const [highlightRect, setHighlightRect] = useState(null);

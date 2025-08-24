@@ -8,6 +8,7 @@ import { FaArrowRight, FaPlay, FaDownload, FaPhone, FaEnvelope, FaTwitter, FaLin
 import { HiSparkles, HiLightBulb, HiCube } from 'react-icons/hi';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { trackAssemblyEvent } from '../../utils/umamiTracking';
 
 const CTA = () => {
   const containerRef = useRef(null);
@@ -25,26 +26,78 @@ const CTA = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleStartJourneySubmit = (e) => {
+  const handleStartJourneySubmit = async (e) => {
     e.preventDefault();
     if (!formData.name || !formData.email) {
       toast.error('Please fill in all required fields');
       return;
     }
-    toast.success('Thank you! We\'ll be in touch soon.');
-    setShowStartModal(false);
-    setFormData({ name: '', email: '', company: '' });
+
+    try {
+      const response = await fetch('https://dev.api1.limitless-lighting.co.uk/client/user/brochure_email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          company: formData.company,
+        }),
+      });
+
+      if (response.ok) {
+        toast.success('Thank you! We\'ll be in touch soon.');
+        setShowStartModal(false);
+        setFormData({ name: '', email: '', company: '' });
+      } else {
+        const errorData = await response.json();
+        toast.error(errorData.error || 'Failed to submit form');
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      toast.error('Failed to submit form. Please try again.');
+    }
   };
 
-  const handleBrochureSubmit = (e) => {
+  const handleBrochureSubmit = async (e) => {
     e.preventDefault();
     if (!formData.email) {
       toast.error('Please enter your email address');
       return;
     }
-    toast.success('Brochure sent to your email!');
-    setShowBrochureModal(false);
-    setFormData({ name: '', email: '', company: '' });
+
+    try {
+      const response = await fetch('https://dev.api1.limitless-lighting.co.uk/client/user/brochure_email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+        }),
+      });
+
+      if (response.ok) {
+        toast.success('Brochure sent to your email!');
+        setShowBrochureModal(false);
+        setFormData({ name: '', email: '', company: '' });
+      } else {
+        const errorData = await response.json();
+        toast.error(errorData.error || 'Failed to send brochure');
+      }
+    } catch (error) {
+      console.error('Error sending brochure:', error);
+      toast.error('Failed to send brochure. Please try again.');
+    }
+  };
+
+  const trackModalInteraction = (modalName, action) => {
+    trackAssemblyEvent(`Modal ${action}`, modalName);
+  };
+
+  const trackFormSubmission = (formName, success, formData) => {
+    trackAssemblyEvent(`Form Submission ${success ? 'Success' : 'Failure'}`, formName, formData);
   };
 
   if (!mounted) return null;
@@ -113,7 +166,10 @@ const CTA = () => {
           <motion.button
             whileHover={{ scale: 1.05, y: -5 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => setShowStartModal(true)}
+            onClick={() => {
+              setShowStartModal(true);
+              trackModalInteraction('start_journey', 'open');
+            }}
             className="inline-flex items-center space-x-4 px-12 py-6 bg-gradient-to-r from-[#54bb74] to-[#93cfa2] text-white rounded-full font-bold text-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 mb-8"
           >
             <HiLightBulb className="text-3xl" />
@@ -126,7 +182,10 @@ const CTA = () => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => setShowDemoModal(true)}
+              onClick={() => {
+                setShowDemoModal(true);
+                trackModalInteraction('demo', 'open');
+              }}
               className="px-8 py-4 bg-[#292929] text-white rounded-full font-semibold border-2 border-[#292929] hover:bg-transparent hover:text-[#292929] transition-all duration-300 flex items-center space-x-3"
             >
               <FaPlay className="text-lg" />
@@ -136,7 +195,10 @@ const CTA = () => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => setShowBrochureModal(true)}
+              onClick={() => {
+                setShowBrochureModal(true);
+                trackModalInteraction('brochure', 'open');
+              }}
               className="px-8 py-4 bg-transparent text-[#292929] rounded-full font-semibold border-2 border-[#292929] hover:bg-[#292929] hover:text-white transition-all duration-300 flex items-center space-x-3"
             >
               <FaDownload className="text-lg" />
@@ -153,9 +215,9 @@ const CTA = () => {
           className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20"
         >
           {[
-            { title: "Assembly Demo", desc: "Watch the modular assembly process", icon: HiCube, color: "from-[#54bb74] to-[#93cfa2]" },
-            { title: "Smart Features", desc: "Experience AI-powered automation", icon: HiLightBulb, color: "from-[#93cfa2] to-[#54bb74]" },
-            { title: "Customization", desc: "Explore endless possibilities", icon: HiSparkles, color: "from-[#54bb74] to-[#292929]" }
+            { title: "Assembly Demo", desc: "Watch the modular assembly process", icon: HiCube, color: "from-[#54bb74] to-[#93cfa2]", video: "/limiai/transform1.mp4" },
+            { title: "Smart Features", desc: "Experience AI-powered automation", icon: HiLightBulb, color: "from-[#93cfa2] to-[#54bb74]", video: "/limiai/transform2.mp4" },
+            { title: "Customization", desc: "Explore endless possibilities", icon: HiSparkles, color: "from-[#54bb74] to-[#292929]", video: "/limiai/transform3.mp4" }
           ].map((feature, index) => (
             <motion.div
               key={index}
@@ -171,26 +233,22 @@ const CTA = () => {
               <h3 className="text-2xl font-bold text-[#292929] mb-4 text-center">{feature.title}</h3>
               <p className="text-[#292929]/70 text-center mb-6 leading-relaxed">{feature.desc}</p>
               
-              {/* Animation Placeholder */}
+              {/* Video Integration */}
               <div className="w-full h-32 bg-gradient-to-br from-[#f3ebe2]/50 to-[#93cfa2]/20 rounded-2xl border border-[#54bb74]/10 flex items-center justify-center relative overflow-hidden">
-                <span className="text-sm text-[#292929]/60 font-medium">{feature.title} Animation</span>
-                <motion.div
-                  animate={{ 
-                    scale: [1, 1.3, 1], 
-                    opacity: [0.4, 0.8, 0.4],
-                    rotate: [0, 180, 360]
-                  }}
-                  transition={{ duration: 3, repeat: Infinity, delay: index * 0.7 }}
-                  className="absolute top-3 right-3 w-3 h-3 bg-[#54bb74] rounded-full"
+                <video 
+                  className="w-full h-full object-cover rounded-xl"
+                  autoPlay={true}
+                  loop={true}
+                  muted={true}
+                  playsInline={true}
+                  src={feature.video}
                 />
-                <motion.div
-                  animate={{ 
-                    x: [0, 20, 0],
-                    y: [0, -10, 0]
-                  }}
-                  transition={{ duration: 4, repeat: Infinity, delay: index * 0.5 }}
-                  className="absolute bottom-3 left-3 w-2 h-2 bg-[#93cfa2] rounded-full"
-                />
+                {/* Video overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent rounded-xl flex items-end justify-center pb-2">
+                  <span className="text-xs font-medium text-white/90 bg-black/20 px-2 py-1 rounded backdrop-blur-sm">
+                    {feature.title}
+                  </span>
+                </div>
               </div>
             </motion.div>
           ))}
@@ -236,24 +294,25 @@ const CTA = () => {
               <div className="text-center md:text-left">
                 <h3 className="text-2xl font-bold text-white mb-4">Get in Touch</h3>
                 <div className="space-y-3">
-                  <div className="flex items-center justify-center md:justify-start text-gray-300">
-                    <FaPhone className="mr-3 text-[#54bb74] text-lg" />
-                    <span className="text-lg">+1 (555) 123-4567</span>
-                  </div>
+                 
                   <div className="flex items-center justify-center md:justify-start text-gray-300">
                     <FaEnvelope className="mr-3 text-[#54bb74] text-lg" />
-                    <span className="text-lg">hello@limi.lighting</span>
+                    <span className="text-lg">hello@limilighting.com</span>
                   </div>
                 </div>
               </div>
 
               {/* Logo/Brand */}
               <div className="text-center">
-                <div className="text-4xl font-black text-white mb-2">LIMI</div>
+                <img 
+                  src="/images/svgLogos/__Logo_Icon_Inverted.svg" 
+                  alt="LIMI Logo" 
+                  className="w-16 h-16 mx-auto mb-2"
+                />
                 <div className="text-[#54bb74] font-semibold text-lg">Modular Lighting System</div>
                 <motion.div
                   animate={{ rotate: [0, 5, -5, 0] }}
-                  transition={{ duration: 4, repeat: Infinity }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
                   className="w-12 h-12 bg-gradient-to-br from-[#54bb74] to-[#93cfa2] rounded-full mx-auto mt-4 flex items-center justify-center"
                 >
                   <HiLightBulb className="text-white text-2xl" />
@@ -286,9 +345,6 @@ const CTA = () => {
 
             {/* Tech Credits */}
             <div className="mt-8 pt-6 border-t border-white/20 text-center">
-              <p className="text-gray-400 text-sm">
-                Built with Next.js, GSAP, Framer Motion, Anime.js & PlayCanvas
-              </p>
               <motion.div
                 animate={{ opacity: [0.5, 1, 0.5] }}
                 transition={{ duration: 3, repeat: Infinity }}
@@ -317,7 +373,10 @@ const CTA = () => {
             className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl relative"
           >
             <button
-              onClick={() => setShowStartModal(false)}
+              onClick={() => {
+                setShowStartModal(false);
+                trackModalInteraction('start_journey', 'close');
+              }}
               className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl"
             >
               <FaTimes />
@@ -331,7 +390,10 @@ const CTA = () => {
               <p className="text-gray-600">Tell us about yourself and we'll get you started</p>
             </div>
 
-            <form onSubmit={handleStartJourneySubmit} className="space-y-4">
+            <form onSubmit={(e) => {
+              handleStartJourneySubmit(e);
+              trackFormSubmission('start_journey', true, formData);
+            }} className="space-y-4">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">Name *</label>
                 <input
@@ -339,9 +401,9 @@ const CTA = () => {
                   name="name"
                   value={formData.name}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#54bb74] focus:border-transparent outline-none transition-all"
-                  placeholder="Your full name"
                   required
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#54bb74] focus:border-transparent"
+                  placeholder="Your full name"
                 />
               </div>
               
@@ -352,29 +414,29 @@ const CTA = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#54bb74] focus:border-transparent outline-none transition-all"
-                  placeholder="your@email.com"
                   required
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#54bb74] focus:border-transparent"
+                  placeholder="your@email.com"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Company (Optional)</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Company</label>
                 <input
                   type="text"
                   name="company"
                   value={formData.company}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#54bb74] focus:border-transparent outline-none transition-all"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#54bb74] focus:border-transparent"
                   placeholder="Your company name"
                 />
               </div>
               
               <button
                 type="submit"
-                className="w-full py-3 bg-gradient-to-r from-[#54bb74] to-[#93cfa2] text-white rounded-xl font-semibold hover:shadow-lg transition-all duration-300"
+                className="w-full py-4 bg-gradient-to-r from-[#54bb74] to-[#93cfa2] text-white rounded-xl font-semibold text-lg hover:shadow-lg transition-all duration-300"
               >
-                Submit
+                Start My Journey
               </button>
             </form>
           </motion.div>
@@ -383,43 +445,77 @@ const CTA = () => {
 
       {/* Demo Modal */}
       {showDemoModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
             className="bg-white rounded-3xl p-8 max-w-4xl w-full shadow-2xl relative"
           >
             <button
-              onClick={() => setShowDemoModal(false)}
+              onClick={() => {
+                setShowDemoModal(false);
+                trackModalInteraction('demo', 'close');
+              }}
               className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl z-10"
             >
               <FaTimes />
             </button>
-            
-            <div className="text-center mb-6">
-              <h3 className="text-2xl font-bold text-[#292929] mb-2">Product Demo</h3>
-              <p className="text-gray-600">Watch how LIMI transforms your space</p>
-            </div>
 
-            <div className="aspect-video bg-gray-900 rounded-2xl overflow-hidden relative">
-              <video
-                className="w-full h-full object-cover"
-                controls
-                autoPlay
-                poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 450'%3E%3Crect width='800' height='450' fill='%23292929'/%3E%3Ctext x='400' y='225' text-anchor='middle' fill='%2354bb74' font-size='24' font-family='Arial'%3ELIMI Demo Video%3C/text%3E%3C/svg%3E"
-              >
-                <source src="/demo-video.mp4" type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
-              
-              {/* Fallback content */}
-              <div className="absolute inset-0 flex items-center justify-center text-white">
-                <div className="text-center">
-                  <FaPlay className="text-6xl mb-4 text-[#54bb74]" />
-                  <p className="text-xl">Demo video will be available soon</p>
-                  <p className="text-gray-400 mt-2">Experience LIMI's modular lighting system</p>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div>
+                <h3 className="text-3xl font-bold text-[#292929] mb-4">Interactive Demo</h3>
+                <p className="text-gray-600 mb-6">Experience LIMI's capabilities with our interactive demonstration</p>
+                
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-[#54bb74] rounded-full flex items-center justify-center">
+                      <span className="text-white text-sm font-bold">1</span>
+                    </div>
+                    <span className="text-gray-700">Real-time sensor data visualization</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-[#54bb74] rounded-full flex items-center justify-center">
+                      <span className="text-white text-sm font-bold">2</span>
+                    </div>
+                    <span className="text-gray-700">AI-powered lighting adjustments</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-[#54bb74] rounded-full flex items-center justify-center">
+                      <span className="text-white text-sm font-bold">3</span>
+                    </div>
+                    <span className="text-gray-700">Modular configuration options</span>
+                  </div>
                 </div>
+              </div>
+              <div>
+                <h4 className="text-xl font-semibold text-[#292929] mb-4">Quick Contact</h4>
+                <form onSubmit={(e) => {
+                  handleStartJourneySubmit(e);
+                  trackFormSubmission('demo', true, formData);
+                }} className="space-y-3">
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    placeholder="Your name"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#54bb74] focus:border-transparent"
+                  />
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    placeholder="Your email"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#54bb74] focus:border-transparent"
+                  />
+                  <button
+                    type="submit"
+                    className="w-full py-3 bg-[#292929] text-white rounded-xl font-semibold hover:bg-[#54bb74] transition-all duration-300"
+                  >
+                    Request Demo Access
+                  </button>
+                </form>
               </div>
             </div>
           </motion.div>
@@ -428,29 +524,34 @@ const CTA = () => {
 
       {/* Brochure Modal */}
       {showBrochureModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
             className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl relative"
           >
             <button
-              onClick={() => setShowBrochureModal(false)}
+              onClick={() => {
+                setShowBrochureModal(false);
+                trackModalInteraction('brochure', 'close');
+              }}
               className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl"
             >
               <FaTimes />
             </button>
-            
+
             <div className="text-center mb-6">
-              <div className="w-16 h-16 bg-gradient-to-br from-[#54bb74] to-[#93cfa2] rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-gradient-to-br from-[#93cfa2] to-[#54bb74] rounded-full flex items-center justify-center mx-auto mb-4">
                 <FaDownload className="text-2xl text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-[#292929] mb-2">Get Brochure</h3>
+              <h3 className="text-2xl font-bold text-[#292929] mb-2">Download Brochure</h3>
               <p className="text-gray-600">Download our detailed product brochure</p>
             </div>
 
-            <form onSubmit={handleBrochureSubmit} className="space-y-4">
+            <form onSubmit={(e) => {
+              handleBrochureSubmit(e);
+              trackFormSubmission('brochure', true, formData);
+            }} className="space-y-4">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
                 <input
@@ -458,18 +559,16 @@ const CTA = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#54bb74] focus:border-transparent outline-none transition-all"
-                  placeholder="your@email.com"
                   required
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#54bb74] focus:border-transparent"
+                  placeholder="your@email.com"
                 />
               </div>
-              
               <button
                 type="submit"
-                className="w-full py-3 bg-gradient-to-r from-[#54bb74] to-[#93cfa2] text-white rounded-xl font-semibold hover:shadow-lg transition-all duration-300 flex items-center justify-center space-x-2"
+                className="w-full py-4 bg-gradient-to-r from-[#93cfa2] to-[#54bb74] text-white rounded-xl font-semibold text-lg hover:shadow-lg transition-all duration-300"
               >
-                <FaDownload />
-                <span>Send Brochure</span>
+                Send Brochure
               </button>
             </form>
           </motion.div>

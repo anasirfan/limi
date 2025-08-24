@@ -31,6 +31,8 @@ import SplashScreen from './components/SplashScreen';
 import CookieConsent from './components/CookieConsent';
 import { useEffect, useState, Suspense } from 'react';
 import { initTracking, sendTrackingData, cleanupTracking } from './services/trackingService';
+import { initDynamicThemeSwitcher, setDayNightTheme } from './utils/dynamicThemeSwitcher';
+import HourSelector from './components/ui/HourSelector';
 // Dynamically import CubeAnimation with SSR disabled
 const CubeAnimation = dynamic(() => import('./components/CubeAnimation'), { 
   ssr: false,
@@ -44,12 +46,23 @@ const CubeAnimation = dynamic(() => import('./components/CubeAnimation'), {
  * @returns {JSX.Element} The main app component.
  */
 export default function Home() {
+  // For testing: allow manual hour override
+  const [testHour, setTestHour] = useState(10); // Default to 10am (day)
+  const handleHourChange = (hour) => {
+    setTestHour(hour);
+    setDayNightTheme(hour);
+  };
   const [isMobile, setIsMobile] = useState(false);
   const [userType, setUserType] = useState(null);
   const [showSplash, setShowSplash] = useState(true);
   const [showUserSelection, setShowUserSelection] = useState(false);
   
   useEffect(() => {
+    // Initialize dynamic hourly theme switcher
+    if (typeof window !== 'undefined') {
+      initDynamicThemeSwitcher();
+      setDayNightTheme(testHour); // Set initial hour for testing
+    }
     // Check if device is mobile
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
@@ -107,13 +120,25 @@ export default function Home() {
 
   return (
     <main>
-      <SplashScreen onComplete={() => window.dispatchEvent(new Event('splashComplete'))} />
+      {/* <SplashScreen onComplete={() => window.dispatchEvent(new Event('splashComplete'))} /> */}
       {/* <UserSelectionPopup isVisible={showUserSelection} onSelect={handleUserTypeSelect} /> */}
-      <Header />
-      
+      {/* TESTING: HourSelector for dynamic theme (hide after testing) */}
+      <div style={{
+  position: 'fixed',
+  top: 16,
+  right: 16,
+  zIndex: 99999,
+  background: 'rgba(255,255,255,0.9)',
+  padding: 8,
+  borderRadius: 8
+}}>
+  <HourSelector hour={testHour} onChange={handleHourChange} />
+</div>
+      <TransitionLayout>
+        <Header />
         <HeroSection />
         <ProductShowcase />
-        <HowItWorks  />
+        <HowItWorks />
         <InteractiveConfigurator />
         <OurStory />
         <TimelineAchievements />
@@ -129,7 +154,7 @@ export default function Home() {
         <AnalyticsInsights />
         <DistributorHub />
         */}
-  
+      </TransitionLayout>
       {/* {!isMobile && <MouseTrail />} */}
       <Footer />
       <SectionNavigation />

@@ -3,20 +3,134 @@
 @tailwind utilities;
 
 :root {
+  /* Hourly Dynamic Brand Colors */
+  --color-emerald: var(--color-emerald-0);
+  --color-eton-blue: var(--color-eton-blue-0);
+  --color-charleston-green: var(--color-charleston-green-0);
+  --color-alabaster: var(--color-alabaster-0);
+  /* Emerald Shades */
+  --color-emerald-0: #e5f9ed;
+  --color-emerald-1: #d0f5e1;
+  --color-emerald-2: #b8f0d3;
+  --color-emerald-3: #a0eac6;
+  --color-emerald-4: #87e4b9;
+  --color-emerald-5: #6edeac;
+  --color-emerald-6: #54d89f;
+  --color-emerald-7: #3bd292;
+  --color-emerald-8: #22cc85;
+  --color-emerald-9: #19b576;
+  --color-emerald-10: #14a06a;
+  --color-emerald-11: #158b5c;
+  --color-emerald-12: #16764e;
+  --color-emerald-13: #17613f;
+  --color-emerald-14: #185c38;
+  --color-emerald-15: #176e41;
+  --color-emerald-16: #176d4a;
+  --color-emerald-17: #156c53;
+  --color-emerald-18: #145c37;
+  --color-emerald-19: #174d2a;
+  --color-emerald-20: #1a3e1e;
+  --color-emerald-21: #1d2f12;
+  --color-emerald-22: #202006;
+  --color-emerald-23: #1b1a13;
+  /* Eton Blue Shades */
+  --color-eton-blue-0: #f0f9f5;
+  --color-eton-blue-1: #e0f3ea;
+  --color-eton-blue-2: #c4e8d9;
+  --color-eton-blue-3: #a8ddc8;
+  --color-eton-blue-4: #8cd2b7;
+  --color-eton-blue-5: #70c7a6;
+  --color-eton-blue-6: #54bb94;
+  --color-eton-blue-7: #48a683;
+  --color-eton-blue-8: #3c9172;
+  --color-eton-blue-9: #307c61;
+  --color-eton-blue-10: #246750;
+  --color-eton-blue-11: #18523f;
+  --color-eton-blue-12: #0c3d2e;
+  --color-eton-blue-13: #083628;
+  --color-eton-blue-14: #073022;
+  --color-eton-blue-15: #062a1c;
+  --color-eton-blue-16: #052416;
+  --color-eton-blue-17: #041e10;
+  --color-eton-blue-18: #03180a;
+  --color-eton-blue-19: #021204;
+  --color-eton-blue-20: #010c00;
+  --color-eton-blue-21: #010a00;
+  --color-eton-blue-22: #010800;
+  --color-eton-blue-23: #010600;
+  /* Charleston Green Shades */
+  --color-charleston-green-0: #f2f2f2;
+  --color-charleston-green-1: #e5e5e5;
+  --color-charleston-green-2: #cccccc;
+  --color-charleston-green-3: #b2b2b2;
+  --color-charleston-green-4: #999999;
+  --color-charleston-green-5: #7f7f7f;
+  --color-charleston-green-6: #666666;
+  --color-charleston-green-7: #4c4c4c;
+  --color-charleston-green-8: #333333;
+  --color-charleston-green-9: #292929;
+  --color-charleston-green-10: #232323;
+  --color-charleston-green-11: #1e2022;
+  --color-charleston-green-12: #1a1a1a;
+  --color-charleston-green-13: #171717;
+  --color-charleston-green-14: #141414;
+  --color-charleston-green-15: #121212;
+  --color-charleston-green-16: #101010;
+  --color-charleston-green-17: #0e0e0e;
+  --color-charleston-green-18: #0c0c0c;
+  --color-charleston-green-19: #0a0a0a;
+  --color-charleston-green-20: #080808;
+  --color-charleston-green-21: #060606;
+  --color-charleston-green-22: #040404;
+  --color-charleston-green-23: #020202;
+  /* Alabaster Shades */
+  --color-alabaster-0: #fffefb;
+  --color-alabaster-1: #fdfcf7;
+  --color-alabaster-2: #fbfaf3;
+  --color-alabaster-3: #f9f8ef;
+  --color-alabaster-4: #f7f6eb;
+  --color-alabaster-5: #f5f4e7;
+  --color-alabaster-6: #f3f2e3;
+  --color-alabaster-7: #f1f0df;
+  --color-alabaster-8: #efecdb;
+  --color-alabaster-9: #edead7;
+  --color-alabaster-10: #ebe8d3;
+  --color-alabaster-11: #e9e6cf;
+  --color-alabaster-12: #e7e4cb;
+  --color-alabaster-13: #e5e2c7;
+  --color-alabaster-14: #e3e0c3;
+  --color-alabaster-15: #e1dec0;
+  --color-alabaster-16: #dfdcbc;
+  --color-alabaster-17: #dddab8;
+  --color-alabaster-18: #dbd8b4;
+  --color-alabaster-19: #d9d6b0;
+  --color-alabaster-20: #d7d4ac;
+  --color-alabaster-21: #d5d2a8;
+  --color-alabaster-22: #d3d0a4;
+  --color-alabaster-23: #d1cea0;
+
   /* Brand Colors */
-  --emerald: #50C878; /* Primary brand accent */
+  --emerald: #50C878;
+--emerald-light: #87CEAB;
+--emerald-dark: #158b5c; /* Primary brand accent */
   --emerald-dark: #3da861;
   --emerald-light: #7ad69a;
   
-  --eton-blue: #87CEAB; /* Secondary accent */
+  --eton-blue: #87CEAB;
+--eton-blue-light: #a3dbc0;
+--eton-blue-dark: #246750; /* Secondary accent */
   --eton-blue-dark: #6ab890;
   --eton-blue-light: #a3dbc0;
   
   --charleston-green: #2B2D2F; /* Dark background */
+--charleston-green-dark: #1e2022;
+--charleston-green-light: #3a3d42;
   --charleston-green-dark: #1e2022;
   --charleston-green-light: #3a3d42;
   
   --alabaster: #F2F0E6; /* Light background */
+--alabaster-light: #fffefb;
+--alabaster-dark: #e5e2c7;
   
   /* UI Colors */
   --background: var(--charleston-green);
@@ -287,4 +401,80 @@ section, div {
     transform: scale(1);
     opacity: 1;
   }
+}
+
+/* Limi AI Storytelling Page Styles */
+.text-glow {
+  text-shadow: 0 0 10px rgba(84, 187, 116, 0.5), 0 0 20px rgba(84, 187, 116, 0.3);
+}
+
+.story-container {
+  scroll-behavior: smooth;
+}
+
+/* Performance optimizations */
+.will-change-transform {
+  will-change: transform;
+}
+
+.gpu-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Cinematic animations */
+@keyframes circuitGlow {
+  0% {
+    box-shadow: 0 0 5px rgba(84, 187, 116, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(84, 187, 116, 0.8), 0 0 30px rgba(84, 187, 116, 0.4);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(84, 187, 116, 0.3);
+  }
+}
+
+@keyframes sensorPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive design improvements */
+@media (max-width: 1024px) {
+  .story-container .flex {
+    flex-direction: column;
+  }
+  
+  .story-container .w-1\/2 {
+    width: 100%;
+  }
+  
+  .story-container .sticky {
+    position: relative;
+    height: 50vh;
+  }
+}
+
+/* Smooth scrolling for all elements */
+* {
+  scroll-behavior: smooth;
 }

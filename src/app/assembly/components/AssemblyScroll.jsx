@@ -25,7 +25,7 @@ const AssemblyScroll = () => {
       icon: HiCube,
       color: '#54bb74',
       highlights: ['Zero-config installation', 'Built-in power management', 'Universal mounting system'],
-      animation: 'base-install'
+      video: '/limiai/step1.mp4'
     },
     {
       id: 2,
@@ -34,7 +34,7 @@ const AssemblyScroll = () => {
       icon: HiOutlineWifi,
       color: '#93cfa2',
       highlights: ['Automatic detection', 'Smart power distribution', 'Flexible cable management'],
-      animation: 'cable-connect'
+      video: '/limiai/step2.mp4'
     },
     {
       id: 3,
@@ -43,7 +43,7 @@ const AssemblyScroll = () => {
       icon: HiLightningBolt,
       color: '#54bb74',
       highlights: ['Magnetic connection', 'Perfect alignment', 'Multiple design options'],
-      animation: 'pendant-attach'
+      video: '/limiai/step3.m4v'
     },
     {
       id: 4,
@@ -52,7 +52,7 @@ const AssemblyScroll = () => {
       icon: HiCog,
       color: '#292929',
       highlights: ['Plug-and-play sensors', 'Advanced AI processing', 'Expandable ecosystem'],
-      animation: 'module-insert'
+      video: '/limiai/step4.m4v'
     }
   ];
 
@@ -242,104 +242,31 @@ const AssemblyScroll = () => {
                 {/* Step Visual */}
                 <div className={`step-visual-${index} ${index % 2 === 1 ? 'lg:col-start-1' : ''}`}>
                   <div className="relative">
-                    {/* Enhanced Animation Placeholder */}
-                    <div className="w-full h-[400px] bg-gradient-to-br from-white/10 to-white/5 rounded-2xl backdrop-blur-sm border border-white/10 overflow-hidden relative">
-                      {/* Background Grid */}
-                      <div className="absolute inset-0 opacity-20">
-                        <div className="grid grid-cols-6 grid-rows-4 h-full w-full">
-                          {[...Array(24)].map((_, i) => (
-                            <motion.div
-                              key={i}
-                              className="border border-[#54bb74]/30"
-                              initial={{ opacity: 0 }}
-                              animate={{ opacity: [0, 0.5, 0] }}
-                              transition={{
-                                duration: 2,
-                                delay: i * 0.1,
-                                repeat: Infinity,
-                                repeatDelay: 4
-                              }}
-                            />
-                          ))}
-                        </div>
-                      </div>
+                    {/* Step Video */}
+                    <div className="w-full h-[400px] rounded-2xl overflow-hidden relative bg-black/20 backdrop-blur-sm border border-white/10">
+                      <video
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        className="w-full h-full object-cover"
+                      >
+                        <source src={step.video} type="video/mp4" />
+                      </video>
                       
-                      {/* Main Content */}
-                      <div className="relative z-10 flex items-center justify-center h-full">
-                        <div className="text-center">
-                          <motion.div 
-                            className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-[#54bb74] to-[#93cfa2] rounded-full flex items-center justify-center"
-                            animate={{ 
-                              scale: [1, 1.1, 1],
-                              rotate: [0, 10, 0]
-                            }}
-                            transition={{ 
-                              duration: 3,
-                              repeat: Infinity,
-                              ease: 'easeInOut'
-                            }}
-                          >
-                            <step.icon className="text-3xl text-white" />
-                          </motion.div>
-                          <span className="text-white/70 text-lg font-medium block mb-2">
-                            {step.animation} Animation
-                          </span>
-                          <div className="flex justify-center space-x-1">
-                            {[...Array(3)].map((_, i) => (
-                              <motion.div
-                                key={i}
-                                className="w-2 h-2 bg-[#54bb74] rounded-full"
-                                animate={{ opacity: [0.3, 1, 0.3] }}
-                                transition={{
-                                  duration: 1.5,
-                                  repeat: Infinity,
-                                  delay: i * 0.2
-                                }}
-                              />
-                            ))}
-                          </div>
-                        </div>
-                      </div>
+                      {/* Video Overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
                       
-                      {/* Interactive Elements */}
-                      <motion.div
-                        animate={{ x: [0, 10, 0], y: [0, -5, 0] }}
-                        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-                        className="absolute top-4 left-4 w-6 h-6 bg-[#54bb74]/40 rounded-full"
-                      />
-                      <motion.div
-                        animate={{ x: [0, -8, 0], y: [0, 8, 0] }}
-                        transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-                        className="absolute bottom-4 right-4 w-4 h-4 bg-[#93cfa2]/50 rounded-full"
-                      />
-                    </div>
-
-                    {/* Floating Elements */}
-                    <motion.div
-                      animate={{ 
-                        y: [0, -10, 0],
-                        rotate: [0, 5, 0]
-                      }}
-                      transition={{ 
-                        duration: 3,
-                        repeat: Infinity,
-                        ease: 'easeInOut'
-                      }}
-                      className="absolute -top-4 -right-4 w-12 h-12 bg-[#54bb74] rounded-full flex items-center justify-center shadow-lg"
-                    >
-                      <FaArrowRight className="text-white text-sm" />
-                    </motion.div>
-                    
-                    {/* Step Progress Indicator */}
-                    <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2">
-                      {steps.map((_, stepIndex) => (
-                        <div
-                          key={stepIndex}
-                          className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                            stepIndex <= index ? 'bg-[#54bb74]' : 'bg-white/30'
-                          }`}
-                        />
-                      ))}
+                      {/* Step Icon Overlay */}
+                      <div className="absolute bottom-4 left-4 flex items-center space-x-3">
+                        <div 
+                          className="w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-md"
+                          style={{ backgroundColor: `${step.color}80` }}
+                        >
+                          <step.icon className="text-xl text-white" />
+                        </div>
+                        <span className="text-white font-medium">Step {step.id}</span>
+                      </div>
                     </div>
                   </div>
                 </div>

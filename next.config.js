@@ -6,10 +6,10 @@ const nextConfig = {
   async rewrites() {
     return {
       beforeFiles: [
-        // Handle limiai.co domain routing - only for root path
+        // Handle limiai.co root path - route to /assembly
         {
           source: '/',
-          destination: '/limiai',
+          destination: '/assembly',
           has: [
             {
               type: 'host',
@@ -17,10 +17,54 @@ const nextConfig = {
             },
           ],
         },
-        // Handle www.limiai.co domain routing - only for root path
+        // Handle limiai.co/dashboard - route to /assembly/dashboard
+        {
+          source: '/dashboard',
+          destination: '/assembly/dashboard',
+          has: [
+            {
+              type: 'host',
+              value: 'limiai.co',
+            },
+          ],
+        },
+        // Handle limiai.co/invest - route to /limifuture
+        {
+          source: '/invest',
+          destination: '/limifuture',
+          has: [
+            {
+              type: 'host',
+              value: 'limiai.co',
+            },
+          ],
+        },
+        // Handle www.limiai.co root path - route to /assembly
         {
           source: '/',
-          destination: '/limiai',
+          destination: '/assembly',
+          has: [
+            {
+              type: 'host',
+              value: 'www.limiai.co',
+            },
+          ],
+        },
+        // Handle www.limiai.co/dashboard - route to /assembly/dashboard
+        {
+          source: '/dashboard',
+          destination: '/assembly/dashboard',
+          has: [
+            {
+              type: 'host',
+              value: 'www.limiai.co',
+            },
+          ],
+        },
+        // Handle www.limiai.co/invest - route to /limifuture
+        {
+          source: '/invest',
+          destination: '/limifuture',
           has: [
             {
               type: 'host',
@@ -41,13 +85,19 @@ const nextConfig = {
       'coverr.co',
       'media.istockphoto.com', // in case any fallback stock sources
       'media.pexels.com',
-      'mixkit.imgix.net'
+      'mixkit.imgix.net',
+      'dev.api.limitless-lighting.co.uk'
     ],
     remotePatterns: [
       {
         protocol: 'https',
         hostname: 'ui-avatars.com',
         pathname: '/api/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'dev.api.limitless-lighting.co.uk',
+        pathname: '/**',
       },
       {
         protocol: 'https',

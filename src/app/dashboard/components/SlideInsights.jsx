@@ -40,7 +40,7 @@ export default function SlideInsights({ customerId, slideTimes = [], sessions = 
     
     try {
       const response = await fetch(`https://dev.api1.limitless-lighting.co.uk/client/user/slide_shows/analytics?customerId=${customerId}`);
-      
+      console.log("slideshow response",response);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }

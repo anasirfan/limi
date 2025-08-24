@@ -60,7 +60,7 @@ const AddCustomerModal = ({ isOpen, onClose, onCustomerAdded, token }) => {
       // Close modal after 2 seconds
       setTimeout(() => {
         onClose();
-      }, 2000);
+      }, 1000);
     } catch (err) {
       console.error('Error adding customer:', err);
       setError(err.message || 'An error occurred while adding the customer');

@@ -2,15 +2,14 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { FaRadar, FaMicrophone, FaCamera, FaInfoCircle } from 'react-icons/fa';
+import { FaRadar, FaMicrophone, FaCamera, FaInfoCircle, FaTimes } from 'react-icons/fa';
 import { HiWifi, HiMicrophone, HiCamera } from 'react-icons/hi';
 import anime from 'animejs';
-
 
 const SensorModuleCard = ({ title, description, icon, delay = 0 }) => {
   const cardRef = useRef(null);
   const [isHovered, setIsHovered] = useState(false);
-  const [showTooltip, setShowTooltip] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   const iconMap = {
@@ -65,66 +64,14 @@ const SensorModuleCard = ({ title, description, icon, delay = 0 }) => {
     }
   }, [delay]);
 
-  const handleMouseEnter = () => {
-    setIsHovered(true);
-    
-    if (cardRef.current) {
-      anime({
-        targets: cardRef.current,
-        scale: 1.05,
-        rotateY: 5,
-        rotateX: 5,
-        duration: 300,
-        easing: 'easeOutCubic'
-      });
 
-      // Animate internal elements
-      anime({
-        targets: cardRef.current.querySelectorAll('.card-icon'),
-        scale: [1, 1.2],
-        rotate: [0, 360],
-        duration: 600,
-        easing: 'easeOutBack'
-      });
 
-      anime({
-        targets: cardRef.current.querySelectorAll('.card-content'),
-        translateY: [0, -5],
-        duration: 300,
-        easing: 'easeOutCubic'
-      });
-    }
+  const openModal = () => {
+    setShowModal(true);
   };
 
-  const handleMouseLeave = () => {
-    setIsHovered(false);
-    setShowTooltip(false);
-    
-    if (cardRef.current) {
-      anime({
-        targets: cardRef.current,
-        scale: 1,
-        rotateY: 0,
-        rotateX: 0,
-        duration: 300,
-        easing: 'easeOutCubic'
-      });
-
-      anime({
-        targets: cardRef.current.querySelectorAll('.card-icon'),
-        scale: 1,
-        rotate: 0,
-        duration: 400,
-        easing: 'easeOutCubic'
-      });
-
-      anime({
-        targets: cardRef.current.querySelectorAll('.card-content'),
-        translateY: 0,
-        duration: 300,
-        easing: 'easeOutCubic'
-      });
-    }
+  const closeModal = () => {
+    setShowModal(false);
   };
 
   if (!mounted) return null;
@@ -134,20 +81,12 @@ const SensorModuleCard = ({ title, description, icon, delay = 0 }) => {
       <motion.div
         ref={cardRef}
         className="relative group cursor-pointer"
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        whileHover={{ y: -10 }}
         transition={{ duration: 0.3 }}
       >
         {/* Glassmorphism Card */}
         <div className="relative p-8 rounded-2xl backdrop-blur-md bg-white/10 border border-white/20 shadow-2xl overflow-hidden">
           {/* Background Gradient */}
-          <div className="absolute inset-0 bg-gradient-to-br from-[#54bb74]/20 via-transparent to-[#93cfa2]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-          
-          {/* Animated Border */}
-          <div className="absolute inset-0 rounded-2xl border-2 border-transparent bg-gradient-to-r from-[#54bb74] via-[#93cfa2] to-[#54bb74] opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ padding: '2px' }}>
-            <div className="w-full h-full rounded-2xl bg-[#292929]"></div>
-          </div>
+          <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
           {/* Content */}
           <div className="relative z-10">
@@ -160,17 +99,17 @@ const SensorModuleCard = ({ title, description, icon, delay = 0 }) => {
 
             {/* Title and Description */}
             <div className="card-content text-center">
-              <h3 className="text-2xl font-bold text-white mb-4">
+              <h3 className="text-2xl font-bold text-[#292929] group-hover:text-[#292929] mb-4">
                 {title}
               </h3>
-              <p className="text-gray-300 leading-relaxed mb-6">
+              <p className="text-[#292929]/70 group-hover:text-[#292929]/80 leading-relaxed mb-6">
                 {description}
               </p>
 
               {/* Specs Preview */}
               <div className="space-y-2 mb-6">
                 {currentSensor.specs.slice(0, 2).map((spec, index) => (
-                  <div key={index} className="text-sm text-gray-400 flex items-center justify-center">
+                  <div key={index} className="text-sm text-[#292929]/60 group-hover:text-[#292929]/70 flex items-center justify-center">
                     <span className="w-2 h-2 bg-[#54bb74] rounded-full mr-2"></span>
                     {spec}
                   </div>
@@ -179,8 +118,8 @@ const SensorModuleCard = ({ title, description, icon, delay = 0 }) => {
 
               {/* Info Button */}
               <button
-                onClick={() => setShowTooltip(!showTooltip)}
-                className="inline-flex items-center px-4 py-2 bg-white/10 hover:bg-white/20 rounded-full text-sm text-white transition-all duration-300"
+                onClick={openModal}
+                className="inline-flex items-center px-4 py-2 bg-[#54bb74]/10 hover:bg-[#54bb74]/20 rounded-full text-sm text-[#292929] transition-all duration-300"
               >
                 <FaInfoCircle className="mr-2" />
                 More Details
@@ -197,40 +136,116 @@ const SensorModuleCard = ({ title, description, icon, delay = 0 }) => {
           </div>
         </div>
 
-        {/* Tooltip */}
-        {showTooltip && (
-          <motion.div
-            initial={{ opacity: 0, y: 10, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.9 }}
-            className="absolute top-full left-1/2 transform -translate-x-1/2 mt-4 z-20"
-          >
-            <div className="bg-[#292929] rounded-xl p-6 shadow-2xl border border-[#54bb74]/20 min-w-[300px]">
-              <h4 className="text-lg font-bold text-white mb-4">Technical Specifications</h4>
+        {/* Modal */}
+        {showModal && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="bg-white rounded-3xl max-w-2xl w-full shadow-2xl relative overflow-hidden"
+            >
+              {/* Background Decoration */}
+              <div className="absolute inset-0 bg-gradient-to-br from-[#f3ebe2]/20 via-transparent to-[#93cfa2]/10"></div>
               
-              <div className="space-y-3 mb-4">
-                {currentSensor.specs.map((spec, index) => (
-                  <div key={index} className="flex items-center text-gray-300">
-                    <span className="w-2 h-2 bg-[#54bb74] rounded-full mr-3"></span>
-                    <span className="text-sm">{spec}</span>
+              <button
+                onClick={closeModal}
+                className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 text-2xl z-20 bg-white/80 backdrop-blur-sm rounded-full w-10 h-10 flex items-center justify-center hover:bg-white transition-all duration-200"
+              >
+                <FaTimes />
+              </button>
+              
+              <div className="relative z-10 p-8">
+                {/* Header */}
+                <div className="flex items-center mb-8">
+                  <div 
+                    className="w-16 h-16 rounded-2xl flex items-center justify-center mr-6 shadow-lg"
+                    style={{ backgroundColor: '#54bb74' }}
+                  >
+                    <IconComponent className="text-2xl text-white" />
                   </div>
-                ))}
-              </div>
-
-              <h5 className="text-md font-semibold text-white mb-3">Key Features</h5>
-              <div className="space-y-2">
-                {currentSensor.features.map((feature, index) => (
-                  <div key={index} className="flex items-center text-gray-300">
-                    <span className="w-1.5 h-1.5 bg-[#93cfa2] rounded-full mr-3"></span>
-                    <span className="text-sm">{feature}</span>
+                  <div>
+                    <h3 className="text-3xl font-black text-[#292929] leading-tight mb-2">
+                      {title} Sensor
+                    </h3>
+                    <p className="text-lg text-[#54bb74] font-semibold">
+                      Technical Specifications & Features
+                    </p>
                   </div>
-                ))}
-              </div>
+                </div>
 
-              {/* Arrow */}
-              <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-[#292929] rotate-45 border-l border-t border-[#54bb74]/20"></div>
-            </div>
-          </motion.div>
+                {/* Content Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {/* Technical Specifications */}
+                  <div>
+                    <h4 className="text-xl font-bold text-[#292929] mb-4 flex items-center">
+                      <div className="w-2 h-2 bg-[#54bb74] rounded-full mr-3"></div>
+                      Technical Specs
+                    </h4>
+                    <div className="space-y-3">
+                      {currentSensor.specs.map((spec, index) => (
+                        <motion.div
+                          key={index}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: index * 0.1, duration: 0.3 }}
+                          className="flex items-center p-3 bg-gradient-to-r from-[#f3ebe2]/30 to-[#93cfa2]/20 rounded-xl"
+                        >
+                          <div className="w-8 h-8 bg-gradient-to-br from-[#54bb74] to-[#93cfa2] rounded-lg flex items-center justify-center mr-3 flex-shrink-0">
+                            <div className="w-2 h-2 bg-white rounded-full"></div>
+                          </div>
+                          <span className="text-[#292929] font-medium">{spec}</span>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Key Features */}
+                  <div>
+                    <h4 className="text-xl font-bold text-[#292929] mb-4 flex items-center">
+                      <div className="w-2 h-2 bg-[#54bb74] rounded-full mr-3"></div>
+                      Key Features
+                    </h4>
+                    <div className="space-y-3">
+                      {currentSensor.features.map((feature, index) => (
+                        <motion.div
+                          key={index}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: index * 0.1 + 0.3, duration: 0.3 }}
+                          className="flex items-center p-3 bg-white rounded-xl border border-[#54bb74]/10 shadow-sm"
+                        >
+                          <div className="w-8 h-8 bg-gradient-to-br from-[#93cfa2] to-[#54bb74] rounded-lg flex items-center justify-center mr-3 flex-shrink-0">
+                            <div className="w-2 h-2 bg-white rounded-full"></div>
+                          </div>
+                          <span className="text-[#292929] font-medium">{feature}</span>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Description */}
+                <div className="mt-8 p-6 bg-gradient-to-r from-[#292929] to-[#1a1a1a] rounded-2xl text-white">
+                  <h4 className="text-lg font-bold mb-3">About This Sensor</h4>
+                  <p className="text-white/90 leading-relaxed">
+                    {description} This advanced sensor module integrates seamlessly with our modular lighting system, 
+                    providing intelligent automation and enhanced user experience through cutting-edge technology.
+                  </p>
+                </div>
+
+                {/* Action Button */}
+                <div className="mt-6 text-center">
+                  <button
+                    onClick={closeModal}
+                    className="px-8 py-3 bg-gradient-to-r from-[#54bb74] to-[#93cfa2] text-white rounded-2xl font-semibold hover:shadow-lg transition-all duration-300"
+                  >
+                    Close Details
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
         )}
       </motion.div>
 

@@ -132,22 +132,18 @@ export default function PortalLogin({ onLogin }) {
     setResetStatus({ type: "loading", message: "Sending OTP..." });
 
     try {
-      // Simulate API call to send OTP
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // In a real app, you would make an API call here
-      // const response = await fetch('/api/auth/send-reset-otp', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ email: resetEmail })
-      // });
-      // const data = await response.json();
-
-      // if (!response.ok) throw new Error(data.message || 'Failed to send OTP');
+      const response = await fetch("https://dev.api.limitless-lighting.co.uk/client/forgot_password/send_otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: resetEmail }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error_message || "Failed to send OTP");
 
       setResetStep(2);
       setResetStatus({ type: "success", message: "OTP sent to your email" });
     } catch (error) {
+      console.log(error);
       setResetStatus({
         type: "error",
         message: error.message || "Failed to send OTP",
@@ -155,13 +151,14 @@ export default function PortalLogin({ onLogin }) {
     }
   };
 
+
   // Handle verify OTP for password reset
   const handleVerifyResetOtp = async (e) => {
     e.preventDefault();
-    if (!resetOtp || resetOtp.length !== 4) {
+    if (!resetOtp || resetOtp.length !== 6) {
       setResetStatus({
         type: "error",
-        message: "Please enter a valid 4-digit OTP",
+        message: "Please enter a valid 6-digit OTP",
       });
       return;
     }
@@ -169,18 +166,13 @@ export default function PortalLogin({ onLogin }) {
     setResetStatus({ type: "loading", message: "Verifying OTP..." });
 
     try {
-      // Simulate API call to verify OTP
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // In a real app, you would make an API call here
-      // const response = await fetch('/api/auth/verify-reset-otp', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ email: resetEmail, otp: resetOtp })
-      // });
-      // const data = await response.json();
-      //
-      // if (!response.ok) throw new Error(data.message || 'Invalid OTP');
+      const response = await fetch("https://dev.api.limitless-lighting.co.uk/client/forgot_password/verify_otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: resetEmail, otp: resetOtp }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || "Invalid OTP");
 
       setResetStep(3);
       setResetStatus({ type: "success", message: "OTP verified successfully" });
@@ -191,6 +183,7 @@ export default function PortalLogin({ onLogin }) {
       });
     }
   };
+
 
   // Handle reset password
   const handleResetPassword = async (e) => {
@@ -212,30 +205,19 @@ export default function PortalLogin({ onLogin }) {
     setResetStatus({ type: "loading", message: "Updating password..." });
 
     try {
-      // Simulate API call to reset password
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const response = await fetch("https://dev.api.limitless-lighting.co.uk/client/forgot_password/reset", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: resetEmail, newPassword }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || "Failed to reset password");
 
-      // In a real app, you would make an API call here
-      // const response = await fetch('/api/auth/reset-password', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({
-      //     email: resetEmail,
-      //     otp: resetOtp,
-      //     newPassword
-      //   })
-      // });
-      // const data = await response.json();
-      //
-      // if (!response.ok) throw new Error(data.message || 'Failed to reset password');
-
-      // Show success message and redirect to login
       setResetStatus({
         type: "success",
         message: "Password updated successfully! Redirecting to login...",
       });
 
-      // Reset form and go back to login after a delay
       setTimeout(() => {
         handleBackToLogin();
       }, 2000);
@@ -246,6 +228,7 @@ export default function PortalLogin({ onLogin }) {
       });
     }
   };
+
 
   const switchToSignup = () => {
     setShowSignup(true);
@@ -514,7 +497,7 @@ export default function PortalLogin({ onLogin }) {
                     <form onSubmit={handleVerifyResetOtp}>
                       <div className="mb-6">
                         <p className="text-gray-300 text-sm mb-4">
-                          We've sent a 4-digit OTP to {resetEmail}
+                          We've sent a 6-digit OTP to {resetEmail}
                         </p>
                         <label className="block text-gray-300 mb-2">
                           Enter OTP
@@ -524,12 +507,12 @@ export default function PortalLogin({ onLogin }) {
                           value={resetOtp}
                           onChange={(e) =>
                             setResetOtp(
-                              e.target.value.replace(/[^0-9]/g, "").slice(0, 4)
+                              e.target.value.replace(/[^0-9]/g, "").slice(0, 6)
                             )
                           }
                           className="bg-charleston-green text-white w-full px-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald text-center tracking-widest font-mono text-xl"
-                          placeholder="1234"
-                          maxLength={4}
+                          placeholder="123456"
+                          maxLength={6}
                           required
                           disabled={resetStatus.type === "loading"}
                         />
