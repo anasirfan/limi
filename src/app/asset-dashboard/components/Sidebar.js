@@ -98,9 +98,15 @@ const Sidebar =({ isCollapsed, onToggleCollapse }) => {
               <span className="text-gray-600">Total Size</span>
               <span className="font-medium text-gray-900">
                 {assets.reduce((total, asset) => {
-                  const size = parseFloat(asset.size.replace(/[^\d.]/g, ''));
-                  return total + size;
-                }, 0).toFixed(1)} MB
+                  // Handle both numeric size (bytes) and string size (e.g., "2.3 MB")
+                  let sizeInBytes = 0;
+                  if (typeof asset?.size === 'number') {
+                    sizeInBytes = asset.size;
+                  } else if (typeof asset?.size === 'string') {
+                    sizeInBytes = parseFloat(asset.size.replace(/[^\d.]/g, '')) * 1024 * 1024; // Assume MB if string
+                  }
+                  return total + sizeInBytes;
+                }, 0) }
               </span>
             </div>
             <div className="flex justify-between text-sm">

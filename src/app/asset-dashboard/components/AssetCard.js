@@ -99,7 +99,7 @@ export default function AssetCard({
 
           {/* Dropdown Menu */}
           {showMenu && (
-            <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-20">
+            <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
               <div className="py-1">
                 <button
                   onClick={() => {
@@ -113,7 +113,7 @@ export default function AssetCard({
                 </button>
                 <button
                   onClick={() => {
-                    onCopyUrl();
+                    onCopyUrl(asset);
                     setShowMenu(false);
                   }}
                   className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2"

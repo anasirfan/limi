@@ -1,9 +1,10 @@
 'use client';
 
 import { useSelector, useDispatch } from 'react-redux';
-import { toggleAssetSelection, deleteAsset, updateAsset } from '../../redux/slices/assetsSlice';
-import { addActivity } from '../../redux/slices/activitySlice';
-import { useState } from 'react';
+import { toggleAssetSelection, deleteAsset, updateAsset, setAssets, setLoading } from '../../../app/redux/slices/activitySlice';
+import { addActivity } from '../../../app/redux/slices/activitySlice';
+import { useState, useEffect } from 'react';
+import { assetsApi } from '../api/assetsApi';
 import AssetCard from './AssetCard';
 import { FiGrid } from 'react-icons/fi';
 
@@ -48,9 +49,76 @@ export default function AssetGrid() {
   };
 
   const handleCopyUrl = (asset) => {
+    console.log("copyurl",asset);
     navigator.clipboard.writeText(asset.url);
-    // You could add a toast notification here
+    // Show a temporary notification
+    const notification = document.createElement('div');
+    notification.textContent = `URL copied: ${asset.name}`;
+    notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 transition-opacity';
+    document.body.appendChild(notification);
+    
+    // Remove notification after 3 seconds
+    setTimeout(() => {
+      notification.style.opacity = '0';
+      setTimeout(() => {
+        document.body.removeChild(notification);
+      }, 300);
+    }, 3000);
   };
+
+  // Transform API response to component format
+  const transformApiAssets = (apiAssets) => {
+    return apiAssets.map(asset => ({
+      id: asset._id,
+      name: asset.originalname || asset.filename,
+      type: asset.category === 'models' ? '3d' : asset.category?.slice(0, -1) || 'image', // 'videos' -> 'video', 'images' -> 'image'
+      size: `${(asset.size / (1024 * 1024)).toFixed(1)} MB`, // Convert bytes to MB string
+      url: asset.url,
+      thumbnail: asset.url,
+      tags: asset.tags || [],
+      uploadedBy: 'API User',
+      uploadedAt: asset.createdAt,
+      lastModified: asset.updatedAt,
+      usageContext: asset.description || 'Uploaded via API',
+      format: asset.mimetype?.split('/')[1]?.toUpperCase() || asset.originalname?.split('.').pop()?.toUpperCase(),
+      createdAt: asset.createdAt
+    }));
+  };
+
+  useEffect(() => {
+    const handleAssetsUpdated = async () => {
+      try {
+        const response = await assetsApi.getAssets();
+        // Handle new API response structure with items array and transform data
+        const rawAssets = response.items || response.data || [];
+        const transformedAssets = transformApiAssets(rawAssets);
+        dispatch(setAssets(transformedAssets));
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    const handleSearchUpdated = async (event) => {
+      try {
+        const { query } = event.detail;
+        const response = await assetsApi.searchAssets(query);
+        // Handle new API response structure with items array and transform data
+        const rawAssets = response.items || response.data || [];
+        const transformedAssets = transformApiAssets(rawAssets);
+        dispatch(setAssets(transformedAssets));
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    window.addEventListener('assetsUpdated', handleAssetsUpdated);
+    window.addEventListener('searchUpdated', handleSearchUpdated);
+    
+    return () => {
+      window.removeEventListener('assetsUpdated', handleAssetsUpdated);
+      window.removeEventListener('searchUpdated', handleSearchUpdated);
+    };
+  }, []); 
 
   if (filteredAssets.length === 0) {
     return (
@@ -75,7 +143,7 @@ export default function AssetGrid() {
           onSelect={() => handleAssetSelect(asset.id)}
           onDelete={() => handleAssetDelete(asset)}
           onRename={(newName) => handleAssetRename(asset, newName)}
-          onCopyUrl={() => handleCopyUrl(asset)}
+          onCopyUrl={handleCopyUrl}
           onStartEdit={() => setEditingAsset(asset.id)}
           onCancelEdit={() => setEditingAsset(null)}
         />
