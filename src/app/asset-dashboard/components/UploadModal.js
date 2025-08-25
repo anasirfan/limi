@@ -2,8 +2,9 @@
 
 import { useState, useRef } from 'react';
 import { useDispatch } from 'react-redux';
-import { addAsset, setIsUploading, setUploadProgress } from '../../redux/slices/assetsSlice';
-import { addActivity } from '../../redux/slices/activitySlice';
+import { addAsset, setIsUploading, setUploadProgress } from '../../../app/redux/slices/assetsSlice';
+import { addActivity } from '../../../app/redux/slices/activitySlice';
+import { assetsApi } from '../api/assetsApi';
 import { FiX, FiUpload, FiFile, FiImage, FiVideo, FiBox } from 'react-icons/fi';
 
 const assetTypeIcons = {
@@ -40,6 +41,7 @@ export default function UploadModal({ onClose }) {
   const [dragActive, setDragActive] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [uploadingFiles, setUploadingFiles] = useState([]);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   const handleDrag = (e) => {
     e.preventDefault();
@@ -92,19 +94,50 @@ export default function UploadModal({ onClose }) {
     ));
   };
 
-  const simulateUpload = async (fileData) => {
-    return new Promise((resolve) => {
-      let progress = 0;
-      const interval = setInterval(() => {
-        progress += Math.random() * 30;
-        if (progress >= 100) {
-          progress = 100;
-          clearInterval(interval);
-          resolve();
-        }
-        dispatch(setUploadProgress(progress));
-      }, 200);
-    });
+  const uploadFile = async (fileData) => {
+    console.log("filedata", fileData);
+    const response = await assetsApi.uploadAsset(fileData.file, fileData.tags, fileData.usageContext);
+    console.log("API response:", response);
+
+    // Check if response has error
+    if (!response.success && response.error) {
+      if (response.error.code === 'FILENAME_EXISTS') {
+        setErrorMessage(`File "${fileData.name}" already exists. Please rename the file or choose a different one.`);
+      } else {
+        setErrorMessage(`Upload failed for "${fileData.name}": ${response.error.message}`);
+      }
+      return null; // Return null to indicate failure
+    }
+
+    // Parse the successful API response structure
+    const uploadedFile = response.files && response.files[0];
+    const newAsset = {
+      id: uploadedFile?._id || Date.now(),
+      name: uploadedFile?.originalname || fileData.name,
+      type: fileData.type,
+      size: fileData.size,
+      url: uploadedFile?.url || `https://cdn.limi.com/${fileData.type}s/${fileData.name}`,
+      thumbnail: uploadedFile?.url || '/api/placeholder/300/200',
+      tags: uploadedFile?.tags || fileData.tags.filter(tag => tag.trim()),
+      uploadedBy: fileData.uploadedBy,
+      usageContext: uploadedFile?.description || fileData.usageContext || `New ${fileData.type} asset`,
+      dimensions: fileData.type === 'image' ? '1920x1080' : undefined,
+      duration: fileData.type === 'video' ? '1:30' : undefined,
+      polygons: fileData.type === '3d' ? '10,000' : undefined,
+      format: fileData.name.split('.').pop().toUpperCase(),
+      createdAt: uploadedFile?.createdAt || new Date().toISOString()
+    };
+
+    dispatch(addAsset(newAsset));
+    dispatch(addActivity({
+      user: fileData.uploadedBy,
+      role: 'Frontend Dev',
+      action: 'uploaded',
+      assetName: fileData.name,
+      assetType: fileData.type,
+      details: `Uploaded new ${fileData.type} asset: ${fileData.name}`
+    }));
+    return newAsset;
   };
 
   const handleUpload = async () => {
@@ -112,51 +145,27 @@ export default function UploadModal({ onClose }) {
 
     dispatch(setIsUploading(true));
     setUploadingFiles(selectedFiles.map(f => f.id));
+    
+    let hasError = false;
 
     for (const fileData of selectedFiles) {
-      try {
-        // Simulate upload process
-        await simulateUpload(fileData);
-
-        // Create asset object
-        const newAsset = {
-          name: fileData.name,
-          type: fileData.type,
-          size: fileData.size,
-          url: `https://cdn.limi.com/${fileData.type}s/${fileData.name}`,
-          thumbnail: '/api/placeholder/300/200',
-          tags: fileData.tags.filter(tag => tag.trim()),
-          uploadedBy: fileData.uploadedBy,
-          usageContext: fileData.usageContext || `New ${fileData.type} asset`,
-          dimensions: fileData.type === 'image' ? '1920x1080' : undefined,
-          duration: fileData.type === 'video' ? '1:30' : undefined,
-          polygons: fileData.type === '3d' ? '10,000' : undefined,
-          format: fileData.name.split('.').pop().toUpperCase()
-        };
-
-        // Add to store
-        dispatch(addAsset(newAsset));
-
-        // Add activity
-        dispatch(addActivity({
-          user: fileData.uploadedBy,
-          role: 'Frontend Dev',
-          action: 'uploaded',
-          assetName: fileData.name,
-          assetType: fileData.type,
-          details: `Uploaded new ${fileData.type} asset: ${fileData.name}`
-        }));
-
-      } catch (error) {
-        console.error('Upload failed:', error);
+      const result = await uploadFile(fileData);
+      if (result === null) {
+        // Upload failed, error message already set in uploadFile function
+        hasError = true;
+        break; // Stop uploading remaining files on error
       }
     }
 
     dispatch(setIsUploading(false));
     dispatch(setUploadProgress(0));
-    setSelectedFiles([]);
     setUploadingFiles([]);
-    onClose();
+    
+    // Only close modal and clear files if no error occurred
+    if (!hasError) {
+      setSelectedFiles([]);
+      onClose();
+    }
   };
 
   const getFileIcon = (type) => {
@@ -177,6 +186,26 @@ export default function UploadModal({ onClose }) {
             <FiX className="w-5 h-5 text-gray-500" />
           </button>
         </div>
+
+        {/* Error Message */}
+        {errorMessage && (
+          <div className="mx-6 mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div className="flex items-start">
+              <div className="flex-shrink-0">
+                <FiX className="w-5 h-5 text-red-400" />
+              </div>
+              <div className="ml-3 flex-1">
+                <p className="text-sm text-red-800">{errorMessage}</p>
+              </div>
+              <button
+                onClick={() => setErrorMessage(null)}
+                className="flex-shrink-0 ml-4 p-1 hover:bg-red-100 rounded"
+              >
+                <FiX className="w-4 h-4 text-red-400" />
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Content */}
         <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
@@ -278,7 +307,7 @@ export default function UploadModal({ onClose }) {
                                 placeholder="Usage context (e.g., Homepage hero)"
                                 value={fileData.usageContext}
                                 onChange={(e) => updateFileMetadata(fileData.id, 'usageContext', e.target.value)}
-                                className="w-full px-3 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                className="w-full px-3 text-black py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                 disabled={isUploading}
                               />
                               <input
@@ -286,7 +315,7 @@ export default function UploadModal({ onClose }) {
                                 placeholder="Tags (comma separated)"
                                 value={fileData.tags.join(', ')}
                                 onChange={(e) => updateFileMetadata(fileData.id, 'tags', e.target.value.split(',').map(t => t.trim()))}
-                                className="w-full px-3 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                className="w-full text-black px-3 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                 disabled={isUploading}
                               />
                             </div>

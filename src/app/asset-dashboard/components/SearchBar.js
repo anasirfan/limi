@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { setSearchQuery, setSortBy, clearSelection, deleteSelectedAssets } from '../../redux/slices/assetsSlice';
+import { setSearchQuery, sortBy, setSortBy, clearSelection, deleteSelectedAssets } from '../../redux/slices/assetsSlice';
 import { FiSearch, FiFilter, FiX } from 'react-icons/fi';
+import { assetsApi } from '../api/assetsApi';
 
 const sortOptions = [
   { value: 'lastModified', label: 'Last Modified', order: 'desc' },
@@ -16,29 +17,72 @@ const sortOptions = [
   { value: 'type', label: 'Type', order: 'asc' }
 ];
 
-export default function SearchBar() {
+const debounce = (func, timeout = 300) => {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      func.apply(this, args);
+    }, timeout);
+  };
+};
+
+export default function SearchBar({ currentFolder }) {
   const dispatch = useDispatch();
-  const { searchQuery, sortBy, sortOrder, selectedAssets } = useSelector(state => state.assets);
-  const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery);
+  const { searchQuery, filteredAssets, selectedAssets, sortBy, sortOrder } = useSelector(state => state.assets);
+  const [localQuery, setLocalQuery] = useState(searchQuery || '');
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
   const [showSortDropdown, setShowSortDropdown] = useState(false);
+  const searchInputRef = useRef(null);
 
-  // Debounced search
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      dispatch(setSearchQuery(localSearchQuery));
-    }, 300);
+  // Debounced search function
+  const debouncedSearch = useCallback(
+    debounce(async (query) => {
+      if (query.trim()) {
+        setIsSearching(true);
+        try {
+          // Trigger search in parent components
+          dispatch(setSearchQuery(query));
+          
+          // Dispatch custom event for AssetGrid to refetch
+          window.dispatchEvent(new CustomEvent('searchUpdated', { 
+            detail: { query } 
+          }));
+        } catch (error) {
+          console.error('Search failed:', error);
+        } finally {
+          setIsSearching(false);
+        }
+      } else {
+        dispatch(setSearchQuery(''));
+        window.dispatchEvent(new CustomEvent('searchUpdated', { 
+          detail: { query: '' } 
+        }));
+      }
+    }, 300),
+    [dispatch]
+  );
 
-    return () => clearTimeout(timer);
-  }, [localSearchQuery, dispatch]);
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    setLocalQuery(value);
+    debouncedSearch(value);
+  };
+
+  const handleClearSearch = () => {
+    setLocalQuery('');
+    dispatch(setSearchQuery(''));
+    setShowSuggestions(false);
+    window.dispatchEvent(new CustomEvent('searchUpdated', { 
+      detail: { query: '' } 
+    }));
+  };
 
   const handleSortChange = (option) => {
     dispatch(setSortBy({ sortBy: option.value, sortOrder: option.order }));
     setShowSortDropdown(false);
-  };
-
-  const clearSearch = () => {
-    setLocalSearchQuery('');
-    dispatch(setSearchQuery(''));
   };
 
   const getCurrentSortLabel = () => {
@@ -49,12 +93,9 @@ export default function SearchBar() {
   };
 
   const handleBulkActions = (action) => {
-    if (selectedAssets.length === 0) return;
-    
-    // Handle bulk actions here
     switch (action) {
       case 'delete':
-        if (confirm(`Delete ${selectedAssets.length} selected assets?`)) {
+        if (window.confirm(`Are you sure you want to delete ${selectedAssets.length} selected assets?`)) {
           dispatch(deleteSelectedAssets());
         }
         break;
@@ -75,14 +116,14 @@ export default function SearchBar() {
         </div>
         <input
           type="text"
-          value={localSearchQuery}
-          onChange={(e) => setLocalSearchQuery(e.target.value)}
+          value={localQuery}
+          onChange={handleInputChange}
           placeholder="Search assets by name, tags, or context..."
           className="block w-full pl-10 text-black pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
         />
-        {localSearchQuery && (
+        {localQuery && (
           <button
-            onClick={clearSearch}
+            onClick={handleClearSearch}
             className="absolute inset-y-0 right-0 pr-3 flex items-center"
           >
             <FiX className="h-4 w-4 text-gray-400 hover:text-gray-600" />

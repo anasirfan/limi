@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Link from 'next/link';
 import Sidebar from './Sidebar';
@@ -11,8 +11,9 @@ import SearchBar from './SearchBar';
 import UploadModal from './UploadModal';
 import FolderUploadModal from './FolderUploadModal';
 import FolderNavigation from './FolderNavigation';
-import { setViewMode } from '../../redux/slices/assetsSlice';
+import { setViewMode, setAssets, setLoading } from '../../../app/redux/slices/assetsSlice';
 import { FiGrid, FiList, FiPlus, FiSettings, FiFolder } from 'react-icons/fi';
+import {assetsApi} from '../api/assetsApi';
 
 export default function AssetDashboard() {
   const dispatch = useDispatch();
@@ -22,6 +23,46 @@ export default function AssetDashboard() {
   const [showFolderUploadModal, setShowFolderUploadModal] = useState(false);
   const [showFolderNavigation, setShowFolderNavigation] = useState(true);
   const [currentFolderPath, setCurrentFolderPath] = useState('/');
+
+  // Transform API response to component format
+  const transformApiAssets = (apiAssets) => {
+    return apiAssets.map(asset => ({
+      id: asset._id,
+      name: asset.originalname || asset.filename,
+      type: asset.category === 'models' ? '3d' : asset.category?.slice(0, -1) || 'image', // 'videos' -> 'video', 'images' -> 'image'
+      size: `${(asset.size / (1024 * 1024)).toFixed(1)} MB`, // Convert bytes to MB string
+      url: asset.url,
+      thumbnail: asset.url,
+      tags: asset.tags || [],
+      uploadedBy: 'API User',
+      uploadedAt: asset.createdAt,
+      lastModified: asset.updatedAt,
+      usageContext: asset.description || 'Uploaded via API',
+      format: asset.mimetype?.split('/')[1]?.toUpperCase() || asset.originalname?.split('.').pop()?.toUpperCase(),
+      createdAt: asset.createdAt
+    }));
+  };
+
+  // Load real API data on dashboard initialization
+  useEffect(() => {
+    const loadInitialAssets = async () => {
+      try {
+        dispatch(setLoading(true));
+        const response = await assetsApi.getAssets();
+        // Handle new API response structure with items array and transform data
+        const rawAssets = response.items || response.data || [];
+        const transformedAssets = transformApiAssets(rawAssets);
+        dispatch(setAssets(transformedAssets));
+      } catch (error) {
+        console.error('Failed to load initial assets:', error);
+        // Keep existing mock data if API fails
+      } finally {
+        dispatch(setLoading(false));
+      }
+    };
+
+    loadInitialAssets();
+  }, [dispatch]);
 
   const handleViewModeChange = (mode) => {
     dispatch(setViewMode(mode));

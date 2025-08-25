@@ -264,6 +264,17 @@ const assetsSlice = createSlice({
 
     setIsUploading: (state, action) => {
       state.isUploading = action.payload;
+    },
+
+    // Set assets from API
+    setAssets: (state, action) => {
+      state.assets = action.payload;
+      state.filteredAssets = filterAssets(state);
+    },
+
+    // Set loading state
+    setLoading: (state, action) => {
+      state.isLoading = action.payload;
     }
   }
 });
@@ -329,7 +340,9 @@ export const {
   clearSelection,
   setViewMode,
   setUploadProgress,
-  setIsUploading
+  setIsUploading,
+  setAssets,
+  setLoading
 } = assetsSlice.actions;
 
 export default assetsSlice.reducer;
