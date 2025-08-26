@@ -48,7 +48,8 @@ const InteractiveViewer = () => {
       'system:ball',
       'cable_1:system_base_1',
       'system:bar',
-      'cable_2:system_base_2'
+      'cable_2:system_base_2',
+      'LimiAi_ZoomEnabled:true'
     ];
     function handleAppReady(event) {
       if (typeof event.data === 'string' && event.data.startsWith('app:ready1')) {

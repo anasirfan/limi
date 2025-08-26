@@ -334,7 +334,7 @@ export default function BackgroundShader({ backgroundConfig }) {
       for (let i = 0; i < cellCount; i++) {
         const x = (Math.sin(time + i) * 0.5 + 0.5) * width;
         const y = (Math.cos(time * 0.8 + i) * 0.5 + 0.5) * height;
-        const size = Math.sin(time + i) * intensity * 50 + 30;
+        const size = Math.max(5, Math.sin(time + i) * intensity * 50 + 30);
         
         const cellGradient = ctx.createRadialGradient(x, y, 0, x, y, size);
         cellGradient.addColorStop(0, colors[2] + '20');
@@ -360,7 +360,7 @@ export default function BackgroundShader({ backgroundConfig }) {
       for (let i = 0; i < particleCount; i++) {
         const x = (Math.sin(time * speed + i) * 0.5 + 0.5) * width;
         const y = (Math.cos(time * speed * 0.7 + i) * 0.5 + 0.5) * height;
-        const size = Math.sin(time + i) * intensity * 5 + 3;
+        const size = Math.max(0.5, Math.sin(time + i) * intensity * 5 + 3);
         
         ctx.beginPath();
         ctx.arc(x, y, size, 0, Math.PI * 2);
@@ -537,7 +537,7 @@ export default function BackgroundShader({ backgroundConfig }) {
         // Create organic droplet shape
         ctx.beginPath();
         for (let angle = 0; angle < Math.PI * 2; angle += 0.1) {
-          const radius = size + Math.sin(angle * 3 + phase) * 15;
+          const radius = Math.max(1, size + Math.sin(angle * 3 + phase) * 15);
           const px = x + Math.cos(angle) * radius;
           const py = y + Math.sin(angle) * radius;
           
@@ -672,7 +672,7 @@ export default function BackgroundShader({ backgroundConfig }) {
         const cloudPhase = time + i * 0.3;
         const x = centerX + Math.sin(cloudPhase) * (100 + i * 20);
         const y = centerY + Math.cos(cloudPhase) * (100 + i * 20);
-        const size = 40 + Math.sin(cloudPhase * 2) * 20;
+        const size = Math.max(10, 40 + Math.sin(cloudPhase * 2) * 20);
         
         const cloudGradient = ctx.createRadialGradient(x, y, 0, x, y, size);
         cloudGradient.addColorStop(0, colors[1] + '60');
@@ -757,7 +757,7 @@ export default function BackgroundShader({ backgroundConfig }) {
         const phase = time + i * 0.8;
         const x = (Math.sin(phase * 0.2) * 0.3 + 0.5) * width;
         const y = (Math.cos(phase * 0.15) * 0.3 + 0.5) * height;
-        const size = 80 + Math.sin(phase) * 40;
+        const size = Math.max(20, 80 + Math.sin(phase) * 40);
         const intensity = Math.sin(phase * 2) * 0.3 + 0.7;
         
         // Multiple glow layers for depth
@@ -879,13 +879,13 @@ export default function BackgroundShader({ backgroundConfig }) {
           const layerPhase = phase + layer * 0.2;
           const layerX = x + Math.sin(layerPhase) * 30;
           const layerY = y + Math.cos(layerPhase) * 20;
-          const size = 60 + layer * 20 + Math.sin(layerPhase * 2) * 15;
+          const size = Math.max(10, 60 + layer * 20 + Math.sin(layerPhase * 2) * 15);
           const opacity = (4 - layer) / 4 * 0.6;
           
           // Organic cloud shape
           ctx.beginPath();
           for (let angle = 0; angle < Math.PI * 2; angle += 0.2) {
-            const radius = size + Math.sin(angle * 3 + layerPhase) * 20;
+            const radius = Math.max(1, size + Math.sin(angle * 3 + layerPhase) * 20);
             const px = layerX + Math.cos(angle) * radius;
             const py = layerY + Math.sin(angle) * radius;
             
@@ -1016,6 +1016,72 @@ export default function BackgroundShader({ backgroundConfig }) {
           ctx.fillStyle = colors[0] + Math.floor(30 * glowIntensity).toString(16);
           ctx.fill();
         }
+      }
+    };
+
+    const createAuroraCrimsonGlow = (ctx, colors, time, width, height) => {
+      ctx.clearRect(0, 0, width, height);
+      
+      // Dark base
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(0, 0, width, height);
+      
+      // Crimson aurora ribbons
+      const ribbonCount = 6;
+      for (let i = 0; i < ribbonCount; i++) {
+        const phase = time + i * 0.8;
+        const baseY = height * (0.3 + i * 0.1);
+        
+        ctx.beginPath();
+        for (let x = 0; x <= width; x += 10) {
+          const waveHeight = Math.sin(x * 0.01 + phase) * 80 + Math.cos(x * 0.005 + phase * 0.7) * 40;
+          const y = baseY + waveHeight;
+          
+          if (x === 0) {
+            ctx.moveTo(x, y);
+          } else {
+            ctx.lineTo(x, y);
+          }
+        }
+        
+        // Create gradient for ribbon
+        const gradient = ctx.createLinearGradient(0, baseY - 100, 0, baseY + 100);
+        gradient.addColorStop(0, 'transparent');
+        gradient.addColorStop(0.5, colors[i % colors.length] + '80');
+        gradient.addColorStop(1, 'transparent');
+        
+        ctx.strokeStyle = gradient;
+        ctx.lineWidth = 15 + Math.sin(phase) * 5;
+        ctx.stroke();
+        
+        // Add glow effect
+        ctx.shadowColor = colors[i % colors.length];
+        ctx.shadowBlur = 20;
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+      }
+      
+      // Particle effects
+      const particleCount = 50;
+      for (let i = 0; i < particleCount; i++) {
+        const phase = time + i * 0.1;
+        const x = (Math.sin(phase * 0.5) * 0.4 + 0.5) * width;
+        const y = (Math.cos(phase * 0.3) * 0.4 + 0.5) * height;
+        const size = Math.max(0.5, Math.sin(phase * 2) * 3 + 2); // Ensure minimum size
+        const glowIntensity = Math.sin(phase) * 0.5 + 0.5;
+        
+        const distorted = applyMouseDistortion(ctx, x, y, time);
+        
+        ctx.beginPath();
+        ctx.arc(distorted.x, distorted.y, size, 0, Math.PI * 2);
+        ctx.fillStyle = colors[i % colors.length] + Math.floor(glowIntensity * 255).toString(16);
+        ctx.fill();
+        
+        // Outer glow
+        ctx.beginPath();
+        ctx.arc(distorted.x, distorted.y, Math.max(1, size * 2), 0, Math.PI * 2); // Ensure minimum glow size
+        ctx.fillStyle = colors[i % colors.length] + Math.floor(30 * glowIntensity).toString(16);
+        ctx.fill();
       }
     };
 

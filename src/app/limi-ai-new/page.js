@@ -478,6 +478,7 @@ export default function LimiAINew() {
   return (
     <div className="lenis-showcase">
       <ProgressBar scrollProgress={scrollProgress} />
+      <Header onBackgroundChange={handleBackgroundChange} />
       <HeroSection 
         backgroundShader={selectedBackground && <BackgroundShader backgroundConfig={selectedBackground} />}
       />
@@ -485,7 +486,7 @@ export default function LimiAINew() {
       <PinnedSection />
       <ScrollRevealsSection />
       <HorizontalScrollSection />
-      <InteractiveFeaturesSection />
+      {/* <InteractiveFeaturesSection /> */}
       {/* <JsonHeroSection /> */}
       <SpeedControlSections />
       <TextMorphingSection />
