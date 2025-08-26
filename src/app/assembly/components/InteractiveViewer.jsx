@@ -47,7 +47,7 @@ const InteractiveViewer = () => {
       "system:ball",
       "cable_1:system_base_2",
       "system:ball",
-      "cable_2:system_base_1",
+      "cable_2:system_base_2",
     ];
     function handleAppReady(event) {
       if (
