@@ -915,11 +915,13 @@ const ConfiguratorLayout = () => {
         // Check if we have only 1 pendant or multiple pendants
         if (config.lightAmount === 1) {
           // For single pendant, send a global pendant design message
-          sendMessageToPlayCanvas(`cable_0:${pendantAssignment.message}`);
+          const modelUrl = pendantAssignment.media?.model?.url || pendantAssignment.image?.url || pendantAssignment.message;
+          sendMessageToPlayCanvas(`cable_0:${modelUrl}`);
         } else {
           // For multiple pendants, send individual pendant messages
           pendantIds.forEach((id) => {
-            sendMessageToPlayCanvas(`cable_${id}:${pendantAssignment.message}`);
+            const modelUrl = pendantAssignment.media?.model?.url || pendantAssignment.image?.url || pendantAssignment.message;
+            sendMessageToPlayCanvas(`cable_${id}:${modelUrl}`);
           });
         }
       }, 10); // Slight delay to ensure state is updated first

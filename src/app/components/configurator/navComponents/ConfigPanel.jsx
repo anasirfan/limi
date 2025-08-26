@@ -2,7 +2,12 @@ import { motion } from "framer-motion";
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { useSelector, useDispatch } from "react-redux";
-import { pendantAssignments, barAssignments, ballAssignments, universalAssignments } from "../pendantSystemData";
+import {
+  pendantAssignments,
+  barAssignments,
+  ballAssignments,
+  universalAssignments,
+} from "../pendantSystemData";
 import {
   FaHeart,
   FaTimes,
@@ -67,15 +72,18 @@ export const ConfigPanel = ({
   const [localSelectedCableSize, setLocalSelectedCableSize] = useState(1);
 
   const syncWishlistWithAPI = async (wishlistArray) => {
-    const token = localStorage.getItem('limiToken');
-    await fetch('https://dev.api1.limitless-lighting.co.uk/admin/products/light-configs/wishlist', {
-      method: 'POST',
-      headers: {
-        'Authorization': `${token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ wishlist: wishlistArray }),
-    });
+    const token = localStorage.getItem("limiToken");
+    await fetch(
+      "https://dev.api1.limitless-lighting.co.uk/admin/products/light-configs/wishlist",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ wishlist: wishlistArray }),
+      }
+    );
   };
 
   // Sync localSelectedCableSize with props when relevant data changes
@@ -311,13 +319,14 @@ export const ConfigPanel = ({
           baseNumber: "19",
           image: "/images/configOptions/universal/19.png",
           message: "system_base_19",
-          },
+        },
         {
           id: "meteor",
           name: "Meteor",
           baseNumber: "20",
           image: "/images/configOptions/universal/20.png",
-          message: "system_base_20",},
+          message: "system_base_20",
+        },
         {
           id: "asteroid",
           name: "Asteroid",
@@ -503,42 +512,42 @@ export const ConfigPanel = ({
     const shadeOptions = {
       // Universal system shades
       // universal: {
-        // atom: [
-        //   { id: "shallowdome", name: "Shallow Dome", color: "#2B2D2F" },
-        //   { id: "deepdome", name: "Deep Dome", color: "#50C878" },
-        //   { id: "flatplate", name: "Flat Plate", color: "#87CEAB" },
-        // ],
-        // nebula: [
-        //   { id: "cone", name: "Cone", color: "#2B2D2F" },
-        //   { id: "cylinder", name: "Cylinder", color: "#50C878" },
-        // ],
-        // cosmos: [
-        //   { id: "sphere", name: "Sphere", color: "#2B2D2F" },
-        //   { id: "hemisphere", name: "Hemisphere", color: "#50C878" },
-        //   { id: "disc", name: "Disc", color: "#87CEAB" },
-        //   { id: "ring", name: "Ring", color: "#F2F0E6" },
-        // ],
-        // stellar: [
-        //   { id: "pyramid", name: "Pyramid", color: "#2B2D2F" },
-        //   { id: "cube", name: "Cube", color: "#50C878" },
-        //   { id: "prism", name: "Prism", color: "#87CEAB" },
-        // ],
-        // eclipse: [
-        //   { id: "oval", name: "Oval", color: "#2B2D2F" },
-        //   { id: "rectangle", name: "Rectangle", color: "#50C878" },
-        // ],
+      // atom: [
+      //   { id: "shallowdome", name: "Shallow Dome", color: "#2B2D2F" },
+      //   { id: "deepdome", name: "Deep Dome", color: "#50C878" },
+      //   { id: "flatplate", name: "Flat Plate", color: "#87CEAB" },
+      // ],
+      // nebula: [
+      //   { id: "cone", name: "Cone", color: "#2B2D2F" },
+      //   { id: "cylinder", name: "Cylinder", color: "#50C878" },
+      // ],
+      // cosmos: [
+      //   { id: "sphere", name: "Sphere", color: "#2B2D2F" },
+      //   { id: "hemisphere", name: "Hemisphere", color: "#50C878" },
+      //   { id: "disc", name: "Disc", color: "#87CEAB" },
+      //   { id: "ring", name: "Ring", color: "#F2F0E6" },
+      // ],
+      // stellar: [
+      //   { id: "pyramid", name: "Pyramid", color: "#2B2D2F" },
+      //   { id: "cube", name: "Cube", color: "#50C878" },
+      //   { id: "prism", name: "Prism", color: "#87CEAB" },
+      // ],
+      // eclipse: [
+      //   { id: "oval", name: "Oval", color: "#2B2D2F" },
+      //   { id: "rectangle", name: "Rectangle", color: "#50C878" },
+      // ],
       // },
       // Bar system shades
       // bar: {
-        // prism: [
-        //   { id: "standard", name: "Standard", color: "#2B2D2F" },
-        //   { id: "extended", name: "Extended", color: "#50C878" },
-        // ],
-        // helix: [
-        //   { id: "single", name: "Single", color: "#2B2D2F" },
-        //   { id: "double", name: "Double", color: "#50C878" },
-        //   { id: "triple", name: "Triple", color: "#87CEAB" },
-        // ],
+      // prism: [
+      //   { id: "standard", name: "Standard", color: "#2B2D2F" },
+      //   { id: "extended", name: "Extended", color: "#50C878" },
+      // ],
+      // helix: [
+      //   { id: "single", name: "Single", color: "#2B2D2F" },
+      //   { id: "double", name: "Double", color: "#50C878" },
+      //   { id: "triple", name: "Triple", color: "#87CEAB" },
+      // ],
       // },
     };
 
@@ -630,7 +639,7 @@ export const ConfigPanel = ({
       config.items = pendantAssignments.map((pendant) => ({
         id: pendant.design,
         name: pendant.name,
-        image: pendant.image,
+        image: pendant.media.image.url,
         message: pendant.message,
         baseNumber: pendant.baseNumber,
       }));
@@ -701,7 +710,7 @@ export const ConfigPanel = ({
           return {
             id: base.design,
             name: base.name,
-            image: base.image,
+            image: base.media.image.url,
             baseNumber: base.baseNumber,
             shades: shades || null,
           };
@@ -948,9 +957,9 @@ export const ConfigPanel = ({
             ) : (
               <>
                 <div className="flex-1">
-                <h3 className="text-xs sm:text-sm font-medium text-white font-['Amenti'] truncate">
-  {panelConfig.title}
-</h3>
+                  <h3 className="text-xs sm:text-sm font-medium text-white font-['Amenti'] truncate">
+                    {panelConfig.title}
+                  </h3>
                 </div>
                 {panelConfig.showCloseButton && (
                   <button
@@ -1027,44 +1036,53 @@ export const ConfigPanel = ({
                       }`}
                     >
                       {/* Wishlist Icon Overlay */}
-                      {item.id !== "pendant" && item.id !== "system" && item.id !== "bar" && item.id !== "ball" && item.id !== "universal" && (
-                        <button
-                          type="button"
-                          className="absolute top-1 right-1 z-10 bg-white/80 rounded-full p-1 hover:bg-rose-200 transition-all"
-                          onClick={async (e) => {
-                            e.stopPropagation();
-                            let newWishlist;
-                          
-                            if (favorites.some((fav) => fav.id === item.id)) {
-                              // Remove from Redux state
-                              dispatch(removeFromFavorites(item.id));
-                              // Remove from wishlist array
-                              newWishlist = favorites.filter(fav => fav.id !== item.id).map(fav => fav.id);
-                            } else {
-                              // Add to Redux state
-                              dispatch(addToFavorites({ id: item.id }));
-                              // Add to wishlist array
-                              newWishlist = [...favorites.map(fav => fav.id), item.id];
-                            }
-                          
-                            // Sync with backend
-                            await syncWishlistWithAPI(newWishlist);
-                          }}
-                          title={
-                            favorites.some((fav) => fav.id === item.id)
-                              ? "Remove from Wishlist"
-                              : "Add to Wishlist"
-                          }
-                        >
-                          <FaHeart
-                            className={
+                      {item.id !== "pendant" &&
+                        item.id !== "system" &&
+                        item.id !== "bar" &&
+                        item.id !== "ball" &&
+                        item.id !== "universal" && (
+                          <button
+                            type="button"
+                            className="absolute top-1 right-1 z-10 bg-white/80 rounded-full p-1 hover:bg-rose-200 transition-all"
+                            onClick={async (e) => {
+                              e.stopPropagation();
+                              let newWishlist;
+
+                              if (favorites.some((fav) => fav.id === item.id)) {
+                                // Remove from Redux state
+                                dispatch(removeFromFavorites(item.id));
+                                // Remove from wishlist array
+                                newWishlist = favorites
+                                  .filter((fav) => fav.id !== item.id)
+                                  .map((fav) => fav.id);
+                              } else {
+                                // Add to Redux state
+                                dispatch(addToFavorites({ id: item.id }));
+                                // Add to wishlist array
+                                newWishlist = [
+                                  ...favorites.map((fav) => fav.id),
+                                  item.id,
+                                ];
+                              }
+
+                              // Sync with backend
+                              await syncWishlistWithAPI(newWishlist);
+                            }}
+                            title={
                               favorites.some((fav) => fav.id === item.id)
-                                ? "text-rose-500"
-                                : "text-gray-400"
+                                ? "Remove from Wishlist"
+                                : "Add to Wishlist"
                             }
-                          />
-                        </button>
-                      )}
+                          >
+                            <FaHeart
+                              className={
+                                favorites.some((fav) => fav.id === item.id)
+                                  ? "text-rose-500"
+                                  : "text-gray-400"
+                              }
+                            />
+                          </button>
+                        )}
                       {item.image ? (
                         <Image
                           src={item.image}

@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { pendantAssignments, barAssignments, universalAssignments } from "../pendantSystemData";
+import { systemAssignments } from "../pendantSystemData";
 
 export const usePendantSelection = (
   pendants,
@@ -18,18 +18,11 @@ export const usePendantSelection = (
   // Helper function to map system design names/types to their image path
   const getImageSrc = (designName) => {
     if (!designName || typeof designName !== "string") return "";
-  
-    // Search all assignment arrays in order of priority
-    const sources = [pendantAssignments, barAssignments, universalAssignments];
-    for (const source of sources) {
-      const assignment = source.find(a => a.design === designName);
-      if (assignment) return `${assignment.image}`;
-    }
-  
-    // If not found, return empty string
-    return "";
+
+    // Search systemAssignments for a matching design and return its image
+    const assignment = systemAssignments.find(a => a.design === designName);
+    return assignment ? assignment.media.image.url : "";
   };
-  console.log("getImageSrc", getImageSrc("zenith"));
 
   // Toggle pendant selection
   const togglePendantSelection = (pendantId) => {
