@@ -42,12 +42,12 @@ const InteractiveViewer = () => {
       "light_type:ceiling",
       "light_amount:3",
       "base_type:round",
-      "system:bar",
-      "cable_0:system_base_2",
       "system:ball",
-      "cable_1:system_base_1",
-      "system:bar",
-      "cable_2:system_base_2",
+      "cable_0:system_base_1",
+      "system:ball",
+      "cable_1:system_base_2",
+      "system:ball",
+      "cable_2:system_base_1",
     ];
     function handleAppReady(event) {
       if (
