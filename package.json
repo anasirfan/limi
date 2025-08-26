@@ -12,6 +12,7 @@
   "dependencies": {
     "@barba/core": "^2.9.7",
     "@heroicons/react": "^2.2.0",
+    "@paper-design/shaders": "^0.0.46",
     "@react-spring/web": "^9.7.3",
     "@react-three/drei": "^9.97.0",
     "@react-three/fiber": "^9.0.0-alpha.2",
