@@ -66,16 +66,16 @@ const SystemTypeSelection = ({
         {systemTypes.map((type) => (
           <div
             key={type.key}
-            className={`p-3 rounded-lg border-2 cursor-pointer transition-all duration-300 ${
+            className={`rounded-lg border-2  cursor-pointer transition-all duration-300 ${
               newPendantData.systemType === type.key
                 ? "border-[#87CEAB] bg-gradient-to-br from-[#87CEAB]/10 to-[#54bb74]/10"
                 : "border-[#3a3a3a] bg-gradient-to-br from-[#1e1e1e] to-[#252525] hover:border-[#87CEAB]/50"
             }`}
             onClick={() => handleSystemTypeSelect(type.key)}
           >
-            <div className="text-center">
+            <div className="flex p-3 justify-start ">
               <div
-                className={`w-8 h-8 mx-auto mb-2 rounded-lg flex items-center justify-center ${
+                className={`w-8 h-8 rounded-lg flex items-center justify-center ${
                   newPendantData.systemType === type.key
                     ? "bg-[#87CEAB]/20"
                     : "bg-[#333333]"
@@ -91,7 +91,8 @@ const SystemTypeSelection = ({
                   {type.icon}
                 </div>
               </div>
-              <h5
+          <div className="ml-3">
+          <h5
                 className={`font-medium text-sm ${
                   newPendantData.systemType === type.key
                     ? "text-[#87CEAB]"
@@ -101,6 +102,7 @@ const SystemTypeSelection = ({
                 {type.label}
               </h5>
               <p className="text-gray-400 text-xs">{type.description}</p>
+          </div>
             </div>
           </div>
         ))}
