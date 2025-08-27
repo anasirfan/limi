@@ -59,15 +59,19 @@ export default function PendantSystemManager({
 
   // Handle delete functionality
   const handleDeleteItem = async (item) => {
-    if (window.confirm(`Are you sure you want to delete "${item.name}"? This action cannot be undone.`)) {
+    if (
+      window.confirm(
+        `Are you sure you want to delete "${item.name}"? This action cannot be undone.`
+      )
+    ) {
       try {
         setDeletingItemId(item._id);
         await deletePendantSystem(item._id);
         setDeletingItemId(null);
       } catch (error) {
-        console.error('Error deleting item:', error);
+        console.error("Error deleting item:", error);
         setDeletingItemId(null);
-        alert('Failed to delete item. Please try again.');
+        alert("Failed to delete item. Please try again.");
       }
     }
   };
@@ -158,7 +162,8 @@ export default function PendantSystemManager({
       }
 
       // Check if model was changed
-      const currentModelUrl = editingItem.model || editingItem.media?.model?.url;
+      const currentModelUrl =
+        editingItem.model || editingItem.media?.model?.url;
       if (modelFile || modelPreview !== currentModelUrl) {
         // Convert model file to binary if available
         if (modelFile) {
@@ -167,7 +172,7 @@ export default function PendantSystemManager({
             const arrayBuffer = e.target.result;
             const uint8Array = new Uint8Array(arrayBuffer);
             changedFields.modelBinary = uint8Array;
-            
+
             // Update with ALL changed fields including model binary
             if (Object.keys(changedFields).length > 0) {
               updatePendantSystem(editingItem._id, changedFields);
@@ -193,12 +198,13 @@ export default function PendantSystemManager({
     }
   };
   return (
-    <div className="min-h-screen bg-gradient-to-br rounded from-[#0a0a0a] via-[#1a1a1a] to-[#0f0f0f] p-6">
+    <div className="min-h-screen bg-[#202020] rounded-xl  p-6">
       {/* Modern Header */}
-      <div className="mb-8">
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-          <div className="space-y-3">
-            <div className="flex items-center space-x-3">
+      <div className="mb-8 w-full">
+        <div className="flex w-full flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+          <div className=" w-full">
+            <div className="flex justify-between items-center space-x-3 w-full">
+              <div className="flex items-center justify-center gap-4">
               <div className="w-12 h-12 bg-gradient-to-br from-[#54bb74] to-[#87CEAB] rounded-2xl flex items-center justify-center shadow-lg">
                 <FaLightbulb className="text-2xl text-white" />
               </div>
@@ -210,12 +216,26 @@ export default function PendantSystemManager({
                   Design and manage your lighting ecosystem
                 </p>
               </div>
+              </div>
+              {/* Action Button */}
+              <div className="flex flex-col space-y-3">
+                <button
+                  onClick={handleAddNew}
+                  className="group relative px-8 py-4 bg-gradient-to-r from-[#54bb74] to-[#87CEAB] rounded-2xl font-semibold text-white transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-[#54bb74]/25 overflow-hidden"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#87CEAB] to-[#54bb74] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="relative flex items-center space-x-3">
+                    <FaPlus className="text-xl" />
+                    <span className="text-lg">Create New</span>
+                  </div>
+                </button>
+              </div>
             </div>
 
             {/* Stats Cards */}
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mt-6">
               {/* Total Items */}
-              <div className="bg-gradient-to-br from-[#1a1a1a] to-[#2a2a2a] rounded-2xl p-4 border border-[#54bb74]/20 backdrop-blur-sm">
+              <div className="bg-[#303030] rounded-2xl p-4 border border-[#54bb74]/20 backdrop-blur-sm">
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 bg-[#54bb74]/20 rounded-xl flex items-center justify-center">
                     <FaCube className="text-[#54bb74]" />
@@ -230,14 +250,17 @@ export default function PendantSystemManager({
               </div>
 
               {/* Individual Pendants */}
-              <div className="bg-gradient-to-br from-[#1a1a1a] to-[#2a2a2a] rounded-2xl p-4 border border-[#50C878]/20 backdrop-blur-sm">
+              <div className="bg-[#303030] rounded-2xl p-4 border border-[#50C878]/20 backdrop-blur-sm">
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 bg-[#50C878]/20 rounded-xl flex items-center justify-center">
                     <FaLightbulb className="text-[#50C878]" />
                   </div>
                   <div>
                     <p className="text-2xl font-bold text-white">
-                      {pendantSystemData.filter((item) => !item.isSystem).length}
+                      {
+                        pendantSystemData.filter((item) => !item.isSystem)
+                          .length
+                      }
                     </p>
                     <p className="text-sm text-gray-400">Pendants</p>
                   </div>
@@ -245,7 +268,7 @@ export default function PendantSystemManager({
               </div>
 
               {/* Total Systems */}
-              <div className="bg-gradient-to-br from-[#1a1a1a] to-[#2a2a2a] rounded-2xl p-4 border border-[#87CEAB]/20 backdrop-blur-sm">
+              <div className="bg-[#303030] rounded-2xl p-4 border border-[#87CEAB]/20 backdrop-blur-sm">
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 bg-[#87CEAB]/20 rounded-xl flex items-center justify-center">
                     <FaLayerGroup className="text-[#87CEAB]" />
@@ -260,16 +283,30 @@ export default function PendantSystemManager({
               </div>
 
               {/* Bar Systems */}
-              <div className="bg-gradient-to-br from-[#1a1a1a] to-[#2a2a2a] rounded-2xl p-4 border border-[#87CEAB]/20 backdrop-blur-sm">
+              <div className="bg-[#303030] rounded-2xl p-4 border border-[#87CEAB]/20 backdrop-blur-sm">
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 bg-[#87CEAB]/20 rounded-xl flex items-center justify-center">
-                    <svg className="w-5 h-5 text-[#87CEAB]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                    <svg
+                      className="w-5 h-5 text-[#87CEAB]"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 6h16M4 12h16M4 18h16"
+                      />
                     </svg>
                   </div>
                   <div>
                     <p className="text-2xl font-bold text-white">
-                      {pendantSystemData.filter((item) => item.systemType === "bar").length}
+                      {
+                        pendantSystemData.filter(
+                          (item) => item.systemType === "bar"
+                        ).length
+                      }
                     </p>
                     <p className="text-sm text-gray-400">Bar Systems</p>
                   </div>
@@ -277,16 +314,30 @@ export default function PendantSystemManager({
               </div>
 
               {/* Universal Systems */}
-              <div className="bg-gradient-to-br from-[#1a1a1a] to-[#2a2a2a] rounded-2xl p-4 border border-[#87CEAB]/20 backdrop-blur-sm">
+              <div className="bg-[#303030] rounded-2xl p-4 border border-[#87CEAB]/20 backdrop-blur-sm">
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 bg-[#87CEAB]/20 rounded-xl flex items-center justify-center">
-                    <svg className="w-5 h-5 text-[#87CEAB]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <svg
+                      className="w-5 h-5 text-[#87CEAB]"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
                     </svg>
                   </div>
                   <div>
                     <p className="text-2xl font-bold text-white">
-                      {pendantSystemData.filter((item) => item.systemType === "universal").length}
+                      {
+                        pendantSystemData.filter(
+                          (item) => item.systemType === "universal"
+                        ).length
+                      }
                     </p>
                     <p className="text-sm text-gray-400">Universal</p>
                   </div>
@@ -294,16 +345,30 @@ export default function PendantSystemManager({
               </div>
 
               {/* Ball Systems */}
-              <div className="bg-gradient-to-br from-[#1a1a1a] to-[#2a2a2a] rounded-2xl p-4 border border-[#87CEAB]/20 backdrop-blur-sm">
+              <div className="bg-[#303030] rounded-2xl p-4 border border-[#87CEAB]/20 backdrop-blur-sm">
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 bg-[#87CEAB]/20 rounded-xl flex items-center justify-center">
-                    <svg className="w-5 h-5 text-[#87CEAB]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <svg
+                      className="w-5 h-5 text-[#87CEAB]"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
                     </svg>
                   </div>
                   <div>
                     <p className="text-2xl font-bold text-white">
-                      {pendantSystemData.filter((item) => item.systemType === "ball").length}
+                      {
+                        pendantSystemData.filter(
+                          (item) => item.systemType === "ball"
+                        ).length
+                      }
                     </p>
                     <p className="text-sm text-gray-400">Ball Systems</p>
                   </div>
@@ -311,42 +376,23 @@ export default function PendantSystemManager({
               </div>
 
               {/* Items with 3D Models */}
-              <div className="bg-gradient-to-br from-[#1a1a1a] to-[#2a2a2a] rounded-2xl p-4 border border-[#FFC107]/20 backdrop-blur-sm">
+              <div className="bg-[#303030] rounded-2xl p-4 border border-[#FFC107]/20 backdrop-blur-sm">
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 bg-[#FFC107]/20 rounded-xl flex items-center justify-center">
                     <FaCube className="text-[#FFC107]" />
                   </div>
                   <div>
                     <p className="text-2xl font-bold text-white">
-                      {pendantSystemData.filter((item) => item.model || item.media?.model?.url).length}
+                      {
+                        pendantSystemData.filter(
+                          (item) => item.model || item.media?.model?.url
+                        ).length
+                      }
                     </p>
                     <p className="text-sm text-gray-400">With Models</p>
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-
-          {/* Action Button */}
-          <div className="flex flex-col space-y-3">
-            <button
-              onClick={handleAddNew}
-              className="group relative px-8 py-4 bg-gradient-to-r from-[#54bb74] to-[#87CEAB] rounded-2xl font-semibold text-white transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-[#54bb74]/25 overflow-hidden"
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-[#87CEAB] to-[#54bb74] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <div className="relative flex items-center space-x-3">
-                <FaPlus className="text-xl" />
-                <span className="text-lg">Create New</span>
-              </div>
-            </button>
-
-            <div className="flex space-x-2">
-              <button className="px-4 py-2 bg-[#1a1a1a] border border-[#3a3a3a] rounded-xl text-gray-400 hover:text-white hover:border-[#54bb74]/50 transition-all duration-300">
-                <FaEdit className="text-sm" />
-              </button>
-              <button className="px-4 py-2 bg-[#1a1a1a] border border-[#3a3a3a] rounded-xl text-gray-400 hover:text-white hover:border-[#54bb74]/50 transition-all duration-300">
-                <FaLayerGroup className="text-sm" />
-              </button>
             </div>
           </div>
         </div>
@@ -1013,7 +1059,8 @@ export default function PendantSystemManager({
                             reader.onload = (e) => {
                               const base64String = e.target.result;
                               setImagePreview(base64String);
-                              const binaryIcon = base64ToUint8Array(base64String);
+                              const binaryIcon =
+                                base64ToUint8Array(base64String);
                               setNewPendantData({
                                 ...newPendantData,
                                 image: base64String, // Keep base64 for preview
@@ -1207,74 +1254,118 @@ export default function PendantSystemManager({
                         </div>
                       </div>
 
-                      <div className="space-y-4">
-                        {pendantProducts.map((item, index) => (
-                          <div
-                            key={item._id || index}
-                            className="group relative bg-gradient-to-br from-[#1a1a1a] to-[#2a2a2a] rounded-2xl p-6 border border-[#50C878]/20 hover:border-[#50C878]/40 transition-all duration-300 hover:shadow-2xl hover:shadow-[#50C878]/10 backdrop-blur-sm"
-                          >
-                            <div className="absolute inset-0 bg-gradient-to-br from-[#50C878]/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-                            <div className="relative flex items-center space-x-6">
-                              {/* Product Image */}
-                              <div className="w-16 h-16 bg-gradient-to-br from-[#50C878]/20 to-[#50C878]/10 rounded-2xl flex items-center justify-center border border-[#50C878]/20 group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
-                                {item.image || item.media?.image?.url ? (
-                                  <img
-                                    src={item.image || item.media?.image?.url}
-                                    alt={item.name}
-                                    className="w-12 h-12 object-cover rounded-xl"
-                                  />
-                                ) : (
-                                  <FaLightbulb className="text-2xl text-[#50C878]" />
-                                )}
-                              </div>
-
-                              {/* Product Info */}
-                              <div className="flex-1 space-y-2">
-                                <div className="flex items-center space-x-3">
-                                  <h4 className="text-xl font-bold text-white group-hover:text-[#50C878] transition-colors duration-300">
-                                    {item.name}
-                                  </h4>
-                                  <span className="px-3 py-1 bg-[#50C878]/20 text-[#50C878] rounded-full text-xs font-medium border border-[#50C878]/30">
-                                    Individual Pendant
-                                  </span>
-                                </div>
-                                
-                                <p className="text-gray-400 text-sm">
-                                  {item.message}
-                                </p>
-
-                                {item.design && (
-                                  <p className="text-gray-500 text-xs">
-                                    Design: {item.design}
-                                  </p>
-                                )}
-                              </div>
-
-                              {/* Action Buttons */}
-                              <div className="flex space-x-3 flex-shrink-0">
-                                <button
-                                  onClick={() => handleEditItem(item)}
-                                  className="px-6 py-3 bg-gradient-to-r from-[#50C878] to-[#87CEAB] text-white rounded-xl font-medium transition-all duration-300 hover:shadow-lg hover:shadow-[#50C878]/25 transform hover:scale-105 flex items-center space-x-2"
-                                >
-                                  <FaEdit className="text-sm" />
-                                  <span>Edit</span>
-                                </button>
-                                <button
-                                  onClick={() => handleDeleteItem(item)}
-                                  disabled={deletingItemId === item._id}
-                                  className="px-4 py-3 bg-gradient-to-r from-red-500/20 to-red-600/20 text-red-400 rounded-xl font-medium transition-all duration-300 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-600 hover:text-white transform hover:scale-105 border border-red-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                  {deletingItemId === item._id ? (
-                                    <FaSpinner className="animate-spin text-sm" />
-                                  ) : (
-                                    <FaTrash className="text-sm" />
-                                  )}
-                                </button>
-                              </div>
+                      <div className="bg-gradient-to-br from-[#1a1a1a] to-[#2a2a2a] rounded-2xl border border-[#50C878]/20 overflow-hidden">
+                        {/* Table Header */}
+                        <div className="bg-gradient-to-r from-[#50C878]/10 to-[#50C878]/5 px-6 py-4 border-b border-[#50C878]/20">
+                          <div className="grid grid-cols-12 gap-4 items-center">
+                            <div className="col-span-1 text-[#50C878] font-semibold text-sm">
+                              Image
+                            </div>
+                            <div className="col-span-3 text-[#50C878] font-semibold text-sm">
+                              Name
+                            </div>
+                            <div className="col-span-4 text-[#50C878] font-semibold text-sm">
+                              Message
+                            </div>
+                            <div className="col-span-2 text-[#50C878] font-semibold text-sm">
+                              Models
+                            </div>
+                            <div className="col-span-2 text-[#50C878] font-semibold text-sm text-right">
+                              Actions
                             </div>
                           </div>
-                        ))}
+                        </div>
+
+                        {/* Table Body */}
+                        <div className="divide-y divide-[#50C878]/10">
+                          {pendantProducts.map((item, index) => (
+                            <div
+                              key={item._id || index}
+                              className="group px-6 py-4 hover:bg-gradient-to-r hover:from-[#50C878]/5 hover:to-transparent transition-all duration-300"
+                            >
+                              <div className="grid grid-cols-12 gap-4 items-center">
+                                {/* Image */}
+                                <div className="col-span-1">
+                                  <div className="w-12 h-12 bg-gradient-to-br from-[#50C878]/20 to-[#50C878]/10 rounded-xl flex items-center justify-center border border-[#50C878]/20 group-hover:scale-110 transition-transform duration-300">
+                                    {item.image || item.media?.image?.url ? (
+                                      <img
+                                        src={
+                                          item.image || item.media?.image?.url
+                                        }
+                                        alt={item.name}
+                                        className="w-10 h-10 object-cover rounded-lg"
+                                      />
+                                    ) : (
+                                      <FaLightbulb className="text-lg text-[#50C878]" />
+                                    )}
+                                  </div>
+                                </div>
+
+                                {/* Name */}
+                                <div className="col-span-3">
+                                  <h4 className="text-lg font-bold text-white group-hover:text-[#50C878] transition-colors duration-300">
+                                    {item.name}
+                                  </h4>
+                                </div>
+
+                                {/* Description */}
+                                <div className="col-span-4">
+                                  <p className="text-gray-400 text-sm">
+                                    {item.message}
+                                  </p>
+                                </div>
+
+                                {/* Details */}
+                                <div className="col-span-2">
+                                  <div className="space-y-1">
+                                    {item.media?.model ? (
+                                      <div className="flex items-center space-x-2 mt-1">
+                                        <div className="w-6 h-6 bg-[#FFC107]/20 rounded-lg flex items-center justify-center">
+                                          <FaCube className="text-[#FFC107] text-xs" />
+                                        </div>
+                                        <span className="text-gray-500 text-xs">
+                                          3D Model Available
+                                        </span>
+                                      </div>
+                                    ) : (
+                                      <div className="flex items-center space-x-2 mt-1">
+                                        <div className="w-6 h-6 bg-gray-500/20 rounded-lg flex items-center justify-center">
+                                          <svg className="w-3 h-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L5.636 5.636" />
+                                          </svg>
+                                        </div>
+                                        <span className="text-gray-500 text-xs">
+                                          No Model
+                                        </span>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+
+                                {/* Actions */}
+                                <div className="col-span-2 flex justify-end space-x-2">
+                                  <button
+                                    onClick={() => handleEditItem(item)}
+                                    className="px-4 py-2 bg-gradient-to-r from-[#50C878] to-[#87CEAB] text-white rounded-lg font-medium transition-all duration-300 hover:shadow-lg hover:shadow-[#50C878]/25 transform hover:scale-105 flex items-center space-x-1"
+                                  >
+                                    <FaEdit className="text-xs" />
+                                  </button>
+                                  <button
+                                    onClick={() => handleDeleteItem(item)}
+                                    disabled={deletingItemId === item._id}
+                                    className="px-3 py-2 bg-gradient-to-r from-red-500/20 to-red-600/20 text-red-400 rounded-lg font-medium transition-all duration-300 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-600 hover:text-white transform hover:scale-105 border border-red-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                                  >
+                                    {deletingItemId === item._id ? (
+                                      <FaSpinner className="animate-spin text-xs" />
+                                    ) : (
+                                      <FaTrash className="text-xs" />
+                                    )}
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   )
@@ -1336,70 +1427,120 @@ export default function PendantSystemManager({
                             </span>
                           </div>
 
-                          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            {systemsByType.bar.map((item, index) => (
-                              <div
-                                key={item._id || index}
-                                className="group relative bg-gradient-to-br from-[#1a1a1a] to-[#2a2a2a] rounded-3xl p-6 border border-[#87CEAB]/20 hover:border-[#87CEAB]/40 transition-all duration-300 hover:shadow-2xl hover:shadow-[#87CEAB]/10"
-                              >
-                                <div className="absolute inset-0 bg-gradient-to-br from-[#87CEAB]/5 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-                                <div className="relative flex items-center space-x-4">
-                                  <div className="w-16 h-16 bg-gradient-to-br from-[#87CEAB]/20 to-[#87CEAB]/10 rounded-2xl flex items-center justify-center border border-[#87CEAB]/20 group-hover:scale-110 transition-transform duration-300">
-                                    {item.image || item.media?.image?.url ? (
-                                      <img
-                                        src={
-                                          item.image || item.media?.image?.url
-                                        }
-                                        alt={item.name}
-                                        className="w-12 h-12 object-cover rounded-xl"
-                                      />
-                                    ) : (
-                                      <FaLayerGroup className="text-2xl text-[#87CEAB]" />
-                                    )}
-                                  </div>
-
-                                  <div className="flex-1">
-                                    <h5 className="text-lg font-bold text-white group-hover:text-[#87CEAB] transition-colors duration-300">
-                                      {item.name}
-                                    </h5>
-                                    <p className="text-gray-400 text-sm mb-2">
-                                      {item.message}
-                                    </p>
-                                    <div className="flex items-center space-x-3">
-                                      <span className="px-2 py-1 bg-[#87CEAB]/20 text-[#87CEAB] rounded-full text-xs font-medium border border-[#87CEAB]/30">
-                                        Bar System
-                                      </span>
-                                      {item.design && (
-                                        <span className="text-gray-500 text-xs">
-                                          Design: {item.design}
-                                        </span>
-                                      )}
-                                    </div>
-                                  </div>
-
-                                  <div className="flex space-x-2">
-                                    <button
-                                      onClick={() => handleEditItem(item)}
-                                      className="px-4 py-2 bg-gradient-to-r from-[#87CEAB] to-[#50C878] text-white rounded-xl font-medium transition-all duration-300 hover:shadow-lg hover:shadow-[#87CEAB]/25 transform hover:scale-105"
-                                    >
-                                      <FaEdit className="text-sm" />
-                                    </button>
-                                    <button
-                                      onClick={() => handleDeleteItem(item)}
-                                      disabled={deletingItemId === item._id}
-                                      className="px-4 py-2 bg-gradient-to-r from-red-500/20 to-red-600/20 text-red-400 rounded-xl font-medium transition-all duration-300 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-600 hover:text-white transform hover:scale-105 border border-red-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                      {deletingItemId === item._id ? (
-                                        <FaSpinner className="animate-spin text-sm" />
-                                      ) : (
-                                        <FaTrash className="text-sm" />
-                                      )}
-                                    </button>
-                                  </div>
+                          <div className="bg-gradient-to-br from-[#1a1a1a] to-[#2a2a2a] rounded-2xl border border-[#87CEAB]/20 overflow-hidden">
+                            {/* Table Header */}
+                            <div className="bg-gradient-to-r from-[#87CEAB]/10 to-[#87CEAB]/5 px-6 py-4 border-b border-[#87CEAB]/20">
+                              <div className="grid grid-cols-12 gap-4 items-center">
+                                <div className="col-span-1 text-[#87CEAB] font-semibold text-sm">
+                                  Image
+                                </div>
+                                <div className="col-span-3 text-[#87CEAB] font-semibold text-sm">
+                                  Name
+                                </div>
+                                <div className="col-span-4 text-[#87CEAB] font-semibold text-sm">
+                                  Message
+                                </div>
+                                <div className="col-span-2 text-[#87CEAB] font-semibold text-sm">
+                                  Models
+                                </div>
+                                <div className="col-span-2 text-[#87CEAB] font-semibold text-sm text-right">
+                                  Actions
                                 </div>
                               </div>
-                            ))}
+                            </div>
+
+                            {/* Table Body */}
+                            <div className="divide-y divide-[#87CEAB]/10">
+                              {systemsByType.bar.map((item, index) => (
+                                <div
+                                  key={item._id || index}
+                                  className="group px-6 py-4 hover:bg-gradient-to-r hover:from-[#87CEAB]/5 hover:to-transparent transition-all duration-300"
+                                >
+                                  <div className="grid grid-cols-12 gap-4 items-center">
+                                    {/* Image */}
+                                    <div className="col-span-1">
+                                      <div className="w-12 h-12 bg-gradient-to-br from-[#87CEAB]/20 to-[#87CEAB]/10 rounded-xl flex items-center justify-center border border-[#87CEAB]/20 group-hover:scale-110 transition-transform duration-300">
+                                        {item.image ||
+                                        item.media?.image?.url ? (
+                                          <img
+                                            src={
+                                              item.image ||
+                                              item.media?.image?.url
+                                            }
+                                            alt={item.name}
+                                            className="w-10 h-10 object-cover rounded-lg"
+                                          />
+                                        ) : (
+                                          <FaLayerGroup className="text-lg text-[#87CEAB]" />
+                                        )}
+                                      </div>
+                                    </div>
+
+                                    {/* Name */}
+                                    <div className="col-span-3">
+                                      <h4 className="text-lg font-bold text-white group-hover:text-[#87CEAB] transition-colors duration-300">
+                                        {item.name}
+                                      </h4>
+                                    </div>
+
+                                    {/* Description */}
+                                    <div className="col-span-4">
+                                      <p className="text-gray-400 text-sm">
+                                        {item.message}
+                                      </p>
+                                    </div>
+
+                                    {/* Details */}
+                                    <div className="col-span-2">
+                                      <div className="space-y-1">
+                                        {item.media?.model ? (
+                                          <div className="flex items-center space-x-2 mt-1">
+                                            <div className="w-6 h-6 bg-[#FFC107]/20 rounded-lg flex items-center justify-center">
+                                              <FaCube className="text-[#FFC107] text-xs" />
+                                            </div>
+                                            <span className="text-gray-500 text-xs">
+                                              3D Model Available
+                                            </span>
+                                          </div>
+                                        ) : (
+                                          <div className="flex items-center space-x-2 mt-1">
+                                            <div className="w-6 h-6 bg-gray-500/20 rounded-lg flex items-center justify-center">
+                                              <svg className="w-3 h-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L5.636 5.636" />
+                                              </svg>
+                                            </div>
+                                            <span className="text-gray-500 text-xs">
+                                              No Model
+                                            </span>
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+
+                                    {/* Actions */}
+                                    <div className="col-span-2 flex justify-end space-x-2">
+                                      <button
+                                        onClick={() => handleEditItem(item)}
+                                        className="px-4 py-2 bg-gradient-to-r from-[#87CEAB] to-[#50C878] text-white rounded-lg font-medium transition-all duration-300 hover:shadow-lg hover:shadow-[#87CEAB]/25 transform hover:scale-105 flex items-center space-x-1"
+                                      >
+                                        <FaEdit className="text-xs" />
+                                      </button>
+                                      <button
+                                        onClick={() => handleDeleteItem(item)}
+                                        disabled={deletingItemId === item._id}
+                                        className="px-3 py-2 bg-gradient-to-r from-red-500/20 to-red-600/20 text-red-400 rounded-lg font-medium transition-all duration-300 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-600 hover:text-white transform hover:scale-105 border border-red-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                                      >
+                                        {deletingItemId === item._id ? (
+                                          <FaSpinner className="animate-spin text-xs" />
+                                        ) : (
+                                          <FaTrash className="text-xs" />
+                                        )}
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
                           </div>
                         </div>
                       )}
@@ -1418,70 +1559,120 @@ export default function PendantSystemManager({
                               {systemsByType.ball.length} systems
                             </span>
                           </div>
-                          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            {systemsByType.ball.map((item, index) => (
-                              <div
-                                key={item._id || index}
-                                className="group relative bg-gradient-to-br from-[#1a1a1a] to-[#2a2a2a] rounded-3xl p-6 border border-[#87CEAB]/20 hover:border-[#87CEAB]/40 transition-all duration-300 hover:shadow-2xl hover:shadow-[#87CEAB]/10"
-                              >
-                                <div className="absolute inset-0 bg-gradient-to-br from-[#87CEAB]/5 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-                                <div className="relative flex items-center space-x-4">
-                                  <div className="w-16 h-16 bg-gradient-to-br from-[#87CEAB]/20 to-[#87CEAB]/10 rounded-2xl flex items-center justify-center border border-[#87CEAB]/20 group-hover:scale-110 transition-transform duration-300">
-                                    {item.image || item.media?.image?.url ? (
-                                      <img
-                                        src={
-                                          item.image || item.media?.image?.url
-                                        }
-                                        alt={item.name}
-                                        className="w-12 h-12 object-cover rounded-xl"
-                                      />
-                                    ) : (
-                                      <FaLayerGroup className="text-2xl text-[#87CEAB]" />
-                                    )}
-                                  </div>
-
-                                  <div className="flex-1">
-                                    <h5 className="text-lg font-bold text-white group-hover:text-[#87CEAB] transition-colors duration-300">
-                                      {item.name}
-                                    </h5>
-                                    <p className="text-gray-400 text-sm mb-2">
-                                      {item.message}
-                                    </p>
-                                    <div className="flex items-center space-x-3">
-                                      <span className="px-2 py-1 bg-[#87CEAB]/20 text-[#87CEAB] rounded-full text-xs font-medium border border-[#87CEAB]/30">
-                                        Ball System
-                                      </span>
-                                      {item.design && (
-                                        <span className="text-gray-500 text-xs">
-                                          Design: {item.design}
-                                        </span>
-                                      )}
-                                    </div>
-                                  </div>
-
-                                  <div className="flex space-x-2">
-                                    <button
-                                      onClick={() => handleEditItem(item)}
-                                      className="px-4 py-2 bg-gradient-to-r from-[#87CEAB] to-[#50C878] text-white rounded-xl font-medium transition-all duration-300 hover:shadow-lg hover:shadow-[#87CEAB]/25 transform hover:scale-105"
-                                    >
-                                      <FaEdit className="text-sm" />
-                                    </button>
-                                    <button
-                                      onClick={() => handleDeleteItem(item)}
-                                      disabled={deletingItemId === item._id}
-                                      className="px-4 py-2 bg-gradient-to-r from-red-500/20 to-red-600/20 text-red-400 rounded-xl font-medium transition-all duration-300 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-600 hover:text-white transform hover:scale-105 border border-red-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                      {deletingItemId === item._id ? (
-                                        <FaSpinner className="animate-spin text-sm" />
-                                      ) : (
-                                        <FaTrash className="text-sm" />
-                                      )}
-                                    </button>
-                                  </div>
+                          <div className="bg-gradient-to-br from-[#1a1a1a] to-[#2a2a2a] rounded-2xl border border-[#87CEAB]/20 overflow-hidden">
+                            {/* Table Header */}
+                            <div className="bg-gradient-to-r from-[#87CEAB]/10 to-[#87CEAB]/5 px-6 py-4 border-b border-[#87CEAB]/20">
+                              <div className="grid grid-cols-12 gap-4 items-center">
+                                <div className="col-span-1 text-[#87CEAB] font-semibold text-sm">
+                                  Image
+                                </div>
+                                <div className="col-span-3 text-[#87CEAB] font-semibold text-sm">
+                                  Name
+                                </div>
+                                <div className="col-span-4 text-[#87CEAB] font-semibold text-sm">
+                                  Message
+                                </div>
+                                <div className="col-span-2 text-[#87CEAB] font-semibold text-sm">
+                                  Models
+                                </div>
+                                <div className="col-span-2 text-[#87CEAB] font-semibold text-sm text-right">
+                                  Actions
                                 </div>
                               </div>
-                            ))}
+                            </div>
+
+                            {/* Table Body */}
+                            <div className="divide-y divide-[#87CEAB]/10">
+                              {systemsByType.ball.map((item, index) => (
+                                <div
+                                  key={item._id || index}
+                                  className="group px-6 py-4 hover:bg-gradient-to-r hover:from-[#87CEAB]/5 hover:to-transparent transition-all duration-300"
+                                >
+                                  <div className="grid grid-cols-12 gap-4 items-center">
+                                    {/* Image */}
+                                    <div className="col-span-1">
+                                      <div className="w-12 h-12 bg-gradient-to-br from-[#87CEAB]/20 to-[#87CEAB]/10 rounded-xl flex items-center justify-center border border-[#87CEAB]/20 group-hover:scale-110 transition-transform duration-300">
+                                        {item.image ||
+                                        item.media?.image?.url ? (
+                                          <img
+                                            src={
+                                              item.image ||
+                                              item.media?.image?.url
+                                            }
+                                            alt={item.name}
+                                            className="w-10 h-10 object-cover rounded-lg"
+                                          />
+                                        ) : (
+                                          <FaLayerGroup className="text-lg text-[#87CEAB]" />
+                                        )}
+                                      </div>
+                                    </div>
+
+                                    {/* Name */}
+                                    <div className="col-span-3">
+                                      <h4 className="text-lg font-bold text-white group-hover:text-[#87CEAB] transition-colors duration-300">
+                                        {item.name}
+                                      </h4>
+                                    </div>
+
+                                    {/* Description */}
+                                    <div className="col-span-4">
+                                      <p className="text-gray-400 text-sm">
+                                        {item.message}
+                                      </p>
+                                    </div>
+
+                                    {/* Details */}
+                                    <div className="col-span-2">
+                                      <div className="space-y-1">
+                                        {item.media?.model ? (
+                                          <div className="flex items-center space-x-2 mt-1">
+                                            <div className="w-6 h-6 bg-[#FFC107]/20 rounded-lg flex items-center justify-center">
+                                              <FaCube className="text-[#FFC107] text-xs" />
+                                            </div>
+                                            <span className="text-gray-500 text-xs">
+                                              3D Model Available
+                                            </span>
+                                          </div>
+                                        ) : (
+                                          <div className="flex items-center space-x-2 mt-1">
+                                            <div className="w-6 h-6 bg-gray-500/20 rounded-lg flex items-center justify-center">
+                                              <svg className="w-3 h-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L5.636 5.636" />
+                                              </svg>
+                                            </div>
+                                            <span className="text-gray-500 text-xs">
+                                              No Model
+                                            </span>
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+
+                                    {/* Actions */}
+                                    <div className="col-span-2 flex justify-end space-x-2">
+                                      <button
+                                        onClick={() => handleEditItem(item)}
+                                        className="px-4 py-2 bg-gradient-to-r from-[#87CEAB] to-[#50C878] text-white rounded-lg font-medium transition-all duration-300 hover:shadow-lg hover:shadow-[#87CEAB]/25 transform hover:scale-105 flex items-center space-x-1"
+                                      >
+                                        <FaEdit className="text-xs" />
+                                      </button>
+                                      <button
+                                        onClick={() => handleDeleteItem(item)}
+                                        disabled={deletingItemId === item._id}
+                                        className="px-3 py-2 bg-gradient-to-r from-red-500/20 to-red-600/20 text-red-400 rounded-lg font-medium transition-all duration-300 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-600 hover:text-white transform hover:scale-105 border border-red-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                                      >
+                                        {deletingItemId === item._id ? (
+                                          <FaSpinner className="animate-spin text-xs" />
+                                        ) : (
+                                          <FaTrash className="text-xs" />
+                                        )}
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
                           </div>
                         </div>
                       )}
@@ -1501,70 +1692,120 @@ export default function PendantSystemManager({
                             </span>
                           </div>
 
-                          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            {systemsByType.universal.map((item, index) => (
-                              <div
-                                key={item._id || index}
-                                className="group relative bg-gradient-to-br from-[#1a1a1a] to-[#2a2a2a] rounded-3xl p-6 border border-[#87CEAB]/20 hover:border-[#87CEAB]/40 transition-all duration-300 hover:shadow-2xl hover:shadow-[#87CEAB]/10"
-                              >
-                                <div className="absolute inset-0 bg-gradient-to-br from-[#87CEAB]/5 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-                                <div className="relative flex items-center space-x-4">
-                                  <div className="w-16 h-16 bg-gradient-to-br from-[#87CEAB]/20 to-[#87CEAB]/10 rounded-2xl flex items-center justify-center border border-[#87CEAB]/20 group-hover:scale-110 transition-transform duration-300">
-                                    {item.image || item.media?.image?.url ? (
-                                      <img
-                                        src={
-                                          item.image || item.media?.image?.url
-                                        }
-                                        alt={item.name}
-                                        className="w-12 h-12 object-cover rounded-xl"
-                                      />
-                                    ) : (
-                                      <FaLayerGroup className="text-2xl text-[#87CEAB]" />
-                                    )}
-                                  </div>
-
-                                  <div className="flex-1">
-                                    <h5 className="text-lg font-bold text-white group-hover:text-[#87CEAB] transition-colors duration-300">
-                                      {item.name}
-                                    </h5>
-                                    <p className="text-gray-400 text-sm mb-2">
-                                      {item.message}
-                                    </p>
-                                    <div className="flex items-center space-x-3">
-                                      <span className="px-2 py-1 bg-[#87CEAB]/20 text-[#87CEAB] rounded-full text-xs font-medium border border-[#87CEAB]/30">
-                                        Universal System
-                                      </span>
-                                      {item.design && (
-                                        <span className="text-gray-500 text-xs">
-                                          Design: {item.design}
-                                        </span>
-                                      )}
-                                    </div>
-                                  </div>
-
-                                  <div className="flex space-x-2">
-                                    <button
-                                      onClick={() => handleEditItem(item)}
-                                      className="px-4 py-2 bg-gradient-to-r from-[#87CEAB] to-[#50C878] text-white rounded-xl font-medium transition-all duration-300 hover:shadow-lg hover:shadow-[#87CEAB]/25 transform hover:scale-105"
-                                    >
-                                      <FaEdit className="text-sm" />
-                                    </button>
-                                    <button
-                                      onClick={() => handleDeleteItem(item)}
-                                      disabled={deletingItemId === item._id}
-                                      className="px-4 py-2 bg-gradient-to-r from-red-500/20 to-red-600/20 text-red-400 rounded-xl font-medium transition-all duration-300 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-600 hover:text-white transform hover:scale-105 border border-red-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                      {deletingItemId === item._id ? (
-                                        <FaSpinner className="animate-spin text-sm" />
-                                      ) : (
-                                        <FaTrash className="text-sm" />
-                                      )}
-                                    </button>
-                                  </div>
+                          <div className="bg-gradient-to-br from-[#1a1a1a] to-[#2a2a2a] rounded-2xl border border-[#87CEAB]/20 overflow-hidden">
+                            {/* Table Header */}
+                            <div className="bg-gradient-to-r from-[#87CEAB]/10 to-[#87CEAB]/5 px-6 py-4 border-b border-[#87CEAB]/20">
+                              <div className="grid grid-cols-12 gap-4 items-center">
+                                <div className="col-span-1 text-[#87CEAB] font-semibold text-sm">
+                                  Image
+                                </div>
+                                <div className="col-span-3 text-[#87CEAB] font-semibold text-sm">
+                                  Name
+                                </div>
+                                <div className="col-span-4 text-[#87CEAB] font-semibold text-sm">
+                                  Message
+                                </div>
+                                <div className="col-span-2 text-[#87CEAB] font-semibold text-sm">
+                                  Models
+                                </div>
+                                <div className="col-span-2 text-[#87CEAB] font-semibold text-sm text-right">
+                                  Actions
                                 </div>
                               </div>
-                            ))}
+                            </div>
+
+                            {/* Table Body */}
+                            <div className="divide-y divide-[#87CEAB]/10">
+                              {systemsByType.universal.map((item, index) => (
+                                <div
+                                  key={item._id || index}
+                                  className="group px-6 py-4 hover:bg-gradient-to-r hover:from-[#87CEAB]/5 hover:to-transparent transition-all duration-300"
+                                >
+                                  <div className="grid grid-cols-12 gap-4 items-center">
+                                    {/* Image */}
+                                    <div className="col-span-1">
+                                      <div className="w-12 h-12 bg-gradient-to-br from-[#87CEAB]/20 to-[#87CEAB]/10 rounded-xl flex items-center justify-center border border-[#87CEAB]/20 group-hover:scale-110 transition-transform duration-300">
+                                        {item.image ||
+                                        item.media?.image?.url ? (
+                                          <img
+                                            src={
+                                              item.image ||
+                                              item.media?.image?.url
+                                            }
+                                            alt={item.name}
+                                            className="w-10 h-10 object-cover rounded-lg"
+                                          />
+                                        ) : (
+                                          <FaLayerGroup className="text-lg text-[#87CEAB]" />
+                                        )}
+                                      </div>
+                                    </div>
+
+                                    {/* Name */}
+                                    <div className="col-span-3">
+                                      <h4 className="text-lg font-bold text-white group-hover:text-[#87CEAB] transition-colors duration-300">
+                                        {item.name}
+                                      </h4>
+                                    </div>
+
+                                    {/* Description */}
+                                    <div className="col-span-4">
+                                      <p className="text-gray-400 text-sm">
+                                        {item.message}
+                                      </p>
+                                    </div>
+
+                                    {/* Details */}
+                                    <div className="col-span-2">
+                                      <div className="space-y-1">
+                                        {item.media?.model ? (
+                                          <div className="flex items-center space-x-2 mt-1">
+                                            <div className="w-6 h-6 bg-[#FFC107]/20 rounded-lg flex items-center justify-center">
+                                              <FaCube className="text-[#FFC107] text-xs" />
+                                            </div>
+                                            <span className="text-gray-500 text-xs">
+                                              3D Model Available
+                                            </span>
+                                          </div>
+                                        ) : (
+                                          <div className="flex items-center space-x-2 mt-1">
+                                            <div className="w-6 h-6 bg-gray-500/20 rounded-lg flex items-center justify-center">
+                                              <svg className="w-3 h-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L5.636 5.636" />
+                                              </svg>
+                                            </div>
+                                            <span className="text-gray-500 text-xs">
+                                              No Model
+                                            </span>
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+
+                                    {/* Actions */}
+                                    <div className="col-span-2 flex justify-end space-x-2">
+                                      <button
+                                        onClick={() => handleEditItem(item)}
+                                        className="px-4 py-2 bg-gradient-to-r from-[#87CEAB] to-[#50C878] text-white rounded-lg font-medium transition-all duration-300 hover:shadow-lg hover:shadow-[#87CEAB]/25 transform hover:scale-105 flex items-center space-x-1"
+                                      >
+                                        <FaEdit className="text-xs" />
+                                      </button>
+                                      <button
+                                        onClick={() => handleDeleteItem(item)}
+                                        disabled={deletingItemId === item._id}
+                                        className="px-3 py-2 bg-gradient-to-r from-red-500/20 to-red-600/20 text-red-400 rounded-lg font-medium transition-all duration-300 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-600 hover:text-white transform hover:scale-105 border border-red-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                                      >
+                                        {deletingItemId === item._id ? (
+                                          <FaSpinner className="animate-spin text-xs" />
+                                        ) : (
+                                          <FaTrash className="text-xs" />
+                                        )}
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
                           </div>
                         </div>
                       )}

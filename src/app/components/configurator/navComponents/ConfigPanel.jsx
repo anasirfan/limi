@@ -639,7 +639,7 @@ export const ConfigPanel = ({
       config.items = pendantAssignments.map((pendant) => ({
         id: pendant.design,
         name: pendant.name,
-        image: pendant.media.image.url,
+        image: pendant.media && pendant.media.image && pendant.media.image.url ? pendant.media.image.url : "",
         message: pendant.message,
         baseNumber: pendant.baseNumber,
       }));

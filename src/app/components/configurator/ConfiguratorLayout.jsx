@@ -913,14 +913,27 @@ const ConfiguratorLayout = () => {
         );
         // Check if we have only 1 pendant or multiple pendants
         if (config.lightAmount === 1) {
-          // For single pendant, send a global pendant design message
-          const modelUrl = pendantAssignment.media?.model?.url || pendantAssignment.image?.url || pendantAssignment.message;
-          sendMessageToPlayCanvas(`cable_0:${modelUrl}`);
+          // For single pendant, send model URL first if it exists, then the design message
+          const modelUrl = pendantAssignment.media?.model?.url;
+          
+          if (modelUrl) {
+            sendMessageToPlayCanvas(`cable_0:${modelUrl}`);
+            sendMessageToPlayCanvas(`${pendantAssignment.message}`);
+       
+          } else {
+            sendMessageToPlayCanvas(`cable_0:${message}`);
+          }
         } else {
           // For multiple pendants, send individual pendant messages
           pendantIds.forEach((id) => {
             const modelUrl = pendantAssignment.media?.model?.url || pendantAssignment.image?.url || pendantAssignment.message;
-            sendMessageToPlayCanvas(`cable_${id}:${modelUrl}`);
+            if (modelUrl) {
+              sendMessageToPlayCanvas(`cable_${id}:${modelUrl}`);
+              sendMessageToPlayCanvas(`${pendantAssignment.message}`);
+         
+            } else {
+              sendMessageToPlayCanvas(`${message}`);
+            }
           });
         }
       }, 10); // Slight delay to ensure state is updated first
