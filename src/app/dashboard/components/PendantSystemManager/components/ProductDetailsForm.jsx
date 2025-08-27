@@ -2,7 +2,7 @@ import React from "react";
 
 const ProductDetailsForm = ({ newPendantData, handlePendantInputChange }) => {
   return (
-    <div className="grid grid-cols-1 p-6 lg:grid-cols-2 gap-4 mb-6">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
       <div className="space-y-1">
         <label className="flex items-center text-gray-300 font-semibold mb-2">
           <div className="w-2 h-2 bg-[#54bb74] rounded-full mr-2"></div>

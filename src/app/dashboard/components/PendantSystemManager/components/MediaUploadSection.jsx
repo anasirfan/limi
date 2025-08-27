@@ -11,7 +11,7 @@ const MediaUploadSection = ({
   setModelPreview,
 }) => {
   return (
-    <div className="grid p-6 grid-cols-1 lg:grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
       {/* Icon Image Upload */}
       <div className="space-y-1">
         <label className="flex items-center text-gray-300 font-semibold mb-2">

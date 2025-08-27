@@ -57,7 +57,7 @@ const SystemTypeSelection = ({
   ];
 
   return (
-    <div className="space-y-3 px-6 mb-6">
+    <div className="space-y-3 mb-6">
       <label className="flex items-center text-gray-300 font-semibold mb-2">
         <div className="w-2 h-2 bg-[#87CEAB] rounded-full mr-2"></div>
         System Type
