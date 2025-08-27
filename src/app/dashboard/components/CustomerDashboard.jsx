@@ -212,8 +212,17 @@ export default function CustomerDashboard({ token }) {
             const binaryData = base64ToUint8Array(value);
             const blob = new Blob([binaryData], { type: 'image/jpeg' });
             formData.append('image', blob, "image.jpg");
-          } else if (key !== 'imageBinary') {
-            // Skip imageBinary field as it's handled above
+          } else if (key === 'modelBinary' && value instanceof Uint8Array) {
+            // Handle binary model data
+            const blob = new Blob([value], { type: 'model/gltf-binary' });
+            formData.append('model', blob, "model.glb");
+          } else if (key === 'model' && typeof value === 'string' && (value.startsWith('data:') || value.includes('base64'))) {
+            // Convert base64 model to binary for uploads
+            const binaryData = base64ToUint8Array(value);
+            const blob = new Blob([binaryData], { type: 'model/gltf-binary' });
+            formData.append('model', blob, "model.glb");
+          } else if (key !== 'imageBinary' && key !== 'modelBinary') {
+            // Skip binary fields as they're handled above
             formData.append(key, value);
           }
         }
@@ -1495,6 +1504,7 @@ export default function CustomerDashboard({ token }) {
           updatePendantSystem={updatePendantSystem}
           setNewPendantData={setNewPendantData}
           deletePendantSystem={deletePendantSystem}
+          modelFile={modelFile}
         />
       )}
 

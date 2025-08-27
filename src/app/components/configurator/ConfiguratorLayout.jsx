@@ -903,7 +903,6 @@ const ConfiguratorLayout = () => {
             };
           }
         });
-
         return updatedCables;
       });
 
@@ -943,7 +942,6 @@ const ConfiguratorLayout = () => {
 
     if (baseType === "rectangular") {
       sendMessageToPlayCanvas(`light_amount:3`);
-
       sendMessageToPlayCanvas(`system:bar`);
       sendMessageToPlayCanvas(`cable_0:system_base_2`);
       sendMessageToPlayCanvas(`cable_0:size_3`);

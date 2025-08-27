@@ -710,7 +710,7 @@ export const ConfigPanel = ({
           return {
             id: base.design,
             name: base.name,
-            image: base.media.image.url,
+            image: base.media && base.media.image && base.media.image.url ? base.media.image.url : "",
             baseNumber: base.baseNumber,
             shades: shades || null,
           };

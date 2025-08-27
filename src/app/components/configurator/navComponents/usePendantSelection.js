@@ -21,7 +21,7 @@ export const usePendantSelection = (
 
     // Search systemAssignments for a matching design and return its image
     const assignment = systemAssignments.find(a => a.design === designName);
-    return assignment ? assignment.media.image.url : "";
+    return assignment && assignment.media && assignment.media.image && assignment.media.image.url ? assignment.media.image.url : "";
   };
 
   // Toggle pendant selection

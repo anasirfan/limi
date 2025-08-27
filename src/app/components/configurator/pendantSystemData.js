@@ -18,7 +18,6 @@ const fetchSystemAssignments = async () => {
     }
 
     const data = await response.json();
-    console.log()
     const formattedData = Array.isArray(data) ? data : data?.data || [];
     
     // Cache the data
@@ -44,7 +43,6 @@ export const getSystemAssignments = async () => {
 
 // Legacy export for backward compatibility (will use cached data or fetch if needed)
 export const systemAssignments = await getSystemAssignments(); // Only use API data
-console.log("systemAssignments",systemAssignments)
 // Dynamic filtered arrays that update based on API data
 export const getPendantAssignments = async () => {
   const assignments = await getSystemAssignments();

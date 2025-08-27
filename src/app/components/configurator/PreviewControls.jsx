@@ -753,10 +753,10 @@ export const PreviewControls = ({
                           }}
                         >
                           <div className="flex flex-col items-center text-center">
-                            {assignment.image ? (
+                            {assignment.media ? (
                               <div className="relative h-14 w-14 rounded-full bg-gray-900 overflow-visible mb-1 group">
                                 <img
-                                  src={assignment.image}
+                                  src={assignment.media && assignment.media.image && assignment.media.image.url ? assignment.media.image.url : ""}
                                   alt={assignment.name}
                                   className="h-full w-full object-cover"
                                 />

@@ -39,6 +39,7 @@ export default function PendantSystemManager({
   setImagePreview,
   modelPreview,
   setModelFile,
+  modelFile,
   setModelPreview,
   pendantLoading,
   pendantSaving,
@@ -157,11 +158,30 @@ export default function PendantSystemManager({
       }
 
       // Check if model was changed
-      if (modelPreview !== editingItem.model) {
-        changedFields.model = modelPreview;
+      const currentModelUrl = editingItem.model || editingItem.media?.model?.url;
+      if (modelFile || modelPreview !== currentModelUrl) {
+        // Convert model file to binary if available
+        if (modelFile) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const arrayBuffer = e.target.result;
+            const uint8Array = new Uint8Array(arrayBuffer);
+            changedFields.modelBinary = uint8Array;
+            
+            // Update with ALL changed fields including model binary
+            if (Object.keys(changedFields).length > 0) {
+              updatePendantSystem(editingItem._id, changedFields);
+            }
+            handleCloseEditModal();
+          };
+          reader.readAsArrayBuffer(modelFile);
+          return; // Exit early to wait for file reading
+        } else {
+          changedFields.model = modelPreview;
+        }
       }
 
-      // Only update if there are changes
+      // Only update if there are changes (when no model file to process)
       if (Object.keys(changedFields).length > 0) {
         updatePendantSystem(editingItem._id, changedFields);
       }
@@ -173,7 +193,7 @@ export default function PendantSystemManager({
     }
   };
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#1a1a1a] to-[#0f0f0f] p-6">
+    <div className="min-h-screen bg-gradient-to-br rounded from-[#0a0a0a] via-[#1a1a1a] to-[#0f0f0f] p-6">
       {/* Modern Header */}
       <div className="mb-8">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
@@ -193,7 +213,8 @@ export default function PendantSystemManager({
             </div>
 
             {/* Stats Cards */}
-            <div className="flex flex-wrap gap-4 mt-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mt-6">
+              {/* Total Items */}
               <div className="bg-gradient-to-br from-[#1a1a1a] to-[#2a2a2a] rounded-2xl p-4 border border-[#54bb74]/20 backdrop-blur-sm">
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 bg-[#54bb74]/20 rounded-xl flex items-center justify-center">
@@ -208,6 +229,22 @@ export default function PendantSystemManager({
                 </div>
               </div>
 
+              {/* Individual Pendants */}
+              <div className="bg-gradient-to-br from-[#1a1a1a] to-[#2a2a2a] rounded-2xl p-4 border border-[#50C878]/20 backdrop-blur-sm">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-[#50C878]/20 rounded-xl flex items-center justify-center">
+                    <FaLightbulb className="text-[#50C878]" />
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold text-white">
+                      {pendantSystemData.filter((item) => !item.isSystem).length}
+                    </p>
+                    <p className="text-sm text-gray-400">Pendants</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Total Systems */}
               <div className="bg-gradient-to-br from-[#1a1a1a] to-[#2a2a2a] rounded-2xl p-4 border border-[#87CEAB]/20 backdrop-blur-sm">
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 bg-[#87CEAB]/20 rounded-xl flex items-center justify-center">
@@ -222,19 +259,68 @@ export default function PendantSystemManager({
                 </div>
               </div>
 
-              <div className="bg-gradient-to-br from-[#1a1a1a] to-[#2a2a2a] rounded-2xl p-4 border border-[#50C878]/20 backdrop-blur-sm">
+              {/* Bar Systems */}
+              <div className="bg-gradient-to-br from-[#1a1a1a] to-[#2a2a2a] rounded-2xl p-4 border border-[#87CEAB]/20 backdrop-blur-sm">
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-[#50C878]/20 rounded-xl flex items-center justify-center">
-                    <FaLightbulb className="text-[#50C878]" />
+                  <div className="w-10 h-10 bg-[#87CEAB]/20 rounded-xl flex items-center justify-center">
+                    <svg className="w-5 h-5 text-[#87CEAB]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
                   </div>
                   <div>
                     <p className="text-2xl font-bold text-white">
-                      {
-                        pendantSystemData.filter((item) => !item.isSystem)
-                          .length
-                      }
+                      {pendantSystemData.filter((item) => item.systemType === "bar").length}
                     </p>
-                    <p className="text-sm text-gray-400">Pendants</p>
+                    <p className="text-sm text-gray-400">Bar Systems</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Universal Systems */}
+              <div className="bg-gradient-to-br from-[#1a1a1a] to-[#2a2a2a] rounded-2xl p-4 border border-[#87CEAB]/20 backdrop-blur-sm">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-[#87CEAB]/20 rounded-xl flex items-center justify-center">
+                    <svg className="w-5 h-5 text-[#87CEAB]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold text-white">
+                      {pendantSystemData.filter((item) => item.systemType === "universal").length}
+                    </p>
+                    <p className="text-sm text-gray-400">Universal</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Ball Systems */}
+              <div className="bg-gradient-to-br from-[#1a1a1a] to-[#2a2a2a] rounded-2xl p-4 border border-[#87CEAB]/20 backdrop-blur-sm">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-[#87CEAB]/20 rounded-xl flex items-center justify-center">
+                    <svg className="w-5 h-5 text-[#87CEAB]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold text-white">
+                      {pendantSystemData.filter((item) => item.systemType === "ball").length}
+                    </p>
+                    <p className="text-sm text-gray-400">Ball Systems</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Items with 3D Models */}
+              <div className="bg-gradient-to-br from-[#1a1a1a] to-[#2a2a2a] rounded-2xl p-4 border border-[#FFC107]/20 backdrop-blur-sm">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-[#FFC107]/20 rounded-xl flex items-center justify-center">
+                    <FaCube className="text-[#FFC107]" />
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold text-white">
+                      {pendantSystemData.filter((item) => item.model || item.media?.model?.url).length}
+                    </p>
+                    <p className="text-sm text-gray-400">With Models</p>
                   </div>
                 </div>
               </div>
