@@ -36,7 +36,7 @@ export default function HeroSection({ backgroundShader }) {
         <h1 className={`text-8xl md:text-9xl font-bold leading-none mb-6 transition-all duration-1000 ${
           titleVisible ? 'opacity-100 blur-0 transform translate-y-0' : 'opacity-0 blur-sm transform translate-y-8'
         }`}>
-          <span className="bg-gradient-to-r from-[#0AB6BC] to-[#045C43] bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(10,182,188,0.5)]">
+          <span className="">
             LIMI AI
           </span>
         </h1>
