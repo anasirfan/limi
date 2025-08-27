@@ -1,5 +1,91 @@
 import React, { useState, useEffect } from "react";
 
+// Generates a random name using prefix and suffix, ensures length 4-5
+function generateName(existingNames = []) {
+  const prefixes = [
+    "No",
+    "Lu",
+    "Ve",
+    "Ly",
+    "Or",
+    "Xa",
+    "Ne",
+    "Ta",
+    "Ci",
+    "Er",
+    "Ay",
+    "So",
+    "Zi",
+    "Kr",
+    "Ym",
+    "Ir",
+    "Co",
+    "Na",
+    "Ed",
+    "Li",
+    "Ax",
+    "Vi",
+    "Mi",
+    "Ar",
+    "Ze",
+    "Th",
+    "Od",
+    "Ra",
+    "Ky",
+    "Vo",
+  ];
+  const suffixes = [
+    "va",
+    "ra",
+    "ga",
+    "ra",
+    "in",
+    "ra",
+    "ro",
+    "us",
+    "el",
+    "yn",
+    "ra",
+    "na",
+    "la",
+    "on",
+    "is",
+    "or",
+    "an",
+    "el",
+    "ar",
+    "os",
+    "en",
+    "ia",
+    "ra",
+    "os",
+    "or",
+    "as",
+    "is",
+    "os",
+    "um",
+    "ar",
+  ];
+  const letters = "abcdefghijklmnopqrstuvwxyz";
+  let tries = 0;
+  let name = "";
+  do {
+    const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+    const suffix = suffixes[Math.floor(Math.random() * suffixes.length)];
+    name = prefix + suffix;
+    if (name.length > 5) {
+      name = name.slice(0, 5);
+    }
+    if (name.length < 4) {
+      name += letters[Math.floor(Math.random() * letters.length)];
+    }
+    tries++;
+    // Safety: avoid infinite loop
+    if (tries > 50) break;
+  } while (existingNames.includes(name));
+  return name;
+}
+
 // Utility: Convert Base64 image string to Uint8Array (binary)
 function base64ToUint8Array(base64String) {
   const cleaned = base64String.replace(/^data:image\/\w+;base64,/, "");
@@ -205,17 +291,17 @@ export default function PendantSystemManager({
           <div className=" w-full">
             <div className="flex justify-between items-center space-x-3 w-full">
               <div className="flex items-center justify-center gap-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-[#54bb74] to-[#87CEAB] rounded-2xl flex items-center justify-center shadow-lg">
-                <FaLightbulb className="text-2xl text-white" />
-              </div>
-              <div>
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-[#54bb74] via-[#87CEAB] to-[#54bb74] bg-clip-text text-transparent">
-                  Lighting Studio
-                </h1>
-                <p className="text-gray-400 text-lg">
-                  Design and manage your lighting ecosystem
-                </p>
-              </div>
+                <div className="w-12 h-12 bg-gradient-to-br from-[#54bb74] to-[#87CEAB] rounded-2xl flex items-center justify-center shadow-lg">
+                  <FaLightbulb className="text-2xl text-white" />
+                </div>
+                <div>
+                  <h1 className="text-4xl font-bold bg-gradient-to-r from-[#54bb74] via-[#87CEAB] to-[#54bb74] bg-clip-text text-transparent">
+                    Lighting Studio
+                  </h1>
+                  <p className="text-gray-400 text-lg">
+                    Design and manage your lighting ecosystem
+                  </p>
+                </div>
               </div>
               {/* Action Button */}
               <div className="flex flex-col space-y-3">
@@ -401,13 +487,13 @@ export default function PendantSystemManager({
       {/* Add New Item Modal */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-gradient-to-br from-[#1e1e1e] to-[#252525] rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-[#3a3a3a]">
-            <div className="sticky top-0 bg-gradient-to-r from-[#1e1e1e] via-[#252525] to-[#1e1e1e] px-8 py-6 border-b border-[#3a3a3a] flex items-center justify-between">
+          <div className="bg-gradient-to-br from-[#1e1e1e] to-[#252525] rounded-xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto border border-[#3a3a3a]">
+            <div className="sticky top-0 bg-gradient-to-r from-[#1e1e1e] via-[#252525] to-[#1e1e1e] px-6 py-4 border-b border-[#3a3a3a] flex items-center justify-between">
               <div>
-                <h2 className="text-3xl font-bold text-white font-amenti bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                <h2 className="text-2xl font-bold text-white font-amenti bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
                   Add New Configuration
                 </h2>
-                <p className="text-gray-400 mt-2">
+                <p className="text-gray-400 mt-1 text-sm">
                   Create a new pendant or system configuration
                 </p>
               </div>
@@ -415,40 +501,48 @@ export default function PendantSystemManager({
                 onClick={handleCloseAddModal}
                 className="p-2 hover:bg-[#333333] rounded-lg transition-colors"
               >
-                <FaTimes className="text-gray-400 hover:text-white text-xl" />
+                <FaTimes className="text-gray-400 hover:text-white text-lg" />
               </button>
             </div>
 
-            <div className="p-8">
+            <div className="p-6">
               {/* Category Selection */}
-              <label className="flex items-center text-gray-300 font-semibold mb-3">
+              <label className="flex items-center text-gray-300 font-semibold mb-2">
                 <div className="w-2 h-2 bg-[#54bb74] rounded-full mr-2"></div>
                 Product Category
               </label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {/* Individual Pendant Card */}
                 <div
-                  className={`relative p-6 rounded-2xl border-2 cursor-pointer transition-all duration-300 ${
+                  className={`relative p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${
                     newPendantData.systemType === ""
                       ? "border-[#54bb74] bg-gradient-to-br from-[#54bb74]/10 to-[#87CEAB]/10"
                       : "border-[#3a3a3a] bg-gradient-to-br from-[#1e1e1e] to-[#252525] hover:border-[#54bb74]/50"
                   }`}
-                  onClick={() =>
+                  onClick={() => {
                     handlePendantInputChange({
                       target: { name: "systemType", value: "" },
-                    })
+                    });
+                    // Auto-generate unique name for Individual Pendant
+                    const existingNames = pendantSystemData.map(p => p.name?.toLowerCase?.() || "");
+                    let newName = generateName(existingNames);
+                    // Ensure uniqueness in case-insensitive manner
+                    while (existingNames.includes(newName.toLowerCase())) {
+                      newName = generateName(existingNames);
+                    }
+                    setNewPendantData(prev => ({ ...prev, name: newName }));
                   }
-                >
-                  <div className="flex items-center space-x-4">
+                  }>
+                  <div className="flex items-center space-x-3">
                     <div
-                      className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                      className={`w-10 h-10 rounded-lg flex items-center justify-center ${
                         newPendantData.systemType === ""
                           ? "bg-[#54bb74]/20"
                           : "bg-[#333333]"
                       }`}
                     >
                       <svg
-                        className={`w-6 h-6 ${
+                        className={`w-5 h-5 ${
                           newPendantData.systemType === ""
                             ? "text-[#54bb74]"
                             : "text-gray-400"
@@ -467,7 +561,7 @@ export default function PendantSystemManager({
                     </div>
                     <div>
                       <h4
-                        className={`font-bold text-lg ${
+                        className={`font-bold text-base ${
                           newPendantData.systemType === ""
                             ? "text-[#54bb74]"
                             : "text-white"
@@ -475,16 +569,16 @@ export default function PendantSystemManager({
                       >
                         Individual Pendant
                       </h4>
-                      <p className="text-gray-400 text-sm">
+                      <p className="text-gray-400 text-xs">
                         Single lighting fixture
                       </p>
                     </div>
                   </div>
                   {newPendantData.systemType === "" && (
-                    <div className="absolute top-3 right-3">
-                      <div className="w-6 h-6 bg-[#54bb74] rounded-full flex items-center justify-center">
+                    <div className="absolute top-2 right-2">
+                      <div className="w-5 h-5 bg-[#54bb74] rounded-full flex items-center justify-center">
                         <svg
-                          className="w-4 h-4 text-white"
+                          className="w-3 h-3 text-white"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -503,7 +597,7 @@ export default function PendantSystemManager({
 
                 {/* System Configuration Card */}
                 <div
-                  className={`relative p-6 rounded-2xl border-2 cursor-pointer transition-all duration-300 ${
+                  className={`relative p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${
                     newPendantData.systemType !== ""
                       ? "border-[#87CEAB] bg-gradient-to-br from-[#87CEAB]/10 to-[#54bb74]/10"
                       : "border-[#3a3a3a] bg-gradient-to-br from-[#1e1e1e] to-[#252525] hover:border-[#87CEAB]/50"
@@ -514,19 +608,26 @@ export default function PendantSystemManager({
                       handlePendantInputChange({
                         target: { name: "systemType", value: "bar" },
                       });
+                      // Auto-generate unique name for System
+                      const existingNames = pendantSystemData.map(p => p.name?.toLowerCase?.() || "");
+                      let newName = generateName(existingNames);
+                      while (existingNames.includes(newName.toLowerCase())) {
+                        newName = generateName(existingNames);
+                      }
+                      setNewPendantData(prev => ({ ...prev, name: newName }));
                     }
                   }}
                 >
-                  <div className="flex items-center space-x-4">
+                  <div className="flex items-center space-x-3">
                     <div
-                      className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                      className={`w-10 h-10 rounded-lg flex items-center justify-center ${
                         newPendantData.systemType !== ""
                           ? "bg-[#87CEAB]/20"
                           : "bg-[#333333]"
                       }`}
                     >
                       <svg
-                        className={`w-6 h-6 ${
+                        className={`w-5 h-5 ${
                           newPendantData.systemType !== ""
                             ? "text-[#87CEAB]"
                             : "text-gray-400"
@@ -545,7 +646,7 @@ export default function PendantSystemManager({
                     </div>
                     <div>
                       <h4
-                        className={`font-bold text-lg ${
+                        className={`font-bold text-base ${
                           newPendantData.systemType !== ""
                             ? "text-[#87CEAB]"
                             : "text-white"
@@ -553,16 +654,16 @@ export default function PendantSystemManager({
                       >
                         System Configuration
                       </h4>
-                      <p className="text-gray-400 text-sm">
+                      <p className="text-gray-400 text-xs">
                         Multiple connected fixtures
                       </p>
                     </div>
                   </div>
                   {newPendantData.systemType !== "" && (
-                    <div className="absolute top-3 right-3">
-                      <div className="w-6 h-6 bg-[#87CEAB] rounded-full flex items-center justify-center">
+                    <div className="absolute top-2 right-2">
+                      <div className="w-5 h-5 bg-[#87CEAB] rounded-full flex items-center justify-center">
                         <svg
-                          className="w-4 h-4 text-white"
+                          className="w-3 h-3 text-white"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -583,35 +684,42 @@ export default function PendantSystemManager({
 
             {/* System Type Selection (only show if system is selected) */}
             {newPendantData.systemType !== "" && (
-              <div className="space-y-4">
-                <label className="flex items-center text-gray-300 font-semibold mb-3">
+              <div className="space-y-3 px-6">
+                <label className="flex items-center text-gray-300 font-semibold mb-2">
                   <div className="w-2 h-2 bg-[#87CEAB] rounded-full mr-2"></div>
                   System Type
                 </label>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   {/* Bar System */}
                   <div
-                    className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${
+                    className={`p-3 rounded-lg border-2 cursor-pointer transition-all duration-300 ${
                       newPendantData.systemType === "bar"
                         ? "border-[#87CEAB] bg-gradient-to-br from-[#87CEAB]/10 to-[#54bb74]/10"
                         : "border-[#3a3a3a] bg-gradient-to-br from-[#1e1e1e] to-[#252525] hover:border-[#87CEAB]/50"
                     }`}
-                    onClick={() =>
+                    onClick={() => {
                       handlePendantInputChange({
                         target: { name: "systemType", value: "bar" },
-                      })
-                    }
+                      });
+                      // Auto-generate unique name for System (bar)
+                      const existingNames = pendantSystemData.map(p => p.name?.toLowerCase?.() || "");
+                      let newName = generateName(existingNames);
+                      while (existingNames.includes(newName.toLowerCase())) {
+                        newName = generateName(existingNames);
+                      }
+                      setNewPendantData(prev => ({ ...prev, name: newName }));
+                    }}
                   >
                     <div className="text-center">
                       <div
-                        className={`w-10 h-10 mx-auto mb-3 rounded-lg flex items-center justify-center ${
+                        className={`w-8 h-8 mx-auto mb-2 rounded-lg flex items-center justify-center ${
                           newPendantData.systemType === "bar"
                             ? "bg-[#87CEAB]/20"
                             : "bg-[#333333]"
                         }`}
                       >
                         <svg
-                          className={`w-5 h-5 ${
+                          className={`w-4 h-4 ${
                             newPendantData.systemType === "bar"
                               ? "text-[#87CEAB]"
                               : "text-gray-400"
@@ -629,7 +737,7 @@ export default function PendantSystemManager({
                         </svg>
                       </div>
                       <h5
-                        className={`font-semibold ${
+                        className={`font-medium text-sm ${
                           newPendantData.systemType === "bar"
                             ? "text-[#87CEAB]"
                             : "text-white"
@@ -637,7 +745,7 @@ export default function PendantSystemManager({
                       >
                         Bar System
                       </h5>
-                      <p className="text-gray-400 text-xs mt-1">
+                      <p className="text-gray-400 text-xs">
                         Linear arrangement
                       </p>
                     </div>
@@ -645,30 +753,37 @@ export default function PendantSystemManager({
 
                   {/* Universal System */}
                   <div
-                    className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${
+                    className={`p-3 rounded-lg border-2 cursor-pointer transition-all duration-300 ${
                       newPendantData.systemType === "universal"
                         ? "border-[#87CEAB] bg-gradient-to-br from-[#87CEAB]/10 to-[#54bb74]/10"
                         : "border-[#3a3a3a] bg-gradient-to-br from-[#1e1e1e] to-[#252525] hover:border-[#87CEAB]/50"
                     }`}
-                    onClick={() =>
+                    onClick={() => {
                       handlePendantInputChange({
                         target: {
                           name: "systemType",
                           value: "universal",
                         },
-                      })
-                    }
+                      });
+                      // Auto-generate unique name for System (universal)
+                      const existingNames = pendantSystemData.map(p => p.name?.toLowerCase?.() || "");
+                      let newName = generateName(existingNames);
+                      while (existingNames.includes(newName.toLowerCase())) {
+                        newName = generateName(existingNames);
+                      }
+                      setNewPendantData(prev => ({ ...prev, name: newName }));
+                    }}
                   >
                     <div className="text-center">
                       <div
-                        className={`w-10 h-10 mx-auto mb-3 rounded-lg flex items-center justify-center ${
+                        className={`w-8 h-8 mx-auto mb-2 rounded-lg flex items-center justify-center ${
                           newPendantData.systemType === "universal"
                             ? "bg-[#87CEAB]/20"
                             : "bg-[#333333]"
                         }`}
                       >
                         <svg
-                          className={`w-5 h-5 ${
+                          className={`w-4 h-4 ${
                             newPendantData.systemType === "universal"
                               ? "text-[#87CEAB]"
                               : "text-gray-400"
@@ -686,7 +801,7 @@ export default function PendantSystemManager({
                         </svg>
                       </div>
                       <h5
-                        className={`font-semibold ${
+                        className={`font-medium text-sm ${
                           newPendantData.systemType === "universal"
                             ? "text-[#87CEAB]"
                             : "text-white"
@@ -694,7 +809,7 @@ export default function PendantSystemManager({
                       >
                         Universal
                       </h5>
-                      <p className="text-gray-400 text-xs mt-1">
+                      <p className="text-gray-400 text-xs">
                         Flexible setup
                       </p>
                     </div>
@@ -702,27 +817,34 @@ export default function PendantSystemManager({
 
                   {/* Ball System */}
                   <div
-                    className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${
+                    className={`p-3 rounded-lg border-2 cursor-pointer transition-all duration-300 ${
                       newPendantData.systemType === "ball"
                         ? "border-[#87CEAB] bg-gradient-to-br from-[#87CEAB]/10 to-[#54bb74]/10"
                         : "border-[#3a3a3a] bg-gradient-to-br from-[#1e1e1e] to-[#252525] hover:border-[#87CEAB]/50"
                     }`}
-                    onClick={() =>
+                    onClick={() => {
                       handlePendantInputChange({
                         target: { name: "systemType", value: "ball" },
-                      })
-                    }
+                      });
+                      // Auto-generate unique name for System (ball)
+                      const existingNames = pendantSystemData.map(p => p.name?.toLowerCase?.() || "");
+                      let newName = generateName(existingNames);
+                      while (existingNames.includes(newName.toLowerCase())) {
+                        newName = generateName(existingNames);
+                      }
+                      setNewPendantData(prev => ({ ...prev, name: newName }));
+                    }}
                   >
                     <div className="text-center">
                       <div
-                        className={`w-10 h-10 mx-auto mb-3 rounded-lg flex items-center justify-center ${
+                        className={`w-8 h-8 mx-auto mb-2 rounded-lg flex items-center justify-center ${
                           newPendantData.systemType === "ball"
                             ? "bg-[#87CEAB]/20"
                             : "bg-[#333333]"
                         }`}
                       >
                         <svg
-                          className={`w-5 h-5 ${
+                          className={`w-4 h-4 ${
                             newPendantData.systemType === "ball"
                               ? "text-[#87CEAB]"
                               : "text-gray-400"
@@ -740,7 +862,7 @@ export default function PendantSystemManager({
                         </svg>
                       </div>
                       <h5
-                        className={`font-semibold ${
+                        className={`font-medium text-sm ${
                           newPendantData.systemType === "ball"
                             ? "text-[#87CEAB]"
                             : "text-white"
@@ -748,7 +870,7 @@ export default function PendantSystemManager({
                       >
                         Ball System
                       </h5>
-                      <p className="text-gray-400 text-xs mt-1">
+                      <p className="text-gray-400 text-xs">
                         Spherical design
                       </p>
                     </div>
@@ -758,54 +880,57 @@ export default function PendantSystemManager({
             )}
 
             {/* Product Details */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label className="flex items-center text-gray-300 font-semibold mb-3">
+            <div className="grid grid-cols-1 p-6 lg:grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <label className="flex items-center text-gray-300 font-semibold mb-2">
                   <div className="w-2 h-2 bg-[#54bb74] rounded-full mr-2"></div>
                   Product Name *
                 </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={newPendantData.name}
-                  onChange={handlePendantInputChange}
-                  placeholder="e.g., Atom5, Prism, Piko"
-                  className="w-full bg-gradient-to-r from-[#1e1e1e] to-[#252525] text-white px-5 py-4 rounded-xl border border-[#3a3a3a] focus:outline-none focus:ring-2 focus:ring-[#54bb74] focus:border-transparent transition-all duration-300 hover:border-[#54bb74]/50 placeholder-gray-500"
-                />
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="text"
+                    name="name"
+                    value={newPendantData.name}
+                    onChange={handlePendantInputChange}
+                    placeholder="e.g., Atom5, Prism, Piko"
+                    className="w-full bg-gradient-to-r from-[#1e1e1e] to-[#252525] text-white px-4 py-3 rounded-lg border border-[#3a3a3a] focus:outline-none focus:ring-2 focus:ring-[#54bb74] focus:border-transparent transition-all duration-300 hover:border-[#54bb74]/50 placeholder-gray-500"
+                  />
+                </div>
               </div>
 
-              <div className="space-y-2">
-                <label className="flex items-center text-gray-300 font-semibold mb-3">
+              <div className="space-y-1">
+                <label className="flex items-center text-gray-300 font-semibold mb-2">
                   <div className="w-2 h-2 bg-[#54bb74] rounded-full mr-2"></div>
                   System Message *
                 </label>
+                <div className="flex items-center space-x-2">
                 <input
                   type="text"
                   name="message"
                   value={newPendantData.message}
                   onChange={handlePendantInputChange}
                   placeholder="e.g., product_5, system_base_1"
-                  className="w-full bg-gradient-to-r from-[#1e1e1e] to-[#252525] text-white px-5 py-4 rounded-xl border border-[#3a3a3a] focus:outline-none focus:ring-2 focus:ring-[#54bb74] focus:border-transparent transition-all duration-300 hover:border-[#54bb74]/50 placeholder-gray-500 font-mono"
+                  className="w-full bg-gradient-to-r from-[#1e1e1e] to-[#252525] text-white px-4 py-3 rounded-lg border border-[#3a3a3a] focus:outline-none focus:ring-2 focus:ring-[#54bb74] focus:border-transparent transition-all duration-300 hover:border-[#54bb74]/50 placeholder-gray-500 font-mono"
                 />
+              </div>
               </div>
             </div>
 
             {/* Media Uploads */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid p-6 grid-cols-1 lg:grid-cols-2 gap-4">
               {/* Icon Image Upload */}
-              <div className="space-y-2">
-                <label className="flex items-center text-gray-300 font-semibold mb-3">
+              <div className="space-y-1">
+                <label className="flex items-center text-gray-300 font-semibold mb-2">
                   <div className="w-2 h-2 bg-[#54bb74] rounded-full mr-2"></div>
                   Icon Image
                 </label>
-                <div className="space-y-4">
+                <div className="space-y-3">
                   <div className="relative group">
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#54bb74]/20 via-transparent to-[#87CEAB]/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500 opacity-0 group-hover:opacity-100"></div>
-                    <label className="relative flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-[#3a3a3a] rounded-2xl cursor-pointer bg-gradient-to-br from-[#1e1e1e] to-[#252525] hover:from-[#252525] hover:to-[#333333] transition-all duration-300 group-hover:border-[#54bb74]/50">
-                      <div className="flex flex-col items-center justify-center py-4">
-                        <div className="p-3 bg-[#54bb74]/10 rounded-full mb-2 group-hover:bg-[#54bb74]/20 transition-colors">
+                    <label className="relative flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-[#3a3a3a] rounded-lg cursor-pointer bg-gradient-to-br from-[#1e1e1e] to-[#252525] hover:from-[#252525] hover:to-[#333333] transition-all duration-300 group-hover:border-[#54bb74]/50">
+                      <div className="flex flex-col items-center justify-center py-2">
+                        <div className="p-2 bg-[#54bb74]/10 rounded-full mb-1 group-hover:bg-[#54bb74]/20 transition-colors">
                           <svg
-                            className="w-6 h-6 text-[#54bb74]"
+                            className="w-4 h-4 text-[#54bb74]"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -818,12 +943,10 @@ export default function PendantSystemManager({
                             />
                           </svg>
                         </div>
-                        <p className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors">
+                        <p className="text-xs font-medium text-gray-300 group-hover:text-white transition-colors">
                           <span className="text-[#54bb74]">Upload Icon</span>
                         </p>
-                        <p className="text-xs text-gray-500 group-hover:text-gray-400 transition-colors">
-                          PNG, JPG • Max 5MB
-                        </p>
+                        <p className="text-xs text-gray-500">PNG, JPG</p>
                       </div>
                       <input
                         type="file"
@@ -836,13 +959,12 @@ export default function PendantSystemManager({
 
                   {imagePreview && (
                     <div className="flex justify-center">
-                      <div className="relative group">
-                        <div className="absolute inset-0 bg-gradient-to-r from-[#54bb74]/20 to-[#87CEAB]/20 rounded-xl blur-lg group-hover:blur-xl transition-all duration-300"></div>
-                        <div className="relative bg-gradient-to-br from-[#1e1e1e] to-[#252525] p-3 rounded-xl border border-[#3a3a3a]">
+                      <div className="relative">
+                        <div className="bg-gradient-to-br from-[#1e1e1e] to-[#252525] p-2 rounded-lg border border-[#3a3a3a]">
                           <img
                             src={imagePreview}
                             alt="Icon Preview"
-                            className="w-20 h-20 object-cover rounded-lg border border-[#3a3a3a] shadow-lg"
+                            className="w-16 h-16 object-cover rounded border border-[#3a3a3a]"
                           />
                           <button
                             type="button"
@@ -850,7 +972,7 @@ export default function PendantSystemManager({
                               setImageFile(null);
                               setImagePreview("");
                             }}
-                            className="absolute -top-1 -right-1 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:from-red-600 hover:to-red-700 transition-all duration-300 shadow-lg transform hover:scale-110"
+                            className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600 transition-colors"
                           >
                             ×
                           </button>
@@ -862,19 +984,18 @@ export default function PendantSystemManager({
               </div>
 
               {/* 3D Model Upload */}
-              <div className="space-y-2">
-                <label className="flex items-center text-gray-300 font-semibold mb-3">
+              <div className="space-y-1">
+                <label className="flex items-center text-gray-300 font-semibold mb-2">
                   <div className="w-2 h-2 bg-[#87CEAB] rounded-full mr-2"></div>
                   3D Model
                 </label>
-                <div className="space-y-4">
+                <div className="space-y-3">
                   <div className="relative group">
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#87CEAB]/20 via-transparent to-[#54bb74]/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500 opacity-0 group-hover:opacity-100"></div>
-                    <label className="relative flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-[#3a3a3a] rounded-2xl cursor-pointer bg-gradient-to-br from-[#1e1e1e] to-[#252525] hover:from-[#252525] hover:to-[#333333] transition-all duration-300 group-hover:border-[#87CEAB]/50">
-                      <div className="flex flex-col items-center justify-center py-4">
-                        <div className="p-3 bg-[#87CEAB]/10 rounded-full mb-2 group-hover:bg-[#87CEAB]/20 transition-colors">
+                    <label className="relative flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-[#3a3a3a] rounded-lg cursor-pointer bg-gradient-to-br from-[#1e1e1e] to-[#252525] hover:from-[#252525] hover:to-[#333333] transition-all duration-300 group-hover:border-[#87CEAB]/50">
+                      <div className="flex flex-col items-center justify-center py-2">
+                        <div className="p-2 bg-[#87CEAB]/10 rounded-full mb-1 group-hover:bg-[#87CEAB]/20 transition-colors">
                           <svg
-                            className="w-6 h-6 text-[#87CEAB]"
+                            className="w-4 h-4 text-[#87CEAB]"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -887,14 +1008,10 @@ export default function PendantSystemManager({
                             />
                           </svg>
                         </div>
-                        <p className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors">
-                          <span className="text-[#87CEAB]">
-                            Upload 3D Model
-                          </span>
+                        <p className="text-xs font-medium text-gray-300 group-hover:text-white transition-colors">
+                          <span className="text-[#87CEAB]">Upload 3D Model</span>
                         </p>
-                        <p className="text-xs text-gray-500 group-hover:text-gray-400 transition-colors">
-                          GLB, FBX, USDZ, GLTF
-                        </p>
+                        <p className="text-xs text-gray-500">GLB, GLTF</p>
                       </div>
                       <input
                         type="file"
@@ -907,13 +1024,12 @@ export default function PendantSystemManager({
 
                   {modelPreview && (
                     <div className="flex justify-center">
-                      <div className="relative group">
-                        <div className="absolute inset-0 bg-gradient-to-r from-[#87CEAB]/20 to-[#54bb74]/20 rounded-xl blur-lg group-hover:blur-xl transition-all duration-300"></div>
-                        <div className="relative bg-gradient-to-br from-[#1e1e1e] to-[#252525] p-3 rounded-xl border border-[#3a3a3a] min-w-[120px]">
-                          <div className="flex items-center space-x-3">
-                            <div className="p-2 bg-[#87CEAB]/20 rounded-lg">
+                      <div className="relative">
+                        <div className="bg-gradient-to-br from-[#1e1e1e] to-[#252525] p-2 rounded-lg border border-[#3a3a3a] min-w-[100px]">
+                          <div className="flex items-center space-x-2">
+                            <div className="p-1 bg-[#87CEAB]/20 rounded">
                               <svg
-                                className="w-5 h-5 text-[#87CEAB]"
+                                className="w-4 h-4 text-[#87CEAB]"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -939,7 +1055,7 @@ export default function PendantSystemManager({
                               setModelFile(null);
                               setModelPreview("");
                             }}
-                            className="absolute -top-1 -right-1 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:from-red-600 hover:to-red-700 transition-all duration-300 shadow-lg transform hover:scale-110"
+                            className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600 transition-colors"
                           >
                             ×
                           </button>
@@ -949,38 +1065,38 @@ export default function PendantSystemManager({
                   )}
                 </div>
               </div>
+            </div>
 
-              {/* Action Buttons */}
-              <div className="flex justify-end gap-4 mt-8 pt-6 border-t border-[#3a3a3a]">
-                <button
-                  onClick={handleCloseAddModal}
-                  disabled={pendantSaving}
-                  className="px-8 py-4 bg-gradient-to-r from-[#333333] to-[#444444] text-white rounded-xl hover:from-[#444444] hover:to-[#555555] transition-all duration-300 disabled:opacity-50 font-medium transform hover:scale-105 shadow-lg"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleSaveOrUpdate}
-                  disabled={
-                    pendantSaving ||
-                    !newPendantData.name ||
-                    !newPendantData.message
-                  }
-                  className="px-8 py-4 bg-gradient-to-r from-[#54bb74] to-[#48a064] text-[#1e1e1e] rounded-xl hover:from-[#48a064] hover:to-[#3d8b54] transition-all duration-300 disabled:opacity-50 flex items-center justify-center font-semibold transform hover:scale-105 shadow-lg disabled:transform-none"
-                >
-                  {pendantSaving ? (
-                    <>
-                      <FaSpinner className="animate-spin mr-3 text-lg" />
-                      Creating Configuration...
-                    </>
-                  ) : (
-                    <>
-                      <FaBox className="mr-3 text-lg" />
-                      Create Configuration
-                    </>
-                  )}
-                </button>
-              </div>
+            {/* Action Buttons */}
+            <div className="flex justify-end gap-3 px-6 pb-6 pt-4 border-t border-[#3a3a3a]">
+              <button
+                onClick={handleCloseAddModal}
+                disabled={pendantSaving}
+                className="px-6 py-2 bg-gradient-to-r from-[#333333] to-[#444444] text-white rounded-lg hover:from-[#444444] hover:to-[#555555] transition-all duration-300 disabled:opacity-50 font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveOrUpdate}
+                disabled={
+                  pendantSaving ||
+                  !newPendantData.name ||
+                  !newPendantData.message
+                }
+                className="px-6 py-2 bg-gradient-to-r from-[#54bb74] to-[#48a064] text-[#1e1e1e] rounded-lg hover:from-[#48a064] hover:to-[#3d8b54] transition-all duration-300 disabled:opacity-50 flex items-center justify-center font-semibold"
+              >
+                {pendantSaving ? (
+                  <>
+                    <FaSpinner className="animate-spin mr-2 text-sm" />
+                    Creating...
+                  </>
+                ) : (
+                  <>
+                    <FaBox className="mr-2 text-sm" />
+                    Create
+                  </>
+                )}
+              </button>
             </div>
           </div>
         </div>
@@ -1330,8 +1446,18 @@ export default function PendantSystemManager({
                                     ) : (
                                       <div className="flex items-center space-x-2 mt-1">
                                         <div className="w-6 h-6 bg-gray-500/20 rounded-lg flex items-center justify-center">
-                                          <svg className="w-3 h-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L5.636 5.636" />
+                                          <svg
+                                            className="w-3 h-3 text-gray-500"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                          >
+                                            <path
+                                              strokeLinecap="round"
+                                              strokeLinejoin="round"
+                                              strokeWidth={2}
+                                              d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L5.636 5.636"
+                                            />
                                           </svg>
                                         </div>
                                         <span className="text-gray-500 text-xs">
@@ -1505,8 +1631,18 @@ export default function PendantSystemManager({
                                         ) : (
                                           <div className="flex items-center space-x-2 mt-1">
                                             <div className="w-6 h-6 bg-gray-500/20 rounded-lg flex items-center justify-center">
-                                              <svg className="w-3 h-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L5.636 5.636" />
+                                              <svg
+                                                className="w-3 h-3 text-gray-500"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                              >
+                                                <path
+                                                  strokeLinecap="round"
+                                                  strokeLinejoin="round"
+                                                  strokeWidth={2}
+                                                  d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L5.636 5.636"
+                                                />
                                               </svg>
                                             </div>
                                             <span className="text-gray-500 text-xs">
@@ -1637,8 +1773,18 @@ export default function PendantSystemManager({
                                         ) : (
                                           <div className="flex items-center space-x-2 mt-1">
                                             <div className="w-6 h-6 bg-gray-500/20 rounded-lg flex items-center justify-center">
-                                              <svg className="w-3 h-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L5.636 5.636" />
+                                              <svg
+                                                className="w-3 h-3 text-gray-500"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                              >
+                                                <path
+                                                  strokeLinecap="round"
+                                                  strokeLinejoin="round"
+                                                  strokeWidth={2}
+                                                  d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L5.636 5.636"
+                                                />
                                               </svg>
                                             </div>
                                             <span className="text-gray-500 text-xs">
@@ -1770,8 +1916,18 @@ export default function PendantSystemManager({
                                         ) : (
                                           <div className="flex items-center space-x-2 mt-1">
                                             <div className="w-6 h-6 bg-gray-500/20 rounded-lg flex items-center justify-center">
-                                              <svg className="w-3 h-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L5.636 5.636" />
+                                              <svg
+                                                className="w-3 h-3 text-gray-500"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                              >
+                                                <path
+                                                  strokeLinecap="round"
+                                                  strokeLinejoin="round"
+                                                  strokeWidth={2}
+                                                  d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L5.636 5.636"
+                                                />
                                               </svg>
                                             </div>
                                             <span className="text-gray-500 text-xs">
