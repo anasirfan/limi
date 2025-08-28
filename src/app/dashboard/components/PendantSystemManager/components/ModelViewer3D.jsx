@@ -131,6 +131,7 @@ function Model({ url, autoRotate = true, ...props }) {
 // Main 3D Model Viewer Component
 const ModelViewer3D = ({ modelUrl, isOpen, onClose, modelName = "3D Model" }) => {
   const [autoRotate, setAutoRotate] = useState(true);
+  const [copied, setCopied] = useState(false);
 
   if (!isOpen) return null;
 
@@ -149,9 +150,34 @@ const ModelViewer3D = ({ modelUrl, isOpen, onClose, modelName = "3D Model" }) =>
               <div>
                 <h3 className="text-lg font-bold text-white">{modelName}</h3>
                 <p className="text-sm text-gray-400">3D Model Viewer</p>
-                <p className="text-xs text-gray-300 mt-1 break-all">
-                  URL: {modelUrl}
-                </p>
+                <div className="flex items-start space-x-2 mt-1">
+                  <p className="text-xs text-gray-300 break-all flex-1">
+                    URL: {modelUrl}
+                  </p>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(modelUrl);
+                      setCopied(true);
+                      setTimeout(() => setCopied(false), 2000);
+                    }}
+                    className={`p-1 rounded transition-all duration-200 transform ${
+                      copied 
+                        ? 'text-[#50C878] bg-[#50C878]/20 scale-110' 
+                        : 'text-gray-400 hover:text-[#50C878] hover:bg-[#50C878]/10 hover:scale-105'
+                    }`}
+                    title={copied ? "Copied!" : "Copy URL"}
+                  >
+                    {copied ? (
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    ) : (
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
               </div>
             </div>
             
