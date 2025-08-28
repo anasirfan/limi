@@ -921,7 +921,7 @@ const ConfiguratorLayout = () => {
             sendMessageToPlayCanvas(`product_${modelUrl}`);
             sendMessageToPlayCanvas(`${pendantAssignment.message}`);
           } else {
-            sendMessageToPlayCanvas(`cable_0:${message}`);
+            sendMessageToPlayCanvas(`cable_0:${pendantAssignment.message}`);
           }
         } else {
           // For multiple pendants, send individual pendant messages
@@ -933,7 +933,7 @@ const ConfiguratorLayout = () => {
               sendMessageToPlayCanvas(`${pendantAssignment.message}`);
          
             } else {
-              sendMessageToPlayCanvas(`cable_${id}:${message}`);
+              sendMessageToPlayCanvas(`cable_${id}:${pendantAssignment.message}`);
             }
           });
         }
