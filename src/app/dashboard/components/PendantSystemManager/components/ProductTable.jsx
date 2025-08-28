@@ -38,9 +38,13 @@ const ProductTable = ({ products, type, onEdit, onDelete, deletingItemId }) => {
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <div
-            className={`w-12 h-12 bg-gradient-to-br from-[${primaryColor}]/20 to-[${primaryColor}]/10 rounded-2xl flex items-center justify-center`}
+            className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
+              isSystem 
+                ? 'bg-gradient-to-br from-[#87CEAB]/20 to-[#87CEAB]/10' 
+                : 'bg-gradient-to-br from-[#50C878]/20 to-[#50C878]/10'
+            }`}
           >
-            <Icon className={`text-2xl text-[${primaryColor}]`} />
+            <Icon className={`text-2xl ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`} />
           </div>
           <div>
             <h3 className="text-2xl font-bold text-white">
@@ -87,9 +91,13 @@ const ProductTable = ({ products, type, onEdit, onDelete, deletingItemId }) => {
             )}
           </div>
           <div
-            className={`px-4 py-3  bg-gradient-to-r from-[${primaryColor}]/10 to-[${primaryColor}]/5 rounded-xl`}
+            className={`px-4 py-3 rounded-xl ${
+              isSystem 
+                ? 'bg-gradient-to-r from-[#87CEAB]/10 to-[#87CEAB]/5' 
+                : 'bg-gradient-to-r from-[#50C878]/10 to-[#50C878]/5'
+            }`}
           >
-            <span className={`text-[${primaryColor}] font-semibold whitespace-nowrap`}>
+            <span className={`font-semibold whitespace-nowrap ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}>
               {filteredProducts.length} of {products.length} {isSystem ? "systems" : "items"}
             </span>
           </div>
@@ -99,30 +107,34 @@ const ProductTable = ({ products, type, onEdit, onDelete, deletingItemId }) => {
       <div className="bg-gradient-to-br from-[#1a1a1a] to-[#2a2a2a] rounded-2xl overflow-hidden">
         {/* Table Header */}
         <div
-          className={`bg-gradient-to-r from-[${primaryColor}]/10 to-[${primaryColor}]/5 px-6 py-4`}
+          className={`px-6 py-4 ${
+            isSystem 
+              ? 'bg-gradient-to-r from-[#87CEAB]/10 to-[#87CEAB]/5' 
+              : 'bg-gradient-to-r from-[#50C878]/10 to-[#50C878]/5'
+          }`}
         >
           <div className="grid grid-cols-12 gap-4 items-center">
             <div
-              className={`col-span-1 text-[${primaryColor}] font-semibold text-sm`}
+              className={`col-span-1 font-semibold text-sm ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}
             >
               Image
             </div>
-            <div className="col-span-2 text-[${primaryColor}] font-semibold text-sm">
+            <div className={`col-span-2 font-semibold text-sm ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}>
               Name
             </div>
-            <div className="col-span-2 text-[${primaryColor}] font-semibold text-sm">
+            <div className={`col-span-2 font-semibold text-sm ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}>
               Type
             </div>
-            <div className="col-span-3 text-[${primaryColor}] font-semibold text-sm">
+            <div className={`col-span-3 font-semibold text-sm ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}>
               Message
             </div>
             <div
-              className={`col-span-2 text-[${primaryColor}] font-semibold text-sm`}
+              className={`col-span-2 font-semibold text-sm ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}
             >
               Models
             </div>
             <div
-              className={`col-span-2 text-[${primaryColor}] font-semibold text-sm text-right`}
+              className={`col-span-2 font-semibold text-sm text-right ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}
             >
               Actions
             </div>
@@ -134,13 +146,21 @@ const ProductTable = ({ products, type, onEdit, onDelete, deletingItemId }) => {
           {filteredProducts.map((item, index) => (
             <div
               key={item._id || index}
-              className={`group px-6 py-4 hover:bg-gradient-to-r hover:from-[${primaryColor}]/5 hover:to-transparent transition-all duration-300`}
+              className={`group px-6 py-4 transition-all duration-300 ${
+                isSystem 
+                  ? 'hover:bg-gradient-to-r hover:from-[#87CEAB]/5 hover:to-transparent' 
+                  : 'hover:bg-gradient-to-r hover:from-[#50C878]/5 hover:to-transparent'
+              }`}
             >
               <div className="grid grid-cols-12 gap-4 items-center">
                 {/* Image */}
                 <div className="col-span-1">
                   <div
-                    className={`w-12 h-12 bg-gradient-to-br from-[${primaryColor}]/20 to-[${primaryColor}]/10 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}
+                    className={`w-12 h-12 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 ${
+                      isSystem 
+                        ? 'bg-gradient-to-br from-[#87CEAB]/20 to-[#87CEAB]/10' 
+                        : 'bg-gradient-to-br from-[#50C878]/20 to-[#50C878]/10'
+                    }`}
                   >
                     {item.image || item.media?.image?.url ? (
                       <img
@@ -149,7 +169,7 @@ const ProductTable = ({ products, type, onEdit, onDelete, deletingItemId }) => {
                         className="w-10 h-10 object-cover rounded-lg"
                       />
                     ) : (
-                      <Icon className={`text-lg text-[${primaryColor}]`} />
+                      <Icon className={`text-lg ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`} />
                     )}
                   </div>
                 </div>
@@ -157,7 +177,11 @@ const ProductTable = ({ products, type, onEdit, onDelete, deletingItemId }) => {
                 {/* Name */}
                 <div className="col-span-2">
                   <h4
-                    className={`text-lg font-bold text-white group-hover:text-[${primaryColor}] transition-colors duration-300`}
+                    className={`text-lg font-bold text-white transition-colors duration-300 ${
+                      isSystem 
+                        ? 'group-hover:text-[#87CEAB]' 
+                        : 'group-hover:text-[#50C878]'
+                    }`}
                   >
                     {item.name}
                   </h4>
@@ -192,35 +216,50 @@ const ProductTable = ({ products, type, onEdit, onDelete, deletingItemId }) => {
                 {/* Models */}
                 <div className="col-span-2">
                   <div className="space-y-1">
-                    {item.media?.model || item.model ? (
-                      <div className="flex items-center space-x-2 mt-1">
-                        <div className="w-6 h-6 bg-[#FFC107]/20 rounded-lg flex items-center justify-center">
-                          <FaCube className="text-[#FFC107] text-xs" />
-                        </div>
-                        <span className="text-gray-500 text-xs">
-                          3D Model Available
-                        </span>
-                      </div>
-                    ) : (
-                      <div className="flex items-center space-x-2 mt-1">
-                        <div className="w-6 h-6 bg-gray-500/20 rounded-lg flex items-center justify-center">
-                          <svg
-                            className="w-3 h-3 text-gray-500"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
+                    {(() => {
+                      const modelUrl = item.media?.model?.url || item.model;
+                      const hasModel = modelUrl && modelUrl.trim() !== '';
+                      
+                      return hasModel ? (
+                        <div className="flex flex-col space-y-1">
+                          <div className="flex items-center space-x-2">
+                            <div className="w-6 h-6 bg-yellow-500/20 rounded-lg flex items-center justify-center">
+                              <FaCube className="text-yellow-500 text-xs" />
+                            </div>
+                            <span className="text-green-400 text-xs font-medium">
+                              3D Model Available
+                            </span>
+                          </div>
+                          <a
+                            href={modelUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-400 hover:text-blue-300 text-xs underline ml-8 transition-colors duration-200"
                           >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L5.636 5.636"
-                            />
-                          </svg>
+                            View Model
+                          </a>
                         </div>
-                        <span className="text-gray-500 text-xs">No Model</span>
-                      </div>
-                    )}
+                      ) : (
+                        <div className="flex items-center space-x-2">
+                          <div className="w-6 h-6 bg-gray-500/20 rounded-lg flex items-center justify-center">
+                            <svg
+                              className="w-3 h-3 text-gray-500"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L5.636 5.636"
+                              />
+                            </svg>
+                          </div>
+                          <span className="text-gray-500 text-xs">No Model</span>
+                        </div>
+                      );
+                    })()}
                   </div>
                 </div>
 

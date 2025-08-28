@@ -23,6 +23,11 @@ export const filterProductsByTab = (products, activeTab) => {
     case "ball":
     case "universal":
       return products.filter(item => item.isSystem && item.systemType === activeTab);
+    case "model":
+      return products.filter(item => {
+        const modelUrl = item.media?.model?.url || item.model;
+        return modelUrl && modelUrl.trim() !== '';
+      });
     case "all":
     default:
       return products;

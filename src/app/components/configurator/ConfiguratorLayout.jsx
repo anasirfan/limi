@@ -917,7 +917,7 @@ const ConfiguratorLayout = () => {
           const modelUrl = pendantAssignment.media?.model?.url;
           
           if (modelUrl) {
-            sendMessageToPlayCanvas(`cable_0:${modelUrl}`);
+            sendMessageToPlayCanvas(`cable_0:product${modelUrl}`);
             sendMessageToPlayCanvas(`${pendantAssignment.message}`);
        
           } else {
@@ -928,7 +928,8 @@ const ConfiguratorLayout = () => {
           pendantIds.forEach((id) => {
             const modelUrl = pendantAssignment.media?.model?.url || pendantAssignment.image?.url || pendantAssignment.message;
             if (modelUrl) {
-              sendMessageToPlayCanvas(`cable_${id}:${modelUrl}`);
+              sendMessageToPlayCanvas(`cable_${id}`);
+              sendMessageToPlayCanvas(`product_${modelUrl}`);
               sendMessageToPlayCanvas(`${pendantAssignment.message}`);
          
             } else {
