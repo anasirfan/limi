@@ -217,7 +217,7 @@ const ProductTable = ({ products, type, onEdit, onDelete, deletingItemId }) => {
                 <div className="col-span-2">
                   <div className="space-y-1">
                     {(() => {
-                      const modelUrl = item.media?.model?.url || item.model;
+                      const modelUrl = item.media?.model?.url;
                       const hasModel = modelUrl && modelUrl.trim() !== '';
                       
                       return hasModel ? (

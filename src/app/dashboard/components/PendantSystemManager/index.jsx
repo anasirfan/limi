@@ -333,6 +333,32 @@ export default function PendantSystemManager({
                     deletingItemId={deletingItemId}
                   />
                 )}
+
+                {/* Show Products with Models */}
+                {activeTab === 'model' && filteredProducts.length > 0 && (
+                  <>
+                    {/* Show pendant products with models */}
+                    {filteredProducts.filter(item => !item.isSystem).length > 0 && (
+                      <ProductTable
+                        products={filteredProducts.filter(item => !item.isSystem)}
+                        type="pendant"
+                        onEdit={handleEditItem}
+                        onDelete={handleDeleteItem}
+                        deletingItemId={deletingItemId}
+                      />
+                    )}
+                    {/* Show system products with models */}
+                    {filteredProducts.filter(item => item.isSystem).length > 0 && (
+                      <ProductTable
+                        products={filteredProducts.filter(item => item.isSystem)}
+                        type="system"
+                        onEdit={handleEditItem}
+                        onDelete={handleDeleteItem}
+                        deletingItemId={deletingItemId}
+                      />
+                    )}
+                  </>
+                )}
               </div>
             </div>
           )

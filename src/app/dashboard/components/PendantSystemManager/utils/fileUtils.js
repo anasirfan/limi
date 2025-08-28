@@ -25,7 +25,7 @@ export const filterProductsByTab = (products, activeTab) => {
       return products.filter(item => item.isSystem && item.systemType === activeTab);
     case "model":
       return products.filter(item => {
-        const modelUrl = item.media?.model?.url || item.model;
+        const modelUrl = item.media?.model?.url;
         return modelUrl && modelUrl.trim() !== '';
       });
     case "all":
@@ -81,12 +81,9 @@ export function getTabCounts(products) {
     bar: products.filter((item) => item.isSystem && item.systemType === "bar").length,
     ball: products.filter((item) => item.isSystem && item.systemType === "ball").length,
     universal: products.filter((item) => item.isSystem && item.systemType === "universal").length,
-    model: products.filter(
-      (item) =>
-        item.media?.model ||
-        item.model ||
-        item.media?.model?.url ||
-        (typeof item.model === "string" && item.model.length > 0)
-    ).length,
+    model: products.filter(item => {
+      const modelUrl = item.media?.model?.url;
+      return modelUrl && modelUrl.trim() !== '';
+    }).length,
   };
 }
