@@ -227,6 +227,9 @@ const ModelViewer3D = ({ modelUrl, isOpen, onClose, modelName = "3D Model" }) =>
                 blur={1} 
                 far={4} 
               />
+            </Suspense>
+            
+            <Suspense fallback={null}>
               <Environment preset="studio" />
             </Suspense>
             
