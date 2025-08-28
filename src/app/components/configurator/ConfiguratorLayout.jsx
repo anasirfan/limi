@@ -917,9 +917,9 @@ const ConfiguratorLayout = () => {
           const modelUrl = pendantAssignment.media?.model?.url;
           
           if (modelUrl) {
-            sendMessageToPlayCanvas(`cable_0:product${modelUrl}`);
+            sendMessageToPlayCanvas(`cable_0`);
+            sendMessageToPlayCanvas(`product_${modelUrl}`);
             sendMessageToPlayCanvas(`${pendantAssignment.message}`);
-       
           } else {
             sendMessageToPlayCanvas(`cable_0:${message}`);
           }
@@ -933,7 +933,7 @@ const ConfiguratorLayout = () => {
               sendMessageToPlayCanvas(`${pendantAssignment.message}`);
          
             } else {
-              sendMessageToPlayCanvas(`${message}`);
+              sendMessageToPlayCanvas(`cable_${id}:${message}`);
             }
           });
         }
