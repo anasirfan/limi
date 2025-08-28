@@ -9,9 +9,12 @@ import {
   FaSearch,
   FaTimes,
 } from "react-icons/fa";
+import ModelViewer3D from "./ModelViewer3D";
 
 const ProductTable = ({ products, type, onEdit, onDelete, deletingItemId }) => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedModel, setSelectedModel] = useState(null);
+  const [isModelViewerOpen, setIsModelViewerOpen] = useState(false);
   const isSystem = type === "system";
   const primaryColor = isSystem ? "#87CEAB" : "#50C878";
   const Icon = isSystem ? FaLayerGroup : FaLightbulb;
@@ -31,6 +34,19 @@ const ProductTable = ({ products, type, onEdit, onDelete, deletingItemId }) => {
 
   const handleClearSearch = () => {
     setSearchQuery("");
+  };
+
+  const handleViewModel = (item) => {
+    setSelectedModel({
+      url: item.media?.model?.url,
+      name: item.name
+    });
+    setIsModelViewerOpen(true);
+  };
+
+  const handleCloseModelViewer = () => {
+    setIsModelViewerOpen(false);
+    setSelectedModel(null);
   };
 
   return (
@@ -230,14 +246,12 @@ const ProductTable = ({ products, type, onEdit, onDelete, deletingItemId }) => {
                               3D Model Available
                             </span>
                           </div>
-                          <a
-                            href={modelUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-400 hover:text-blue-300 text-xs underline ml-8 transition-colors duration-200"
+                          <button
+                            onClick={() => handleViewModel(item)}
+                            className="text-blue-400 hover:text-blue-300 text-xs underline ml-8 transition-colors duration-200 bg-transparent border-none cursor-pointer"
                           >
                             View Model
-                          </a>
+                          </button>
                         </div>
                       ) : (
                         <div className="flex items-center space-x-2">
@@ -292,6 +306,16 @@ const ProductTable = ({ products, type, onEdit, onDelete, deletingItemId }) => {
           ))}
         </div>
       </div>
+
+      {/* 3D Model Viewer Modal */}
+      {selectedModel && (
+        <ModelViewer3D
+          modelUrl={selectedModel.url}
+          modelName={selectedModel.name}
+          isOpen={isModelViewerOpen}
+          onClose={handleCloseModelViewer}
+        />
+      )}
     </div>
   );
 };
