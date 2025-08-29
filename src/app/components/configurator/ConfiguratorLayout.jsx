@@ -95,15 +95,16 @@ const ConfiguratorLayout = () => {
       {
         isSystem: true,
         systemType: "",
-        design: "Pikoes",
+        design: "Piko",
         designId: "product_5",
         connectorColor: "black",
         cableSize: "2mm",
         cableColor: "black",
         modelUrl:
-          "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/testpandet_1756418157231.glb",
+        "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756460850615.glb",
         hasGlass: false,
-        hasColor: false,
+        hasGold: true,
+        hasSilver: false,
       },
     ]);
   });
@@ -620,26 +621,27 @@ const ConfiguratorLayout = () => {
               sendMessageToPlayCanvas(`system:${cable.systemType}`);
               const parts = cable.designId.split("_"); // system_base_2_2
               if (parts.length === 4) {
-                // [system, base, 2, 2]
-                const baseDesign = parts.slice(0, 3).join("_"); // e.g., "system_base_2"
-                // sendMessageToPlayCanvas(`cable_${index}:${baseDesign}`);
-                sendMessageToPlayCanvas(`cable_${index}:${cable.designId}`);
+                sendMessageToPlayCanvas(`cable_${index}`);
+                sendMessageToPlayCanvas(`glass_${cable.hasGlass ? "attached" : "none"}`);
+                sendMessageToPlayCanvas(`color_${cable.hasGold ? "gold" : "none"}`);
+                sendMessageToPlayCanvas(`silver_${cable.hasSilver ? "attached" : "none"}`);
+                sendMessageToPlayCanvas(`product_${cable.modelUrl}`);
+                sendMessageToPlayCanvas(`${cable.message}`);
               } else {
-                // sendMessageToPlayCanvas(`cable_${index}:${baseDesign}`);
-                sendMessageToPlayCanvas(`cable_${index}:${cable.designId}`);
+                sendMessageToPlayCanvas(`cable_${index}`);
+                sendMessageToPlayCanvas(`glass_${cable.hasGlass ? "attached" : "none"}`);
+                sendMessageToPlayCanvas(`color_${cable.hasGold ? "gold" : "none"}`);
+                sendMessageToPlayCanvas(`silver_${cable.hasSilver ? "attached" : "none"}`);
+                sendMessageToPlayCanvas(`product_${cable.modelUrl}`);
+                sendMessageToPlayCanvas(`${cable.message}`);
               }
-              console.log("cable", cable.size);
-              sendMessageToPlayCanvas(`cable_${index}:size_${cable.size}`);
             } else {
               sendMessageToPlayCanvas(`cable_${index}`);
-              sendMessageToPlayCanvas(
-                cable.hasGlass ? "glass_attached" : "glass_none"
-              );
-              sendMessageToPlayCanvas(
-                cable.hasColor ? "color_gold" : "color_none"
-              );
+              sendMessageToPlayCanvas(`glass_${cable.hasGlass ? "attached" : "none"}`);
+              sendMessageToPlayCanvas(`color_${cable.hasGold ? "gold" : "none"}`);
+              sendMessageToPlayCanvas(`silver_${cable.hasSilver ? "attached" : "none"}`);
               sendMessageToPlayCanvas(`product_${cable.modelUrl}`);
-              sendMessageToPlayCanvas(`${cable.designId}`);
+              sendMessageToPlayCanvas(`${cable.message}`);
             }
           });
           sendMessageToPlayCanvas(
@@ -918,7 +920,8 @@ const ConfiguratorLayout = () => {
               designId: pendantAssignment.message,
               modelUrl: pendantAssignment.media?.model?.url,
               hasGlass: pendantAssignment.hasGlass,
-              hasColor: pendantAssignment.hasColor,
+              hasGold: pendantAssignment.hasGold,
+              hasSilver: pendantAssignment.hasSilver,
             };
           }
         });
@@ -937,15 +940,9 @@ const ConfiguratorLayout = () => {
 
           if (modelUrl) {
             sendMessageToPlayCanvas(`cable_0`);
-            sendMessageToPlayCanvas(
-              pendantAssignment.hasGlass ? "glass_attached" : "glass_none"
-            );
-            sendMessageToPlayCanvas(
-              pendantAssignment.hasGold ? "color_gold" : "gold_none"
-            );
-            sendMessageToPlayCanvas(
-              pendantAssignment.hasSilver ? "color_silver" : "silver_none"
-            );
+            sendMessageToPlayCanvas(`glass_${pendantAssignment.hasGlass ? "attached" : "none"}`);
+            sendMessageToPlayCanvas(`color_${pendantAssignment.hasGold ? "gold" : "none"}`);
+            sendMessageToPlayCanvas(`silver_${pendantAssignment.hasSilver ? "attached" : "none"}`);
             sendMessageToPlayCanvas(`product_${modelUrl}`);
             sendMessageToPlayCanvas(`${pendantAssignment.message}`);
           } else {
@@ -960,15 +957,9 @@ const ConfiguratorLayout = () => {
               pendantAssignment.message;
             if (modelUrl) {
               sendMessageToPlayCanvas(`cable_${id}`);
-              sendMessageToPlayCanvas(
-                pendantAssignment.hasGlass ? "glass_attached" : "glass_none"
-              );
-              sendMessageToPlayCanvas(
-                pendantAssignment.hasGold ? "gold_attached" : "gold_none"
-              );
-              sendMessageToPlayCanvas(
-                pendantAssignment.hasSilver ? "silver_attached" : "silver_none"
-              );
+              sendMessageToPlayCanvas(`glass_${pendantAssignment.hasGlass ? "attached" : "none"}`);
+              sendMessageToPlayCanvas(`color_${pendantAssignment.hasGold ? "gold" : "none"}`);
+              sendMessageToPlayCanvas(`silver_${pendantAssignment.hasSilver ? "attached" : "none"}`);
               sendMessageToPlayCanvas(`product_${modelUrl}`);
               sendMessageToPlayCanvas(`${pendantAssignment.message}`);
             } else {
@@ -1003,17 +994,17 @@ const ConfiguratorLayout = () => {
       sendMessageToPlayCanvas(`glass_${system.hasGlass ? "attached" : "none"}`);
       sendMessageToPlayCanvas(`color_${system.hasColor ? "gold" : "none"}`);
       sendMessageToPlayCanvas(`product_${system.media?.model?.url}`);
-      sendMessageToPlayCanvas(`system_${system.message}`);
+      sendMessageToPlayCanvas(`${system.message}`);
       sendMessageToPlayCanvas(`cable_1`);
       sendMessageToPlayCanvas(`glass_${system.hasGlass ? "attached" : "none"}`);
       sendMessageToPlayCanvas(`color_${system.hasColor ? "gold" : "none"}`);
       sendMessageToPlayCanvas(`product_${system.media?.model?.url}`);
-      sendMessageToPlayCanvas(`system_${system.message}`); 
+      sendMessageToPlayCanvas(`${system.message}`); 
       sendMessageToPlayCanvas(`cable_2`);
       sendMessageToPlayCanvas(`glass_${system.hasGlass ? "attached" : "none"}`);
       sendMessageToPlayCanvas(`color_${system.hasColor ? "gold" : "none"}`);
       sendMessageToPlayCanvas(`product_${system.media?.model?.url}`);
-      sendMessageToPlayCanvas(`system_${system.message}`);
+      sendMessageToPlayCanvas(`${system.message}`);
       setCables([
         {
           isSystem: system.isSystem,
@@ -1152,15 +1143,9 @@ const ConfiguratorLayout = () => {
           const system = systemAssignments.find((a) => a.design === design);
           sendMessageToPlayCanvas(`system:${system.systemType}`);
           sendMessageToPlayCanvas(`cable_${cableNo}`);
-          sendMessageToPlayCanvas(
-            system.hasGlass ? "glass_attached" : "glass_none"
-          );
-          sendMessageToPlayCanvas(
-            system.hasGold ? "gold_attached" : "gold_none"
-          );
-          sendMessageToPlayCanvas(
-            system.hasSilver ? "silver_attached" : "silver_none"
-          );
+          sendMessageToPlayCanvas(`glass_${system.hasGlass ? "attached" : "none"}`);
+          sendMessageToPlayCanvas(`color_${system.hasGold ? "gold" : "none"}`);
+          sendMessageToPlayCanvas(`silver_${system.hasSilver ? "attached" : "none"}`);
           sendMessageToPlayCanvas(`product_${system.media?.model?.url}`);
           sendMessageToPlayCanvas(`${system.message}`);
         });
@@ -1250,7 +1235,7 @@ const ConfiguratorLayout = () => {
         } else {
           iframeMessagesArray.push(`cable_${i}:${cable.designId}`);
         }
-        iframeMessagesArray.push(`cable_${i}:size_${cable.size}`);
+        // iframeMessagesArray.push(`cable_${i}:size_${cable.size}`);
       });
     }
 
