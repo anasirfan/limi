@@ -135,7 +135,7 @@ const ProductTable = ({
                 : 'bg-gradient-to-r from-[#50C878]/10 to-[#50C878]/5'
             }`}
           >
-            <div className="grid grid-cols-12 gap-4 items-center">
+            <div className="grid grid-cols-12 items-center">
               {/* Select All Checkbox */}
               <div className="col-span-1 flex items-center space-x-2">
                 <button
@@ -151,7 +151,7 @@ const ProductTable = ({
                 Name
               </div>
               
-              <div className={`col-span-2 font-semibold text-sm ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}>
+              <div className={`col-span-1 font-semibold text-sm ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}>
                 Type
               </div>
               
@@ -237,7 +237,7 @@ const ProductTable = ({
                   </div>
 
                   {/* Type */}
-                  <div className="col-span-2">
+                  <div className="col-span-1">
                     {isSystem ? (
                       <span
                         className={`px-3 py-1 rounded-full text-xs font-medium capitalize ${
