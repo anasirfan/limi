@@ -1081,6 +1081,9 @@ const ConfiguratorLayout = () => {
                 systemType: system.systemType,
                 design: system.design,
                 designId: system.message,
+                hasGlass: system.hasGlass,
+                hasColor: system.hasColor,
+                modelUrl: system.media?.model?.url,
               };
             }
           });
@@ -1092,7 +1095,11 @@ const ConfiguratorLayout = () => {
           //New Logic
           const system = systemAssignments.find((a) => a.design === design);
           sendMessageToPlayCanvas(`system:${system.systemType}`);
-          sendMessageToPlayCanvas(`cable_${cableNo}:${system.message}`);
+          sendMessageToPlayCanvas(`cable_${cableNo}`);
+          sendMessageToPlayCanvas(system.hasGlass ? "glass_attached" : "glass_none");
+          sendMessageToPlayCanvas(system.hasColor ? "color_gold" : "color_none");
+          sendMessageToPlayCanvas(`product_${system.modelUrl}`);
+          sendMessageToPlayCanvas(`${system.designId}`);
         });
       }, 10);
     }, [config.selectedPendants, config.systemType, config.cableSystemTypes]);
