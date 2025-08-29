@@ -151,26 +151,26 @@ const ProductTable = ({
                 Name
               </div>
               
-              <div className={`col-span-1 font-semibold text-sm ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}>
+              <div className={`col-span-1 ml-2 font-semibold text-sm ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}>
                 Type
               </div>
               
               {/* Message Column */}
-              <div className={`col-span-2 font-semibold text-sm ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}>
+              <div className={`col-span-2 ml-1 font-semibold text-sm ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}>
                 Message
               </div>
               
-              <div className={`col-span-1 font-semibold text-xs ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}>
+              <div className={`col-span-1 ml-2 font-semibold text-xs ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}>
                 Glass
               </div>
               
-              <div className={`col-span-1 font-semibold text-xs ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}>
+              <div className={`col-span-1 ml-2 font-semibold text-xs ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}>
                 Gold
               </div>
-              <div className={`col-span-1 font-semibold text-xs ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}>
+              <div className={`col-span-1 ml-2 font-semibold text-xs ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}>
                 Silver
               </div>
-              <div className={`col-span-1 font-semibold text-xs ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}>
+              <div className={`col-span-1 ml-2 font-semibold text-xs ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}>
                 Model
               </div>
               
