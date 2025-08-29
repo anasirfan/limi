@@ -6,35 +6,33 @@ import {
   FaCube,
   FaLightbulb,
   FaLayerGroup,
-  FaSearch,
-  FaTimes,
+  FaCheckSquare,
+  FaTimes ,
+  FaSquare
 } from "react-icons/fa";
 import ModelViewer3D from "./ModelViewer3D";
 
-const ProductTable = ({ products, type, onEdit, onDelete, deletingItemId }) => {
-  const [searchQuery, setSearchQuery] = useState("");
+const ProductTable = ({ 
+  products, 
+  type, 
+  onEdit, 
+  onDelete, 
+  deletingItemId,
+  viewMode,
+  selectedItems,
+  setSelectedItems
+}) => {
   const [selectedModel, setSelectedModel] = useState(null);
   const [isModelViewerOpen, setIsModelViewerOpen] = useState(false);
+  const [hoveredItem, setHoveredItem] = useState(null);
   const isSystem = type === "system";
   const primaryColor = isSystem ? "#87CEAB" : "#50C878";
   const Icon = isSystem ? FaLayerGroup : FaLightbulb;
 
-  // Filter products based on search query
-  const filteredProducts = products.filter((item) => {
-    if (!searchQuery || searchQuery.trim() === "") return true;
+  // Use products directly since filtering/sorting is now handled in parent
+  const processedProducts = products;
 
-    const query = searchQuery.toLowerCase().trim();
-    const nameMatch = item.name?.toLowerCase().includes(query);
-    const messageMatch = item.message?.toLowerCase().includes(query);
-    const typeMatch = item.systemType?.toLowerCase().includes(query);
-    const designMatch = item.design?.toLowerCase().includes(query);
-
-    return nameMatch || messageMatch || typeMatch || designMatch;
-  });
-
-  const handleClearSearch = () => {
-    setSearchQuery("");
-  };
+  // Handler functions
 
   const handleViewModel = (item) => {
     setSelectedModel({
@@ -49,250 +47,434 @@ const ProductTable = ({ products, type, onEdit, onDelete, deletingItemId }) => {
     setSelectedModel(null);
   };
 
+  const handleSelectItem = (itemId) => {
+    const newSelected = new Set(selectedItems);
+    if (newSelected.has(itemId)) {
+      newSelected.delete(itemId);
+    } else {
+      newSelected.add(itemId);
+    }
+    setSelectedItems(newSelected);
+  };
+
+  const handleSelectAll = () => {
+    if (selectedItems && selectedItems.size === processedProducts.length) {
+      setSelectedItems(new Set());
+    } else {
+      setSelectedItems(new Set(processedProducts.map(item => item._id)));
+    }
+  };
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <div
-            className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
-              isSystem 
-                ? 'bg-gradient-to-br from-[#87CEAB]/20 to-[#87CEAB]/10' 
-                : 'bg-gradient-to-br from-[#50C878]/20 to-[#50C878]/10'
-            }`}
-          >
-            <Icon className={`text-2xl ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`} />
+      {/* Header */}
+      <div className="flex items-center space-x-4">
+        <div
+          className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
+            isSystem 
+              ? 'bg-gradient-to-br from-[#87CEAB]/20 to-[#87CEAB]/10' 
+              : 'bg-gradient-to-br from-[#50C878]/20 to-[#50C878]/10'
+          }`}
+        >
+          <Icon className={`text-2xl ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`} />
+        </div>
+        <div>
+          <h3 className="text-2xl font-bold text-white">
+            {isSystem ? "System Configurations" : "Individual Pendants"}
+          </h3>
+          <p className="text-gray-400">
+            {isSystem
+              ? "Multi-fixture lighting systems"
+              : "Single lighting fixtures"}
+          </p>
+        </div>
+      </div>
+
+      {/* Bulk Actions */}
+      {selectedItems && selectedItems.size > 0 && (
+        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-xl border border-blue-500/20">
+          <div className="flex items-center space-x-3">
+            <span className="text-blue-400 font-medium">
+              {selectedItems.size} item{selectedItems.size !== 1 ? 's' : ''} selected
+            </span>
           </div>
-          <div>
-            <h3 className="text-2xl font-bold text-white">
-              {isSystem ? "System Configurations" : "Individual Pendants"}
-            </h3>
-            <p className="text-gray-400">
-              {isSystem
-                ? "Multi-fixture lighting systems"
-                : "Single lighting fixtures"}
-            </p>
+          <div className="flex space-x-2">
+            <button
+              onClick={() => setSelectedItems(new Set())}
+              className="px-3 py-2 bg-gray-700/50 text-gray-400 rounded-lg hover:text-white transition-colors duration-200 text-sm"
+            >
+              Clear Selection
+            </button>
+            <button
+              onClick={() => {
+                if (window.confirm(`Delete ${selectedItems.size} selected items?`)) {
+                  selectedItems.forEach(id => {
+                    const item = processedProducts.find(p => p._id === id);
+                    if (item) onDelete(item);
+                  });
+                  setSelectedItems(new Set());
+                }
+              }}
+              className="px-3 py-2 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500 hover:text-white transition-all duration-200 text-sm"
+            >
+              Delete Selected
+            </button>
           </div>
         </div>
-        <div className="flex gap-4 mr-7 justify-center items-center">
-          {/* Search Input */}
-          <div className="relative w-full max-w-md">
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <FaSearch className="text-gray-400 text-lg" />
-              </div>
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={`Search ${isSystem ? "systems" : "pendants"}...`}
-                className="w-full pl-12 pr-12 py-3 bg-gradient-to-r from-[#1a1a1a] to-[#2a2a2a] border border-gray-600/30 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#54bb74]/50 focus:border-[#54bb74]/50 transition-all duration-300"
-              />
-              {searchQuery && (
-                <button
-                  onClick={handleClearSearch}
-                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-white transition-colors duration-200"
-                >
-                  <FaTimes className="text-lg" />
-                </button>
-              )}
-            </div>
-            {searchQuery && (
-              <div className="absolute top-full left-0 right-0 mt-2 px-4 py-2 bg-[#54bb74]/10 border border-[#54bb74]/20 rounded-lg backdrop-blur-sm">
-                <p className="text-sm text-[#54bb74]">
-                  {filteredProducts.length} result
-                  {filteredProducts.length !== 1 ? "s" : ""} found for "
-                  {searchQuery}"
-                </p>
-              </div>
-            )}
-          </div>
+      )}
+
+      {viewMode === "table" ? (
+        /* Table View */
+        <div className="bg-gradient-to-br from-[#1a1a1a] to-[#2a2a2a] rounded-2xl overflow-hidden">
+          {/* Table Header with Sorting */}
           <div
-            className={`px-4 py-3 rounded-xl ${
+            className={`px-6 py-4 ${
               isSystem 
                 ? 'bg-gradient-to-r from-[#87CEAB]/10 to-[#87CEAB]/5' 
                 : 'bg-gradient-to-r from-[#50C878]/10 to-[#50C878]/5'
             }`}
           >
-            <span className={`font-semibold whitespace-nowrap ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}>
-              {filteredProducts.length} of {products.length} {isSystem ? "systems" : "items"}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-gradient-to-br from-[#1a1a1a] to-[#2a2a2a] rounded-2xl overflow-hidden">
-        {/* Table Header */}
-        <div
-          className={`px-6 py-4 ${
-            isSystem 
-              ? 'bg-gradient-to-r from-[#87CEAB]/10 to-[#87CEAB]/5' 
-              : 'bg-gradient-to-r from-[#50C878]/10 to-[#50C878]/5'
-          }`}
-        >
-          <div className="grid grid-cols-12 gap-4 items-center">
-            <div
-              className={`col-span-1 font-semibold text-sm ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}
-            >
-              Image
-            </div>
-            <div className={`col-span-2 font-semibold text-sm ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}>
-              Name
-            </div>
-            <div className={`col-span-2 font-semibold text-sm ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}>
-              Type
-            </div>
-            <div className={`col-span-3 font-semibold text-sm ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}>
-              Message
-            </div>
-            <div
-              className={`col-span-2 font-semibold text-sm ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}
-            >
-              Models
-            </div>
-            <div
-              className={`col-span-2 font-semibold text-sm text-right ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}
-            >
-              Actions
+            <div className="grid grid-cols-12 gap-4 items-center">
+              {/* Select All Checkbox */}
+              <div className="col-span-1 flex items-center space-x-2">
+                <button
+                  onClick={handleSelectAll}
+                  className={`text-lg ${selectedItems.size === processedProducts.length && processedProducts.length > 0 ? (isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]') : 'text-gray-400'} hover:text-white transition-colors duration-200`}
+                >
+                  {selectedItems.size === processedProducts.length && processedProducts.length > 0 ? <FaCheckSquare /> : <FaSquare />}
+                </button>
+              </div>
+              
+              {/* Name Column */}
+              <div className={`col-span-2 font-semibold text-sm ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}>
+                Name
+              </div>
+              
+              <div className={`col-span-2 font-semibold text-sm ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}>
+                Type
+              </div>
+              
+              {/* Message Column */}
+              <div className={`col-span-3 font-semibold text-sm ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}>
+                Message
+              </div>
+              
+              <div className={`col-span-2 font-semibold text-sm ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}>
+                Models
+              </div>
+              
+              <div className={`col-span-2 font-semibold text-sm text-right ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}>
+                Actions
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Table Body */}
-        <div className="divide-y divide-gray-700">
-          {filteredProducts.map((item, index) => (
-            <div
-              key={item._id || index}
-              className={`group px-6 py-4 transition-all duration-300 ${
-                isSystem 
-                  ? 'hover:bg-gradient-to-r hover:from-[#87CEAB]/5 hover:to-transparent' 
-                  : 'hover:bg-gradient-to-r hover:from-[#50C878]/5 hover:to-transparent'
-              }`}
-            >
-              <div className="grid grid-cols-12 gap-4 items-center">
-                {/* Image */}
-                <div className="col-span-1">
-                  <div
-                    className={`w-12 h-12 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 ${
-                      isSystem 
-                        ? 'bg-gradient-to-br from-[#87CEAB]/20 to-[#87CEAB]/10' 
-                        : 'bg-gradient-to-br from-[#50C878]/20 to-[#50C878]/10'
-                    }`}
-                  >
-                    {item.image || item.media?.image?.url ? (
-                      <img
-                        src={item.image || item.media?.image?.url}
-                        alt={item.name}
-                        className="w-10 h-10 object-cover rounded-lg"
-                      />
+          {/* Table Body */}
+          <div className="divide-y divide-gray-700">
+            {processedProducts.map((item, index) => (
+              <div
+                key={item._id || index}
+                onMouseEnter={() => setHoveredItem(item._id)}
+                onMouseLeave={() => setHoveredItem(null)}
+                className={`group px-6 py-4 transition-all duration-300 relative ${
+                  isSystem 
+                    ? 'hover:bg-gradient-to-r hover:from-[#87CEAB]/5 hover:to-transparent' 
+                    : 'hover:bg-gradient-to-r hover:from-[#50C878]/5 hover:to-transparent'
+                } ${selectedItems.has(item._id) ? 'bg-blue-500/10 border-l-4 border-blue-500' : ''}`}
+              >
+                <div className="grid grid-cols-12 gap-4 items-center">
+                  {/* Checkbox */}
+                  <div className="col-span-1 flex items-center space-x-2">
+                    <button
+                      onClick={() => handleSelectItem(item._id)}
+                      className={`text-lg ${selectedItems.has(item._id) ? (isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]') : 'text-gray-400'} hover:text-white transition-colors duration-200`}
+                    >
+                      {selectedItems.has(item._id) ? <FaCheckSquare /> : <FaSquare />}
+                    </button>
+                  </div>
+
+                  {/* Image */}
+                  <div className="col-span-2 flex items-center space-x-3">
+                    <div
+                      className={`w-12 h-12 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 ${
+                        isSystem 
+                          ? 'bg-gradient-to-br from-[#87CEAB]/20 to-[#87CEAB]/10' 
+                          : 'bg-gradient-to-br from-[#50C878]/20 to-[#50C878]/10'
+                      }`}
+                    >
+                      {item.image || item.media?.image?.url ? (
+                        <img
+                          src={item.image || item.media?.image?.url}
+                          alt={item.name}
+                          className="w-10 h-10 object-cover rounded-lg"
+                        />
+                      ) : (
+                        <Icon className={`text-lg ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`} />
+                      )}
+                    </div>
+                    <div>
+                      <h4
+                        className={`text-lg font-bold text-white transition-colors duration-300 ${
+                          isSystem 
+                            ? 'group-hover:text-[#87CEAB]' 
+                            : 'group-hover:text-[#50C878]'
+                        }`}
+                      >
+                        {item.name}
+                      </h4>
+                    </div>
+                  </div>
+
+                  {/* Type */}
+                  <div className="col-span-2">
+                    {isSystem ? (
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-medium capitalize ${
+                          item.systemType === "bar"
+                            ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
+                            : item.systemType === "ball"
+                            ? "bg-purple-500/20 text-purple-400 border border-purple-500/30"
+                            : "bg-orange-500/20 text-orange-400 border border-orange-500/30"
+                        }`}
+                      >
+                        {item.systemType || "System"}
+                      </span>
                     ) : (
-                      <Icon className={`text-lg ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`} />
+                      <span className="px-3 py-1 rounded-full text-xs font-medium capitalize bg-green-500/20 text-green-400">
+                        Pendant
+                      </span>
                     )}
+                  </div>
+
+                  {/* Message */}
+                  <div className="col-span-3">
+                    <p className="text-gray-400 text-sm truncate">{item.message}</p>
+                  </div>
+
+                  {/* Models */}
+                  <div className="col-span-2">
+                    <div className="space-y-1">
+                      {(() => {
+                        const modelUrl = item.media?.model?.url;
+                        const hasModel = modelUrl && modelUrl.trim() !== '';
+                        
+                        return hasModel ? (
+                          <div className="flex flex-col space-y-1">
+                            <div className="flex items-center space-x-2">
+                              <div className="w-6 h-6 bg-yellow-500/20 rounded-lg flex items-center justify-center">
+                                <FaCube className="text-yellow-500 text-xs" />
+                              </div>
+                              <span className="text-green-400 text-xs font-medium">
+                                3D Model Available
+                              </span>
+                            </div>
+                            <button
+                              onClick={() => handleViewModel(item)}
+                              className="text-blue-400 hover:text-blue-300 text-xs underline ml-8 transition-colors duration-200 bg-transparent border-none cursor-pointer"
+                            >
+                              View Model
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center space-x-2">
+                            <div className="w-6 h-6 bg-gray-500/20 rounded-lg flex items-center justify-center">
+                              <svg
+                                className="w-3 h-3 text-gray-500"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L5.636 5.636"
+                                />
+                              </svg>
+                            </div>
+                            <span className="text-gray-500 text-xs">No Model</span>
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="col-span-2 flex justify-end space-x-2">
+                    <button
+                      onClick={() => onEdit(item)}
+                      className={`px-4 py-2 bg-gradient-to-r ${
+                        isSystem
+                          ? "from-[#87CEAB] to-[#50C878]"
+                          : "from-[#50C878] to-[#87CEAB]"
+                      } text-white rounded-lg font-medium transition-all duration-300 hover:shadow-lg hover:shadow-[${primaryColor}]/25 transform hover:scale-105 flex items-center space-x-1`}
+                    >
+                      <FaEdit className="text-xs" />
+                    </button>
+                    <button
+                      onClick={() => onDelete(item)}
+                      disabled={deletingItemId === item._id}
+                      className="px-3 py-2 bg-gradient-to-r from-red-500/20 to-red-600/20 text-red-400 rounded-lg font-medium transition-all duration-300 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-600 hover:text-white transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {deletingItemId === item._id ? (
+                        <FaSpinner className="animate-spin text-xs" />
+                      ) : (
+                        <FaTrash className="text-xs" />
+                      )}
+                    </button>
                   </div>
                 </div>
 
-                {/* Name */}
-                <div className="col-span-2">
-                  <h4
-                    className={`text-lg font-bold text-white transition-colors duration-300 ${
-                      isSystem 
-                        ? 'group-hover:text-[#87CEAB]' 
-                        : 'group-hover:text-[#50C878]'
-                    }`}
-                  >
-                    {item.name}
-                  </h4>
-                </div>
+                {/* Hover Preview Card */}
+                {hoveredItem === item._id && (item.image || item.media?.image?.url) && (
+                  <div className="absolute left-full top-0 ml-4 z-50 w-80 bg-gradient-to-br from-[#1a1a1a] to-[#2a2a2a] rounded-xl p-4 border border-gray-700/50 shadow-2xl">
+                    <div className="flex items-start space-x-4">
+                      <img
+                        src={item.image || item.media?.image?.url}
+                        alt={item.name}
+                        className="w-20 h-20 object-cover rounded-lg"
+                      />
+                      <div className="flex-1">
+                        <h4 className="text-lg font-bold text-white mb-2">{item.name}</h4>
+                        <p className="text-gray-400 text-sm mb-3">{item.message}</p>
+                        <div className="flex space-x-2">
+                          <button
+                            onClick={() => onEdit(item)}
+                            className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-lg text-xs hover:bg-blue-500/30 transition-colors duration-200"
+                          >
+                            <FaEdit className="inline mr-1" /> Edit
+                          </button>
+                          {item.media?.model?.url && (
+                            <button
+                              onClick={() => handleViewModel(item)}
+                              className="px-3 py-1 bg-green-500/20 text-green-400 rounded-lg text-xs hover:bg-green-500/30 transition-colors duration-200"
+                            >
+                              <FaCube className="inline mr-1" /> View 3D
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : (
+        /* Grid View */
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {processedProducts.map((item, index) => (
+            <div
+              key={item._id || index}
+              onMouseEnter={() => setHoveredItem(item._id)}
+              onMouseLeave={() => setHoveredItem(null)}
+              className={`relative group bg-gradient-to-br from-[#1a1a1a] to-[#2a2a2a] rounded-2xl p-6 border transition-all duration-300 hover:scale-105 hover:shadow-2xl ${
+                selectedItems.has(item._id) 
+                  ? 'border-blue-500 shadow-blue-500/25' 
+                  : 'border-gray-700/50 hover:border-gray-600/50'
+              }`}
+            >
+              {/* Selection Checkbox */}
+              <button
+                onClick={() => handleSelectItem(item._id)}
+                className={`absolute top-4 right-4 text-lg z-10 ${selectedItems.has(item._id) ? (isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]') : 'text-gray-400'} hover:text-white transition-colors duration-200`}
+              >
+                {selectedItems.has(item._id) ? <FaCheckSquare /> : <FaSquare />}
+              </button>
 
-                {/* Type */}
-                <div className="col-span-2">
+              {/* Image */}
+              <div className="mb-4">
+                <div
+                  className={`w-full h-32 rounded-xl flex items-center justify-center ${
+                    isSystem 
+                      ? 'bg-gradient-to-br from-[#87CEAB]/20 to-[#87CEAB]/10' 
+                      : 'bg-gradient-to-br from-[#50C878]/20 to-[#50C878]/10'
+                  }`}
+                >
+                  {item.image || item.media?.image?.url ? (
+                    <img
+                      src={item.image || item.media?.image?.url}
+                      alt={item.name}
+                      className="w-full h-full object-cover rounded-xl"
+                    />
+                  ) : (
+                    <Icon className={`text-4xl ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`} />
+                  )}
+                </div>
+              </div>
+
+              {/* Content */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-lg font-bold text-white truncate">{item.name}</h4>
                   {isSystem ? (
                     <span
-                      className={`px-3 py-1 rounded-full text-xs font-medium capitalize ${
+                      className={`px-2 py-1 rounded-full text-xs font-medium capitalize ${
                         item.systemType === "bar"
-                          ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
+                          ? "bg-blue-500/20 text-blue-400"
                           : item.systemType === "ball"
-                          ? "bg-purple-500/20 text-purple-400 border border-purple-500/30"
-                          : "bg-orange-500/20 text-orange-400 border border-orange-500/30"
+                          ? "bg-purple-500/20 text-purple-400"
+                          : "bg-orange-500/20 text-orange-400"
                       }`}
                     >
                       {item.systemType || "System"}
                     </span>
                   ) : (
-                    <span className="px-3 py-1 rounded-full text-xs font-medium capitalize bg-green-500/20 text-green-400">
+                    <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400">
                       Pendant
                     </span>
                   )}
                 </div>
 
-                {/* Message */}
-                <div className="col-span-3">
-                  <p className="text-gray-400 text-sm">{item.message}</p>
-                </div>
+                <p className="text-gray-400 text-sm line-clamp-2">{item.message}</p>
 
-                {/* Models */}
-                <div className="col-span-2">
-                  <div className="space-y-1">
-                    {(() => {
-                      const modelUrl = item.media?.model?.url;
-                      const hasModel = modelUrl && modelUrl.trim() !== '';
-                      
-                      return hasModel ? (
-                        <div className="flex flex-col space-y-1">
-                          <div className="flex items-center space-x-2">
-                            <div className="w-6 h-6 bg-yellow-500/20 rounded-lg flex items-center justify-center">
-                              <FaCube className="text-yellow-500 text-xs" />
-                            </div>
-                            <span className="text-green-400 text-xs font-medium">
-                              3D Model Available
-                            </span>
-                          </div>
-                          <button
-                            onClick={() => handleViewModel(item)}
-                            className="text-blue-400 hover:text-blue-300 text-xs underline ml-8 transition-colors duration-200 bg-transparent border-none cursor-pointer"
-                          >
-                            View Model
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="flex items-center space-x-2">
-                          <div className="w-6 h-6 bg-gray-500/20 rounded-lg flex items-center justify-center">
-                            <svg
-                              className="w-3 h-3 text-gray-500"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L5.636 5.636"
-                              />
-                            </svg>
-                          </div>
-                          <span className="text-gray-500 text-xs">No Model</span>
-                        </div>
-                      );
-                    })()}
-                  </div>
+                {/* Model Status */}
+                <div className="flex items-center space-x-2">
+                  {item.media?.model?.url ? (
+                    <>
+                      <div className="w-4 h-4 bg-yellow-500/20 rounded flex items-center justify-center">
+                        <FaCube className="text-yellow-500 text-xs" />
+                      </div>
+                      <span className="text-green-400 text-xs">3D Model Available</span>
+                    </>
+                  ) : (
+                    <>
+                      <div className="w-4 h-4 bg-gray-500/20 rounded flex items-center justify-center">
+                        <FaTimes className="text-gray-500 text-xs" />
+                      </div>
+                      <span className="text-gray-500 text-xs">No Model</span>
+                    </>
+                  )}
                 </div>
 
                 {/* Actions */}
-                <div className="col-span-2 flex justify-end space-x-2">
+                <div className="flex space-x-2 pt-2">
                   <button
                     onClick={() => onEdit(item)}
-                    className={`px-4 py-2 bg-gradient-to-r ${
+                    className={`flex-1 px-3 py-2 bg-gradient-to-r ${
                       isSystem
                         ? "from-[#87CEAB] to-[#50C878]"
                         : "from-[#50C878] to-[#87CEAB]"
-                    } text-white rounded-lg font-medium transition-all duration-300 hover:shadow-lg hover:shadow-[${primaryColor}]/25 transform hover:scale-105 flex items-center space-x-1`}
+                    } text-white rounded-lg font-medium transition-all duration-300 hover:shadow-lg transform hover:scale-105 flex items-center justify-center space-x-1`}
                   >
                     <FaEdit className="text-xs" />
+                    <span className="text-xs">Edit</span>
                   </button>
+                  
+                  {item.media?.model?.url && (
+                    <button
+                      onClick={() => handleViewModel(item)}
+                      className="px-3 py-2 bg-blue-500/20 text-blue-400 rounded-lg transition-all duration-300 hover:bg-blue-500/30 flex items-center justify-center"
+                    >
+                      <FaCube className="text-xs" />
+                    </button>
+                  )}
+                  
                   <button
                     onClick={() => onDelete(item)}
                     disabled={deletingItemId === item._id}
-                    className="px-3 py-2 bg-gradient-to-r from-red-500/20 to-red-600/20 text-red-400 rounded-lg font-medium transition-all duration-300 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-600 hover:text-white transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-3 py-2 bg-red-500/20 text-red-400 rounded-lg transition-all duration-300 hover:bg-red-500/30 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                   >
                     {deletingItemId === item._id ? (
                       <FaSpinner className="animate-spin text-xs" />
@@ -305,7 +487,7 @@ const ProductTable = ({ products, type, onEdit, onDelete, deletingItemId }) => {
             </div>
           ))}
         </div>
-      </div>
+      )}
 
       {/* 3D Model Viewer Modal */}
       {selectedModel && (

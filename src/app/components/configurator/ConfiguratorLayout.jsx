@@ -94,12 +94,13 @@ const ConfiguratorLayout = () => {
     return loadFromLocalStorage("lightCables", [
       {
         isSystem: true,
-        systemType: "bar",
-        design: "Helix",
-        designId: "system_base_2",
+        systemType: "",
+        design: "Pikoes",
+        designId: "product_5",
         connectorColor: "black",
         cableSize: "2mm",
         cableColor: "black",
+        modelUrl: "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/testpandet_1756418157231.glb",
       },
     ]);
   });
@@ -600,7 +601,6 @@ const ConfiguratorLayout = () => {
         if (savedConfig && savedCables) {
           console.log("Loading saved configuration...");
           sendMessageToPlayCanvas(`light_type:${savedConfig.lightType}`);
-          console.log("light_type", savedConfig.lightType);
           sendMessageToPlayCanvas(`base_type:${savedConfig.baseType}`);
           sendMessageToPlayCanvas(`light_amount:${savedConfig.lightAmount}`);
           sendMessageToPlayCanvas(`base_color:${savedConfig.baseColor}`);
@@ -610,7 +610,7 @@ const ConfiguratorLayout = () => {
           savedCables.forEach((cable, index) => {
             sendMessageToPlayCanvas(`cable_${index}:connector_color:${cable.connectorColor}`);
           });
-      
+        
           savedCables.forEach((cable, index) => {
             if (cable.systemType) {
               sendMessageToPlayCanvas(`system:${cable.systemType}`);
@@ -621,13 +621,15 @@ const ConfiguratorLayout = () => {
                 sendMessageToPlayCanvas(`cable_${index}:${baseDesign}`);
                 sendMessageToPlayCanvas(`cable_${index}:${cable.designId}`);
               } else {
+                sendMessageToPlayCanvas(`cable_${index}:${baseDesign}`);
                 sendMessageToPlayCanvas(`cable_${index}:${cable.designId}`);
               }
               console.log("cable", cable.size);
               sendMessageToPlayCanvas(`cable_${index}:size_${cable.size}`);
             } else {
-              sendMessageToPlayCanvas(`cable_${index}:${cable.designId}`);
-              sendMessageToPlayCanvas(`cable_${index}:size_${cable.size}`);
+              sendMessageToPlayCanvas(`cable_${index}`);
+              sendMessageToPlayCanvas(`product_${cable.modelUrl}`);
+              sendMessageToPlayCanvas(`${cable.designId}`);
             }
           });
           sendMessageToPlayCanvas(
@@ -899,7 +901,8 @@ const ConfiguratorLayout = () => {
               isSystem: pendantAssignment.isSystem,
               design: pendantAssignment.design,
               systemType: pendantAssignment.systemType,
-              designId: pendantAssignment.message, // message contains "product_1", etc.
+              designId: pendantAssignment.message,
+              modelUrl: pendantAssignment.media?.model?.url,
             };
           }
         });

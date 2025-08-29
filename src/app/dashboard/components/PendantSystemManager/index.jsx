@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { FaLightbulb, FaPlus, FaSpinner } from "react-icons/fa";
 import TabNavigation from "./components/TabNavigation";
 import ProductTable from "./components/ProductTable";
@@ -36,6 +36,14 @@ export default function PendantSystemManager({
   const [showEditModal, setShowEditModal] = useState(false);
   const [deletingItemId, setDeletingItemId] = useState(null);
   const [activeTab, setActiveTab] = useState("all");
+  
+  // Search and filter state
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortField, setSortField] = useState("name");
+  const [sortDirection, setSortDirection] = useState("asc");
+  const [viewMode, setViewMode] = useState("table");
+  const [activeFilters, setActiveFilters] = useState(new Set());
+  const [selectedItems, setSelectedItems] = useState(new Set());
 
   // Handle delete functionality
   const handleDeleteItem = async (item) => {
@@ -176,10 +184,66 @@ export default function PendantSystemManager({
     }
   };
 
-  // Filter products based on active tab
-  const filteredProducts = filterProductsByTab(pendantSystemData, activeTab);
-  const pendantProducts = filteredProducts.filter((item) => !item.isSystem);
-  const systemProducts = filteredProducts.filter((item) => item.isSystem);
+  // Process products with search, filter, and sort
+  const processedProducts = useMemo(() => {
+    // First filter by tab
+    let filtered = filterProductsByTab(pendantSystemData, activeTab);
+    
+    // Apply search filter
+    if (searchQuery && searchQuery.trim() !== "") {
+      const query = searchQuery.toLowerCase().trim();
+      filtered = filtered.filter((item) => {
+        const nameMatch = item.name?.toLowerCase().includes(query);
+        const messageMatch = item.message?.toLowerCase().includes(query);
+        const typeMatch = item.systemType?.toLowerCase().includes(query);
+        const designMatch = item.design?.toLowerCase().includes(query);
+        return nameMatch || messageMatch || typeMatch || designMatch;
+      });
+    }
+
+    // Apply active filters
+    if (activeFilters.has("hasModel")) {
+      filtered = filtered.filter((item) => {
+        const hasModel = item.media?.model?.url && item.media.model.url.trim() !== '';
+        return hasModel;
+      });
+    }
+    if (activeFilters.has("noModel")) {
+      filtered = filtered.filter((item) => {
+        const hasModel = item.media?.model?.url && item.media.model.url.trim() !== '';
+        return !hasModel;
+      });
+    }
+    if (activeFilters.has("hasImage")) {
+      filtered = filtered.filter((item) => {
+        const hasImage = (item.image || item.media?.image?.url) && 
+                         (item.image?.trim() !== '' || item.media?.image?.url?.trim() !== '');
+        return hasImage;
+      });
+    }
+
+    // Sort products
+    filtered.sort((a, b) => {
+      let aValue = a[sortField] || '';
+      let bValue = b[sortField] || '';
+      
+      if (sortField === 'name' || sortField === 'message') {
+        aValue = aValue.toLowerCase();
+        bValue = bValue.toLowerCase();
+      }
+      
+      if (sortDirection === 'asc') {
+        return aValue > bValue ? 1 : -1;
+      } else {
+        return aValue < bValue ? 1 : -1;
+      }
+    });
+
+    return filtered;
+  }, [pendantSystemData, activeTab, searchQuery, activeFilters, sortField, sortDirection]);
+
+  const pendantProducts = processedProducts.filter((item) => !item.isSystem);
+  const systemProducts = processedProducts.filter((item) => item.isSystem);
 
   return (
     <div className="min-h-screen bg-[#202020] rounded-xl p-6">
@@ -303,11 +367,22 @@ export default function PendantSystemManager({
         ) : (
           pendantSystemData.length > 0 && (
             <div className="space-y-8">
-              {/* Tab Navigation */}
+              {/* Tab Navigation with Search */}
               <TabNavigation
                 activeTab={activeTab}
                 setActiveTab={setActiveTab}
                 products={pendantSystemData}
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
+                sortField={sortField}
+                setSortField={setSortField}
+                sortDirection={sortDirection}
+                setSortDirection={setSortDirection}
+                viewMode={viewMode}
+                setViewMode={setViewMode}
+                activeFilters={activeFilters}
+                setActiveFilters={setActiveFilters}
+                processedProducts={processedProducts}
               />
 
               {/* Filtered Products Display */}
@@ -320,6 +395,9 @@ export default function PendantSystemManager({
                     onEdit={handleEditItem}
                     onDelete={handleDeleteItem}
                     deletingItemId={deletingItemId}
+                    viewMode={viewMode}
+                    selectedItems={selectedItems}
+                    setSelectedItems={setSelectedItems}
                   />
                 )}
 
@@ -331,30 +409,39 @@ export default function PendantSystemManager({
                     onEdit={handleEditItem}
                     onDelete={handleDeleteItem}
                     deletingItemId={deletingItemId}
+                    viewMode={viewMode}
+                    selectedItems={selectedItems}
+                    setSelectedItems={setSelectedItems}
                   />
                 )}
 
                 {/* Show Products with Models */}
-                {activeTab === 'model' && filteredProducts.length > 0 && (
+                {activeTab === 'model' && processedProducts.length > 0 && (
                   <>
                     {/* Show pendant products with models */}
-                    {filteredProducts.filter(item => !item.isSystem).length > 0 && (
+                    {processedProducts.filter(item => !item.isSystem).length > 0 && (
                       <ProductTable
-                        products={filteredProducts.filter(item => !item.isSystem)}
+                        products={processedProducts.filter(item => !item.isSystem)}
                         type="pendant"
                         onEdit={handleEditItem}
                         onDelete={handleDeleteItem}
                         deletingItemId={deletingItemId}
+                        viewMode={viewMode}
+                        selectedItems={selectedItems}
+                        setSelectedItems={setSelectedItems}
                       />
                     )}
                     {/* Show system products with models */}
-                    {filteredProducts.filter(item => item.isSystem).length > 0 && (
+                    {processedProducts.filter(item => item.isSystem).length > 0 && (
                       <ProductTable
-                        products={filteredProducts.filter(item => item.isSystem)}
+                        products={processedProducts.filter(item => item.isSystem)}
                         type="system"
                         onEdit={handleEditItem}
                         onDelete={handleDeleteItem}
                         deletingItemId={deletingItemId}
+                        viewMode={viewMode}
+                        selectedItems={selectedItems}
+                        setSelectedItems={setSelectedItems}
                       />
                     )}
                   </>

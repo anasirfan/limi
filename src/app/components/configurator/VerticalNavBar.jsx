@@ -195,8 +195,14 @@ const tourSteps = [
     position: 'right'
   },
   {
-    id: 'lightAmount',
-    title: 'Configure Light Amount',
+    id: 'baseColor',
+    title: 'Configure Base Color',
+    description: 'Specify how many lights you need for your setup.',
+    position: 'right'
+  },
+  {
+    id: 'connectorColor',
+    title: 'Configure Connector Color',
     description: 'Specify how many lights you need for your setup.',
     position: 'right'
   },
@@ -433,20 +439,8 @@ const tourSteps = [
           setIsTourActive(true);
         }}
       />
-      {/* Guided Tour Overlay is disabled by request
-      {!isTourActive && !showWelcomeModal && (
-        <GuidedTourOverlay
-          isActive={isTourActive}
-          step={tourSteps[tourStep]}
-          stepIndex={tourStep}
-          totalSteps={tourSteps.length}
-          targetSelector={`[data-tour-step="${tourSteps[tourStep]?.id}"]`}
-          onNext={() => setTourStep((prev) => Math.min(prev + 1, tourSteps.length - 1))}
-          onPrev={() => setTourStep((prev) => Math.max(prev - 1, 0))}
-          onClose={() => setIsTourActive(false)}
-        />
-      )}
-      */}
+      
+
       {/* Only show vertical nav when not configuring individual pendant/system */}
       {showVerticalNav && (
         <div 
