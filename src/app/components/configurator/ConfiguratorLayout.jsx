@@ -100,10 +100,11 @@ const ConfiguratorLayout = () => {
         connectorColor: "black",
         cableSize: "2mm",
         cableColor: "black",
-        modelUrl: "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/testpandet_1756418157231.glb",
+        modelUrl:
+          "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/testpandet_1756418157231.glb",
         hasGlass: false,
         hasColor: false,
-     },
+      },
     ]);
   });
 
@@ -349,7 +350,7 @@ const ConfiguratorLayout = () => {
             design: "helix",
             isSystem: true,
             designId: "system_base_2",
-            connectorColor: 'gold',
+            connectorColor: "gold",
           },
         ];
       case 3:
@@ -360,7 +361,7 @@ const ConfiguratorLayout = () => {
             design: "orbit",
             designId: "system_base_1",
             isSystem: true,
-            connectorColor: 'black',
+            connectorColor: "black",
           },
           {
             id: 1,
@@ -368,7 +369,7 @@ const ConfiguratorLayout = () => {
             design: "bumble",
             designId: "product_2",
             isSystem: false,
-            connectorColor: 'silver',
+            connectorColor: "silver",
           },
           {
             id: 2,
@@ -376,7 +377,7 @@ const ConfiguratorLayout = () => {
             design: "aurora",
             designId: "system_base_6",
             isSystem: true,
-            connectorColor: 'midnight-blue',
+            connectorColor: "midnight-blue",
           },
         ];
       case 6:
@@ -387,7 +388,7 @@ const ConfiguratorLayout = () => {
             design: "bumble",
             designId: "product_2",
             isSystem: false,
-            connectorColor: 'black',
+            connectorColor: "black",
           },
           {
             id: 1,
@@ -395,7 +396,7 @@ const ConfiguratorLayout = () => {
             design: "piko",
             designId: "product_5",
             isSystem: false,
-            connectorColor: 'gold',
+            connectorColor: "gold",
           },
           {
             id: 2,
@@ -403,7 +404,7 @@ const ConfiguratorLayout = () => {
             design: "helix",
             designId: "system_base_2",
             isSystem: true,
-            connectorColor: 'silver',
+            connectorColor: "silver",
           },
           {
             id: 3,
@@ -411,7 +412,7 @@ const ConfiguratorLayout = () => {
             design: "zenith",
             designId: "system_base_4",
             isSystem: true,
-            connectorColor: 'midnight-blue',
+            connectorColor: "midnight-blue",
           },
           {
             id: 4,
@@ -419,7 +420,7 @@ const ConfiguratorLayout = () => {
             design: "equinox",
             designId: "system_base_12",
             isSystem: true,
-            connectorColor: 'midnight-blue',
+            connectorColor: "midnight-blue",
           },
           {
             id: 5,
@@ -427,7 +428,7 @@ const ConfiguratorLayout = () => {
             design: "stellar",
             designId: "system_base_4",
             isSystem: true,
-            connectorColor: 'gold',
+            connectorColor: "gold",
           },
         ];
     }
@@ -483,7 +484,7 @@ const ConfiguratorLayout = () => {
           systemType: system.systemType,
           design: system.design,
           designId: system.designId,
-          connectorColor: 'black',
+          connectorColor: "black",
         },
       ]);
 
@@ -505,7 +506,7 @@ const ConfiguratorLayout = () => {
               systemType: system.systemType,
               design: system.design,
               designId: system.designId,
-              connectorColor: 'black',
+              connectorColor: "black",
             },
           ]);
           sendMessageToPlayCanvas(`system:${system.systemType}`);
@@ -585,7 +586,6 @@ const ConfiguratorLayout = () => {
     }));
     setCables(configData.config.cableConfig);
     console.log("cablessss", configData.config.cableConfig);
-
   };
   // Listen for app:ready1 message from PlayCanvas iframe
   useEffect(() => {
@@ -610,9 +610,11 @@ const ConfiguratorLayout = () => {
           //   `connector_color:${savedConfig.connectorColor}`
           // );
           savedCables.forEach((cable, index) => {
-            sendMessageToPlayCanvas(`cable_${index}:connector_color:${cable.connectorColor}`);
+            sendMessageToPlayCanvas(
+              `cable_${index}:connector_color:${cable.connectorColor}`
+            );
           });
-        
+
           savedCables.forEach((cable, index) => {
             if (cable.systemType) {
               sendMessageToPlayCanvas(`system:${cable.systemType}`);
@@ -630,8 +632,12 @@ const ConfiguratorLayout = () => {
               sendMessageToPlayCanvas(`cable_${index}:size_${cable.size}`);
             } else {
               sendMessageToPlayCanvas(`cable_${index}`);
-              sendMessageToPlayCanvas(cable.hasGlass ? "glass_attached" : "glass_none");
-              sendMessageToPlayCanvas(cable.hasColor ? "color_gold" : "color_none");
+              sendMessageToPlayCanvas(
+                cable.hasGlass ? "glass_attached" : "glass_none"
+              );
+              sendMessageToPlayCanvas(
+                cable.hasColor ? "color_gold" : "color_none"
+              );
               sendMessageToPlayCanvas(`product_${cable.modelUrl}`);
               sendMessageToPlayCanvas(`${cable.designId}`);
             }
@@ -715,7 +721,7 @@ const ConfiguratorLayout = () => {
           systemType: "",
           design: pendant.design,
           designId: productId,
-          connectorColor: 'black',
+          connectorColor: "black",
         },
       ]);
     });
@@ -781,8 +787,8 @@ const ConfiguratorLayout = () => {
         connectorColor: system.connectorColor,
       }))
     );
-    console.log("lightcables",cables)
-    
+    console.log("lightcables", cables);
+
     // Send messages to iframe
     setTimeout(() => {
       sendMessageToPlayCanvas(`light_amount:${amount}`);
@@ -791,7 +797,9 @@ const ConfiguratorLayout = () => {
           sendMessageToPlayCanvas(`system:${system.systemType}`);
         }
         sendMessageToPlayCanvas(`cable_${index}:${system.designId}`);
-        sendMessageToPlayCanvas(`cable_${index}:connector_color_${system.connectorColor}`);
+        sendMessageToPlayCanvas(
+          `cable_${index}:connector_color_${system.connectorColor}`
+        );
         // sendMessageToPlayCanvas(`cable_${index}:size_3`);
       });
     }, 0);
@@ -924,11 +932,15 @@ const ConfiguratorLayout = () => {
         if (config.lightAmount === 1) {
           // For single pendant, send model URL first if it exists, then the design message
           const modelUrl = pendantAssignment.media?.model?.url;
-          
+
           if (modelUrl) {
             sendMessageToPlayCanvas(`cable_0`);
-            sendMessageToPlayCanvas(pendantAssignment.hasGlass ? "glass_attached" : "glass_none");
-            sendMessageToPlayCanvas(pendantAssignment.hasColor ? "color_gold" : "color_none");
+            sendMessageToPlayCanvas(
+              pendantAssignment.hasGlass ? "glass_attached" : "glass_none"
+            );
+            sendMessageToPlayCanvas(
+              pendantAssignment.hasColor ? "color_gold" : "color_none"
+            );
             sendMessageToPlayCanvas(`product_${modelUrl}`);
             sendMessageToPlayCanvas(`${pendantAssignment.message}`);
           } else {
@@ -937,15 +949,24 @@ const ConfiguratorLayout = () => {
         } else {
           // For multiple pendants, send individual pendant messages
           pendantIds.forEach((id) => {
-            const modelUrl = pendantAssignment.media?.model?.url || pendantAssignment.image?.url || pendantAssignment.message;
+            const modelUrl =
+              pendantAssignment.media?.model?.url ||
+              pendantAssignment.image?.url ||
+              pendantAssignment.message;
             if (modelUrl) {
               sendMessageToPlayCanvas(`cable_${id}`);
-              sendMessageToPlayCanvas(pendantAssignment.hasGlass ? "glass_attached" : "glass_none");
-              sendMessageToPlayCanvas(pendantAssignment.hasColor ? "color_gold" : "color_none");
+              sendMessageToPlayCanvas(
+                pendantAssignment.hasGlass ? "glass_attached" : "glass_none"
+              );
+              sendMessageToPlayCanvas(
+                pendantAssignment.hasColor ? "color_gold" : "color_none"
+              );
               sendMessageToPlayCanvas(`product_${modelUrl}`);
               sendMessageToPlayCanvas(`${pendantAssignment.message}`);
             } else {
-              sendMessageToPlayCanvas(`cable_${id}:${pendantAssignment.message}`);
+              sendMessageToPlayCanvas(
+                `cable_${id}:${pendantAssignment.message}`
+              );
             }
           });
         }
@@ -1096,10 +1117,14 @@ const ConfiguratorLayout = () => {
           const system = systemAssignments.find((a) => a.design === design);
           sendMessageToPlayCanvas(`system:${system.systemType}`);
           sendMessageToPlayCanvas(`cable_${cableNo}`);
-          sendMessageToPlayCanvas(system.hasGlass ? "glass_attached" : "glass_none");
-          sendMessageToPlayCanvas(system.hasColor ? "color_gold" : "color_none");
-          sendMessageToPlayCanvas(`product_${system.modelUrl}`);
-          sendMessageToPlayCanvas(`${system.designId}`);
+          sendMessageToPlayCanvas(
+            system.hasGlass ? "glass_attached" : "glass_none"
+          );
+          sendMessageToPlayCanvas(
+            system.hasColor ? "color_gold" : "color_none"
+          );
+          sendMessageToPlayCanvas(`product_${system.media?.model?.url}`);
+          sendMessageToPlayCanvas(`${system.message}`);
         });
       }, 10);
     }, [config.selectedPendants, config.systemType, config.cableSystemTypes]);
@@ -1449,7 +1474,7 @@ const ConfiguratorLayout = () => {
           setCables={setCables}
           cableMessage={cableMessage}
           onStartTour={() => {
-            if (typeof window !== 'undefined' && window.startConfiguratorTour) {
+            if (typeof window !== "undefined" && window.startConfiguratorTour) {
               window.startConfiguratorTour();
             }
           }}
