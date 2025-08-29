@@ -262,54 +262,53 @@ const ConfiguratorLayout = () => {
         return [
           {
             id: 0,
-            systemType: "bar",
-            design: "helix",
-            isSystem: true,
-            designId: "system_base_2",
+            systemType: "",
+            design: "piko",
+            isSystem: false,
+            message: "product_5",
             hasGlass: false,
-            hasColor: false,
             hasSilver: false,
-            hasGold: false,
-            modelUrl: "",
+            hasGold: true,
+            modelUrl: "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756460850615.glb",
           },
         ];
       case 3:
         return [
           {
             id: 0,
-            systemType: "bar",
-            design: "orbit",
-            designId: "system_base_1",
-            isSystem: true,
+            systemType: "",
+            design: "piko",
+            isSystem: false,
+            message: "product_5",
             hasGlass: false,
-            hasColor: false,
             hasSilver: false,
-            hasGold: false,
-            modelUrl: "",
+            hasGold: true,
+            modelUrl: "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756460850615.glb",
+         
           },
           {
             id: 1,
             systemType: "",
-            design: "bumble",
-            designId: "product_2",
+            design: "piko",
             isSystem: false,
+            message: "product_5",
             hasGlass: false,
-            hasColor: false,
             hasSilver: false,
-            hasGold: false,
-            modelUrl: "",
+            hasGold: true,
+            modelUrl: "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756460850615.glb",
+         
           },
           {
             id: 2,
-            systemType: "universal",
-            design: "aurora",
-            designId: "system_base_6",
-            isSystem: true,
+            systemType: "",
+            design: "piko",
+            isSystem: false,
+            message: "product_5",
             hasGlass: false,
-            hasColor: false,
             hasSilver: false,
-            hasGold: false,
-            modelUrl: "",
+            hasGold: true,
+            modelUrl: "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756460850615.glb",
+         
           },
         ];
       case 6:
@@ -317,59 +316,73 @@ const ConfiguratorLayout = () => {
           {
             id: 0,
             systemType: "",
-            design: "bumble",
-            designId: "product_2",
+            design: "piko",
             isSystem: false,
+            message: "product_5",
             hasGlass: false,
-            hasColor: false,
             hasSilver: false,
-            hasGold: false,
-            modelUrl: "",
+            hasGold: true,
+            modelUrl: "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756460850615.glb",
+         
           },
           {
             id: 1,
             systemType: "",
             design: "piko",
-            designId: "product_5",
             isSystem: false,
+            message: "product_5",
             hasGlass: false,
-            hasColor: false,
             hasSilver: false,
-            hasGold: false,
-            modelUrl: "",
+            hasGold: true,
+            modelUrl: "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756460850615.glb",
+         
           },
           {
             id: 2,
-            systemType: "bar",
-            design: "helix",
-            designId: "system_base_2",
-            isSystem: true,
+            systemType: "",
+            design: "piko",
+            isSystem: false,
+            message: "product_5",
             hasGlass: false,
-            hasColor: false,
             hasSilver: false,
-            hasGold: false,
-            modelUrl: "",
+            hasGold: true,
+            modelUrl: "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756460850615.glb",
+         
           },
           {
             id: 3,
-            systemType: "bar",
-            design: "zenith",
-            designId: "system_base_4",
-            isSystem: true,
+            systemType: "",
+            design: "piko",
+            isSystem: false,
+            message: "product_5",
+            hasGlass: false,
+            hasSilver: false,
+            hasGold: true,
+            modelUrl: "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756460850615.glb",
+         
           },
           {
             id: 4,
-            systemType: "universal",
-            design: "equinox",
-            designId: "system_base_12",
-            isSystem: true,
+            systemType: "",
+            design: "piko",
+            isSystem: false,
+            message: "product_5",
+            hasGlass: false,
+            hasSilver: false,
+            hasGold: true,
+            modelUrl: "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756460850615.glb",
+         
           },
           {
             id: 5,
-            systemType: "universal",
-            design: "stellar",
-            designId: "system_base_4",
-            isSystem: true,
+            systemType: "",
+            design: "piko",
+            isSystem: false,
+            message: "product_5",
+            hasGlass: false,
+            hasSilver: false,
+            hasGold: true,
+            modelUrl: "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756460850615.glb",
           },
         ];
     }
@@ -834,15 +847,17 @@ const ConfiguratorLayout = () => {
     }));
     setCables([]);
     newPendants.forEach((pendant, index) => {
-      const productId = getProductIdForDesign(pendant.design);
       setCables((prev) => [
         ...prev,
         {
           isSystem: false,
           systemType: "",
           design: pendant.design,
-          designId: productId,
-          connectorColor: "black",
+          designId: pendant.message,
+          hasGlass: pendant.hasGlass,
+          hasSilver: pendant.hasSilver,
+          hasGold: pendant.hasGold,
+          modelUrl: pendant.modelUrl,
         },
       ]);
     });
@@ -858,8 +873,16 @@ const ConfiguratorLayout = () => {
       sendMessageToPlayCanvas(`hotspot:'off'`);
 
       newPendants.forEach((pendant, index) => {
-        const productId = getProductIdForDesign(pendant.design);
-        sendMessageToPlayCanvas(`cable_${index}:${productId}`);
+        sendMessageToPlayCanvas(`cable_${index}`);
+        sendMessageToPlayCanvas(
+          `glass_${pendant.hasGlass ? "attached" : "none"}`
+        );
+        sendMessageToPlayCanvas(`color_${pendant.hasGold ? "gold" : "none"}`);
+        sendMessageToPlayCanvas(
+          `silver_${pendant.hasSilver ? "attached" : "none"}`
+        );
+        sendMessageToPlayCanvas(`product_${pendant.modelUrl}`);
+        sendMessageToPlayCanvas(`${pendant.message}`)
       });
     }, 0);
   };
