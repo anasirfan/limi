@@ -160,19 +160,21 @@ const ProductTable = ({
                 Message
               </div>
               
-              <div className={`col-span-1 font-semibold text-sm ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}>
+              <div className={`col-span-1 font-semibold text-xs ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}>
                 Glass
               </div>
               
-              <div className={`col-span-1 font-semibold text-sm ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}>
-                Color
+              <div className={`col-span-1 font-semibold text-xs ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}>
+                Gold
               </div>
-              
-              <div className={`col-span-1 font-semibold text-sm ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}>
+              <div className={`col-span-1 font-semibold text-xs ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}>
+                Silver
+              </div>
+              <div className={`col-span-1 font-semibold text-xs ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}>
                 Model
               </div>
               
-              <div className={`col-span-2 font-semibold text-sm text-right ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}>
+              <div className={`col-span-1 font-semibold text-xs text-right ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}>
                 Actions
               </div>
             </div>
@@ -196,7 +198,7 @@ const ProductTable = ({
                   <div className="col-span-1 flex items-center space-x-2">
                     <button
                       onClick={() => handleSelectItem(item._id)}
-                      className={`text-lg ${selectedItems.has(item._id) ? (isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]') : 'text-gray-400'} hover:text-white transition-colors duration-200`}
+                      className={`text-sm ${selectedItems.has(item._id) ? (isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]') : 'text-gray-400'} hover:text-white transition-colors duration-200`}
                     >
                       {selectedItems.has(item._id) ? <FaCheckSquare /> : <FaSquare />}
                     </button>
@@ -283,10 +285,10 @@ const ProductTable = ({
                     </div>
                   </div>
 
-                  {/* Color Status */}
+                  {/* Gold Status */}
                   <div className="col-span-1">
                     <div className="flex items-center space-x-2">
-                      {item.hasColor ? (
+                      {item.hasGold ? (
                         <>
                           <div className="w-4 h-4 bg-purple-500/20 rounded flex items-center justify-center">
                             <svg className="w-2 h-2 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
@@ -305,6 +307,31 @@ const ProductTable = ({
                       )}
                     </div>
                   </div>
+                   {/* Silver Status */}
+                  <div className="col-span-1">
+                    <div className="flex items-center space-x-2">
+                      {item.hasSilver ? (
+                        <>
+                          <div className="w-4 h-4 bg-purple-500/20 rounded flex items-center justify-center">
+                            <svg className="w-2 h-2 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                            </svg>
+                          </div>
+                          <span className="text-purple-400 text-xs font-medium">Color</span>
+                        </>
+                      ) : (
+                        <>
+                          <div className="w-4 h-4 bg-gray-500/20 rounded flex items-center justify-center">
+                            <FaTimes className="text-gray-500 text-xs" />
+                          </div>
+                          <span className="text-gray-500 text-xs">No Color</span>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+
+                   
 
                   {/* Model Status */}
                   <div className="col-span-1">

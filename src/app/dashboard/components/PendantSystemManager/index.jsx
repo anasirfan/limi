@@ -79,7 +79,8 @@ export default function PendantSystemManager({
       isSystem: item.isSystem || false,
       image: item.image || "",
       hasGlass: item.hasGlass !== undefined ? item.hasGlass : false,  // Default: No Glass
-      hasColor: item.hasColor !== undefined ? item.hasColor : false   // Default: No Color
+      hasGold: item.hasGold !== undefined ? item.hasGold : false,     // Default: No Gold
+      hasSilver: item.hasSilver !== undefined ? item.hasSilver : false // Default: No Silver
     });
 
     // Set existing images if available
@@ -116,7 +117,8 @@ export default function PendantSystemManager({
       isSystem: false,
       image: "",
       hasGlass: false,  // Default: No Glass
-      hasColor: false   // Default: No Color
+      hasGold: false,   // Default: No Gold
+      hasSilver: false  // Default: No Silver
     });
   };
 
@@ -150,8 +152,11 @@ export default function PendantSystemManager({
       if (newPendantData.hasGlass !== editingItem.hasGlass) {
         changedFields.hasGlass = newPendantData.hasGlass;
       }
-      if (newPendantData.hasColor !== editingItem.hasColor) {
-        changedFields.hasColor = newPendantData.hasColor;
+      if (newPendantData.hasGold !== editingItem.hasGold) {
+        changedFields.hasGold = newPendantData.hasGold;
+      }
+      if (newPendantData.hasSilver !== editingItem.hasSilver) {
+        changedFields.hasSilver = newPendantData.hasSilver;
       }
 
       // Check if image was changed

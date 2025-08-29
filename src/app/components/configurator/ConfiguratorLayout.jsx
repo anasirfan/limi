@@ -765,7 +765,6 @@ const ConfiguratorLayout = () => {
     }
 
     // Use deterministic default pendants and systems for the new amount
-    const newPendants = getDefaultPendantAssignments(amount);
     const newSystems = getDefaultSystemAssignments(amount);
 
     // Filter selectedPendants to only include valid indices for the new amount
@@ -785,6 +784,9 @@ const ConfiguratorLayout = () => {
         design: system.design,
         designId: system.designId,
         connectorColor: system.connectorColor,
+        hasGlass: system.hasGlass,
+        hasColor: system.hasColor,
+        modelUrl: system.media.model.url,
       }))
     );
     console.log("lightcables", cables);
@@ -939,7 +941,10 @@ const ConfiguratorLayout = () => {
               pendantAssignment.hasGlass ? "glass_attached" : "glass_none"
             );
             sendMessageToPlayCanvas(
-              pendantAssignment.hasColor ? "color_gold" : "color_none"
+              pendantAssignment.hasGold ? "color_gold" : "gold_none"
+            );
+            sendMessageToPlayCanvas(
+              pendantAssignment.hasSilver ? "color_silver" : "silver_none"
             );
             sendMessageToPlayCanvas(`product_${modelUrl}`);
             sendMessageToPlayCanvas(`${pendantAssignment.message}`);
@@ -959,7 +964,10 @@ const ConfiguratorLayout = () => {
                 pendantAssignment.hasGlass ? "glass_attached" : "glass_none"
               );
               sendMessageToPlayCanvas(
-                pendantAssignment.hasColor ? "color_gold" : "color_none"
+                pendantAssignment.hasGold ? "gold_attached" : "gold_none"
+              );
+              sendMessageToPlayCanvas(
+                pendantAssignment.hasSilver ? "silver_attached" : "silver_none"
               );
               sendMessageToPlayCanvas(`product_${modelUrl}`);
               sendMessageToPlayCanvas(`${pendantAssignment.message}`);
@@ -983,50 +991,76 @@ const ConfiguratorLayout = () => {
       lightAmount: baseType === "rectangular" ? 3 : 1,
       baseType: baseType,
     }));
-
+    const design = "helix";
+    const system = systemAssignments.find((a) => a.design === design);
     // Send message to PlayCanvas iframe
     sendMessageToPlayCanvas(`base_type:${baseType}`);
 
     if (baseType === "rectangular") {
       sendMessageToPlayCanvas(`light_amount:3`);
-      sendMessageToPlayCanvas(`system:bar`);
-      sendMessageToPlayCanvas(`cable_0:system_base_2`);
-      sendMessageToPlayCanvas(`cable_0:size_3`);
-      sendMessageToPlayCanvas(`system:bar`);
-      sendMessageToPlayCanvas(`cable_1:system_base_2`);
-      sendMessageToPlayCanvas(`cable_1:size_3`);
-      sendMessageToPlayCanvas(`cable_2:product_2`);
-      sendMessageToPlayCanvas(`cable_2:size_3`);
+      sendMessageToPlayCanvas(`system:${system.systemType}`);
+      sendMessageToPlayCanvas(`cable_0`);
+      sendMessageToPlayCanvas(`glass_${system.hasGlass ? "attached" : "none"}`);
+      sendMessageToPlayCanvas(`color_${system.hasColor ? "gold" : "none"}`);
+      sendMessageToPlayCanvas(`product_${system.media?.model?.url}`);
+      sendMessageToPlayCanvas(`system_${system.message}`);
+      sendMessageToPlayCanvas(`cable_1`);
+      sendMessageToPlayCanvas(`glass_${system.hasGlass ? "attached" : "none"}`);
+      sendMessageToPlayCanvas(`color_${system.hasColor ? "gold" : "none"}`);
+      sendMessageToPlayCanvas(`product_${system.media?.model?.url}`);
+      sendMessageToPlayCanvas(`system_${system.message}`); 
+      sendMessageToPlayCanvas(`cable_2`);
+      sendMessageToPlayCanvas(`glass_${system.hasGlass ? "attached" : "none"}`);
+      sendMessageToPlayCanvas(`color_${system.hasColor ? "gold" : "none"}`);
+      sendMessageToPlayCanvas(`product_${system.media?.model?.url}`);
+      sendMessageToPlayCanvas(`system_${system.message}`);
       setCables([
         {
-          isSystem: true,
-          systemType: "bar",
-          design: "Helix",
-          designId: "product_2",
+          isSystem: system.isSystem,
+          systemType: system.systemType,
+          design: system.design,
+          designId: system.message,
+          hasGlass: system.hasGlass,
+          hasColor: system.hasColor,
+          modelUrl: system.media?.model?.url,
         },
         {
-          isSystem: true,
-          systemType: "bar",
-          design: "Helix",
-          designId: "product_2",
+          isSystem: system.isSystem,
+          systemType: system.systemType,
+          design: system.design,
+          designId: system.message,
+          hasGlass: system.hasGlass,
+          hasColor: system.hasColor,
+          modelUrl: system.media?.model?.url,
         },
         {
-          isSystem: false,
-          systemType: "",
-          design: "Radial",
-          designId: "product_2",
+          isSystem: system.isSystem,
+          systemType: system.systemType,
+          design: system.design,
+          designId: system.message,
+          hasGlass: system.hasGlass,
+          hasColor: system.hasColor,
+          modelUrl: system.media?.model?.url,
         },
       ]);
     } else {
       sendMessageToPlayCanvas(`light_amount:1`);
-      sendMessageToPlayCanvas(`cable_0:product_2`);
-      sendMessageToPlayCanvas(`cable_0:size_3`);
+      sendMessageToPlayCanvas(`system:${system.systemType}`);
+      sendMessageToPlayCanvas(`cable_0`);
+      sendMessageToPlayCanvas(`glass_${system.hasGlass ? "attached" : "none"}`);
+      sendMessageToPlayCanvas(`color_${system.hasColor ? "gold" : "none"}`);
+      sendMessageToPlayCanvas(`product_${system.media?.model?.url}`);
+      sendMessageToPlayCanvas(`system_${system.message}`);
       setCables([
         {
-          isSystem: false,
-          systemType: "",
-          design: "Radial",
-          designId: "product_2",
+          isSystem: system.isSystem,
+          systemType: system.systemType,
+          design: system.design,
+          designId: system.message,
+          hasGlass: system.hasGlass,
+          hasGold: system.hasGold,
+          hasSilver: system.hasSilver,
+          modelUrl: system.media?.model?.url,
         },
       ]);
     }
@@ -1103,7 +1137,8 @@ const ConfiguratorLayout = () => {
                 design: system.design,
                 designId: system.message,
                 hasGlass: system.hasGlass,
-                hasColor: system.hasColor,
+                hasGold: system.hasGold,
+                hasSilver: system.hasSilver,
                 modelUrl: system.media?.model?.url,
               };
             }
@@ -1121,7 +1156,10 @@ const ConfiguratorLayout = () => {
             system.hasGlass ? "glass_attached" : "glass_none"
           );
           sendMessageToPlayCanvas(
-            system.hasColor ? "color_gold" : "color_none"
+            system.hasGold ? "gold_attached" : "gold_none"
+          );
+          sendMessageToPlayCanvas(
+            system.hasSilver ? "silver_attached" : "silver_none"
           );
           sendMessageToPlayCanvas(`product_${system.media?.model?.url}`);
           sendMessageToPlayCanvas(`${system.message}`);

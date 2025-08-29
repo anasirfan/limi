@@ -40,8 +40,8 @@ const ProductDetailsForm = ({ newPendantData, handlePendantInputChange }) => {
         </div>
       </div>
 
-      {/* Glass and Color Options */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      {/* Glass, Gold, and Silver Options */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Glass Option */}
         <div className="space-y-3">
           <label className="flex items-center text-gray-300 font-semibold mb-2">
@@ -105,64 +105,127 @@ const ProductDetailsForm = ({ newPendantData, handlePendantInputChange }) => {
           </div>
         </div>
 
-        {/* Color Option */}
+        {/* Gold Option */}
         <div className="space-y-3">
           <label className="flex items-center text-gray-300 font-semibold mb-2">
             <div className="w-2 h-2 bg-[#54bb74] rounded-full mr-2"></div>
-            Color Option
+            Gold Option
           </label>
           <div className="flex items-center space-x-4">
             <label className="flex items-center cursor-pointer group">
               <input
                 type="radio"
-                name="hasColor"
+                name="hasGold"
                 value="true"
-                checked={newPendantData.hasColor === true}
+                checked={newPendantData.hasGold === true}
                 onChange={(e) => handlePendantInputChange({
-                  target: { name: 'hasColor', value: true }
+                  target: { name: 'hasGold', value: true }
                 })}
                 className="sr-only"
               />
               <div className={`w-5 h-5 rounded-full border-2 mr-3 transition-all duration-300 ${
-                newPendantData.hasColor === true 
+                newPendantData.hasGold === true 
                   ? 'border-[#54bb74] bg-[#54bb74]' 
                   : 'border-gray-400 group-hover:border-[#54bb74]'
               }`}>
-                {newPendantData.hasColor === true && (
+                {newPendantData.hasGold === true && (
                   <div className="w-2 h-2 bg-white rounded-full mx-auto mt-0.5"></div>
                 )}
               </div>
               <span className={`text-sm font-medium transition-colors ${
-                newPendantData.hasColor === true ? 'text-[#54bb74]' : 'text-gray-300'
+                newPendantData.hasGold === true ? 'text-[#54bb74]' : 'text-gray-300'
               }`}>
-                Color
+                Gold
               </span>
             </label>
             
             <label className="flex items-center cursor-pointer group">
               <input
                 type="radio"
-                name="hasColor"
+                name="hasGold"
                 value="false"
-                checked={newPendantData.hasColor === false}
+                checked={newPendantData.hasGold === false}
                 onChange={(e) => handlePendantInputChange({
-                  target: { name: 'hasColor', value: false }
+                  target: { name: 'hasGold', value: false }
                 })}
                 className="sr-only"
               />
               <div className={`w-5 h-5 rounded-full border-2 mr-3 transition-all duration-300 ${
-                newPendantData.hasColor === false 
+                newPendantData.hasGold === false 
                   ? 'border-[#54bb74] bg-[#54bb74]' 
                   : 'border-gray-400 group-hover:border-[#54bb74]'
               }`}>
-                {newPendantData.hasColor === false && (
+                {newPendantData.hasGold === false && (
                   <div className="w-2 h-2 bg-white rounded-full mx-auto mt-0.5"></div>
                 )}
               </div>
               <span className={`text-sm font-medium transition-colors ${
-                newPendantData.hasColor === false ? 'text-[#54bb74]' : 'text-gray-300'
+                newPendantData.hasGold === false ? 'text-[#54bb74]' : 'text-gray-300'
               }`}>
-                No Color
+                No Gold
+              </span>
+            </label>
+          </div>
+        </div>
+
+        {/* Silver Option */}
+        <div className="space-y-3">
+          <label className="flex items-center text-gray-300 font-semibold mb-2">
+            <div className="w-2 h-2 bg-[#54bb74] rounded-full mr-2"></div>
+            Silver Option
+          </label>
+          <div className="flex items-center space-x-4">
+            <label className="flex items-center cursor-pointer group">
+              <input
+                type="radio"
+                name="hasSilver"
+                value="true"
+                checked={newPendantData.hasSilver === true}
+                onChange={(e) => handlePendantInputChange({
+                  target: { name: 'hasSilver', value: true }
+                })}
+                className="sr-only"
+              />
+              <div className={`w-5 h-5 rounded-full border-2 mr-3 transition-all duration-300 ${
+                newPendantData.hasSilver === true 
+                  ? 'border-[#54bb74] bg-[#54bb74]' 
+                  : 'border-gray-400 group-hover:border-[#54bb74]'
+              }`}>
+                {newPendantData.hasSilver === true && (
+                  <div className="w-2 h-2 bg-white rounded-full mx-auto mt-0.5"></div>
+                )}
+              </div>
+              <span className={`text-sm font-medium transition-colors ${
+                newPendantData.hasSilver === true ? 'text-[#54bb74]' : 'text-gray-300'
+              }`}>
+                Silver
+              </span>
+            </label>
+            
+            <label className="flex items-center cursor-pointer group">
+              <input
+                type="radio"
+                name="hasSilver"
+                value="false"
+                checked={newPendantData.hasSilver === false}
+                onChange={(e) => handlePendantInputChange({
+                  target: { name: 'hasSilver', value: false }
+                })}
+                className="sr-only"
+              />
+              <div className={`w-5 h-5 rounded-full border-2 mr-3 transition-all duration-300 ${
+                newPendantData.hasSilver === false 
+                  ? 'border-[#54bb74] bg-[#54bb74]' 
+                  : 'border-gray-400 group-hover:border-[#54bb74]'
+              }`}>
+                {newPendantData.hasSilver === false && (
+                  <div className="w-2 h-2 bg-white rounded-full mx-auto mt-0.5"></div>
+                )}
+              </div>
+              <span className={`text-sm font-medium transition-colors ${
+                newPendantData.hasSilver === false ? 'text-[#54bb74]' : 'text-gray-300'
+              }`}>
+                No Silver
               </span>
             </label>
           </div>
