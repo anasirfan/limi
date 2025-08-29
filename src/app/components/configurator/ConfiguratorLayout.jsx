@@ -939,7 +939,7 @@ const ConfiguratorLayout = () => {
     setTimeout(() => {
       sendMessageToPlayCanvas(`light_amount:${amount}`);
       newSystems.forEach((system, index) => {
-        sendMessageToPlayCanvas(`system:${system.systemType}`);
+        // sendMessageToPlayCanvas(`system:${system.systemType}`);
         sendMessageToPlayCanvas(`cable_${index}`);
         sendMessageToPlayCanvas(
           `glass_${system.hasGlass ? "attached" : "none"}`
