@@ -101,7 +101,9 @@ const ConfiguratorLayout = () => {
         cableSize: "2mm",
         cableColor: "black",
         modelUrl: "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/testpandet_1756418157231.glb",
-      },
+        hasGlass: false,
+        hasColor: false,
+     },
     ]);
   });
 
@@ -628,6 +630,8 @@ const ConfiguratorLayout = () => {
               sendMessageToPlayCanvas(`cable_${index}:size_${cable.size}`);
             } else {
               sendMessageToPlayCanvas(`cable_${index}`);
+              sendMessageToPlayCanvas(cable.hasGlass ? "glass_attached" : "glass_none");
+              sendMessageToPlayCanvas(cable.hasColor ? "color_gold" : "color_none");
               sendMessageToPlayCanvas(`product_${cable.modelUrl}`);
               sendMessageToPlayCanvas(`${cable.designId}`);
             }
@@ -903,6 +907,8 @@ const ConfiguratorLayout = () => {
               systemType: pendantAssignment.systemType,
               designId: pendantAssignment.message,
               modelUrl: pendantAssignment.media?.model?.url,
+              hasGlass: pendantAssignment.hasGlass,
+              hasColor: pendantAssignment.hasColor,
             };
           }
         });
