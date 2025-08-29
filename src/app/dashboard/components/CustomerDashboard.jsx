@@ -303,6 +303,8 @@ export default function CustomerDashboard({ token }) {
       formData.append("design", newPendantData.design || "");
       formData.append("message", newPendantData.message || "");
       formData.append("isSystem", newPendantData.isSystem ? "true" : "false");
+      formData.append("hasGlass", newPendantData.hasGlass ? "true" : "false");
+      formData.append("hasColor", newPendantData.hasColor ? "true" : "false");
 
       const response = await fetch(
         "https://dev.api1.limitless-lighting.co.uk/admin/configurator/system",
@@ -327,6 +329,8 @@ export default function CustomerDashboard({ token }) {
         message: "",
         isSystem: false,
         image: "",
+        hasGlass: false,
+        hasColor: false
       });
       setImageFile(null);
       setImagePreview("");

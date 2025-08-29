@@ -78,6 +78,8 @@ export default function PendantSystemManager({
       systemType: item.systemType || "",
       isSystem: item.isSystem || false,
       image: item.image || "",
+      hasGlass: item.hasGlass !== undefined ? item.hasGlass : false,  // Default: No Glass
+      hasColor: item.hasColor !== undefined ? item.hasColor : false   // Default: No Color
     });
 
     // Set existing images if available
@@ -105,6 +107,17 @@ export default function PendantSystemManager({
     setModelPreview("");
     setImageFile(null);
     setModelFile(null);
+    // Reset form with default values
+    setNewPendantData({
+      name: "",
+      message: "",
+      design: "",
+      systemType: "",
+      isSystem: false,
+      image: "",
+      hasGlass: false,  // Default: No Glass
+      hasColor: false   // Default: No Color
+    });
   };
 
   const handleCloseEditModal = () => {
@@ -133,6 +146,12 @@ export default function PendantSystemManager({
       }
       if (newPendantData.systemType !== editingItem.systemType) {
         changedFields.systemType = newPendantData.systemType;
+      }
+      if (newPendantData.hasGlass !== editingItem.hasGlass) {
+        changedFields.hasGlass = newPendantData.hasGlass;
+      }
+      if (newPendantData.hasColor !== editingItem.hasColor) {
+        changedFields.hasColor = newPendantData.hasColor;
       }
 
       // Check if image was changed

@@ -618,10 +618,10 @@ const ConfiguratorLayout = () => {
               if (parts.length === 4) {
                 // [system, base, 2, 2]
                 const baseDesign = parts.slice(0, 3).join("_"); // e.g., "system_base_2"
-                sendMessageToPlayCanvas(`cable_${index}:${baseDesign}`);
+                // sendMessageToPlayCanvas(`cable_${index}:${baseDesign}`);
                 sendMessageToPlayCanvas(`cable_${index}:${cable.designId}`);
               } else {
-                sendMessageToPlayCanvas(`cable_${index}:${baseDesign}`);
+                // sendMessageToPlayCanvas(`cable_${index}:${baseDesign}`);
                 sendMessageToPlayCanvas(`cable_${index}:${cable.designId}`);
               }
               console.log("cable", cable.size);
@@ -923,6 +923,8 @@ const ConfiguratorLayout = () => {
             sendMessageToPlayCanvas(`cable_0`);
             sendMessageToPlayCanvas(`product_${modelUrl}`);
             sendMessageToPlayCanvas(`${pendantAssignment.message}`);
+            sendMessageToPlayCanvas(pendantAssignment.hasGlass ? "glass_attached" : "glass_none");
+            sendMessageToPlayCanvas(pendantAssignment.hasColor ? "color_gold" : "color_none");
           } else {
             sendMessageToPlayCanvas(`cable_0:${pendantAssignment.message}`);
           }
@@ -934,7 +936,8 @@ const ConfiguratorLayout = () => {
               sendMessageToPlayCanvas(`cable_${id}`);
               sendMessageToPlayCanvas(`product_${modelUrl}`);
               sendMessageToPlayCanvas(`${pendantAssignment.message}`);
-         
+              sendMessageToPlayCanvas(pendantAssignment.hasGlass ? "glass_attached" : "glass_none");
+              sendMessageToPlayCanvas(pendantAssignment.hasColor ? "color_gold" : "color_none");
             } else {
               sendMessageToPlayCanvas(`cable_${id}:${pendantAssignment.message}`);
             }
@@ -1432,6 +1435,11 @@ const ConfiguratorLayout = () => {
           setIsLightingPanelOpen={setIsLightingPanelOpen}
           setCables={setCables}
           cableMessage={cableMessage}
+          onStartTour={() => {
+            if (typeof window !== 'undefined' && window.startConfiguratorTour) {
+              window.startConfiguratorTour();
+            }
+          }}
         />
       )}
 
@@ -1476,6 +1484,7 @@ const ConfiguratorLayout = () => {
               onCableSizeChange={handleCableSizeChange}
               onShadeSelect={handleShadeSelect}
               setCableMessage={setCableMessage}
+              sendMessageToPlayCanvas={sendMessageToPlayCanvas}
             />
           )}
 

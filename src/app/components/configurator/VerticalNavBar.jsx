@@ -56,7 +56,8 @@ const VerticalNavBar = ({
   
   onSystemTypeSelection,
   containerDimensions,
-  onShadeSelect // Add onShadeSelect prop
+  onShadeSelect, // Add onShadeSelect prop
+  sendMessageToPlayCanvas // Add sendMessageToPlayCanvas prop
 }) => {
   // Define colors from LIMI brand palette
   const emerald = '#50C878';
@@ -69,19 +70,29 @@ const VerticalNavBar = ({
   const [showTooltip, setShowTooltip] = useState(true);
   // Add these state variables after other state declarations
 const [tourStep, setTourStep] = useState(0);
-const [isTourActive, setIsTourActive] = useState(true);
+const [isTourActive, setIsTourActive] = useState(false);
 const [highlightedElement, setHighlightedElement] = useState(null);
 const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });
 const [targetElement, setTargetElement] = useState(null);
-const [openingBase, setOpenBase] = useState(false);
+const [openingBase, setOpeningBase] = useState(false);
+const [openBase, setOpenBase] = useState(false);
 // Welcome modal state
 const [showWelcomeModal, setShowWelcomeModal] = useState(false);
-const [activeTab, setActiveTab] = useState('base'); 
-  
+const [activeTab, setActiveTab] = useState('base');
 
-const handleSetActiveTab = (tab) => {
-  setActiveTab(tab);
-};
+// Tour system state
+const [tourState, setTourState] = useState({
+  isActive: false,
+  currentStep: 0,
+  totalSteps: 6,
+  isAutoAdvancing: true,
+  showWelcome: false,
+  isCompleted: false
+}); 
+
+  const handleSetActiveTab = (tab) => {
+    setActiveTab(tab);
+  };
   // Define the order of steps for the guided tour
   const guidedSteps = [
     { id: 'lightType', message: 'First, select your light type' },
@@ -180,37 +191,86 @@ const handleSetActiveTab = (tab) => {
   }, [cableMessage, setActiveStep, setSelectedPendants, setCableMessage]);
  
 
-// Define tour steps
+// Define comprehensive tour steps with PlayCanvas messages
 const tourSteps = [
   {
     id: 'lightType',
-    title: 'Select Light Type',
-    description: 'Start by choosing your preferred light type from the options available.',
-    position: 'right'
+    title: 'Choose Your Light Type',
+    description: 'We offer three main types: Ceiling, Wall, and Floor lights. Let\'s start with ceiling lights for ambient lighting.',
+    target: '[data-tour="lightType"]',
+    action: 'select',
+    value: 'ceiling',
+    duration: 4000,
+    playCanvasMessages: [
+      'lightType:ceiling',
+      'demo:ceiling-showcase'
+    ]
   },
   {
     id: 'baseType',
-    title: 'Choose Base Type',
-    description: 'Next, select the base type that fits your needs.',
-    position: 'right'
+    title: 'Select Base Type',
+    description: 'Round bases offer elegant, modern aesthetics perfect for contemporary spaces.',
+    target: '[data-tour="baseType"]',
+    action: 'select',
+    value: 'round',
+    duration: 3500,
+    playCanvasMessages: [
+      'baseType:round',
+      'demo:base-comparison'
+    ]
   },
   {
     id: 'baseColor',
-    title: 'Configure Base Color',
-    description: 'Specify how many lights you need for your setup.',
-    position: 'right'
+    title: 'Choose Base Color',
+    description: 'Black provides a sleek, contemporary look that complements any interior.',
+    target: '[data-tour="baseColor"]',
+    action: 'select',
+    value: 'black',
+    duration: 3500,
+    playCanvasMessages: [
+      'baseColor:black',
+      'demo:color-transition'
+    ]
   },
   {
     id: 'connectorColor',
-    title: 'Configure Connector Color',
-    description: 'Specify how many lights you need for your setup.',
-    position: 'right'
+    title: 'Connector Color',
+    description: 'Matching connector creates a cohesive design throughout your lighting system.',
+    target: '[data-tour="connectorColor"]',
+    action: 'select',
+    value: 'black',
+    duration: 3000,
+    playCanvasMessages: [
+      'connectorColor:black',
+      'demo:connector-highlight'
+    ]
+  },
+  {
+    id: 'lightAmount',
+    title: 'Number of Lights',
+    description: 'Three lights provide balanced illumination perfect for most spaces.',
+    target: '[data-tour="lightAmount"]',
+    action: 'select',
+    value: 3,
+    duration: 3500,
+    playCanvasMessages: [
+      'lightAmount:3',
+      'demo:light-multiplication',
+      'hotspot:on'
+    ]
   },
   {
     id: 'pendantSelection',
-    title: 'Customize Pendants',
-    description: 'Finally, customize your pendant selection and configuration.',
-    position: 'right'
+    title: 'Configure Your Pendants',
+    description: 'Now customize each pendant to create your perfect lighting solution.',
+    target: '[data-tour="pendantSelection"]',
+    action: 'open',
+    duration: 4000,
+    playCanvasMessages: [
+      'demo:pendant-showcase',
+      'cable_1:demo-pendant',
+      'demo:configuration-panel'
+    ]
   }
 ];
 
@@ -236,12 +296,147 @@ const tourSteps = [
     return guidedSteps[currentGuideStep]?.id === stepId;
   };
   
-  const sendMessageToPlayCanvas = (message) => {
-    console.log("Sending message to PlayCanvas iframe:", message);
-    const iframe = document.getElementById("playcanvas-app");
-    if (iframe && iframe.contentWindow) {
-      iframe.contentWindow.postMessage(message, "*");
+  // Tour control functions
+  const firePlayCanvasMessages = (messages, delay = 500) => {
+    if (!messages || !Array.isArray(messages)) return;
+    
+    messages.forEach((message, index) => {
+      setTimeout(() => {
+        if (sendMessageToPlayCanvas) {
+          sendMessageToPlayCanvas(message);
+        }
+      }, index * delay);
+    });
+  };
+
+  const executeTourStep = async (step) => {
+    console.log(`Executing tour step: ${step.id}`);
+    
+    // 1. Fire PlayCanvas messages to show visual changes
+    if (step.playCanvasMessages) {
+      firePlayCanvasMessages(step.playCanvasMessages);
     }
+    
+    // 2. Execute the actual action based on step type
+    await performStepAction(step);
+    
+    // 3. Auto-advance after duration
+    setTimeout(() => {
+      advanceToNextStep();
+    }, step.duration);
+  };
+
+  const performStepAction = async (step) => {
+    switch (step.id) {
+      case 'lightType':
+        setActiveStep('lightType');
+        setOpenDropdown('lightType');
+        setTimeout(() => {
+          onLightTypeChange('ceiling');
+          setOpenDropdown(null);
+        }, 1000);
+        break;
+        
+      case 'baseType':
+        setActiveStep('baseType');
+        setOpenDropdown('baseType');
+        setTimeout(() => {
+          onBaseTypeChange('round');
+          setOpenDropdown(null);
+        }, 1000);
+        break;
+        
+      case 'baseColor':
+        setActiveStep('baseColor');
+        setOpenDropdown('baseColor');
+        setTimeout(() => {
+          onBaseColorChange('black');
+          setOpenDropdown(null);
+        }, 1000);
+        break;
+        
+      case 'connectorColor':
+        setActiveStep('baseColor');
+        setOpenDropdown('baseColor');
+        handleSetActiveTab('connector');
+        setTimeout(() => {
+          onConnectorColorChange('black');
+          setOpenDropdown(null);
+        }, 1000);
+        break;
+        
+      case 'lightAmount':
+        setActiveStep('lightAmount');
+        setOpenDropdown('lightAmount');
+        setTimeout(() => {
+          onLightAmountChange(3);
+          setOpenDropdown(null);
+        }, 1000);
+        break;
+        
+      case 'pendantSelection':
+        setActiveStep('pendantSelection');
+        setOpenDropdown('pendantSelection');
+        setTimeout(() => {
+          setShowConfigurationTypeSelector(true);
+        }, 1000);
+        break;
+        
+      default:
+        break;
+    }
+  };
+
+  const advanceToNextStep = () => {
+    setTourState(prev => {
+      const nextStep = prev.currentStep + 1;
+      
+      if (nextStep >= tourSteps.length) {
+        // Tour completed
+        return {
+          ...prev,
+          isActive: false,
+          isCompleted: true,
+          currentStep: 0
+        };
+      }
+      
+      const newState = {
+        ...prev,
+        currentStep: nextStep
+      };
+      
+      // Execute next step
+      setTimeout(() => {
+        executeTourStep(tourSteps[nextStep]);
+      }, 500);
+      
+      return newState;
+    });
+  };
+
+  const startTour = () => {
+    setTourState({
+      isActive: true,
+      currentStep: 0,
+      totalSteps: tourSteps.length,
+      isAutoAdvancing: true,
+      showWelcome: false,
+      isCompleted: false
+    });
+    
+    // Start with first step
+    setTimeout(() => {
+      executeTourStep(tourSteps[0]);
+    }, 1000);
+  };
+
+  const stopTour = () => {
+    setTourState(prev => ({
+      ...prev,
+      isActive: false,
+      showWelcome: false
+    }));
   };
 
   
@@ -424,23 +619,45 @@ const tourSteps = [
   // Determine if we should show the vertical nav bar
   const showVerticalNav = !configuringType;
   
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.startConfiguratorTour = () => {
+        setTourState(prev => ({ ...prev, showWelcome: true }));
+      };
+    }
+    return () => {
+      if (typeof window !== 'undefined') {
+        delete window.startConfiguratorTour;
+      }
+    };
+  }, []);
+
   return (
     <>
-      {/* Welcome Modal */}
+      {/* Welcome Tour Modal */}
       <WelcomeTourModal
-        isOpen={showWelcomeModal}
+        isOpen={tourState.showWelcome}
         onSkip={() => {
-          setShowWelcomeModal(false);
-          setIsTourActive(false);
+          setTourState(prev => ({ ...prev, showWelcome: false }));
         }}
         onStart={() => {
-          setShowWelcomeModal(false);
-          setTourStep(0); // Reset to first step
-          setIsTourActive(true);
+          setTourState(prev => ({ ...prev, showWelcome: false }));
+          startTour();
         }}
       />
-      
 
+      {/* Tour Overlay System */}
+      {tourState.isActive && (
+        <TourOverlay
+          step={tourSteps[tourState.currentStep]}
+          stepIndex={tourState.currentStep}
+          totalSteps={tourState.totalSteps}
+          onSkip={stopTour}
+          onPause={() => setTourState(prev => ({ ...prev, isAutoAdvancing: false }))}
+          onResume={() => setTourState(prev => ({ ...prev, isAutoAdvancing: true }))}
+        />
+      )}
+      
       {/* Only show vertical nav when not configuring individual pendant/system */}
       {showVerticalNav && (
         <div 
@@ -488,7 +705,7 @@ const tourSteps = [
                   containerDimensions={containerDimensions}
                   isGuided={isGuidedStep(step.id)}
                   isCompleted={isStepCompleted(step.id)}
-                  data-tour-step={step.id}
+                  data-tour={step.id}
                 >
                 {step?.id === 'lightType' && openDropdown === step?.id && (
                   <LightTypeDropdown 
@@ -880,35 +1097,235 @@ function GuidedTourOverlay({ isActive, step, stepIndex, totalSteps, targetSelect
     )}
   </div>
 </div>
-    </>,
-    document.body
-  );
+</>,
+document.body
+);
 }
 // WelcomeTourModal component
 function WelcomeTourModal({ isOpen, onSkip, onStart }) {
-  if (!isOpen) return null;
-  return (
-    <div className="fixed inset-0 z-[11000] flex items-center justify-center bg-black bg-opacity-60 animate-fadeIn">
-      <div className="bg-white rounded-2xl shadow-2xl px-8 py-8 flex flex-col items-center gap-4 max-w-[90vw] w-[380px]">
-        <div className="text-2xl font-bold mb-2 text-emerald-600">Are you new to the configurator?</div>
-        <div className="text-gray-700 text-base mb-4 text-center">We can walk you through the main features step by step.<br/>Would you like a quick tour?</div>
-        <div className="flex gap-4 mt-2 w-full">
-          <button
-            className="flex-1 py-2 rounded-lg border border-gray-300 bg-gray-100 text-gray-700 font-semibold hover:bg-gray-200 transition"
-            onClick={onSkip}
-          >
-            Skip
-          </button>
-          <button
-            className="flex-1 py-2 rounded-lg bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition"
-            onClick={onStart}
-          >
-            Start Tour
-          </button>
+if (!isOpen) return null;
+return createPortal(
+<div className="fixed inset-0 z-[11000] flex items-center justify-center bg-black bg-opacity-60 animate-fadeIn">
+  <div className="bg-white rounded-2xl shadow-2xl px-8 py-8 flex flex-col items-center gap-4 max-w-[90vw] w-[420px]">
+    <div className="text-2xl font-bold mb-2 text-emerald-600">Ready to explore LIMI?</div>
+    <div className="text-gray-700 text-base mb-4 text-center">
+      Let us guide you through creating the perfect lighting configuration.<br/>
+      <span className="text-sm text-gray-500 mt-2 block">Takes about 2 minutes</span>
+    </div>
+    <div className="flex gap-4 mt-2 w-full">
+      <button
+        className="flex-1 py-3 rounded-lg border border-gray-300 bg-gray-100 text-gray-700 font-semibold hover:bg-gray-200 transition"
+        onClick={onSkip}
+      >
+        Skip Tour
+      </button>
+      <button
+        className="flex-1 py-3 rounded-lg bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition shadow-lg"
+        onClick={onStart}
+      >
+        Start Tour
+      </button>
+    </div>
+  </div>
+</div>,
+document.body
+);
+}
+
+// TourOverlay component
+function TourOverlay({ step, stepIndex, totalSteps, onSkip, onPause, onResume }) {
+const [highlightRect, setHighlightRect] = useState(null);
+const [tooltipPos, setTooltipPos] = useState({ top: 0, left: 0 });
+
+// Find and track the position of the highlighted element
+useLayoutEffect(() => {
+if (!step || !step.target) {
+  setHighlightRect(null);
+  return;
+}
+  
+const el = document.querySelector(step.target);
+if (el) {
+  const rect = el.getBoundingClientRect();
+  setHighlightRect(rect);
+  // Position tooltip to the left of the navigation
+  setTooltipPos({
+    top: rect.top + rect.height / 2,
+    left: rect.left - 320, // Position tooltip to the left
+  });
+}
+}, [step]);
+
+if (!step || !highlightRect) return null;
+
+return createPortal(
+<>
+  {/* Spotlight Overlay */}
+  <svg
+    className="fixed inset-0 z-[10000] pointer-events-none"
+    width={typeof window !== 'undefined' ? window.innerWidth : 0}
+    height={typeof window !== 'undefined' ? window.innerHeight : 0}
+    style={{ width: '100vw', height: '100vh', display: 'block', pointerEvents: 'none' }}
+    aria-hidden="true"
+  >
+    <defs>
+      <mask id="tour-spotlight-mask">
+        <rect x="0" y="0" width="100%" height="100%" fill="white" />
+        {highlightRect && (
+          <circle
+            cx={highlightRect.left + highlightRect.width / 2}
+            cy={highlightRect.top + highlightRect.height / 2}
+            r={Math.max(highlightRect.width, highlightRect.height) / 2 + 32}
+            fill="black"
+          />
+        )}
+      </mask>
+    </defs>
+    <rect
+      x="0"
+      y="0"
+      width="100%"
+      height="100%"
+      fill="rgba(16,20,24,0.8)"
+      style={{ backdropFilter: 'blur(4px)', pointerEvents: 'none' }}
+      mask="url(#tour-spotlight-mask)"
+    />
+  </svg>
+
+  {/* Highlight Glow */}
+  <div
+    className="fixed z-[10010] pointer-events-none"
+    style={{
+      top: highlightRect.top - 32,
+      left: highlightRect.left - 32,
+      width: highlightRect.width + 64,
+      height: highlightRect.height + 64,
+      pointerEvents: 'none',
+    }}
+  >
+    <div className="absolute inset-0 rounded-full shadow-[0_0_0_8px_rgba(80,200,120,0.3),0_0_0_24px_rgba(80,200,120,0.2)] animate-pulse" />
+  </div>
+
+  {/* Tour Tooltip */}
+  <div
+    className="fixed z-[10020] bg-gradient-to-br from-white to-gray-50 text-gray-800 rounded-xl shadow-2xl px-6 py-5 flex flex-col gap-3 w-[300px] animate-fadeIn border border-gray-100"
+    style={{
+      top: Math.max(tooltipPos.top - 100, 24),
+      left: Math.max(tooltipPos.left, 24),
+      pointerEvents: 'auto',
+    }}
+    role="dialog"
+    aria-modal="true"
+  >
+    {/* Header */}
+    <div className="flex justify-between items-center">
+      <div className="flex-1">
+        <div className="flex items-center gap-2">
+          <span className="font-bold text-gray-900 text-lg">{step.title}</span>
+          <span className="text-xs bg-emerald-100 text-emerald-600 px-2 py-0.5 rounded-full">
+            Step {stepIndex + 1} of {totalSteps}
+          </span>
+        </div>
+        {/* Progress bar */}
+        <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
+          <div 
+            className="bg-emerald-500 h-1.5 rounded-full transition-all duration-300 ease-out" 
+            style={{ 
+              width: `${((stepIndex + 1) / totalSteps) * 100}%` 
+            }}
+          />
         </div>
       </div>
+      <button
+        onClick={onSkip}
+        className="ml-2 p-1.5 rounded-full hover:bg-gray-100 transition-colors duration-200 text-gray-500 hover:text-gray-700"
+        aria-label="Skip tour"
+      >
+        <FiX size={18} />
+      </button>
     </div>
-  );
+
+    {/* Description */}
+    <div className="text-sm text-gray-600 leading-relaxed">
+      {step.description}
+    </div>
+
+    {/* Auto-advance indicator */}
+    <div className="flex items-center justify-between gap-3 mt-2">
+      <div className="flex items-center gap-2 text-xs text-gray-500">
+        <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+        <span>Auto-advancing...</span>
+      </div>
+      
+      <button
+        onClick={onSkip}
+        className="px-4 py-2 rounded-lg font-medium text-sm text-gray-600 hover:bg-gray-100 transition-colors duration-200"
+      >
+        Skip Tour
+      </button>
+    </div>
+  </div>
+</>,
+document.body
+);
 }
 
 export default VerticalNavBar;
+
+// Add CSS animations for tour effects
+const tourStyles = `
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+  
+  @keyframes slideInFromRight {
+    from { 
+      opacity: 0; 
+      transform: translateX(20px); 
+    }
+    to { 
+      opacity: 1; 
+      transform: translateX(0); 
+    }
+  }
+  
+  .animate-fadeIn {
+    animation: fadeIn 0.3s ease-out;
+  }
+  
+  .animate-pulse {
+    animation: pulse 2s infinite;
+  }
+  
+  .animate-slideInFromRight {
+    animation: slideInFromRight 0.4s ease-out;
+  }
+  
+  .tour-spotlight {
+    pointer-events: none;
+    z-index: 9999;
+  }
+  
+  .tour-tooltip {
+    backdrop-filter: blur(10px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  }
+  
+  .tour-highlight {
+    box-shadow: 0 0 0 4px rgba(80, 200, 120, 0.3), 0 0 0 8px rgba(80, 200, 120, 0.2);
+    border-radius: 50%;
+  }
+`;
+
+// Inject styles into document head
+if (typeof document !== 'undefined') {
+  const styleSheet = document.createElement('style');
+  styleSheet.textContent = tourStyles;
+  document.head.appendChild(styleSheet);
+}

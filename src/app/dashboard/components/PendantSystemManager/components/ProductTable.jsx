@@ -35,8 +35,9 @@ const ProductTable = ({
   // Handler functions
 
   const handleViewModel = (item) => {
+    const modelUrl = item.media?.model?.url || item.model;
     setSelectedModel({
-      url: item.media?.model?.url,
+      url: modelUrl,
       name: item.name
     });
     setIsModelViewerOpen(true);
@@ -155,12 +156,20 @@ const ProductTable = ({
               </div>
               
               {/* Message Column */}
-              <div className={`col-span-3 font-semibold text-sm ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}>
+              <div className={`col-span-2 font-semibold text-sm ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}>
                 Message
               </div>
               
-              <div className={`col-span-2 font-semibold text-sm ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}>
-                Models
+              <div className={`col-span-1 font-semibold text-sm ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}>
+                Glass
+              </div>
+              
+              <div className={`col-span-1 font-semibold text-sm ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}>
+                Color
+              </div>
+              
+              <div className={`col-span-1 font-semibold text-sm ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}>
+                Model
               </div>
               
               <div className={`col-span-2 font-semibold text-sm text-right ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}>
@@ -247,50 +256,83 @@ const ProductTable = ({
                   </div>
 
                   {/* Message */}
-                  <div className="col-span-3">
+                  <div className="col-span-2">
                     <p className="text-gray-400 text-sm truncate">{item.message}</p>
                   </div>
 
-                  {/* Models */}
-                  <div className="col-span-2">
-                    <div className="space-y-1">
+                  {/* Glass Status */}
+                  <div className="col-span-1">
+                    <div className="flex items-center space-x-2">
+                      {item.hasGlass ? (
+                        <>
+                          <div className="w-4 h-4 bg-blue-500/20 rounded flex items-center justify-center">
+                            <svg className="w-2 h-2 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                            </svg>
+                          </div>
+                          <span className="text-blue-400 text-xs font-medium">Glass</span>
+                        </>
+                      ) : (
+                        <>
+                          <div className="w-4 h-4 bg-gray-500/20 rounded flex items-center justify-center">
+                            <FaTimes className="text-gray-500 text-xs" />
+                          </div>
+                          <span className="text-gray-500 text-xs">No Glass</span>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Color Status */}
+                  <div className="col-span-1">
+                    <div className="flex items-center space-x-2">
+                      {item.hasColor ? (
+                        <>
+                          <div className="w-4 h-4 bg-purple-500/20 rounded flex items-center justify-center">
+                            <svg className="w-2 h-2 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                            </svg>
+                          </div>
+                          <span className="text-purple-400 text-xs font-medium">Color</span>
+                        </>
+                      ) : (
+                        <>
+                          <div className="w-4 h-4 bg-gray-500/20 rounded flex items-center justify-center">
+                            <FaTimes className="text-gray-500 text-xs" />
+                          </div>
+                          <span className="text-gray-500 text-xs">No Color</span>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Model Status */}
+                  <div className="col-span-1">
+                    <div className="flex flex-col space-y-1">
                       {(() => {
-                        const modelUrl = item.media?.model?.url;
+                        // Check multiple possible model locations
+                        const modelUrl = item.media?.model?.url || item.model;
                         const hasModel = modelUrl && modelUrl.trim() !== '';
                         
                         return hasModel ? (
-                          <div className="flex flex-col space-y-1">
-                            <div className="flex items-center space-x-2">
-                              <div className="w-6 h-6 bg-yellow-500/20 rounded-lg flex items-center justify-center">
+                          <>
+                            <div className="flex items-center space-x-1">
+                              <div className="w-4 h-4 bg-yellow-500/20 rounded flex items-center justify-center">
                                 <FaCube className="text-yellow-500 text-xs" />
                               </div>
-                              <span className="text-green-400 text-xs font-medium">
-                                3D Model Available
-                              </span>
+                              <span className="text-green-400 text-xs font-medium">Available</span>
                             </div>
                             <button
                               onClick={() => handleViewModel(item)}
-                              className="text-blue-400 hover:text-blue-300 text-xs underline ml-8 transition-colors duration-200 bg-transparent border-none cursor-pointer"
+                              className="text-blue-400 hover:text-blue-300 text-xs underline transition-colors duration-200 bg-transparent border-none cursor-pointer text-left"
                             >
-                              View Model
+                              View 3D
                             </button>
-                          </div>
+                          </>
                         ) : (
-                          <div className="flex items-center space-x-2">
-                            <div className="w-6 h-6 bg-gray-500/20 rounded-lg flex items-center justify-center">
-                              <svg
-                                className="w-3 h-3 text-gray-500"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L5.636 5.636"
-                                />
-                              </svg>
+                          <div className="flex items-center space-x-1">
+                            <div className="w-4 h-4 bg-gray-500/20 rounded flex items-center justify-center">
+                              <FaTimes className="text-gray-500 text-xs" />
                             </div>
                             <span className="text-gray-500 text-xs">No Model</span>
                           </div>
@@ -344,14 +386,19 @@ const ProductTable = ({
                           >
                             <FaEdit className="inline mr-1" /> Edit
                           </button>
-                          {item.media?.model?.url && (
-                            <button
-                              onClick={() => handleViewModel(item)}
-                              className="px-3 py-1 bg-green-500/20 text-green-400 rounded-lg text-xs hover:bg-green-500/30 transition-colors duration-200"
-                            >
-                              <FaCube className="inline mr-1" /> View 3D
-                            </button>
-                          )}
+                          {(() => {
+                            const modelUrl = item.media?.model?.url || item.model;
+                            const hasModel = modelUrl && modelUrl.trim() !== '';
+                            
+                            return hasModel ? (
+                              <button
+                                onClick={() => handleViewModel(item)}
+                                className="px-3 py-1 bg-green-500/20 text-green-400 rounded-lg text-xs hover:bg-green-500/30 transition-colors duration-200"
+                              >
+                                <FaCube className="inline mr-1" /> View 3D
+                              </button>
+                            ) : null;
+                          })()}
                         </div>
                       </div>
                     </div>
@@ -429,23 +476,71 @@ const ProductTable = ({
 
                 <p className="text-gray-400 text-sm line-clamp-2">{item.message}</p>
 
+                {/* Glass and Color Status */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-1">
+                    {item.hasGlass ? (
+                      <>
+                        <div className="w-3 h-3 bg-blue-500/20 rounded flex items-center justify-center">
+                          <svg className="w-2 h-2 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                        <span className="text-blue-400 text-xs">Glass</span>
+                      </>
+                    ) : (
+                      <>
+                        <div className="w-3 h-3 bg-gray-500/20 rounded flex items-center justify-center">
+                          <FaTimes className="text-gray-500 text-xs" />
+                        </div>
+                        <span className="text-gray-500 text-xs">No Glass</span>
+                      </>
+                    )}
+                  </div>
+                  
+                  <div className="flex items-center space-x-1">
+                    {item.hasColor ? (
+                      <>
+                        <div className="w-3 h-3 bg-purple-500/20 rounded flex items-center justify-center">
+                          <svg className="w-2 h-2 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                        <span className="text-purple-400 text-xs">Color</span>
+                      </>
+                    ) : (
+                      <>
+                        <div className="w-3 h-3 bg-gray-500/20 rounded flex items-center justify-center">
+                          <FaTimes className="text-gray-500 text-xs" />
+                        </div>
+                        <span className="text-gray-500 text-xs">No Color</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+
                 {/* Model Status */}
                 <div className="flex items-center space-x-2">
-                  {item.media?.model?.url ? (
-                    <>
-                      <div className="w-4 h-4 bg-yellow-500/20 rounded flex items-center justify-center">
-                        <FaCube className="text-yellow-500 text-xs" />
-                      </div>
-                      <span className="text-green-400 text-xs">3D Model Available</span>
-                    </>
-                  ) : (
-                    <>
-                      <div className="w-4 h-4 bg-gray-500/20 rounded flex items-center justify-center">
-                        <FaTimes className="text-gray-500 text-xs" />
-                      </div>
-                      <span className="text-gray-500 text-xs">No Model</span>
-                    </>
-                  )}
+                  {(() => {
+                    const modelUrl = item.media?.model?.url || item.model;
+                    const hasModel = modelUrl && modelUrl.trim() !== '';
+                    
+                    return hasModel ? (
+                      <>
+                        <div className="w-4 h-4 bg-yellow-500/20 rounded flex items-center justify-center">
+                          <FaCube className="text-yellow-500 text-xs" />
+                        </div>
+                        <span className="text-green-400 text-xs">3D Model Available</span>
+                      </>
+                    ) : (
+                      <>
+                        <div className="w-4 h-4 bg-gray-500/20 rounded flex items-center justify-center">
+                          <FaTimes className="text-gray-500 text-xs" />
+                        </div>
+                        <span className="text-gray-500 text-xs">No Model</span>
+                      </>
+                    );
+                  })()}
                 </div>
 
                 {/* Actions */}
@@ -462,14 +557,19 @@ const ProductTable = ({
                     <span className="text-xs">Edit</span>
                   </button>
                   
-                  {item.media?.model?.url && (
-                    <button
-                      onClick={() => handleViewModel(item)}
-                      className="px-3 py-2 bg-blue-500/20 text-blue-400 rounded-lg transition-all duration-300 hover:bg-blue-500/30 flex items-center justify-center"
-                    >
-                      <FaCube className="text-xs" />
-                    </button>
-                  )}
+                  {(() => {
+                    const modelUrl = item.media?.model?.url || item.model;
+                    const hasModel = modelUrl && modelUrl.trim() !== '';
+                    
+                    return hasModel ? (
+                      <button
+                        onClick={() => handleViewModel(item)}
+                        className="px-3 py-2 bg-blue-500/20 text-blue-400 rounded-lg transition-all duration-300 hover:bg-blue-500/30 flex items-center justify-center"
+                      >
+                        <FaCube className="text-xs" />
+                      </button>
+                    ) : null;
+                  })()}
                   
                   <button
                     onClick={() => onDelete(item)}

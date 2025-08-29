@@ -14,6 +14,7 @@ import {
   FaHeart,
   FaHandPaper,
   FaLightbulb,
+  FaRoute,
 } from "react-icons/fa";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -48,6 +49,7 @@ export const PreviewControls = ({
   lighting,
   setLighting,
   setCables,
+  onStartTour, // Add tour callback prop
 }) => {
   const [isMobile, setIsMobile] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -629,6 +631,17 @@ export const PreviewControls = ({
         >
           <FaEye size={16} />
         </button>
+
+        {/* Tour Guide Button */}
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="p-2 rounded-full bg-emerald-600 text-white hover:bg-emerald-700 transition-all shadow-lg"
+          onClick={() => onStartTour && onStartTour()}
+          title="Start Guided Tour"
+        >
+          <FaRoute size={16} />
+        </motion.button>
 
         {/* Wishlist Button */}
         <div className="relative" ref={wishlistRef}>
