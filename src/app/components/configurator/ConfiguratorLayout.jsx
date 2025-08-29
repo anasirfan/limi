@@ -921,10 +921,10 @@ const ConfiguratorLayout = () => {
           
           if (modelUrl) {
             sendMessageToPlayCanvas(`cable_0`);
-            sendMessageToPlayCanvas(`product_${modelUrl}`);
-            sendMessageToPlayCanvas(`${pendantAssignment.message}`);
             sendMessageToPlayCanvas(pendantAssignment.hasGlass ? "glass_attached" : "glass_none");
             sendMessageToPlayCanvas(pendantAssignment.hasColor ? "color_gold" : "color_none");
+            sendMessageToPlayCanvas(`product_${modelUrl}`);
+            sendMessageToPlayCanvas(`${pendantAssignment.message}`);
           } else {
             sendMessageToPlayCanvas(`cable_0:${pendantAssignment.message}`);
           }
@@ -934,10 +934,10 @@ const ConfiguratorLayout = () => {
             const modelUrl = pendantAssignment.media?.model?.url || pendantAssignment.image?.url || pendantAssignment.message;
             if (modelUrl) {
               sendMessageToPlayCanvas(`cable_${id}`);
-              sendMessageToPlayCanvas(`product_${modelUrl}`);
-              sendMessageToPlayCanvas(`${pendantAssignment.message}`);
               sendMessageToPlayCanvas(pendantAssignment.hasGlass ? "glass_attached" : "glass_none");
               sendMessageToPlayCanvas(pendantAssignment.hasColor ? "color_gold" : "color_none");
+              sendMessageToPlayCanvas(`product_${modelUrl}`);
+              sendMessageToPlayCanvas(`${pendantAssignment.message}`);
             } else {
               sendMessageToPlayCanvas(`cable_${id}:${pendantAssignment.message}`);
             }

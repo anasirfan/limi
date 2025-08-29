@@ -377,8 +377,10 @@ const tourSteps = [
       case 'pendantSelection':
         setActiveStep('pendantSelection');
         setOpenDropdown('pendantSelection');
+        
         setTimeout(() => {
           setShowConfigurationTypeSelector(true);
+        
         }, 1000);
         break;
         
