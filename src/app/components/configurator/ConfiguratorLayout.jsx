@@ -905,7 +905,8 @@ const ConfiguratorLayout = () => {
         designId: system.designId,
         connectorColor: system.connectorColor,
         hasGlass: system.hasGlass,
-        hasColor: system.hasColor,
+        hasGold: system.hasGold,
+        hasSilver: system.hasSilver,
         modelUrl: system.modelUrl,
       }))
     );
