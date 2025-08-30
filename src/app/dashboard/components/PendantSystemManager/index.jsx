@@ -74,7 +74,7 @@ export default function PendantSystemManager({
     setNewPendantData({
       name: item.name || "",
       message: item.message || "",
-      design: item.design || "",
+      design: item.name ? item.name.toLowerCase() : (item.design || ""),
       systemType: item.systemType || "",
       isSystem: item.isSystem || false,
       image: item.image || "",

@@ -41,7 +41,8 @@ import {
   LineChart,
   Line,
 } from "recharts";
-import { FaTimesCircle, FaChartLine } from "react-icons/fa";
+import { FaPlus, FaEdit, FaImage, FaCube,FaChartLine  } from "react-icons/fa";
+import { generateName } from "./PendantSystemManager/utils/nameGenerator";
 import ProductManagement from "./ProductManagement";
 import SlideManagement from "./SlideManagement";
 import AddCustomerModal from "./SlideManagement/AddCustomerModal";
@@ -377,17 +378,25 @@ export default function CustomerDashboard({ token }) {
 
         const nextIndex = getNextIndex(value);
 
-        // Auto-populate fields based on selection
+        // Auto-populate fields based on selection using generateName
+        const existingNames = pendantSystemData.map(
+          (p) => p.name?.toLowerCase?.() || ""
+        );
+        
         let autoName = "";
         let autoMessage = "";
 
         if (value === "") {
-          // Individual Pendant
-          autoName = `product_${nextIndex}`;
+          // Individual Pendant - use generateName
+          do {
+            autoName = generateName(existingNames);
+          } while (existingNames.includes(autoName.toLowerCase()));
           autoMessage = `product_${nextIndex}`;
         } else {
-          // System Configuration
-          autoName = `${value}_system_${nextIndex}`;
+          // System Configuration - use generateName
+          do {
+            autoName = generateName(existingNames);
+          } while (existingNames.includes(autoName.toLowerCase()));
           autoMessage = `system_base_${nextIndex}`;
         }
 

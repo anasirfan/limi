@@ -11,16 +11,6 @@ const SystemTypeSelection = ({
     handlePendantInputChange({
       target: { name: "systemType", value: systemType },
     });
-    
-    // Auto-generate unique name
-    const existingNames = pendantSystemData.map(
-      (p) => p.name?.toLowerCase?.() || ""
-    );
-    let newName = generateName(existingNames);
-    while (existingNames.includes(newName.toLowerCase())) {
-      newName = generateName(existingNames);
-    }
-    setNewPendantData((prev) => ({ ...prev, name: newName }));
   };
 
   const systemTypes = [
