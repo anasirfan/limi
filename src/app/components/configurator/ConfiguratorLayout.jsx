@@ -93,18 +93,10 @@ const ConfiguratorLayout = () => {
   const [cables, setCables] = useState(() => {
     return loadFromLocalStorage("lightCables", [
       {
-        isSystem: true,
-        systemType: "",
-        design: "Piko",
-        designId: "product_5",
+        design: "piko",
         connectorColor: "black",
         cableSize: "2mm",
         cableColor: "black",
-        modelUrl:
-          "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756460850615.glb",
-        hasGlass: false,
-        hasGold: true,
-        hasSilver: false,
       },
     ]);
   });
@@ -269,7 +261,8 @@ const ConfiguratorLayout = () => {
             hasGlass: false,
             hasSilver: false,
             hasGold: true,
-            modelUrl: "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756460850615.glb",
+            modelUrl:
+              "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756460850615.glb",
           },
         ];
       case 3:
@@ -283,8 +276,8 @@ const ConfiguratorLayout = () => {
             hasGlass: false,
             hasSilver: false,
             hasGold: true,
-            modelUrl: "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756460850615.glb",
-         
+            modelUrl:
+              "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756460850615.glb",
           },
           {
             id: 1,
@@ -295,8 +288,8 @@ const ConfiguratorLayout = () => {
             hasGlass: false,
             hasSilver: false,
             hasGold: true,
-            modelUrl: "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756460850615.glb",
-         
+            modelUrl:
+              "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756460850615.glb",
           },
           {
             id: 2,
@@ -307,8 +300,8 @@ const ConfiguratorLayout = () => {
             hasGlass: false,
             hasSilver: false,
             hasGold: true,
-            modelUrl: "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756460850615.glb",
-         
+            modelUrl:
+              "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756460850615.glb",
           },
         ];
       case 6:
@@ -322,8 +315,8 @@ const ConfiguratorLayout = () => {
             hasGlass: false,
             hasSilver: false,
             hasGold: true,
-            modelUrl: "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756460850615.glb",
-         
+            modelUrl:
+              "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756460850615.glb",
           },
           {
             id: 1,
@@ -334,8 +327,8 @@ const ConfiguratorLayout = () => {
             hasGlass: false,
             hasSilver: false,
             hasGold: true,
-            modelUrl: "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756460850615.glb",
-         
+            modelUrl:
+              "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756460850615.glb",
           },
           {
             id: 2,
@@ -346,8 +339,8 @@ const ConfiguratorLayout = () => {
             hasGlass: false,
             hasSilver: false,
             hasGold: true,
-            modelUrl: "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756460850615.glb",
-         
+            modelUrl:
+              "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756460850615.glb",
           },
           {
             id: 3,
@@ -358,8 +351,8 @@ const ConfiguratorLayout = () => {
             hasGlass: false,
             hasSilver: false,
             hasGold: true,
-            modelUrl: "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756460850615.glb",
-         
+            modelUrl:
+              "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756460850615.glb",
           },
           {
             id: 4,
@@ -370,8 +363,8 @@ const ConfiguratorLayout = () => {
             hasGlass: false,
             hasSilver: false,
             hasGold: true,
-            modelUrl: "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756460850615.glb",
-         
+            modelUrl:
+              "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756460850615.glb",
           },
           {
             id: 5,
@@ -382,194 +375,36 @@ const ConfiguratorLayout = () => {
             hasGlass: false,
             hasSilver: false,
             hasGold: true,
-            modelUrl: "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756460850615.glb",
+            modelUrl:
+              "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756460850615.glb",
           },
         ];
     }
   };
 
   // Deterministic system assignments for 1, 3, 6 lights
-  const getDefaultSystemAssignments = (amount) => {
+  const getDefaultDesigns = (amount) => {
     switch (amount) {
       case 1:
-        return [
-          {
-            id: 0,
-            isSystem: true,
-            systemType: "",
-            design: "Piko",
-            designId: "product_5",
-            connectorColor: "black",
-            cableSize: "2mm",
-            cableColor: "black",
-            modelUrl:
-              "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756460850615.glb",
-            hasGlass: false,
-            hasGold: true,
-            hasSilver: false,
-          },
-        ];
+        return [{ design: "piko" }];
       case 3:
         return [
-          {
-            id: 0,
-            isSystem: true,
-            systemType: "",
-            design: "Piko",
-            designId: "product_5",
-            connectorColor: "black",
-            cableSize: "2mm",
-            cableColor: "black",
-            modelUrl:
-              "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756460850615.glb",
-            hasGlass: false,
-            hasGold: true,
-            hasSilver: false,
-          },
-          {
-            id: 1,
-            isSystem: true,
-            systemType: "",
-            design: "Piko",
-            designId: "product_5",
-            connectorColor: "black",
-            cableSize: "2mm",
-            cableColor: "black",
-            modelUrl:
-              "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756460850615.glb",
-            hasGlass: false,
-            hasGold: true,
-            hasSilver: false,
-          },
-          {
-            id: 2,
-            isSystem: true,
-            systemType: "",
-            design: "Piko",
-            designId: "product_5",
-            connectorColor: "black",
-            cableSize: "2mm",
-            cableColor: "black",
-            modelUrl:
-              "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756460850615.glb",
-            hasGlass: false,
-            hasGold: true,
-            hasSilver: false,
-          },
+          { design: "piko" },
+          { design: "piko" },
+          { design: "piko" },
         ];
       case 6:
         return [
-          {
-            id: 0,
-            isSystem: true,
-            systemType: "",
-            design: "Piko",
-            designId: "product_5",
-            connectorColor: "black",
-            cableSize: "2mm",
-            cableColor: "black",
-            modelUrl:
-              "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756460850615.glb",
-            hasGlass: false,
-            hasGold: true,
-            hasSilver: false,
-          },
-          {
-            id: 1,
-            isSystem: true,
-            systemType: "",
-            design: "Piko",
-            designId: "product_5",
-            connectorColor: "black",
-            cableSize: "2mm",
-            cableColor: "black",
-            modelUrl:
-              "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756460850615.glb",
-            hasGlass: false,
-            hasGold: true,
-            hasSilver: false,
-          },
-          {
-            id: 2,
-            isSystem: true,
-            systemType: "",
-            design: "Piko",
-            designId: "product_5",
-            connectorColor: "black",
-            cableSize: "2mm",
-            cableColor: "black",
-            modelUrl:
-              "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756460850615.glb",
-            hasGlass: false,
-            hasGold: true,
-            hasSilver: false,
-          },
-          {
-            id: 3,
-            isSystem: true,
-            systemType: "",
-            design: "Piko",
-            designId: "product_5",
-            connectorColor: "black",
-            cableSize: "2mm",
-            cableColor: "black",
-            modelUrl:
-              "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756460850615.glb",
-            hasGlass: false,
-            hasGold: true,
-            hasSilver: false,
-          },
-          {
-            id: 4,
-            isSystem: true,
-            systemType: "",
-            design: "Piko",
-            designId: "product_5",
-            connectorColor: "black",
-            cableSize: "2mm",
-            cableColor: "black",
-            modelUrl:
-              "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756460850615.glb",
-            hasGlass: false,
-            hasGold: true,
-            hasSilver: false,
-          },
-          {
-            id: 5,
-            isSystem: true,
-            systemType: "",
-            design: "Piko",
-            designId: "product_5",
-            connectorColor: "black",
-            cableSize: "2mm",
-            cableColor: "black",
-            modelUrl:
-              "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756460850615.glb",
-            hasGlass: false,
-            hasGold: true,
-            hasSilver: false,
-          },
+          { design: "piko" },
+          { design: "piko" },
+          { design: "piko" },
+          { design: "piko" },
+          { design: "piko" },
+          { design: "piko" },
         ];
     }
   };
 
-  // Helper to map pendant design to productId for PlayCanvas
-  const getProductIdForDesign = (design) => {
-    switch (design) {
-      case "bumble":
-        return "product_1";
-      case "radial":
-        return "product_2";
-      case "ico":
-        return "product_4";
-      case "piko":
-        return "product_5";
-      default:
-        return "product_2";
-    }
-  };
-
-  // Initialize pendants when component mounts
   // Initialize pendants when component mounts
   useEffect(() => {
     // Check if we have a configId in the URL
@@ -589,7 +424,7 @@ const ConfiguratorLayout = () => {
       console.log("initializing with defaults");
       const initialPendants = getDefaultPendantAssignments(config.lightAmount);
       const initialSystems = getDefaultSystemAssignments(config.lightAmount);
-      const system = getDefaultSystemAssignments(config.lightAmount);
+      const system = getDefaultDesigns(config.lightAmount);
 
       setConfig((prev) => ({
         ...prev,
@@ -599,15 +434,8 @@ const ConfiguratorLayout = () => {
 
       setCables((prev) => [
         ...prev,
-        {
-          isSystem: system.isSystem,
-          systemType: system.systemType,
-          design: system.design,
-          designId: system.designId,
-          connectorColor: system.connectorColor,
-          hasGlass: system.hasGlass,
-          hasColor: system.hasColor,
-          modelUrl: system.modelUrl,
+        { 
+          design: system.design,   
         },
       ]);
 
@@ -637,23 +465,17 @@ const ConfiguratorLayout = () => {
         });
       }
     } else {
-      console.log("loading from saved state");
-      console.log("savedConfig", savedConfig);
-      console.log("savedCables", savedCables);
-
-      sendMessageToPlayCanvas(`light_type:${savedConfig.lightType}`);
-      console.log("light_type", savedConfig.lightType);
-      sendMessageToPlayCanvas(`light_amount:${savedConfig.lightAmount}`);
-      sendMessageToPlayCanvas(`base_type:${savedConfig.baseType}`);
-      console.log("savedCables", savedCables);
-      savedCables.forEach((cable, index) => {
-        if (cable.systemType) {
-          sendMessageToPlayCanvas(`system:${cable.systemType}`);
-          sendMessageToPlayCanvas(`cable_${index}:${cable.designId}`);
-        } else {
-          sendMessageToPlayCanvas(`cable_${index}:${cable.designId}`);
-        }
-      });
+      // sendMessageToPlayCanvas(`light_type:${savedConfig.lightType}`);
+      // sendMessageToPlayCanvas(`light_amount:${savedConfig.lightAmount}`);
+      // sendMessageToPlayCanvas(`base_type:${savedConfig.baseType}`);
+      // savedCables.forEach((cable, index) => {
+      //   if (cable.systemType) {
+      //     sendMessageToPlayCanvas(`system:${cable.systemType}`);
+      //     sendMessageToPlayCanvas(`cable_${index}:${cable.designId}`);
+      //   } else {
+      //     sendMessageToPlayCanvas(`cable_${index}:${cable.designId}`);
+      //   }
+      // });
     }
   }, [hasConfigIdParam]);
 
@@ -731,50 +553,7 @@ const ConfiguratorLayout = () => {
           sendMessageToPlayCanvas(`base_color:${savedConfig.baseColor}`);
 
           savedCables.forEach((cable, index) => {
-            if (cable.systemType) {
-              sendMessageToPlayCanvas(`system:${cable.systemType}`);
-              const parts = cable.designId.split("_"); // system_base_2_2
-              if (parts.length === 4) {
-                sendMessageToPlayCanvas(`cable_${index}`);
-                sendMessageToPlayCanvas(
-                  `glass_${cable.hasGlass ? "attached" : "none"}`
-                );
-                sendMessageToPlayCanvas(
-                  `color_${cable.hasGold ? "gold" : "none"}`
-                );
-                sendMessageToPlayCanvas(
-                  `silver_${cable.hasSilver ? "attached" : "none"}`
-                );
-                sendMessageToPlayCanvas(`product_${cable.modelUrl}`);
-                sendMessageToPlayCanvas(`${cable.designId}`);
-              } else {
-                sendMessageToPlayCanvas(`cable_${index}`);
-                sendMessageToPlayCanvas(
-                  `glass_${cable.hasGlass ? "attached" : "none"}`
-                );
-                sendMessageToPlayCanvas(
-                  `color_${cable.hasGold ? "gold" : "none"}`
-                );
-                sendMessageToPlayCanvas(
-                  `silver_${cable.hasSilver ? "attached" : "none"}`
-                );
-                sendMessageToPlayCanvas(`product_${cable.modelUrl}`);
-                sendMessageToPlayCanvas(`${cable.designId}`);
-              }
-            } else {
-              sendMessageToPlayCanvas(`cable_${index}`);
-              sendMessageToPlayCanvas(
-                `glass_${cable.hasGlass ? "attached" : "none"}`
-              );
-              sendMessageToPlayCanvas(
-                `color_${cable.hasGold ? "gold" : "none"}`
-              );
-              sendMessageToPlayCanvas(
-                `silver_${cable.hasSilver ? "attached" : "none"}`
-              );
-              sendMessageToPlayCanvas(`product_${cable.modelUrl}`);
-              sendMessageToPlayCanvas(`${cable.designId}`);
-            }
+            sendMessagesForDesign(cable.design, index);
           });
           sendMessageToPlayCanvas(
             `lighting:${savedConfig.lighting ? "on" : "off"}`
@@ -855,8 +634,8 @@ const ConfiguratorLayout = () => {
           design: pendant.design,
           designId: pendant.message,
           hasGlass: pendant.hasGlass,
-          hasSilver: pendant.hasSilver,
           hasGold: pendant.hasGold,
+          hasSilver: pendant.hasSilver,
           modelUrl: pendant.modelUrl,
         },
       ]);
@@ -873,21 +652,11 @@ const ConfiguratorLayout = () => {
       sendMessageToPlayCanvas(`hotspot:'off'`);
 
       newPendants.forEach((pendant, index) => {
-        sendMessageToPlayCanvas(`cable_${index}`);
-        sendMessageToPlayCanvas(
-          `glass_${pendant.hasGlass ? "attached" : "none"}`
-        );
-        sendMessageToPlayCanvas(`color_${pendant.hasGold ? "gold" : "none"}`);
-        sendMessageToPlayCanvas(
-          `silver_${pendant.hasSilver ? "attached" : "none"}`
-        );
-        sendMessageToPlayCanvas(`product_${pendant.modelUrl}`);
-        sendMessageToPlayCanvas(`${pendant.message}`)
+        sendMessagesForDesign(pendant.design, index);
       });
     }, 0);
   };
 
-  // Handle base type change
 
   // Handle configuration type change
   const handleConfigurationTypeChange = useCallback((type) => {
@@ -908,7 +677,7 @@ const ConfiguratorLayout = () => {
     }
 
     // Use deterministic default pendants and systems for the new amount
-    const newSystems = getDefaultSystemAssignments(amount);
+    const newSystems = getDefaultDesigns(amount);
 
     // Filter selectedPendants to only include valid indices for the new amount
     const filteredSelectedPendants = config.selectedPendants
@@ -922,15 +691,7 @@ const ConfiguratorLayout = () => {
     }));
     setCables(
       newSystems.map((system, idx) => ({
-        isSystem: system.isSystem,
-        systemType: system.systemType,
         design: system.design,
-        designId: system.designId,
-        connectorColor: system.connectorColor,
-        hasGlass: system.hasGlass,
-        hasGold: system.hasGold,
-        hasSilver: system.hasSilver,
-        modelUrl: system.modelUrl,
       }))
     );
     console.log("lightcables", cables);
@@ -940,16 +701,7 @@ const ConfiguratorLayout = () => {
       sendMessageToPlayCanvas(`light_amount:${amount}`);
       newSystems.forEach((system, index) => {
         // sendMessageToPlayCanvas(`system:${system.systemType}`);
-        sendMessageToPlayCanvas(`cable_${index}`);
-        sendMessageToPlayCanvas(
-          `glass_${system.hasGlass ? "attached" : "none"}`
-        );
-        sendMessageToPlayCanvas(`color_${system.hasGold ? "gold" : "none"}`);
-        sendMessageToPlayCanvas(
-          `silver_${system.hasSilver ? "attached" : "none"}`
-        );
-        sendMessageToPlayCanvas(`product_${system.modelUrl}`);
-        sendMessageToPlayCanvas(`${system.designId}`);
+        sendMessagesForDesign(system.design, index);
       });
     }, 0);
   };
@@ -1075,55 +827,14 @@ const ConfiguratorLayout = () => {
 
       // This ensures we don't have race conditions between state updates and messaging
       setTimeout(() => {
-        const pendantAssignment = systemAssignments.find(
-          (a) => a.design === design && !a.isSystem
-        );
         // Check if we have only 1 pendant or multiple pendants
         if (config.lightAmount === 1) {
           // For single pendant, send model URL first if it exists, then the design message
-          const modelUrl = pendantAssignment.media?.model?.url;
-
-          if (modelUrl) {
-            sendMessageToPlayCanvas(`cable_0`);
-            sendMessageToPlayCanvas(
-              `glass_${pendantAssignment.hasGlass ? "attached" : "none"}`
-            );
-            sendMessageToPlayCanvas(
-              `color_${pendantAssignment.hasGold ? "gold" : "none"}`
-            );
-            sendMessageToPlayCanvas(
-              `silver_${pendantAssignment.hasSilver ? "attached" : "none"}`
-            );
-            sendMessageToPlayCanvas(`product_${modelUrl}`);
-            sendMessageToPlayCanvas(`${pendantAssignment.message}`);
-          } else {
-            sendMessageToPlayCanvas(`cable_0:${pendantAssignment.message}`);
-          }
+          sendMessagesForDesign(design, 0);
         } else {
           // For multiple pendants, send individual pendant messages
           pendantIds.forEach((id) => {
-            const modelUrl =
-              pendantAssignment.media?.model?.url ||
-              pendantAssignment.image?.url ||
-              pendantAssignment.message;
-            if (modelUrl) {
-              sendMessageToPlayCanvas(`cable_${id}`);
-              sendMessageToPlayCanvas(
-                `glass_${pendantAssignment.hasGlass ? "attached" : "none"}`
-              );
-              sendMessageToPlayCanvas(
-                `color_${pendantAssignment.hasGold ? "gold" : "none"}`
-              );
-              sendMessageToPlayCanvas(
-                `silver_${pendantAssignment.hasSilver ? "attached" : "none"}`
-              );
-              sendMessageToPlayCanvas(`product_${modelUrl}`);
-              sendMessageToPlayCanvas(`${pendantAssignment.message}`);
-            } else {
-              sendMessageToPlayCanvas(
-                `cable_${id}:${pendantAssignment.message}`
-              );
-            }
+            sendMessagesForDesign(design, id);
           });
         }
       }, 10); // Slight delay to ensure state is updated first
@@ -1141,27 +852,16 @@ const ConfiguratorLayout = () => {
     }));
     const design = "helix";
     const system = systemAssignments.find((a) => a.design === design);
-    // Send message to PlayCanvas iframe
-    sendMessageToPlayCanvas(`base_type:${baseType}`);
 
+    // Send message to PlayCanvas iframe
     if (baseType === "rectangular") {
+      sendMessageToPlayCanvas(`base_type:${baseType}`);
       sendMessageToPlayCanvas(`light_amount:3`);
       sendMessageToPlayCanvas(`system:${system.systemType}`);
-      sendMessageToPlayCanvas(`cable_0`);
-      sendMessageToPlayCanvas(`glass_${system.hasGlass ? "attached" : "none"}`);
-      sendMessageToPlayCanvas(`color_${system.hasColor ? "gold" : "none"}`);
-      sendMessageToPlayCanvas(`product_${system.media?.model?.url}`);
-      sendMessageToPlayCanvas(`${system.message}`);
-      sendMessageToPlayCanvas(`cable_1`);
-      sendMessageToPlayCanvas(`glass_${system.hasGlass ? "attached" : "none"}`);
-      sendMessageToPlayCanvas(`color_${system.hasColor ? "gold" : "none"}`);
-      sendMessageToPlayCanvas(`product_${system.media?.model?.url}`);
-      sendMessageToPlayCanvas(`${system.message}`);
-      sendMessageToPlayCanvas(`cable_2`);
-      sendMessageToPlayCanvas(`glass_${system.hasGlass ? "attached" : "none"}`);
-      sendMessageToPlayCanvas(`color_${system.hasColor ? "gold" : "none"}`);
-      sendMessageToPlayCanvas(`product_${system.media?.model?.url}`);
-      sendMessageToPlayCanvas(`${system.message}`);
+      // Use a loop for 3 pendants (IDs 0, 1, 2)
+      [0, 1, 2].forEach((id) => {
+        sendMessagesForDesign(design, id);
+      });
       setCables([
         {
           isSystem: system.isSystem,
@@ -1194,11 +894,7 @@ const ConfiguratorLayout = () => {
     } else {
       sendMessageToPlayCanvas(`light_amount:1`);
       sendMessageToPlayCanvas(`system:${system.systemType}`);
-      sendMessageToPlayCanvas(`cable_0`);
-      sendMessageToPlayCanvas(`glass_${system.hasGlass ? "attached" : "none"}`);
-      sendMessageToPlayCanvas(`color_${system.hasColor ? "gold" : "none"}`);
-      sendMessageToPlayCanvas(`product_${system.media?.model?.url}`);
-      sendMessageToPlayCanvas(`system_${system.message}`);
+      sendMessagesForDesign(design, 0);
       setCables([
         {
           isSystem: system.isSystem,
@@ -1295,20 +991,11 @@ const ConfiguratorLayout = () => {
         });
 
         // Send messages to iframe
-        selectedCables.forEach((cableNo) => {
+        selectedCables.forEach((id) => {
           //New Logic
           const system = systemAssignments.find((a) => a.design === design);
           sendMessageToPlayCanvas(`system:${system.systemType}`);
-          sendMessageToPlayCanvas(`cable_${cableNo}`);
-          sendMessageToPlayCanvas(
-            `glass_${system.hasGlass ? "attached" : "none"}`
-          );
-          sendMessageToPlayCanvas(`color_${system.hasGold ? "gold" : "none"}`);
-          sendMessageToPlayCanvas(
-            `silver_${system.hasSilver ? "attached" : "none"}`
-          );
-          sendMessageToPlayCanvas(`product_${system.media?.model?.url}`);
-          sendMessageToPlayCanvas(`${system.message}`);
+          sendMessagesForDesign(design, id);
         });
       }, 10);
     }, [config.selectedPendants, config.systemType, config.cableSystemTypes]);
@@ -1323,6 +1010,21 @@ const ConfiguratorLayout = () => {
     if (iframe && iframe.contentWindow) {
       iframe.contentWindow.postMessage(message, "*");
     }
+  };
+
+  const sendMessagesForDesign = (designName, id) => {
+    const assignment = systemAssignments.find((a) => a.design === designName);
+    if (!assignment) return;
+    sendMessageToPlayCanvas(`cable_${id}`);
+    sendMessageToPlayCanvas(
+      `glass_${assignment.hasGlass ? "attached" : "none"}`
+    );
+    sendMessageToPlayCanvas(`color_${assignment.hasGold ? "gold" : "none"}`);
+    sendMessageToPlayCanvas(
+      `silver_${assignment.hasSilver ? "attached" : "none"}`
+    );
+    sendMessageToPlayCanvas(`product_${assignment.media?.model?.url}`);
+    sendMessageToPlayCanvas(`${assignment.message}`);
   };
 
   // Save configuration function
@@ -1656,6 +1358,7 @@ const ConfiguratorLayout = () => {
           isLightingPanelOpen={isLightingPanelOpen}
           setIsLightingPanelOpen={setIsLightingPanelOpen}
           setCables={setCables}
+          sendMessagesForDesign={sendMessagesForDesign}
           cableMessage={cableMessage}
           onStartTour={() => {
             if (typeof window !== "undefined" && window.startConfiguratorTour) {

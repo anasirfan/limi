@@ -725,70 +725,39 @@ export const PreviewControls = ({
                           key={pendant.id}
                           className="group relative p-2 "
                           onClick={() => {
-                            if (assignment && assignment.isSystem) {
-                              // Bar or Universal system
-                              sendMessageToPlayCanvas(
-                                `system:${assignment.systemType || "bar"}`
-                              );
-                              selectedPendants.forEach((idx) => {
-                                sendMessageToPlayCanvas(
-                                  `cable_${idx}:${assignment.message}`
-                                );
-                                setCables((prev) => {
-                                  const updatedCables = [...prev];
-                                  updatedCables[idx] = {
-                                    isSystem: true,
-                                    systemType: assignment.systemType,
-                                    design: assignment.design,
-                                    designId: assignment.message,
-                                  };
-                                  return updatedCables;
-                                });
+                            selectedPendants.forEach((idx) => {
+                              sendMessagesForDesign(pendant.id, idx);
+                              setCables((prev) => {
+                                const updatedCables = [...prev];
+                                updatedCables[idx] = {
+                                  isSystem: true,
+                                  systemType: assignment.systemType,
+                                  design: assignment.design,
+                                  designId: assignment.message,
+                                };
+                                return updatedCables;
                               });
-                            } else if (assignment) {
-                              // Pendant
-                              selectedPendants.forEach((idx) => {
-                                sendMessageToPlayCanvas(
-                                  `cable_${idx}:${assignment.message}`
-                                );
-                                setCables((prev) => {
-                                  const updatedCables = [...prev];
-                                  updatedCables[idx] = {
-                                    isSystem: false,
-                                    systemType: "",
-                                    design: assignment.design,
-                                    designId: assignment.message,
-                                  };
-                                  return updatedCables;
-                                });
-                              });
-                            }
+                            });
                           }}
                         >
                           <div className="flex flex-col items-center text-center">
-                            {assignment.media ? (
-                              <div className="relative h-14 w-14 rounded-full bg-gray-900 overflow-visible mb-1 group">
-                                <img
-                                  src={assignment.media && assignment.media.image && assignment.media.image.url ? assignment.media.image.url : ""}
-                                  alt={assignment.name}
-                                  className="h-full w-full object-cover"
-                                />
-                                <button
-                                  className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center bg-rose-500 rounded-full text-white text-xs font-bold hover:bg-rose-600 transition-colors"
-                                  title="Remove from Wishlist"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    dispatch(removeFromFavoritesAndSync(assignment.design));
-                                  }}
-                                >
-                                  ×
-                                </button>
-                              </div>
-                            ) : (
-                              <div className="h-14 w-14 rounded-full bg-gray-100 flex items-center justify-center mb-1">
-                                <FaHeart className="h-6 w-6 text-gray-400" />
-                              </div>
-                            )}
+                            <div className="relative h-14 w-14 rounded-full bg-gray-900 overflow-visible mb-1 group">
+                              <img
+                                src={assignment.media && assignment.media.image && assignment.media.image.url ? assignment.media.image.url : ""}
+                                alt={assignment.name}
+                                className="h-full w-full object-cover"
+                              />
+                              <button
+                                className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center bg-rose-500 rounded-full text-white text-xs font-bold hover:bg-rose-600 transition-colors"
+                                title="Remove from Wishlist"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  dispatch(removeFromFavoritesAndSync(assignment.design));
+                                }}
+                              >
+                                ×
+                              </button>
+                            </div>
                             <p className="text-xs font-medium text-white line-clamp-2 h-8 flex items-center">
                               {/* Use assignment.design for pendant/system name */}
                               {assignment ? assignment.design : pendant.name}
