@@ -93,7 +93,7 @@ const ConfiguratorLayout = () => {
   const [cables, setCables] = useState(() => {
     return loadFromLocalStorage("lightCables", [
       {
-        design: "piko",
+        design:"ico",
         connectorColor: "black",
         cableSize: "2mm",
         cableColor: "black",

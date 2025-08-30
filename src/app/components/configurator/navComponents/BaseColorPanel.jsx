@@ -9,7 +9,9 @@ const BaseColorPanel = ({
   currentBaseColor,
   currentConnectorColor,
   setActiveTab,
-  activeTab
+  activeTab,
+  tourActive,
+  onTourSelection
 }) => {
 
   const [selectedBaseColor, setSelectedBaseColor] = useState(currentBaseColor || 'black');
@@ -37,6 +39,13 @@ const BaseColorPanel = ({
   }, [currentConnectorColor]);
 
   const handleBaseColorSelect = (color) => {
+    console.log(`🖱️ User clicked on base color: ${color}`);
+    
+    // If tour is active, call tour selection handler
+    if (tourActive && onTourSelection) {
+      onTourSelection('baseColor', color);
+    }
+    
     setSelectedBaseColor(color);
     onBaseColorChange && onBaseColorChange(color);
   };

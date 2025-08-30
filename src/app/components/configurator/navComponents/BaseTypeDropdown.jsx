@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 
-export const BaseTypeDropdown = ({ config, onBaseTypeChange, setActiveStep, setOpenDropdown }) => {
+export const BaseTypeDropdown = ({ config, onBaseTypeChange, setActiveStep, setOpenDropdown, tourActive, onTourSelection }) => {
   return (
     <div className="p-4">
       <h3 className="text-base font-bold text-white mb-3 font-['Amenti']">Base Type</h3>
@@ -11,6 +11,13 @@ export const BaseTypeDropdown = ({ config, onBaseTypeChange, setActiveStep, setO
             key={type}
             className={`flex flex-col items-center ${config.baseType === type ? 'text-emerald-500' : 'text-gray-300 hover:text-white'}`}
             onClick={() => {
+              console.log(`🖱️ User clicked on base type: ${type}`);
+              
+              // If tour is active, call tour selection handler
+              if (tourActive && onTourSelection) {
+                onTourSelection('baseType', type);
+              }
+              
               onBaseTypeChange(type);
               setActiveStep('lightAmount');
               setOpenDropdown(null);

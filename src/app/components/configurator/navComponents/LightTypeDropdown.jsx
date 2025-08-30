@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 
-export const LightTypeDropdown = ({ config, onLightTypeChange, setActiveStep, setOpenDropdown }) => {
+export const LightTypeDropdown = ({ config, onLightTypeChange, setActiveStep, setOpenDropdown, tourActive, onTourSelection }) => {
   return (
     <div 
       className=" max-sm:left-0 max-sm:w-full p-4"
@@ -22,6 +22,13 @@ export const LightTypeDropdown = ({ config, onLightTypeChange, setActiveStep, se
               key={type}
               className={`rounded-lg overflow-hidden ${config.lightType === type ? 'ring-2 ring-emerald-500 ring-offset-1 ring-offset-gray-800' : 'hover:ring-1 hover:ring-gray-400'}`}
               onClick={() => {
+                console.log(`🖱️ User clicked on light type: ${type}`);
+                
+                // If tour is active, call tour selection handler
+                if (tourActive && onTourSelection) {
+                  onTourSelection('lightType', type);
+                }
+                
                 onLightTypeChange(type);
                 // Don't automatically switch to next tab
                 setOpenDropdown(null);

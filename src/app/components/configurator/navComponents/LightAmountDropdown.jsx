@@ -7,7 +7,9 @@ export const LightAmountDropdown = ({
   config, 
   onLightAmountChange, 
   setActiveStep, 
-  setOpenDropdown 
+  setOpenDropdown,
+  tourActive,
+  onTourSelection
 }) => {
   const carouselRef = useRef(null);
   
@@ -49,6 +51,13 @@ export const LightAmountDropdown = ({
       key={amount}
       className={`flex-shrink-0 flex flex-col items-center ${config.lightAmount === amount ? 'text-emerald-500' : 'text-gray-300 hover:text-white'}`}
       onClick={() => {
+        console.log(`🖱️ User clicked on light amount: ${amount}`);
+        
+        // If tour is active, call tour selection handler
+        if (tourActive && onTourSelection) {
+          onTourSelection('lightAmount', amount);
+        }
+        
         onLightAmountChange(amount);
         // Always go to pendant selection next
         setActiveStep('pendantSelection');
