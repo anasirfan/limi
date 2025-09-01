@@ -755,8 +755,8 @@ export const ConfigPanel = ({
             config.title = "Add On";
             config.showBreadcrumb = true;
             
-            // Get bar assignments
-            const systemTypeBases = barAssignments || [];
+            // Get bar assignments and filter out "Luga" design
+            const systemTypeBases = (barAssignments || []).filter(base => base.design !== "luga");
             
             // Create items with images from the type-specific folder, and attach shades if available
             config.items = systemTypeBases.map((base) => {

@@ -457,17 +457,14 @@ const ConfiguratorLayout = () => {
         });
       }
     } else {
-      // sendMessageToPlayCanvas(`light_type:${savedConfig.lightType}`);
-      // sendMessageToPlayCanvas(`light_amount:${savedConfig.lightAmount}`);
-      // sendMessageToPlayCanvas(`base_type:${savedConfig.baseType}`);
-      // savedCables.forEach((cable, index) => {
-      //   if (cable.systemType) {
-      //     sendMessageToPlayCanvas(`system:${cable.systemType}`);
-      //     sendMessageToPlayCanvas(`cable_${index}:${cable.designId}`);
-      //   } else {
-      //     sendMessageToPlayCanvas(`cable_${index}:${cable.designId}`);
-      //   }
-      // });
+      sendMessageToPlayCanvas(`light_type:${savedConfig.lightType}`);
+      sendMessageToPlayCanvas(`light_amount:${savedConfig.lightAmount}`);
+      sendMessageToPlayCanvas(`base_type:${savedConfig.baseType}`);
+      savedCables.forEach((cable, index) => {
+        if (cable.systemType) {
+          setTimeout(() => sendMessagesForDesign(cable.design, index), 700 + (index * 140));
+        }
+      });
     }
   }, [hasConfigIdParam]);
 
