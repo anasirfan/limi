@@ -436,9 +436,9 @@ const ConfiguratorLayout = () => {
 
       // Send initial messages to PlayCanvas
       if (playCanvasReadyRef.current) {
-        sendMessageToPlayCanvas(`light_type:${config.lightType}`);
-        sendMessageToPlayCanvas(`base_type:${config.baseType}`);
-        sendMessageToPlayCanvas(`light_amount:${config.lightAmount}`);
+        // sendMessageToPlayCanvas(`light_type:${config.lightType}`);
+        // sendMessageToPlayCanvas(`base_type:${config.baseType}`);
+        // sendMessageToPlayCanvas(`light_amount:${config.lightAmount}`);
 
         // Send pendant messages
         initialSystems.forEach((system, index) => {
@@ -452,19 +452,19 @@ const ConfiguratorLayout = () => {
               connectorColor: "black",
             },
           ]);
-          sendMessageToPlayCanvas(`system:${system.systemType}`);
-          sendMessageToPlayCanvas(`cable_${index}:${system.designId}`);
+          // sendMessageToPlayCanvas(`system:${system.systemType}`);
+          // sendMessageToPlayCanvas(`cable_${index}:${system.designId}`);
         });
       }
     } else {
-      sendMessageToPlayCanvas(`light_type:${savedConfig.lightType}`);
-      sendMessageToPlayCanvas(`light_amount:${savedConfig.lightAmount}`);
-      sendMessageToPlayCanvas(`base_type:${savedConfig.baseType}`);
-      savedCables.forEach((cable, index) => {
-        if (cable.systemType) {
-          setTimeout(() => sendMessagesForDesign(cable.design, index), 700 + (index * 140));
-        }
-      });
+      // sendMessageToPlayCanvas(`light_type:${savedConfig.lightType}`);
+      // sendMessageToPlayCanvas(`light_amount:${savedConfig.lightAmount}`);
+      // sendMessageToPlayCanvas(`base_type:${savedConfig.baseType}`);
+      // savedCables.forEach((cable, index) => {
+      //   if (cable.systemType) {
+      //     setTimeout(() => sendMessagesForDesign(cable.design, index), 700 + (index * 140));
+      //   }
+      // });
     }
   }, [hasConfigIdParam]);
 
@@ -480,21 +480,34 @@ const ConfiguratorLayout = () => {
     }
 
     // Send all iframe messages in sequence with a slight delay between each
-    const sendMessagesInSequence = async (messages) => {
-      for (let i = 0; i < messages.length; i++) {
-        const message = messages[i];
+    // const sendMessagesInSequence = async (messages) => {
+    //   for (let i = 0; i < messages.length; i++) {
+    //     const message = messages[i];
 
-        sendMessageToPlayCanvas(message);
+    //     sendMessageToPlayCanvas(message);
 
-        // Wait a short time between messages to ensure proper sequence
-        await new Promise((resolve) => setTimeout(resolve, 100));
-      }
+    //     // Wait a short time between messages to ensure proper sequence
+    //     await new Promise((resolve) => setTimeout(resolve, 100));
+    //   }
 
-      toast.success("Configuration loaded successfully");
-    };
+    //   toast.success("Configuration loaded successfully");
+    // };
+
+    sendMessageToPlayCanvas(`light_type:${configData.config.light_type}`);
+    sendMessageToPlayCanvas(`base_type:${configData.config.base_type}`);
+    sendMessageToPlayCanvas(`light_amount:${configData.config.light_amount}`);
+    // sendMessageToPlayCanvas(`base_color:${configData.config.base_color}`);
+    if (configData.config.cableConfig && Array.isArray(configData.config.cableConfig)) {
+      configData.config.cableConfig.forEach((cable, index) => {
+        if (cable.design) {
+          console.log("cable.design", cable.design);
+          setTimeout(() => sendMessagesForDesign(cable.design, index), 700 + (index * 300));
+        }
+      });
+    }
 
     // Start sending messages
-    sendMessagesInSequence(configData.iframe);
+    // sendMessagesInSequence(configData.iframe);
 
     // Update local config state based on loaded configuration
     const lightType = configData.config.light_type.toLowerCase();
@@ -543,7 +556,19 @@ const ConfiguratorLayout = () => {
           setTimeout(() => sendMessageToPlayCanvas(`light_amount:${savedConfig.lightAmount}`), 500);
           setTimeout(() => sendMessageToPlayCanvas(`base_color:${savedConfig.baseColor}`), 600);
 
-          // Send cable messages with delays
+       
+          // Check if any cable has systemType "bar" and fire bar messages first
+          const hasBarSystem = savedCables.some(cable => cable.systemType === "bar");
+          if (hasBarSystem) {
+            setTimeout(() => {
+              sendMessageToPlayCanvas("bars");
+              sendMessageToPlayCanvas("glass_none");
+              sendMessageToPlayCanvas("color_gold");
+              sendMessageToPlayCanvas("silver_none");
+              sendMessageToPlayCanvas("product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/Bar_1756723148543.glb");
+            }, 650);
+          }
+
           savedCables.forEach((cable, index) => {
             setTimeout(() => sendMessagesForDesign(cable.design, index), 700 + (index * 140));
           });
@@ -694,7 +719,7 @@ const ConfiguratorLayout = () => {
       sendMessageToPlayCanvas(`light_amount:${amount}`);
       newSystems.forEach((system, index) => {
         // sendMessageToPlayCanvas(`system:${system.systemType}`);
-        sendMessagesForDesign(system.design, index);
+        setTimeout(() => sendMessagesForDesign(system.design, index), 700 + (index * 200));
       });
     }, 0);
   };
