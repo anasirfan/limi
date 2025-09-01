@@ -93,7 +93,7 @@ const ConfiguratorLayout = () => {
   const [cables, setCables] = useState(() => {
     return loadFromLocalStorage("lightCables", [
       {
-        design:"ico",
+        design: "ico",
         connectorColor: "black",
         cableSize: "2mm",
         cableColor: "black",
@@ -380,11 +380,7 @@ const ConfiguratorLayout = () => {
       case 1:
         return [{ design: "piko" }];
       case 3:
-        return [
-          { design: "piko" },
-          { design: "piko" },
-          { design: "piko" },
-        ];
+        return [{ design: "piko" }, { design: "piko" }, { design: "piko" }];
       case 6:
         return [
           { design: "piko" },
@@ -426,8 +422,8 @@ const ConfiguratorLayout = () => {
 
       setCables((prev) => [
         ...prev,
-        { 
-          design: system.design,   
+        {
+          design: system.design,
         },
       ]);
 
@@ -497,11 +493,17 @@ const ConfiguratorLayout = () => {
     sendMessageToPlayCanvas(`base_type:${configData.config.base_type}`);
     sendMessageToPlayCanvas(`light_amount:${configData.config.light_amount}`);
     // sendMessageToPlayCanvas(`base_color:${configData.config.base_color}`);
-    if (configData.config.cableConfig && Array.isArray(configData.config.cableConfig)) {
+    if (
+      configData.config.cableConfig &&
+      Array.isArray(configData.config.cableConfig)
+    ) {
       configData.config.cableConfig.forEach((cable, index) => {
         if (cable.design) {
           console.log("cable.design", cable.design);
-          setTimeout(() => sendMessagesForDesign(cable.design, index), 700 + (index * 300));
+          setTimeout(
+            () => sendMessagesForDesign(cable.design, index),
+            700 + index * 300
+          );
         }
       });
     }
@@ -549,41 +551,79 @@ const ConfiguratorLayout = () => {
         console.log("savedCables", savedCables);
         if (savedConfig && savedCables) {
           console.log("Loading saved configuration...");
-          
-          // Send messages with incremental delays
-          setTimeout(() => sendMessageToPlayCanvas(`light_type:${savedConfig.lightType}`), 300);
-          setTimeout(() => sendMessageToPlayCanvas(`base_type:${savedConfig.baseType}`), 400);
-          setTimeout(() => sendMessageToPlayCanvas(`light_amount:${savedConfig.lightAmount}`), 500);
-          setTimeout(() => sendMessageToPlayCanvas(`base_color:${savedConfig.baseColor}`), 600);
 
-       
-          // Check if any cable has systemType "bar" and fire bar messages first
-          const hasBarSystem = savedCables.some(cable => cable.systemType === "bar");
-          if (hasBarSystem) {
-            setTimeout(() => {
-              sendMessageToPlayCanvas("bars");
-              sendMessageToPlayCanvas("glass_none");
-              sendMessageToPlayCanvas("color_gold");
-              sendMessageToPlayCanvas("silver_none");
-              sendMessageToPlayCanvas("product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/Bar_1756732230450.glb");
-            }, 500);
-          }
+          // Send messages with incremental delays
+          setTimeout(
+            () =>
+              sendMessageToPlayCanvas(`light_type:${savedConfig.lightType}`),
+            300
+          );
+          setTimeout(
+            () => sendMessageToPlayCanvas(`base_type:${savedConfig.baseType}`),
+            400
+          );
+          setTimeout(
+            () =>
+              sendMessageToPlayCanvas(
+                `light_amount:${savedConfig.lightAmount}`
+              ),
+            500
+          );
+          setTimeout(
+            () =>
+              sendMessageToPlayCanvas(`base_color:${savedConfig.baseColor}`),
+            600
+          );
 
           savedCables.forEach((cable, index) => {
-            setTimeout(() => sendMessagesForDesign(cable.design, index), 700 + (index * 140));
+            const hasBarSystem = cable.systemType === "bar";
+
+            if (hasBarSystem) {
+              setTimeout(() => {
+                sendMessageToPlayCanvas(`cable_${index}`);
+                sendMessageToPlayCanvas("bars");
+                sendMessageToPlayCanvas("glass_none");
+                sendMessageToPlayCanvas("color_gold");
+                sendMessageToPlayCanvas("silver_none");
+                sendMessageToPlayCanvas(
+                  "product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/Bar_1756732230450.glb"
+                );
+              }, 500);
+            }
           });
-          
+          savedCables.forEach((cable, index) => {
+            setTimeout(
+              () => sendMessagesForDesign(cable.design, index),
+              700 + index * 140
+            );
+          });
+
           // Send lighting messages with delays
-          setTimeout(() => sendMessageToPlayCanvas(`lighting:${savedConfig.lighting ? "on" : "off"}`), 700 + (savedCables.length * 100) + 100);
-          
+          setTimeout(
+            () =>
+              sendMessageToPlayCanvas(
+                `lighting:${savedConfig.lighting ? "on" : "off"}`
+              ),
+            700 + savedCables.length * 100 + 100
+          );
+
           if (savedConfig.lighting == "on") {
-            setTimeout(() => sendMessageToPlayCanvas(`brightness:${savedConfig.brightness}`), 700 + (savedCables.length * 100) + 200);
-            setTimeout(() => sendMessageToPlayCanvas(
-              "colorTemperature:" +
-                Math.round(
-                  2700 + (savedConfig.colorTemperature / 100) * (6500 - 2700)
-                )
-            ), 700 + (savedCables.length * 100) + 300);
+            setTimeout(
+              () =>
+                sendMessageToPlayCanvas(`brightness:${savedConfig.brightness}`),
+              700 + savedCables.length * 100 + 200
+            );
+            setTimeout(
+              () =>
+                sendMessageToPlayCanvas(
+                  "colorTemperature:" +
+                    Math.round(
+                      2700 +
+                        (savedConfig.colorTemperature / 100) * (6500 - 2700)
+                    )
+                ),
+              700 + savedCables.length * 100 + 300
+            );
           }
         }
 
@@ -675,7 +715,6 @@ const ConfiguratorLayout = () => {
     }, 0);
   };
 
-
   // Handle configuration type change
   const handleConfigurationTypeChange = useCallback((type) => {
     setConfig((prev) => {
@@ -719,7 +758,10 @@ const ConfiguratorLayout = () => {
       sendMessageToPlayCanvas(`light_amount:${amount}`);
       newSystems.forEach((system, index) => {
         // sendMessageToPlayCanvas(`system:${system.systemType}`);
-        setTimeout(() => sendMessagesForDesign(system.design, index), 700 + (index * 200));
+        setTimeout(
+          () => sendMessagesForDesign(system.design, index),
+          700 + index * 200
+        );
       });
     }, 0);
   };
@@ -1047,8 +1089,6 @@ const ConfiguratorLayout = () => {
     );
     sendMessageToPlayCanvas(`product_${assignment.media?.model?.url}`);
     sendMessageToPlayCanvas(`${assignment.message}`);
-    
-  
   };
 
   // Save configuration function

@@ -733,13 +733,17 @@ export const ConfigPanel = ({
             config.onItemSelect = (itemId) => {
               if (itemId === "bar-engines") {
                 // Fire the two messages to PlayCanvas
-                if (sendMessageToPlayCanvas) {
-                  sendMessageToPlayCanvas("bars");
-                  sendMessageToPlayCanvas("glass_none");
-                  sendMessageToPlayCanvas("color_gold");
-                  sendMessageToPlayCanvas("silver_none");
-                  sendMessageToPlayCanvas("product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/Bar_1756732230450.glb");
-                }
+                selectedPendants.forEach((id) => {
+                  setTimeout(() => {
+                    sendMessageToPlayCanvas(`cable_${id}`);
+                    sendMessageToPlayCanvas("bars");
+                    sendMessageToPlayCanvas("glass_none");
+                    sendMessageToPlayCanvas("color_gold");
+                    sendMessageToPlayCanvas("silver_none");
+                    sendMessageToPlayCanvas("product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/Bar_1756732230450.glb");
+                  }, 500);
+                });
+              
                 // Show the bar options
                 setBarNavState({ showBarEngines: true, showBarOptions: true });
               }
