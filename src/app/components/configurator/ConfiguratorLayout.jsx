@@ -576,7 +576,8 @@ const ConfiguratorLayout = () => {
           );
 
           savedCables.forEach((cable, index) => {
-            const hasBarSystem = cable.systemType === "bar";
+            const system = systemAssignments.find((a) => a.design === cable.design);
+            const hasBarSystem = system.systemType === "bar";
 
             if (hasBarSystem) {
               setTimeout(() => {
@@ -588,7 +589,7 @@ const ConfiguratorLayout = () => {
                 sendMessageToPlayCanvas(
                   "product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/Bar_1756732230450.glb"
                 );
-              }, 500);
+              },750 + index * 150);
             }
           });
           savedCables.forEach((cable, index) => {
