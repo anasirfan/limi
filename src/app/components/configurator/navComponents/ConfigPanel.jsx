@@ -443,7 +443,7 @@ export const ConfigPanel = ({
   useEffect(() => {
     updateNavigationState();
     // Reset bar navigation state when system type changes
-    if (configuringSystemType !== 'bar') {
+    if (configuringSystemType !== "bar") {
       setBarNavState({ showBarEngines: false, showBarOptions: false });
     }
   }, [configuringType, configuringSystemType]);
@@ -660,7 +660,10 @@ export const ConfigPanel = ({
       config.items = pendantAssignments.map((pendant) => ({
         id: pendant.design,
         name: pendant.name,
-        image: pendant.media && pendant.media.image && pendant.media.image.url ? pendant.media.image.url : "",
+        image:
+          pendant.media && pendant.media.image && pendant.media.image.url
+            ? pendant.media.image.url
+            : "",
         message: pendant.message,
         baseNumber: pendant.baseNumber,
       }));
@@ -718,7 +721,7 @@ export const ConfigPanel = ({
         ];
       } else {
         // Handle bar system with nested navigation
-        if (configuringSystemType === 'bar') {
+        if (configuringSystemType === "bar") {
           if (!barNavState.showBarEngines && !barNavState.showBarOptions) {
             // Show "Bar Engines" option first
             config.title = "Bar";
@@ -740,10 +743,12 @@ export const ConfigPanel = ({
                     sendMessageToPlayCanvas("glass_none");
                     sendMessageToPlayCanvas("color_gold");
                     sendMessageToPlayCanvas("silver_none");
-                    sendMessageToPlayCanvas("product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/Bar_1756732230450.glb");
-                  }, 500);
+                    sendMessageToPlayCanvas(
+                      "product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/Bar_1756732230450.glb"
+                    );
+                  }, 200 + id * 200);
                 });
-              
+
                 // Show the bar options
                 setBarNavState({ showBarEngines: true, showBarOptions: true });
               }
@@ -758,22 +763,30 @@ export const ConfigPanel = ({
             // Show actual bar options
             config.title = "Add On";
             config.showBreadcrumb = true;
-            
+
             // Get bar assignments and filter out "Luga" design
-            const systemTypeBases = (barAssignments || []).filter(base => base.design !== "luga");
-            
+            const systemTypeBases = (barAssignments || []).filter(
+              (base) => base.design !== "luga"
+            );
+
             // Create items with images from the type-specific folder, and attach shades if available
             config.items = systemTypeBases.map((base) => {
-              const shades = checkForMultipleShades(base.id, configuringSystemType);
+              const shades = checkForMultipleShades(
+                base.id,
+                configuringSystemType
+              );
               return {
                 id: base.design,
                 name: base.name,
-                image: base.media && base.media.image && base.media.image.url ? base.media.image.url : "",
+                image:
+                  base.media && base.media.image && base.media.image.url
+                    ? base.media.image.url
+                    : "",
                 baseNumber: base.baseNumber,
                 shades: shades || null,
               };
             });
-            
+
             config.onItemSelect = (itemId) => {
               setCurrentDesign(itemId);
               const selectedBase = config.items.find(
@@ -820,11 +833,17 @@ export const ConfigPanel = ({
 
           // Create items with images from the type-specific folder, and attach shades if available
           config.items = systemTypeBases.map((base) => {
-            const shades = checkForMultipleShades(base.id, configuringSystemType);
+            const shades = checkForMultipleShades(
+              base.id,
+              configuringSystemType
+            );
             return {
               id: base.design,
               name: base.name,
-              image: base.media && base.media.image && base.media.image.url ? base.media.image.url : "",
+              image:
+                base.media && base.media.image && base.media.image.url
+                  ? base.media.image.url
+                  : "",
               baseNumber: base.baseNumber,
               shades: shades || null,
             };
@@ -883,7 +902,12 @@ export const ConfigPanel = ({
                   setAvailableShades(shades);
                   setLocalSelectedShade(shades[0].id);
                   if (typeof onShadeSelect === "function") {
-                    onShadeSelect(itemId, shades[0].id, configuringSystemType, 0);
+                    onShadeSelect(
+                      itemId,
+                      shades[0].id,
+                      configuringSystemType,
+                      0
+                    );
                   }
                 } else {
                   setAvailableShades([]);

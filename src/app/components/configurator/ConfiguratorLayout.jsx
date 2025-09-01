@@ -871,14 +871,7 @@ const ConfiguratorLayout = () => {
         pendantIds.forEach((id) => {
           if (id >= 0 && pendantAssignment) {
             updatedCables[id] = {
-              isSystem: pendantAssignment.isSystem,
               design: pendantAssignment.design,
-              systemType: pendantAssignment.systemType,
-              designId: pendantAssignment.message,
-              modelUrl: pendantAssignment.media?.model?.url,
-              hasGlass: pendantAssignment.hasGlass,
-              hasGold: pendantAssignment.hasGold,
-              hasSilver: pendantAssignment.hasSilver,
             };
           }
         });
@@ -894,7 +887,9 @@ const ConfiguratorLayout = () => {
         } else {
           // For multiple pendants, send individual pendant messages
           pendantIds.forEach((id) => {
-            sendMessagesForDesign(design, id);
+            setTimeout(() => {
+              sendMessagesForDesign(design, id);
+            }, 400 + id * 200);
           });
         }
       }, 10); // Slight delay to ensure state is updated first
@@ -910,7 +905,7 @@ const ConfiguratorLayout = () => {
       lightAmount: baseType === "rectangular" ? 3 : 1,
       baseType: baseType,
     }));
-    const design = "helix";
+    const design = "piko";
     const system = systemAssignments.find((a) => a.design === design);
 
     // Send message to PlayCanvas iframe
@@ -920,35 +915,19 @@ const ConfiguratorLayout = () => {
       sendMessageToPlayCanvas(`system:${system.systemType}`);
       // Use a loop for 3 pendants (IDs 0, 1, 2)
       [0, 1, 2].forEach((id) => {
-        sendMessagesForDesign(design, id);
+        setTimeout(() => {
+          sendMessagesForDesign(design, id);
+        }, 400 + id * 200);
       });
       setCables([
         {
-          isSystem: system.isSystem,
-          systemType: system.systemType,
           design: system.design,
-          designId: system.message,
-          hasGlass: system.hasGlass,
-          hasColor: system.hasColor,
-          modelUrl: system.media?.model?.url,
         },
         {
-          isSystem: system.isSystem,
-          systemType: system.systemType,
           design: system.design,
-          designId: system.message,
-          hasGlass: system.hasGlass,
-          hasColor: system.hasColor,
-          modelUrl: system.media?.model?.url,
         },
         {
-          isSystem: system.isSystem,
-          systemType: system.systemType,
           design: system.design,
-          designId: system.message,
-          hasGlass: system.hasGlass,
-          hasColor: system.hasColor,
-          modelUrl: system.media?.model?.url,
         },
       ]);
     } else {
@@ -957,14 +936,7 @@ const ConfiguratorLayout = () => {
       sendMessagesForDesign(design, 0);
       setCables([
         {
-          isSystem: system.isSystem,
-          systemType: system.systemType,
           design: system.design,
-          designId: system.message,
-          hasGlass: system.hasGlass,
-          hasGold: system.hasGold,
-          hasSilver: system.hasSilver,
-          modelUrl: system.media?.model?.url,
         },
       ]);
     }
@@ -1036,14 +1008,7 @@ const ConfiguratorLayout = () => {
             // Update this specific cable
             if (cableNo >= 0) {
               updatedCables[cableNo] = {
-                isSystem: system.isSystem,
-                systemType: system.systemType,
                 design: system.design,
-                designId: system.message,
-                hasGlass: system.hasGlass,
-                hasGold: system.hasGold,
-                hasSilver: system.hasSilver,
-                modelUrl: system.media?.model?.url,
               };
             }
           });
@@ -1053,9 +1018,11 @@ const ConfiguratorLayout = () => {
         // Send messages to iframe
         selectedCables.forEach((id) => {
           //New Logic
-          const system = systemAssignments.find((a) => a.design === design);
-          sendMessageToPlayCanvas(`system:${system.systemType}`);
-          sendMessagesForDesign(design, id);
+          setTimeout(() => {
+            const system = systemAssignments.find((a) => a.design === design);
+            sendMessageToPlayCanvas(`system:${system.systemType}`);
+            sendMessagesForDesign(design, id);
+          }, 200 + id * 200);
         });
       }, 10);
     }, [config.selectedPendants, config.systemType, config.cableSystemTypes]);
