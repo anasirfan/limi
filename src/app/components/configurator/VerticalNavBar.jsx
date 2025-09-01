@@ -1026,6 +1026,7 @@ const VerticalNavBar = ({
               onShadeSelect={onShadeSelect}
               currentShade={null}
               showConfigurationTypeSelector={showConfigurationTypeSelector}
+              sendMessageToPlayCanvas={sendMessageToPlayCanvas}
               onSelectConfigurationType={(type) => {
                 // This matches the original handleConfigTypeSelection function
                 setLocalConfiguringType(type);

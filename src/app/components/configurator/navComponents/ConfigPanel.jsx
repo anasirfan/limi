@@ -44,6 +44,7 @@ export const ConfigPanel = ({
   onCableSizeChange, // NEW PROP
   onClose,
   className = "", // Add className prop with default empty string
+  sendMessageToPlayCanvas, // Add sendMessageToPlayCanvas prop
 }) => {
   // Clear shade state when entering pendant mode (defensive, avoids render loop)
   // Only runs when configuringType changes
@@ -712,6 +713,15 @@ export const ConfigPanel = ({
             ];
             config.onItemSelect = (itemId) => {
               if (itemId === "bar-engines") {
+                // Fire the two messages to PlayCanvas
+                if (sendMessageToPlayCanvas) {
+                  sendMessageToPlayCanvas("bars");
+                  sendMessageToPlayCanvas("glass_none");
+                  sendMessageToPlayCanvas("color_gold");
+                  sendMessageToPlayCanvas("silver_none");
+                  sendMessageToPlayCanvas("product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/Bar_1756723148543.glb");
+                }
+                // Show the bar options
                 setBarNavState({ showBarEngines: true, showBarOptions: true });
               }
             };
