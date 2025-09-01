@@ -1011,6 +1011,10 @@ const ConfiguratorLayout = () => {
   const sendMessagesForDesign = (designName, id) => {
     const assignment = systemAssignments.find((a) => a.design === designName);
     if (!assignment) return;
+    // Fire "Nobars" message if systemType is bar
+    if (assignment.systemType === "bar") {
+      sendMessageToPlayCanvas("Nobars");
+    }
     sendMessageToPlayCanvas(`cable_${id}`);
     sendMessageToPlayCanvas(
       `glass_${assignment.hasGlass ? "attached" : "none"}`
@@ -1021,6 +1025,8 @@ const ConfiguratorLayout = () => {
     );
     sendMessageToPlayCanvas(`product_${assignment.media?.model?.url}`);
     sendMessageToPlayCanvas(`${assignment.message}`);
+    
+  
   };
 
   // Save configuration function
