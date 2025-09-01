@@ -553,52 +553,35 @@ const ConfiguratorLayout = () => {
           console.log("Loading saved configuration...");
 
           // Send messages with incremental delays
-          setTimeout(
-            () =>
-              sendMessageToPlayCanvas(`light_type:${savedConfig.lightType}`),
-            300
-          );
-          setTimeout(
-            () => sendMessageToPlayCanvas(`base_type:${savedConfig.baseType}`),
-            400
-          );
-          setTimeout(
-            () =>
-              sendMessageToPlayCanvas(
-                `light_amount:${savedConfig.lightAmount}`
-              ),
-            500
-          );
-          setTimeout(
-            () =>
-              sendMessageToPlayCanvas(`base_color:${savedConfig.baseColor}`),
-            600
-          );
+          sendMessageToPlayCanvas(`light_type:ceiling`),
+            sendMessageToPlayCanvas(`base_type:round`),
+            sendMessageToPlayCanvas(`light_amount:1`),
+            sendMessageToPlayCanvas(`base_color:black`),
+          // sendMessageToPlayCanvas(`light_type:${savedConfig.lightType}`),
+          //   sendMessageToPlayCanvas(`base_type:${savedConfig.baseType}`),
+          //   sendMessageToPlayCanvas(`light_amount:${savedConfig.lightAmount}`),
+          //   sendMessageToPlayCanvas(`base_color:${savedConfig.baseColor}`),
+          //   savedCables.forEach((cable, index) => {
+          //     const system = systemAssignments.find(
+          //       (a) => a.design === cable.design
+          //     );
+          //     const hasBarSystem = system.systemType === "bar";
 
-          savedCables.forEach((cable, index) => {
-            const system = systemAssignments.find((a) => a.design === cable.design);
-            const hasBarSystem = system.systemType === "bar";
-
-            if (hasBarSystem) {
-              setTimeout(() => {
-                sendMessageToPlayCanvas(`cable_${index}`);
-                sendMessageToPlayCanvas("bars");
-                sendMessageToPlayCanvas("glass_none");
-                sendMessageToPlayCanvas("color_gold");
-                sendMessageToPlayCanvas("silver_none");
-                sendMessageToPlayCanvas(
-                  "product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/Bar_1756732230450.glb"
-                );
-              },750 + index * 150);
-            }
-          });
-          savedCables.forEach((cable, index) => {
-            setTimeout(
-              () => sendMessagesForDesign(cable.design, index),
-              700 + index * 140
-            );
-          });
-
+          //     if (hasBarSystem) {
+          //       sendMessageToPlayCanvas(`cable_${index}`);
+          //       sendMessageToPlayCanvas("bars");
+          //       sendMessageToPlayCanvas("glass_none");
+          //       sendMessageToPlayCanvas("color_gold");
+          //       sendMessageToPlayCanvas("silver_none");
+          //       sendMessageToPlayCanvas(
+          //         "product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/Bar_1756732230450.glb"
+          //       );
+          //     }
+          //   });
+          // savedCables.forEach((cable, index) => {
+          //   sendMessagesForDesign(cable.design, index);
+          // });
+          sendMessagesForDesign("fina", 0);
           // Send lighting messages with delays
           setTimeout(
             () =>
@@ -759,10 +742,7 @@ const ConfiguratorLayout = () => {
       sendMessageToPlayCanvas(`light_amount:${amount}`);
       newSystems.forEach((system, index) => {
         // sendMessageToPlayCanvas(`system:${system.systemType}`);
-        setTimeout(
-          () => sendMessagesForDesign(system.design, index),
-          700 + index * 200
-        );
+        sendMessagesForDesign(system.design, index);
       });
     }, 0);
   };
@@ -916,9 +896,7 @@ const ConfiguratorLayout = () => {
       sendMessageToPlayCanvas(`system:${system.systemType}`);
       // Use a loop for 3 pendants (IDs 0, 1, 2)
       [0, 1, 2].forEach((id) => {
-        setTimeout(() => {
-          sendMessagesForDesign(design, id);
-        }, 400 + id * 200);
+        sendMessagesForDesign(design, id);
       });
       setCables([
         {
@@ -1019,11 +997,10 @@ const ConfiguratorLayout = () => {
         // Send messages to iframe
         selectedCables.forEach((id) => {
           //New Logic
-          setTimeout(() => {
-            const system = systemAssignments.find((a) => a.design === design);
-            sendMessageToPlayCanvas(`system:${system.systemType}`);
-            sendMessagesForDesign(design, id);
-          }, 200 + id * 200);
+
+          const system = systemAssignments.find((a) => a.design === design);
+          sendMessageToPlayCanvas(`system:${system.systemType}`);
+          sendMessagesForDesign(design, id);
         });
       }, 10);
     }, [config.selectedPendants, config.systemType, config.cableSystemTypes]);
