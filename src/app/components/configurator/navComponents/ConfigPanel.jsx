@@ -119,6 +119,12 @@ export const ConfigPanel = ({
     ids: {},
   });
 
+  // Track bar system nested navigation
+  const [barNavState, setBarNavState] = useState({
+    showBarEngines: false, // true when showing "Bar Engines" option
+    showBarOptions: false, // true when showing actual bar options
+  });
+
   const [currentConfig, SetcurrentConfig] = useState(null);
 
   // State for shade selection
@@ -435,6 +441,10 @@ export const ConfigPanel = ({
   // Update navigation state when configuringType or configuringSystemType changes
   useEffect(() => {
     updateNavigationState();
+    // Reset bar navigation state when system type changes
+    if (configuringSystemType !== 'bar') {
+      setBarNavState({ showBarEngines: false, showBarOptions: false });
+    }
   }, [configuringType, configuringSystemType]);
 
   // Debug log for tracking props and state
@@ -687,78 +697,50 @@ export const ConfigPanel = ({
           { id: "system", name: "System Type" },
         ];
       } else {
-        // System base design selection based on the selected system type
-        config.title = `${
-          configuringSystemType.charAt(0).toUpperCase() +
-          configuringSystemType.slice(1)
-        } System`;
-        config.showBreadcrumb = true;
-
-        // Map of base IDs to names and image numbers based on available files
-        const baseOptions = {
-          bar: barAssignments,
-          ball: ballAssignments,
-          universal: universalAssignments,
-        };
-
-        // Get the appropriate bases for the selected system type
-        const systemTypeBases = baseOptions[configuringSystemType] || [];
-
-        // Create items with images from the type-specific folder, and attach shades if available
-        config.items = systemTypeBases.map((base) => {
-          const shades = checkForMultipleShades(base.id, configuringSystemType);
-          return {
-            id: base.design,
-            name: base.name,
-            image: base.media && base.media.image && base.media.image.url ? base.media.image.url : "",
-            baseNumber: base.baseNumber,
-            shades: shades || null,
-          };
-        });
-
-        // If a base is selected and it has shades, show those as the next options (inside the same panel)
-        if (currentDesign) {
-          const selectedBase = config.items.find(
-            (item) => item.id === currentDesign
-          );
-          const shades = selectedBase && selectedBase.shades;
-
-          if (shades && shades.length > 0) {
-            // Replace items with shades for this step
-            config.items = shades.map((shade, idx) => ({
-              ...shade,
-              id: shade.id,
-              name: shade.name,
-              color: shade.color,
-              index: idx,
-            }));
-            config.onItemSelect = (shadeId) => {
-              setLocalSelectedShade(shadeId);
-              if (typeof onShadeSelect === "function") {
-                onShadeSelect(
-                  selectedBase.baseNumber,
-                  shadeId,
-                  configuringSystemType,
-                  config.items.findIndex((s) => s.id === shadeId)
-                );
+        // Handle bar system with nested navigation
+        if (configuringSystemType === 'bar') {
+          if (!barNavState.showBarEngines && !barNavState.showBarOptions) {
+            // Show "Bar Engines" option first
+            config.title = "Bar";
+            config.showBreadcrumb = true;
+            config.items = [
+              {
+                id: "bar-engines",
+                name: "Bar Engines",
+                image: "/images/configOptions/bar-engines.png",
+              },
+            ];
+            config.onItemSelect = (itemId) => {
+              if (itemId === "bar-engines") {
+                setBarNavState({ showBarEngines: true, showBarOptions: true });
               }
             };
-            config.selectedItem = localSelectedShade;
+            config.selectedItem = null;
             config.breadcrumbItems = [
               { id: "home", name: "icon-home" },
-              { id: "system", name: "System" },
-              {
-                id: configuringSystemType,
-                name: `${
-                  configuringSystemType.charAt(0).toUpperCase() +
-                  configuringSystemType.slice(1)
-                } System`,
-              },
-              { id: "shades", name: "Shades" },
+              { id: "system", name: "System Type" },
+              { id: "bar", name: "Bar" },
             ];
-            config.title = "Shades";
-          } else {
-            // Show base options
+          } else if (barNavState.showBarOptions) {
+            // Show actual bar options
+            config.title = "Add On";
+            config.showBreadcrumb = true;
+            
+            // Get bar assignments
+            const systemTypeBases = barAssignments || [];
+            
+            // Create items with images from the type-specific folder, and attach shades if available
+            config.items = systemTypeBases.map((base) => {
+              const shades = checkForMultipleShades(base.id, configuringSystemType);
+              return {
+                id: base.design,
+                name: base.name,
+                image: base.media && base.media.image && base.media.image.url ? base.media.image.url : "",
+                baseNumber: base.baseNumber,
+                shades: shades || null,
+              };
+            });
+            
             config.onItemSelect = (itemId) => {
               setCurrentDesign(itemId);
               const selectedBase = config.items.find(
@@ -780,57 +762,157 @@ export const ConfigPanel = ({
             config.selectedItem = currentDesign;
             config.breadcrumbItems = [
               { id: "home", name: "icon-home" },
-              { id: "system", name: "System" },
+              { id: "system", name: "System Type" },
+              { id: "bar", name: "Bar" },
+              { id: "bar-engines", name: "Add On" },
+            ];
+          }
+        } else {
+          // System base design selection for other system types (ball, universal)
+          config.title = `${
+            configuringSystemType.charAt(0).toUpperCase() +
+            configuringSystemType.slice(1)
+          }`;
+          config.showBreadcrumb = true;
+
+          // Map of base IDs to names and image numbers based on available files
+          const baseOptions = {
+            bar: barAssignments,
+            ball: ballAssignments,
+            universal: universalAssignments,
+          };
+
+          // Get the appropriate bases for the selected system type
+          const systemTypeBases = baseOptions[configuringSystemType] || [];
+
+          // Create items with images from the type-specific folder, and attach shades if available
+          config.items = systemTypeBases.map((base) => {
+            const shades = checkForMultipleShades(base.id, configuringSystemType);
+            return {
+              id: base.design,
+              name: base.name,
+              image: base.media && base.media.image && base.media.image.url ? base.media.image.url : "",
+              baseNumber: base.baseNumber,
+              shades: shades || null,
+            };
+          });
+
+          // If a base is selected and it has shades, show those as the next options (inside the same panel)
+          if (currentDesign) {
+            const selectedBase = config.items.find(
+              (item) => item.id === currentDesign
+            );
+            const shades = selectedBase && selectedBase.shades;
+
+            if (shades && shades.length > 0) {
+              // Replace items with shades for this step
+              config.items = shades.map((shade, idx) => ({
+                ...shade,
+                id: shade.id,
+                name: shade.name,
+                color: shade.color,
+                index: idx,
+              }));
+              config.onItemSelect = (shadeId) => {
+                setLocalSelectedShade(shadeId);
+                if (typeof onShadeSelect === "function") {
+                  onShadeSelect(
+                    selectedBase.baseNumber,
+                    shadeId,
+                    configuringSystemType,
+                    config.items.findIndex((s) => s.id === shadeId)
+                  );
+                }
+              };
+              config.selectedItem = localSelectedShade;
+              config.breadcrumbItems = [
+                { id: "home", name: "icon-home" },
+                { id: "system", name: "System Type" },
+                {
+                  id: configuringSystemType,
+                  name: `${
+                    configuringSystemType.charAt(0).toUpperCase() +
+                    configuringSystemType.slice(1)
+                  }`,
+                },
+                { id: "shades", name: "Shades" },
+              ];
+              config.title = "Shades";
+            } else {
+              // Show base options
+              config.onItemSelect = (itemId) => {
+                setCurrentDesign(itemId);
+                const selectedBase = config.items.find(
+                  (item) => item.id === itemId
+                );
+                const shades = selectedBase && selectedBase.shades;
+                if (shades && shades.length > 0) {
+                  setAvailableShades(shades);
+                  setLocalSelectedShade(shades[0].id);
+                  if (typeof onShadeSelect === "function") {
+                    onShadeSelect(itemId, shades[0].id, configuringSystemType, 0);
+                  }
+                } else {
+                  setAvailableShades([]);
+                  setLocalSelectedShade(null);
+                }
+                onSystemBaseDesignChange(itemId);
+              };
+              config.selectedItem = currentDesign;
+              config.breadcrumbItems = [
+                { id: "home", name: "icon-home" },
+                { id: "system", name: "System Type" },
+                {
+                  id: configuringSystemType,
+                  name: `${
+                    configuringSystemType.charAt(0).toUpperCase() +
+                    configuringSystemType.slice(1)
+                  }`,
+                },
+              ];
+              config.title = `${
+                configuringSystemType.charAt(0).toUpperCase() +
+                configuringSystemType.slice(1)
+              }`;
+            }
+          } else {
+            // Show base options
+            config.onItemSelect = (itemId) => {
+              setCurrentDesign(itemId);
+              const selectedBase = config.items.find(
+                (item) => item.id === itemId
+              );
+              const shades = selectedBase && selectedBase.shades;
+              if (shades && shades.length > 0) {
+                setAvailableShades(shades);
+                setLocalSelectedShade(shades[0].id);
+                if (typeof onShadeSelect === "function") {
+                  onShadeSelect(itemId, shades[0].id, configuringSystemType, 0);
+                }
+              } else {
+                setAvailableShades([]);
+                setLocalSelectedShade(null);
+              }
+              onSystemBaseDesignChange(itemId);
+              console.log("onSystemBaseDesignChange", itemId);
+            };
+            config.selectedItem = currentDesign;
+            config.breadcrumbItems = [
+              { id: "home", name: "icon-home" },
+              { id: "system", name: "System Type" },
               {
                 id: configuringSystemType,
                 name: `${
                   configuringSystemType.charAt(0).toUpperCase() +
                   configuringSystemType.slice(1)
-                } System`,
+                }`,
               },
             ];
             config.title = `${
               configuringSystemType.charAt(0).toUpperCase() +
               configuringSystemType.slice(1)
-            } System`;
+            }`;
           }
-        } else {
-          // Show base options
-          config.onItemSelect = (itemId) => {
-            setCurrentDesign(itemId);
-            const selectedBase = config.items.find(
-              (item) => item.id === itemId
-            );
-            const shades = selectedBase && selectedBase.shades;
-            if (shades && shades.length > 0) {
-              setAvailableShades(shades);
-              setLocalSelectedShade(shades[0].id);
-              if (typeof onShadeSelect === "function") {
-                onShadeSelect(itemId, shades[0].id, configuringSystemType, 0);
-              }
-            } else {
-              setAvailableShades([]);
-              setLocalSelectedShade(null);
-            }
-            onSystemBaseDesignChange(itemId);
-            console.log("onSystemBaseDesignChange", itemId);
-          };
-          config.selectedItem = currentDesign;
-          config.breadcrumbItems = [
-            { id: "home", name: "icon-home" },
-            { id: "system", name: "System" },
-            {
-              id: configuringSystemType,
-              name: `${
-                configuringSystemType.charAt(0).toUpperCase() +
-                configuringSystemType.slice(1)
-              } System`,
-            },
-          ];
-          config.title = `${
-            configuringSystemType.charAt(0).toUpperCase() +
-            configuringSystemType.slice(1)
-          } System`;
         }
       }
     }
@@ -854,17 +936,28 @@ export const ConfigPanel = ({
         path: ["system"],
         ids: { system: true },
       });
+      // Reset bar navigation state
+      setBarNavState({ showBarEngines: false, showBarOptions: false });
       onSystemTypeSelection(null);
     } else if (id === "pendant") {
       // If we click on Pendant Design breadcrumb, ensure we're at that level
       if (configuringType !== "pendant") {
         onSelectConfigurationType("pendant");
       }
+    } else if (id === "bar" && configuringSystemType === "bar") {
+      // If we click on Bar breadcrumb, go back to showing "Bar Engines" option
+      setBarNavState({ showBarEngines: false, showBarOptions: false });
+      setCurrentDesign(null);
+      setAvailableShades([]);
+      setLocalSelectedShade(null);
+    } else if (id === "bar-engines" && configuringSystemType === "bar") {
+      // If we click on "Add On" breadcrumb, stay in bar options view
+      // This is already the current state, so no action needed
     } else if (
       configuringType === "system" &&
-      (id === "universal" || id === "bar" || id === "ball")
+      (id === "universal" || id === "ball")
     ) {
-      // If we click on a system base (e.g., Universal System, Bar System) breadcrumb,
+      // If we click on a system base (e.g., Universal, Ball) breadcrumb,
       // reset to show base options for that system
       setCurrentDesign(null);
       setAvailableShades([]);

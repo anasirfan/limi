@@ -547,25 +547,29 @@ const ConfiguratorLayout = () => {
         console.log("savedCables", savedCables);
         if (savedConfig && savedCables) {
           console.log("Loading saved configuration...");
-          sendMessageToPlayCanvas(`light_type:${savedConfig.lightType}`);
-          sendMessageToPlayCanvas(`base_type:${savedConfig.baseType}`);
-          sendMessageToPlayCanvas(`light_amount:${savedConfig.lightAmount}`);
-          sendMessageToPlayCanvas(`base_color:${savedConfig.baseColor}`);
+          
+          // Send messages with incremental delays
+          setTimeout(() => sendMessageToPlayCanvas(`light_type:${savedConfig.lightType}`), 300);
+          setTimeout(() => sendMessageToPlayCanvas(`base_type:${savedConfig.baseType}`), 400);
+          setTimeout(() => sendMessageToPlayCanvas(`light_amount:${savedConfig.lightAmount}`), 500);
+          setTimeout(() => sendMessageToPlayCanvas(`base_color:${savedConfig.baseColor}`), 600);
 
+          // Send cable messages with delays
           savedCables.forEach((cable, index) => {
-            sendMessagesForDesign(cable.design, index);
+            setTimeout(() => sendMessagesForDesign(cable.design, index), 700 + (index * 140));
           });
-          sendMessageToPlayCanvas(
-            `lighting:${savedConfig.lighting ? "on" : "off"}`
-          );
+          
+          // Send lighting messages with delays
+          setTimeout(() => sendMessageToPlayCanvas(`lighting:${savedConfig.lighting ? "on" : "off"}`), 700 + (savedCables.length * 100) + 100);
+          
           if (savedConfig.lighting == "on") {
-            sendMessageToPlayCanvas(`brightness:${savedConfig.brightness}`);
-            sendMessageToPlayCanvas(
+            setTimeout(() => sendMessageToPlayCanvas(`brightness:${savedConfig.brightness}`), 700 + (savedCables.length * 100) + 200);
+            setTimeout(() => sendMessageToPlayCanvas(
               "colorTemperature:" +
                 Math.round(
                   2700 + (savedConfig.colorTemperature / 100) * (6500 - 2700)
                 )
-            );
+            ), 700 + (savedCables.length * 100) + 300);
           }
         }
 
