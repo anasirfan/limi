@@ -1010,7 +1010,7 @@ const ConfiguratorLayout = () => {
     if (!assignment) return;
     // Fire "Nobars" when message if systemType is bar
     if (assignment.systemType === "bar") {
-      sendMessageToPlayCanvas("Nobars");
+      sendMessageToPlayCanvas("barextra");
     }
     sendMessageToPlayCanvas(`cable_${id}`);
     sendMessageToPlayCanvas(
