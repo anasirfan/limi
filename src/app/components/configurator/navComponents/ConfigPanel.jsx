@@ -606,7 +606,17 @@ export const ConfigPanel = ({
         //   image: "/images/configOptions/cable.png",
         // },
       ];
-      config.onItemSelect = onSelectConfigurationType;
+      config.onItemSelect = (itemId) => {
+        // Fire messages for configuration type selection
+        if (sendMessageToPlayCanvas) {
+          if (itemId === "pendant") {
+            sendMessageToPlayCanvas("Nobars");
+          } else if (itemId === "system") {
+            sendMessageToPlayCanvas("Nobars");
+          }
+        }
+        onSelectConfigurationType(itemId);
+      };
       config.selectedItem = null;
       config.useIcon = true;
       config.showCloseButton = true;
@@ -688,6 +698,15 @@ export const ConfigPanel = ({
           },
         ];
         config.onItemSelect = (systemType) => {
+          // Fire specific messages for each system type
+          if (sendMessageToPlayCanvas) {
+            if (systemType === "universal") {
+              sendMessageToPlayCanvas("Nobars");
+            } else if (systemType === "ball") {
+              sendMessageToPlayCanvas("Nobars");
+            }
+          }
+
           // Call the parent handler to update state and send message to iframe
           onSystemTypeSelection(systemType);
         };
