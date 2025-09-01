@@ -1011,7 +1011,7 @@ const ConfiguratorLayout = () => {
   const sendMessagesForDesign = (designName, id) => {
     const assignment = systemAssignments.find((a) => a.design === designName);
     if (!assignment) return;
-    // Fire "Nobars" message if systemType is bar
+    // Fire "Nobars" when message if systemType is bar
     if (assignment.systemType === "bar") {
       sendMessageToPlayCanvas("Nobars");
     }
