@@ -578,9 +578,14 @@ const ConfiguratorLayout = () => {
                 );
               }
             });
-          savedCables.forEach((cable, index) => {
-            sendMessagesForDesign(cable.design, index);
-          });
+            const designToIndices = {};
+            savedCables.forEach((cable, index) => {
+              if (!designToIndices[cable.design]) designToIndices[cable.design] = [];
+              designToIndices[cable.design].push(index);
+            });
+            Object.entries(designToIndices).forEach(([design, indices]) => {
+              sendMessagesForDesign(design, indices.length === 1 ? indices[0] : indices);
+            });
           // sendMessagesForDesign("fina", 0);
           // Send lighting messages with delays
           setTimeout(
@@ -872,9 +877,7 @@ const ConfiguratorLayout = () => {
         } else {
           // For multiple pendants, send individual pendant messages
           pendantIds.forEach((id) => {
-            setTimeout(() => {
-              sendMessagesForDesign(design, id);
-            }, 400 + id * 200);
+            sendMessagesForDesign(design, id);
           });
         }
       }, 10); // Slight delay to ensure state is updated first
