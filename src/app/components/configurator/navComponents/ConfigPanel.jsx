@@ -737,7 +737,7 @@ export const ConfigPanel = ({
               if (itemId === "bar-engines") {
                 // Fire the two messages to PlayCanvas
                 selectedPendants.forEach((id) => {
-                  setTimeout(() => {
+              
                     sendMessageToPlayCanvas(`cable_${id}`);
                     sendMessageToPlayCanvas("bars");
                     sendMessageToPlayCanvas("glass_none");
@@ -746,8 +746,9 @@ export const ConfigPanel = ({
                     sendMessageToPlayCanvas(
                       "product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/Bar_1756732230450.glb"
                     );
-                  }, 200 + id * 200);
+                 
                 });
+                sendMessageToPlayCanvas("allmodelsloaded");
 
                 // Show the bar options
                 setBarNavState({ showBarEngines: true, showBarOptions: true });
