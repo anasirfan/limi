@@ -561,33 +561,33 @@ const ConfiguratorLayout = () => {
             sendMessageToPlayCanvas(`base_type:${savedConfig.baseType}`),
             sendMessageToPlayCanvas(`light_amount:${savedConfig.lightAmount}`),
             sendMessageToPlayCanvas(`base_color:${savedConfig.baseColor}`);
-            savedCables.forEach((cable, index) => {
-              const system = systemAssignments.find(
-                (a) => a.design === cable.design
+          savedCables.forEach((cable, index) => {
+            const system = systemAssignments.find(
+              (a) => a.design === cable.design
+            );
+            const hasBarSystem = system.systemType === "bar";
+
+            if (hasBarSystem) {
+              sendMessageToPlayCanvas(`cable_${index}`);
+              sendMessageToPlayCanvas("bars");
+              sendMessageToPlayCanvas("glass_none");
+              sendMessageToPlayCanvas("color_gold");
+              sendMessageToPlayCanvas("silver_none");
+              sendMessageToPlayCanvas(
+                "product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/Bar_1756732230450.glb"
               );
-              const hasBarSystem = system.systemType === "bar";
+            }
+          });
 
-              if (hasBarSystem) {
-                sendMessageToPlayCanvas(`cable_${index}`);
-                sendMessageToPlayCanvas("bars");
-                sendMessageToPlayCanvas("glass_none");
-                sendMessageToPlayCanvas("color_gold");
-                sendMessageToPlayCanvas("silver_none");
-                sendMessageToPlayCanvas(
-                  "product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/Bar_1756732230450.glb"
-                );
-              }
-            });
-
-            //Send messages for each design
-            // const designToIndices = {};
-            // savedCables.forEach((cable, index) => {
-            //   if (!designToIndices[cable.design]) designToIndices[cable.design] = [];
-            //   designToIndices[cable.design].push(index);
-            // });
-            // Object.entries(designToIndices).forEach(([design, indices]) => {
-            //   sendMessagesForDesign(design, indices.length === 1 ? indices[0] : indices);
-            // });
+          //Send messages for each design
+          // const designToIndices = {};
+          // savedCables.forEach((cable, index) => {
+          //   if (!designToIndices[cable.design]) designToIndices[cable.design] = [];
+          //   designToIndices[cable.design].push(index);
+          // });
+          // Object.entries(designToIndices).forEach(([design, indices]) => {
+          //   sendMessagesForDesign(design, indices.length === 1 ? indices[0] : indices);
+          // });
 
           savedCables.forEach((cable, index) => {
             sendMessagesForDesignOnReload(cable.design, index);
@@ -877,16 +877,19 @@ const ConfiguratorLayout = () => {
 
       // This ensures we don't have race conditions between state updates and messaging
       setTimeout(() => {
-        // Check if we have only 1 pendant or multiple pendants
-        if (config.lightAmount === 1) {
-          // For single pendant, send model URL first if it exists, then the design message
-          sendMessagesForDesign(design, 0);
-        } else {
-          // For multiple pendants, send individual pendant messages
-          pendantIds.forEach((id) => {
-            sendMessagesForDesign(design, id);
-          });
-        }
+        // Group pendants by design and send system type + messages per design
+        const designToIds = {};
+        pendantIds.forEach((id) => {
+          const system = systemAssignments.find((a) => a.design === design);
+          if (!designToIds[system.design]) designToIds[system.design] = [];
+          designToIds[system.design].push(id);
+        });
+
+        Object.entries(designToIds).forEach(([design, ids]) => {
+          // const system = systemAssignments.find((a) => a.design === design);
+          // sendMessageToPlayCanvas(`system:${system.systemType}`);
+          sendMessagesForDesign(design, ids.length === 1 ? ids[0] : ids);
+        });
       }, 10); // Slight delay to ensure state is updated first
     },
     [config.lightAmount]
@@ -1015,7 +1018,7 @@ const ConfiguratorLayout = () => {
           if (!designToIds[system.design]) designToIds[system.design] = [];
           designToIds[system.design].push(id);
         });
-        
+
         Object.entries(designToIds).forEach(([design, ids]) => {
           const system = systemAssignments.find((a) => a.design === design);
           sendMessageToPlayCanvas(`system:${system.systemType}`);
@@ -1069,7 +1072,7 @@ const ConfiguratorLayout = () => {
       sendMessageToPlayCanvas("allmodelsloaded");
     }
   };
- 
+
   const sendMessagesForDesignOnReload = (designName, id) => {
     const assignment = systemAssignments.find((a) => a.design === designName);
     if (!assignment) return;
