@@ -561,23 +561,23 @@ const ConfiguratorLayout = () => {
             sendMessageToPlayCanvas(`base_type:${savedConfig.baseType}`),
             sendMessageToPlayCanvas(`light_amount:${savedConfig.lightAmount}`),
             sendMessageToPlayCanvas(`base_color:${savedConfig.baseColor}`);
-            // savedCables.forEach((cable, index) => {
-            //   const system = systemAssignments.find(
-            //     (a) => a.design === cable.design
-            //   );
-            //   const hasBarSystem = system.systemType === "bar";
+            savedCables.forEach((cable, index) => {
+              const system = systemAssignments.find(
+                (a) => a.design === cable.design
+              );
+              const hasBarSystem = system.systemType === "bar";
 
-            //   if (hasBarSystem) {
-            //     sendMessageToPlayCanvas(`cable_${index}`);
-            //     sendMessageToPlayCanvas("bars");
-            //     sendMessageToPlayCanvas("glass_none");
-            //     sendMessageToPlayCanvas("color_gold");
-            //     sendMessageToPlayCanvas("silver_none");
-            //     sendMessageToPlayCanvas(
-            //       "product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/Bar_1756732230450.glb"
-            //     );
-            //   }
-            // });
+              if (hasBarSystem) {
+                sendMessageToPlayCanvas(`cable_${index}`);
+                sendMessageToPlayCanvas("bars");
+                sendMessageToPlayCanvas("glass_none");
+                sendMessageToPlayCanvas("color_gold");
+                sendMessageToPlayCanvas("silver_none");
+                sendMessageToPlayCanvas(
+                  "product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/Bar_1756732230450.glb"
+                );
+              }
+            });
 
             //Send messages for each design
             // const designToIndices = {};
