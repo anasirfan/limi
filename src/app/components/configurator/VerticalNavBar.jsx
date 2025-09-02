@@ -178,6 +178,11 @@ const VerticalNavBar = ({
           setOpenBase(false);
           // 1. Open the pendant selection step
           setActiveStep("pendantSelection");
+          setActiveStep("baseColor");
+
+          setOpenDropdown("baseColor");
+          handleSetActiveTab("connector");
+          setIsLightingPanelOpen(true);
           // 2. Select the pendant with the extracted id
           setSelectedPendants([cableId]);
           // 3. Show the configuration type selector
@@ -191,6 +196,7 @@ const VerticalNavBar = ({
           // 1. Open the pendant selection step
           setActiveStep("pendantSelection");
           setOpenDropdown("pendantSelection");
+       
           setIsLightingPanelOpen(true);
           // 2. Select the pendant with the extracted id
           setSelectedPendants([cableId]);
