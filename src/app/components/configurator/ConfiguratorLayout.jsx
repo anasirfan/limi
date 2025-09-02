@@ -740,9 +740,13 @@ const ConfiguratorLayout = () => {
     // Send messages to iframe
     setTimeout(() => {
       sendMessageToPlayCanvas(`light_amount:${amount}`);
-      newSystems.forEach((system, index) => {
-        // sendMessageToPlayCanvas(`system:${system.systemType}`);
-        sendMessagesForDesign(system.design, index);
+      const designToIds = {};
+      newSystems.forEach((system, idx) => {
+        if (!designToIds[system.design]) designToIds[system.design] = [];
+        designToIds[system.design].push(idx);
+      });
+      Object.entries(designToIds).forEach(([design, ids]) => {
+        sendMessagesForDesign(design, ids);
       });
     }, 0);
   };
@@ -995,12 +999,17 @@ const ConfiguratorLayout = () => {
         });
 
         // Send messages to iframe
+        const designToIds = {};
         selectedCables.forEach((id) => {
-          //New Logic
-
+          const system = systemAssignments.find((a) => a.design === design);
+          if (!designToIds[system.design]) designToIds[system.design] = [];
+          designToIds[system.design].push(id);
+        });
+        
+        Object.entries(designToIds).forEach(([design, ids]) => {
           const system = systemAssignments.find((a) => a.design === design);
           sendMessageToPlayCanvas(`system:${system.systemType}`);
-          sendMessagesForDesign(design, id);
+          sendMessagesForDesign(design, ids.length === 1 ? ids[0] : ids);
         });
       }, 10);
     }, [config.selectedPendants, config.systemType, config.cableSystemTypes]);
@@ -1017,28 +1026,36 @@ const ConfiguratorLayout = () => {
     }
   };
 
-  const sendMessagesForDesign = (designName, id) => {
+  const sendMessagesForDesign = (designName, idOrIds) => {
     const assignment = systemAssignments.find((a) => a.design === designName);
     if (!assignment) return;
-    // Fire "Nobars" when message if systemType is bar
-    if (assignment.systemType === "bar") {
-      sendMessageToPlayCanvas("barextra");
-    }
-    sendMessageToPlayCanvas(`cable_${id}`);
-    sendMessageToPlayCanvas(
-      `glass_${assignment.hasGlass ? "attached" : "none"}`
-    );
-    sendMessageToPlayCanvas(`color_${assignment.hasGold ? "gold" : "none"}`);
-    sendMessageToPlayCanvas(
-      `silver_${assignment.hasSilver ? "attached" : "none"}`
-    );
-    sendMessageToPlayCanvas(`product_${assignment.media?.model?.url}`);
-    sendMessageToPlayCanvas(`${assignment.message}`);
 
-    if ( id === 2) {
+    // Helper to send all messages for a single id
+    const sendAllMessages = (id) => {
+      if (assignment.systemType === "bar") {
+        sendMessageToPlayCanvas("barextra");
+      }
+      sendMessageToPlayCanvas(`cable_${id}`);
+      sendMessageToPlayCanvas(
+        `glass_${assignment.hasGlass ? "attached" : "none"}`
+      );
+      sendMessageToPlayCanvas(`color_${assignment.hasGold ? "gold" : "none"}`);
+      sendMessageToPlayCanvas(
+        `silver_${assignment.hasSilver ? "attached" : "none"}`
+      );
+      sendMessageToPlayCanvas(`product_${assignment.media?.model?.url}`);
+      sendMessageToPlayCanvas(`${assignment.message}`);
+    };
+
+    if (Array.isArray(idOrIds)) {
+      idOrIds.forEach((id) => {
+        sendAllMessages(id);
+      });
+      // Fire allmodelsloaded ONCE at the end
       sendMessageToPlayCanvas("allmodelsloaded");
-    }
-    if ( id === 5) {
+    } else {
+      sendAllMessages(idOrIds);
+      // Fire allmodelsloaded after the single id
       sendMessageToPlayCanvas("allmodelsloaded");
     }
   };
@@ -1126,7 +1143,7 @@ const ConfiguratorLayout = () => {
     }
 
     if (config.cableColor) {
-      iframeMessagesArray.push(`cable_color:${config.cableColor}`);
+      iframeMessagesArray.push(`cable_color:${config.baseColor}`);
     }
 
     if (configToSave.cable_length) {
