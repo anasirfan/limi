@@ -560,32 +560,39 @@ const ConfiguratorLayout = () => {
           sendMessageToPlayCanvas(`light_type:${savedConfig.lightType}`),
             sendMessageToPlayCanvas(`base_type:${savedConfig.baseType}`),
             sendMessageToPlayCanvas(`light_amount:${savedConfig.lightAmount}`),
-            sendMessageToPlayCanvas(`base_color:${savedConfig.baseColor}`),
-            savedCables.forEach((cable, index) => {
-              const system = systemAssignments.find(
-                (a) => a.design === cable.design
-              );
-              const hasBarSystem = system.systemType === "bar";
+            sendMessageToPlayCanvas(`base_color:${savedConfig.baseColor}`);
+            // savedCables.forEach((cable, index) => {
+            //   const system = systemAssignments.find(
+            //     (a) => a.design === cable.design
+            //   );
+            //   const hasBarSystem = system.systemType === "bar";
 
-              if (hasBarSystem) {
-                sendMessageToPlayCanvas(`cable_${index}`);
-                sendMessageToPlayCanvas("bars");
-                sendMessageToPlayCanvas("glass_none");
-                sendMessageToPlayCanvas("color_gold");
-                sendMessageToPlayCanvas("silver_none");
-                sendMessageToPlayCanvas(
-                  "product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/Bar_1756732230450.glb"
-                );
-              }
-            });
-            const designToIndices = {};
-            savedCables.forEach((cable, index) => {
-              if (!designToIndices[cable.design]) designToIndices[cable.design] = [];
-              designToIndices[cable.design].push(index);
-            });
-            Object.entries(designToIndices).forEach(([design, indices]) => {
-              sendMessagesForDesign(design, indices.length === 1 ? indices[0] : indices);
-            });
+            //   if (hasBarSystem) {
+            //     sendMessageToPlayCanvas(`cable_${index}`);
+            //     sendMessageToPlayCanvas("bars");
+            //     sendMessageToPlayCanvas("glass_none");
+            //     sendMessageToPlayCanvas("color_gold");
+            //     sendMessageToPlayCanvas("silver_none");
+            //     sendMessageToPlayCanvas(
+            //       "product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/Bar_1756732230450.glb"
+            //     );
+            //   }
+            // });
+
+            //Send messages for each design
+            // const designToIndices = {};
+            // savedCables.forEach((cable, index) => {
+            //   if (!designToIndices[cable.design]) designToIndices[cable.design] = [];
+            //   designToIndices[cable.design].push(index);
+            // });
+            // Object.entries(designToIndices).forEach(([design, indices]) => {
+            //   sendMessagesForDesign(design, indices.length === 1 ? indices[0] : indices);
+            // });
+
+          savedCables.forEach((cable, index) => {
+            sendMessagesForDesignOnReload(cable.design, index);
+          });
+          sendMessageToPlayCanvas("allmodelsloaded");
           // sendMessagesForDesign("fina", 0);
           // Send lighting messages with delays
           setTimeout(
@@ -1062,7 +1069,29 @@ const ConfiguratorLayout = () => {
       sendMessageToPlayCanvas("allmodelsloaded");
     }
   };
+ 
+  const sendMessagesForDesignOnReload = (designName, id) => {
+    const assignment = systemAssignments.find((a) => a.design === designName);
+    if (!assignment) return;
 
+    // Helper to send all messages for a single id
+    const sendAllMessages = (id) => {
+      if (assignment.systemType === "bar") {
+        sendMessageToPlayCanvas("barextra");
+      }
+      sendMessageToPlayCanvas(`cable_${id}`);
+      sendMessageToPlayCanvas(
+        `glass_${assignment.hasGlass ? "attached" : "none"}`
+      );
+      sendMessageToPlayCanvas(`color_${assignment.hasGold ? "gold" : "none"}`);
+      sendMessageToPlayCanvas(
+        `silver_${assignment.hasSilver ? "attached" : "none"}`
+      );
+      sendMessageToPlayCanvas(`product_${assignment.media?.model?.url}`);
+      sendMessageToPlayCanvas(`${assignment.message}`);
+    };
+    sendAllMessages(id);
+  };
   // Save configuration function
   const handleSaveConfig = (configParam, cablesParam) => {
     // Check if user is logged in
