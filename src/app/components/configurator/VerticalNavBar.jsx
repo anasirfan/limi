@@ -178,10 +178,8 @@ const VerticalNavBar = ({
           setOpenBase(false);
           // 1. Open the pendant selection step
           setActiveStep("pendantSelection");
-          setActiveStep("baseColor");
-
-          setOpenDropdown("baseColor");
-          handleSetActiveTab("connector");
+          
+          
           setIsLightingPanelOpen(true);
           // 2. Select the pendant with the extracted id
           setSelectedPendants([cableId]);
