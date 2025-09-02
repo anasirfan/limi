@@ -927,6 +927,7 @@ const ConfiguratorLayout = () => {
         },
       ]);
     } else {
+      sendMessageToPlayCanvas(`base_type:${baseType}`);
       sendMessageToPlayCanvas(`light_amount:1`);
       sendMessageToPlayCanvas(`system:${system.systemType}`);
       sendMessagesForDesign(design, 0);
