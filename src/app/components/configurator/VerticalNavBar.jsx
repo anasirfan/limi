@@ -181,7 +181,7 @@ const VerticalNavBar = ({
           
           
           setIsLightingPanelOpen(true);
-          // 2. Select the pendant with the extracted id
+          // 2. Select the pendant with the extracte
           setSelectedPendants([cableId]);
           // 3. Show the configuration type selector
           setTimeout(() => {
