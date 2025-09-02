@@ -553,35 +553,35 @@ const ConfiguratorLayout = () => {
           console.log("Loading saved configuration...");
 
           // Send messages with incremental delays
-          sendMessageToPlayCanvas(`light_type:ceiling`),
-            sendMessageToPlayCanvas(`base_type:round`),
-            sendMessageToPlayCanvas(`light_amount:1`),
-            sendMessageToPlayCanvas(`base_color:black`),
-          // sendMessageToPlayCanvas(`light_type:${savedConfig.lightType}`),
-          //   sendMessageToPlayCanvas(`base_type:${savedConfig.baseType}`),
-          //   sendMessageToPlayCanvas(`light_amount:${savedConfig.lightAmount}`),
-          //   sendMessageToPlayCanvas(`base_color:${savedConfig.baseColor}`),
-          //   savedCables.forEach((cable, index) => {
-          //     const system = systemAssignments.find(
-          //       (a) => a.design === cable.design
-          //     );
-          //     const hasBarSystem = system.systemType === "bar";
+          // sendMessageToPlayCanvas(`light_type:ceiling`),
+          //   sendMessageToPlayCanvas(`base_type:round`),
+          //   sendMessageToPlayCanvas(`light_amount:1`),
+          //   sendMessageToPlayCanvas(`base_color:black`),
+          sendMessageToPlayCanvas(`light_type:${savedConfig.lightType}`),
+            sendMessageToPlayCanvas(`base_type:${savedConfig.baseType}`),
+            sendMessageToPlayCanvas(`light_amount:${savedConfig.lightAmount}`),
+            sendMessageToPlayCanvas(`base_color:${savedConfig.baseColor}`),
+            savedCables.forEach((cable, index) => {
+              const system = systemAssignments.find(
+                (a) => a.design === cable.design
+              );
+              const hasBarSystem = system.systemType === "bar";
 
-          //     if (hasBarSystem) {
-          //       sendMessageToPlayCanvas(`cable_${index}`);
-          //       sendMessageToPlayCanvas("bars");
-          //       sendMessageToPlayCanvas("glass_none");
-          //       sendMessageToPlayCanvas("color_gold");
-          //       sendMessageToPlayCanvas("silver_none");
-          //       sendMessageToPlayCanvas(
-          //         "product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/Bar_1756732230450.glb"
-          //       );
-          //     }
-          //   });
-          // savedCables.forEach((cable, index) => {
-          //   sendMessagesForDesign(cable.design, index);
-          // });
-          sendMessagesForDesign("fina", 0);
+              if (hasBarSystem) {
+                sendMessageToPlayCanvas(`cable_${index}`);
+                sendMessageToPlayCanvas("bars");
+                sendMessageToPlayCanvas("glass_none");
+                sendMessageToPlayCanvas("color_gold");
+                sendMessageToPlayCanvas("silver_none");
+                sendMessageToPlayCanvas(
+                  "product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/Bar_1756732230450.glb"
+                );
+              }
+            });
+          savedCables.forEach((cable, index) => {
+            sendMessagesForDesign(cable.design, index);
+          });
+          // sendMessagesForDesign("fina", 0);
           // Send lighting messages with delays
           setTimeout(
             () =>
