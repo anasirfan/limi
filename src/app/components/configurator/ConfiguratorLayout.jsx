@@ -1034,6 +1034,13 @@ const ConfiguratorLayout = () => {
     );
     sendMessageToPlayCanvas(`product_${assignment.media?.model?.url}`);
     sendMessageToPlayCanvas(`${assignment.message}`);
+
+    if ( id === 2) {
+      sendMessageToPlayCanvas("allmodelsloaded");
+    }
+    if ( id === 5) {
+      sendMessageToPlayCanvas("allmodelsloaded");
+    }
   };
 
   // Save configuration function
