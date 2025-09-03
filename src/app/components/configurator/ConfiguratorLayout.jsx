@@ -825,6 +825,12 @@ const ConfiguratorLayout = () => {
   const handleConfigTypeSelection = (type) => {
     setConfiguringType(type);
     setShowTypeSelector(false);
+    
+    // Reset system type when selecting configuration type
+    if (type === "system" || type === null) {
+      setConfiguringSystemType(null);
+      setBreadcrumbPath([]);
+    }
 
     if (type === "pendant") {
       setBreadcrumbPath([
@@ -832,7 +838,7 @@ const ConfiguratorLayout = () => {
       ]);
     } else if (type === "system") {
       setBreadcrumbPath([{ id: "system", label: "System" }]);
-      setConfiguringSystemType("bar"); // Default system type
+      // Don't set a default system type - let user choose
     }
   };
 
@@ -853,6 +859,13 @@ const ConfiguratorLayout = () => {
 
   // Handle system type selection
   const handleIndividualSystemTypeSelection = (type) => {
+    // If type is null, reset to system type selection
+    if (type === null) {
+      setConfiguringSystemType(null);
+      setBreadcrumbPath([]);
+      return;
+    }
+    
     setConfiguringSystemType(type);
     setBreadcrumbPath([
       { id: "system", label: "System" },

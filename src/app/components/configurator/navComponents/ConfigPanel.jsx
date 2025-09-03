@@ -458,6 +458,12 @@ export const ConfigPanel = ({
       setAvailableShades([]);
       setLocalSelectedShade(null);
       setBarNavState({ showBarEngines: false, showBarOptions: false });
+      // Reset navigation state completely
+      setNavState({
+        level: 0,
+        path: [],
+        ids: {},
+      });
     }
   }, [configuringType, configuringSystemType]);
 
@@ -635,6 +641,12 @@ export const ConfigPanel = ({
           setAvailableShades([]);
           setLocalSelectedShade(null);
           setBarNavState({ showBarEngines: false, showBarOptions: false });
+          // Reset navigation state to ensure we show system type selection
+          setNavState({
+            level: 1,
+            path: ["system"],
+            ids: { system: true },
+          });
         }
         
         onSelectConfigurationType(itemId);

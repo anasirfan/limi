@@ -164,6 +164,9 @@ const VerticalNavBar = ({
       setActiveStep(null);
       setIsLightingPanelOpen(false);
       setCableMessage("");
+      
+      // Reset breadcrumb and navigation states
+      onBreadcrumbNavigation("home");
     });
     return cleanup;
   }, [cableMessage]);
