@@ -489,22 +489,25 @@ const ConfiguratorLayout = () => {
     //   toast.success("Configuration loaded successfully");
     // };
 
-    sendMessageToPlayCanvas(`light_type:${configData.config.light_type}`);
-    sendMessageToPlayCanvas(`base_type:${configData.config.base_type}`);
+    sendMessageToPlayCanvas(`light_type:${configData.config.light_type.toLowerCase()}`);
+    sendMessageToPlayCanvas(`base_type:${configData.config.base_type.toLowerCase()}`);
     sendMessageToPlayCanvas(`light_amount:${configData.config.light_amount}`);
     // sendMessageToPlayCanvas(`base_color:${configData.config.base_color}`);
     if (
       configData.config.cableConfig &&
       Array.isArray(configData.config.cableConfig)
     ) {
+      // Group cable indices by design
+      const designToIndices = {};
       configData.config.cableConfig.forEach((cable, index) => {
         if (cable.design) {
-          console.log("cable.design", cable.design);
-          setTimeout(
-            () => sendMessagesForDesign(cable.design, index),
-            700 + index * 300
-          );
+          if (!designToIndices[cable.design]) designToIndices[cable.design] = [];
+          designToIndices[cable.design].push(index);
         }
+      });
+      // Call sendMessagesForDesign for each unique design with all indices
+      Object.entries(designToIndices).forEach(([design, indices]) => {
+        sendMessagesForDesign(design, indices.length === 1 ? indices[0] : indices);
       });
     }
 
@@ -1429,7 +1432,7 @@ const ConfiguratorLayout = () => {
           setCables={setCables}
           sendMessagesForDesign={sendMessagesForDesign}
           cableMessage={cableMessage}
-          
+
           onStartTour={() => {
             if (typeof window !== "undefined" && window.startConfiguratorTour) {
               window.startConfiguratorTour();

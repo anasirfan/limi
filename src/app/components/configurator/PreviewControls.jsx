@@ -101,7 +101,7 @@ export const PreviewControls = ({
   // Close lighting panel when navigation guide is hovered
   useEffect(() => {
     // If lighting panel is open and info is hovered, close the panel
-    
+
     if (isLightingPanelOpen && isHovered) {
       setIsLightingPanelOpen(false);
     }
@@ -147,28 +147,28 @@ export const PreviewControls = ({
 
   // --- Replace your current brightness useEffect with this ---
   useEffect(() => {
-    if(lighting == true){
-    if (brightnessDebounceTimeout.current)
-      clearTimeout(brightnessDebounceTimeout.current);
-    brightnessDebounceTimeout.current = setTimeout(() => {
-      sendMessageToPlayCanvas("brightness:" + brightness);
-    });
-    return () => clearTimeout(brightnessDebounceTimeout.current);
+    if (lighting == true) {
+      if (brightnessDebounceTimeout.current)
+        clearTimeout(brightnessDebounceTimeout.current);
+      brightnessDebounceTimeout.current = setTimeout(() => {
+        sendMessageToPlayCanvas("brightness:" + brightness);
+      });
+      return () => clearTimeout(brightnessDebounceTimeout.current);
     }
   }, [brightness]);
 
   // --- Add this new useEffect for colorTemperature ---
   useEffect(() => {
-    if(lighting == true){
-    if (colorTempDebounceTimeout.current)
-      clearTimeout(colorTempDebounceTimeout.current);
-    colorTempDebounceTimeout.current = setTimeout(() => {
-      sendMessageToPlayCanvas(
-        "colorTemperature:" +
-          Math.round(2700 + (colorTemperature / 100) * (6500 - 2700))
-      );
-    });
-    return () => clearTimeout(colorTempDebounceTimeout.current);
+    if (lighting == true) {
+      if (colorTempDebounceTimeout.current)
+        clearTimeout(colorTempDebounceTimeout.current);
+      colorTempDebounceTimeout.current = setTimeout(() => {
+        sendMessageToPlayCanvas(
+          "colorTemperature:" +
+            Math.round(2700 + (colorTemperature / 100) * (6500 - 2700))
+        );
+      });
+      return () => clearTimeout(colorTempDebounceTimeout.current);
     }
   }, [colorTemperature]);
 
@@ -394,9 +394,11 @@ export const PreviewControls = ({
                     } transition-colors text-sm sm:text-base`}
                     size={16}
                   />
-                  <h3 className="text-white font-semibold text-sm sm:text-lg">Lighting</h3>
+                  <h3 className="text-white font-semibold text-sm sm:text-lg">
+                    Lighting
+                  </h3>
                 </div>
-                
+
                 {/* Mobile: Toggle in header, Desktop: Status indicator */}
                 <div className="flex items-center gap-2">
                   <button
@@ -410,7 +412,9 @@ export const PreviewControls = ({
                       const message = newState ? "lighting:on" : "lighting:off";
                       const iframe = document.getElementById("playcanvas-app");
                       if (iframe && iframe.contentWindow) {
-                        console.log(`Sending message to PlayCanvas: ${message}`);
+                        console.log(
+                          `Sending message to PlayCanvas: ${message}`
+                        );
                         iframe.contentWindow.postMessage(message, "*");
                         if (newState) {
                           // Also send brightness and color temperature when turning ON
@@ -437,7 +441,7 @@ export const PreviewControls = ({
                       } inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow-lg ring-0 transition-transform duration-300 ease-in-out`}
                     />
                   </button>
-                  
+
                   <div
                     className={`hidden sm:block w-2 h-2 rounded-full ${
                       lighting ? "bg-green-400" : "bg-red-400"
@@ -708,93 +712,135 @@ export const PreviewControls = ({
                     {/* Left Navigation Button */}
                     <button
                       onClick={() => {
-                        const container = document.querySelector('.wishlist-scroll');
-                        container.scrollBy({ left: -100, behavior: 'smooth' });
+                        const container =
+                          document.querySelector(".wishlist-scroll");
+                        container.scrollBy({ left: -100, behavior: "smooth" });
                       }}
                       className="absolute left-1 top-[35%] -translate-y-1/2 z-10 w-8 h-8 bg-gray-800/80 hover:bg-gray-700 rounded-full flex items-center justify-center text-white transition-colors"
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M15 19l-7-7 7-7"
+                        />
                       </svg>
                     </button>
-                    
-                    <div className="wishlist-scroll flex flex-nowrap overflow-x-auto  px-2 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                    {favorites.map((pendant) => {
-                      // Find full pendant/system object from shared data (by id or designId)
-                      console.log("pendant", pendant);
-                      console.log("systemAssignments", systemAssignments);
-                      const assignment = systemAssignments.find(
-                        (item) => pendant.id == item.design
-                      );
-                      return (
-                        <div
-                          key={pendant.id}
-                          className="group relative p-2 "
-                          onClick={() => {
-                           
-                            // Build a mapping of design to indices
-const designToIds = {};
-selectedPendants.forEach((idx) => {
-  const design = assignment.design; // Use the assignment's design
-  if (!designToIds[design]) designToIds[design] = [];
-  designToIds[design].push(idx);
-});
-// Call sendMessagesForDesign for each unique design
-Object.entries(designToIds).forEach(([design, ids]) => {
-  sendMessagesForDesign(design, ids.length === 1 ? ids[0] : ids);
-});
-// Update cables for all selected indices
-setCables((prev) => {
-  const updatedCables = [...prev];
-  selectedPendants.forEach((idx) => {
-    updatedCables[idx] = {
-      ...updatedCables[idx],
-      design: assignment.design,
-    };
-  });
-  return updatedCables;
-});
-                          }}
-                        >
-                          <div className="flex flex-col items-center text-center">
-                            <div className="relative h-14 w-14 rounded-full bg-gray-900 overflow-visible mb-1 group">
-                              <img
-                                src={assignment.media && assignment.media.image && assignment.media.image.url ? assignment.media.image.url : ""
-}
-                                alt={assignment.name}
-                                className="h-full w-full object-cover"
-                              />
-                              <button
-                                className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center bg-rose-500 rounded-full text-white text-xs font-bold hover:bg-rose-600 transition-colors"
-                                title="Remove from Wishlist"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  dispatch(removeFromFavoritesAndSync(assignment.design));
-                                }}
-                              >
-                                ×
-                              </button>
+
+                    <div
+                      className="wishlist-scroll flex flex-nowrap overflow-x-auto  px-2 scrollbar-hide"
+                      style={{
+                        scrollbarWidth: "none",
+                        msOverflowStyle: "none",
+                      }}
+                    >
+                      {favorites.map((pendant) => {
+                        // Find full pendant/system object from shared data (by id or designId)
+                        console.log("pendant", pendant);
+                        console.log("systemAssignments", systemAssignments);
+                        const assignment = systemAssignments.find(
+                          (item) => pendant.id == item.design
+                        );
+                        return (
+                          <div
+                            key={pendant.id}
+                            className="group relative p-2 "
+                            onClick={() => {
+                              // Build a mapping of design to indices
+                              const designToIds = {};
+                              selectedPendants.forEach((idx) => {
+                                const design = assignment.design; // Use the assignment's design
+                                if (!designToIds[design])
+                                  designToIds[design] = [];
+                                designToIds[design].push(idx);
+                              });
+                              // Call sendMessagesForDesign for each unique design
+                              Object.entries(designToIds).forEach(
+                                ([design, ids]) => {
+                                  sendMessagesForDesign(
+                                    design,
+                                    ids.length === 1 ? ids[0] : ids
+                                  );
+                                }
+                              );
+                              // Update cables for all selected indices
+                              setCables((prev) => {
+                                const updatedCables = [...prev];
+                                selectedPendants.forEach((idx) => {
+                                  updatedCables[idx] = {
+                                    ...updatedCables[idx],
+                                    design: assignment.design,
+                                  };
+                                });
+                                return updatedCables;
+                              });
+                            }}
+                          >
+                            <div className="flex flex-col items-center text-center">
+                              <div className="relative h-14 w-14 rounded-full bg-gray-900 overflow-visible mb-1 group">
+                                <img
+                                  src={
+                                    assignment.media &&
+                                    assignment.media.image &&
+                                    assignment.media.image.url
+                                      ? assignment.media.image.url
+                                      : ""
+                                  }
+                                  alt={assignment.name}
+                                  className="h-full w-full object-cover"
+                                />
+                                <button
+                                  className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center bg-rose-500 rounded-full text-white text-xs font-bold hover:bg-rose-600 transition-colors"
+                                  title="Remove from Wishlist"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    dispatch(
+                                      removeFromFavoritesAndSync(
+                                        assignment.design
+                                      )
+                                    );
+                                  }}
+                                >
+                                  ×
+                                </button>
+                              </div>
+                              <p className="text-xs font-medium text-white line-clamp-2 h-8 flex items-center">
+                                {/* Use assignment.design for pendant/system name */}
+                                {assignment ? assignment.design : pendant.name}
+                              </p>
                             </div>
-                            <p className="text-xs font-medium text-white line-clamp-2 h-8 flex items-center">
-                              {/* Use assignment.design for pendant/system name */}
-                              {assignment ? assignment.design : pendant.name}
-                            </p>
                           </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
                     </div>
-                    
+
                     {/* Right Navigation Button */}
                     <button
                       onClick={() => {
-                        const container = document.querySelector('.wishlist-scroll');
-                        container.scrollBy({ left: 100, behavior: 'smooth' });
+                        const container =
+                          document.querySelector(".wishlist-scroll");
+                        container.scrollBy({ left: 100, behavior: "smooth" });
                       }}
                       className="absolute right-1 top-[35%] -translate-y-1/2 z-10 w-8 h-8 bg-gray-800/80 hover:bg-gray-700 rounded-full flex items-center justify-center text-white transition-colors"
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5l7 7-7 7"
+                        />
                       </svg>
                     </button>
                   </div>
@@ -830,22 +876,22 @@ setCables((prev) => {
 
       {/* Onboarding CSS Animations */}
       <style jsx>{`
-      .noselect {
+        .noselect {
           user-select: none;
           -webkit-user-select: none;
           -ms-user-select: none;
           -moz-user-select: none;
         }
-        
+
         .scrollbar-hide {
           -ms-overflow-style: none;
           scrollbar-width: none;
         }
-        
+
         .scrollbar-hide::-webkit-scrollbar {
           display: none;
         }
-        
+
         @keyframes slideOnLine {
           0% {
             left: 50%;
