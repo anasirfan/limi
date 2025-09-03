@@ -1429,6 +1429,7 @@ const ConfiguratorLayout = () => {
           setCables={setCables}
           sendMessagesForDesign={sendMessagesForDesign}
           cableMessage={cableMessage}
+          
           onStartTour={() => {
             if (typeof window !== "undefined" && window.startConfiguratorTour) {
               window.startConfiguratorTour();

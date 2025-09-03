@@ -23,6 +23,41 @@ export const fetchFavorites = createAsyncThunk(
     return (data.wishlist || []).map(id => ({ id }));
   }
 );
+
+// Thunk to sync favorites with systemAssignments
+import { getSystemAssignments } from '../../components/configurator/pendantSystemData';
+
+export const syncFavoritesWithSystemAssignments = createAsyncThunk(
+  'favorites/syncFavoritesWithSystemAssignments',
+  async (favorites, thunkAPI) => {
+    // Get systemAssignments (array of objects with .design)
+    let systemAssignments = [];
+    try {
+      systemAssignments = await getSystemAssignments();
+    } catch (err) {
+      // fallback: don't filter if systemAssignments fails
+      return favorites;
+    }
+    const validDesigns = new Set(systemAssignments.map(a => a.design));
+    const filtered = favorites.filter(item => validDesigns.has(item.id));
+    // If any were filtered out, update the backend
+    if (filtered.length !== favorites.length) {
+      const token = getToken();
+      await fetch(API_BASE, {
+        method: 'POST',
+        headers: {
+          'Authorization': `${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ wishlist: filtered.map(item => item.id) }),
+      });
+    }
+    return filtered ;
+
+
+  }
+);
+
 export const updateFavorites = createAsyncThunk(
   'favorites/updateFavorites',
   async (favoritesArray, thunkAPI) => {
@@ -88,6 +123,16 @@ export const favoritesSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchFavorites.fulfilled, (state, action) => {
+        // Instead of setting items directly, trigger syncFavoritesWithSystemAssignments
+        // (handled in a thunk, not here)
+        state.items = action.payload; // temp, will be filtered by syncFavoritesWithSystemAssignments
+        localStorage.setItem('limiFavorites', JSON.stringify(state));
+      })
+      .addCase(syncFavoritesWithSystemAssignments.fulfilled, (state, action) => {
+        state.items = action.payload;
+        localStorage.setItem('limiFavorites', JSON.stringify(state));
+      })
+      .addCase(removeFromFavoritesAndSync.fulfilled, (state, action) => {
         state.items = action.payload;
         localStorage.setItem('limiFavorites', JSON.stringify(state));
       })
@@ -97,11 +142,15 @@ export const favoritesSlice = createSlice({
   }
 });
 
-export const removeFromFavoritesAndSync = (id) => (dispatch, getState) => {
-  dispatch(favoritesSlice.actions.removeFromFavorites(id));
-  const { items } = getState().favorites;
-  dispatch(updateFavorites(items));
-};
+export const removeFromFavoritesAndSync = createAsyncThunk(
+  'favorites/removeFromFavoritesAndSync',
+  async (id, thunkAPI) => {
+    thunkAPI.dispatch(favoritesSlice.actions.removeFromFavorites(id));
+    const { items } = thunkAPI.getState().favorites;
+    await thunkAPI.dispatch(updateFavorites(items));
+    return items;
+  }
+);
 
 
 

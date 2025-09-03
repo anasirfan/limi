@@ -21,6 +21,7 @@ import {
   removeFromFavoritesAndSync,
   clearFavorites,
   fetchFavorites,
+  syncFavoritesWithSystemAssignments,
 } from "../../redux/slices/favoritesSlice";
 import { motion, AnimatePresence } from "framer-motion";
 import { listenForAppReady1 } from "../../util/iframeCableMessageHandler";
@@ -45,6 +46,7 @@ export const PreviewControls = ({
   brightness,
   setBrightness,
   colorTemperature,
+  sendMessagesForDesign,
   setColorTemperature,
   lighting,
   setLighting,
@@ -136,7 +138,11 @@ export const PreviewControls = ({
   }, []);
 
   useEffect(() => {
-    dispatch(fetchFavorites());
+    dispatch(fetchFavorites()).then((action) => {
+      if (action.payload) {
+        dispatch(syncFavoritesWithSystemAssignments(action.payload));
+      }
+    });
   }, [dispatch]);
 
   // --- Replace your current brightness useEffect with this ---
@@ -725,25 +731,36 @@ export const PreviewControls = ({
                           key={pendant.id}
                           className="group relative p-2 "
                           onClick={() => {
-                            selectedPendants.forEach((idx) => {
-                              sendMessagesForDesign(pendant.id, idx);
-                              setCables((prev) => {
-                                const updatedCables = [...prev];
-                                updatedCables[idx] = {
-                                  isSystem: true,
-                                  systemType: assignment.systemType,
-                                  design: assignment.design,
-                                  designId: assignment.message,
-                                };
-                                return updatedCables;
-                              });
-                            });
+                           
+                            // Build a mapping of design to indices
+const designToIds = {};
+selectedPendants.forEach((idx) => {
+  const design = assignment.design; // Use the assignment's design
+  if (!designToIds[design]) designToIds[design] = [];
+  designToIds[design].push(idx);
+});
+// Call sendMessagesForDesign for each unique design
+Object.entries(designToIds).forEach(([design, ids]) => {
+  sendMessagesForDesign(design, ids.length === 1 ? ids[0] : ids);
+});
+// Update cables for all selected indices
+setCables((prev) => {
+  const updatedCables = [...prev];
+  selectedPendants.forEach((idx) => {
+    updatedCables[idx] = {
+      ...updatedCables[idx],
+      design: assignment.design,
+    };
+  });
+  return updatedCables;
+});
                           }}
                         >
                           <div className="flex flex-col items-center text-center">
                             <div className="relative h-14 w-14 rounded-full bg-gray-900 overflow-visible mb-1 group">
                               <img
-                                src={assignment.media && assignment.media.image && assignment.media.image.url ? assignment.media.image.url : ""}
+                                src={assignment.media && assignment.media.image && assignment.media.image.url ? assignment.media.image.url : ""
+}
                                 alt={assignment.name}
                                 className="h-full w-full object-cover"
                               />
