@@ -63,6 +63,11 @@ export const ConfigPanel = ({
         "showConfigurationTypeSelector",
         showConfigurationTypeSelector
       );
+      // Reset all state when panel is opened
+      setCurrentDesign(null);
+      setAvailableShades([]);
+      setLocalSelectedShade(null);
+      setBarNavState({ showBarEngines: false, showBarOptions: false });
       handleBreadcrumbNavigation("home");
     }
   }, [showConfigurationTypeSelector]);
@@ -446,6 +451,14 @@ export const ConfigPanel = ({
     if (configuringSystemType !== "bar") {
       setBarNavState({ showBarEngines: false, showBarOptions: false });
     }
+    
+    // Reset all state when configuringType becomes null (panel closed)
+    if (!configuringType) {
+      setCurrentDesign(null);
+      setAvailableShades([]);
+      setLocalSelectedShade(null);
+      setBarNavState({ showBarEngines: false, showBarOptions: false });
+    }
   }, [configuringType, configuringSystemType]);
 
   // Debug log for tracking props and state
@@ -615,6 +628,15 @@ export const ConfigPanel = ({
             sendMessageToPlayCanvas("Nobars");
           }
         }
+        
+        // Reset system type state when selecting system
+        if (itemId === "system") {
+          setCurrentDesign(null);
+          setAvailableShades([]);
+          setLocalSelectedShade(null);
+          setBarNavState({ showBarEngines: false, showBarOptions: false });
+        }
+        
         onSelectConfigurationType(itemId);
       };
       config.selectedItem = null;
@@ -707,6 +729,19 @@ export const ConfigPanel = ({
               sendMessageToPlayCanvas("Nobars");
             } else if (systemType === "ball") {
               sendMessageToPlayCanvas("Nobars");
+            } else if (systemType === "bar") {
+              // Fire the PlayCanvas messages when bar is selected
+              selectedPendants.forEach((id) => {
+                sendMessageToPlayCanvas(`cable_${id}`);
+                sendMessageToPlayCanvas("bars");
+                sendMessageToPlayCanvas("glass_none");
+                sendMessageToPlayCanvas("color_gold");
+                sendMessageToPlayCanvas("silver_none");
+                sendMessageToPlayCanvas(
+                  "product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/Bar_1756732230450.glb"
+                );
+              });
+              sendMessageToPlayCanvas("allmodelsloaded");
             }
           }
 
@@ -720,100 +755,58 @@ export const ConfigPanel = ({
           { id: "system", name: "System Type" },
         ];
       } else {
-        // Handle bar system with nested navigation
+        // Handle bar system - show bar options directly
         if (configuringSystemType === "bar") {
-          if (!barNavState.showBarEngines && !barNavState.showBarOptions) {
-            // Show "Bar Engines" option first
-            config.title = "Bar";
-            config.showBreadcrumb = true;
-            config.items = [
-              {
-                id: "bar-engines",
-                name: "Bar Engines",
-                image: "/images/configOptions/bar-engines.png",
-              },
-            ];
-            config.onItemSelect = (itemId) => {
-              if (itemId === "bar-engines") {
-                // Fire the two messages to PlayCanvas
-                selectedPendants.forEach((id) => {
-              
-                    sendMessageToPlayCanvas(`cable_${id}`);
-                    sendMessageToPlayCanvas("bars");
-                    sendMessageToPlayCanvas("glass_none");
-                    sendMessageToPlayCanvas("color_gold");
-                    sendMessageToPlayCanvas("silver_none");
-                    sendMessageToPlayCanvas(
-                      "product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/Bar_1756732230450.glb"
-                    );
-                 
-                });
-                sendMessageToPlayCanvas("allmodelsloaded");
+          config.title = "Add On";
+          config.showBreadcrumb = true;
 
-                // Show the bar options
-                setBarNavState({ showBarEngines: true, showBarOptions: true });
-              }
-            };
-            config.selectedItem = null;
-            config.breadcrumbItems = [
-              { id: "home", name: "icon-home" },
-              { id: "system", name: "System Type" },
-              { id: "bar", name: "Bar" },
-            ];
-          } else if (barNavState.showBarOptions) {
-            // Show actual bar options
-            config.title = "Add On";
-            config.showBreadcrumb = true;
+          // Get bar assignments and filter out "Luga" design
+          const systemTypeBases = (barAssignments || []).filter(
+            (base) => base.design !== "luga"
+          );
 
-            // Get bar assignments and filter out "Luga" design
-            const systemTypeBases = (barAssignments || []).filter(
-              (base) => base.design !== "luga"
+          // Create items with images from the type-specific folder, and attach shades if available
+          config.items = systemTypeBases.map((base) => {
+            const shades = checkForMultipleShades(
+              base.id,
+              configuringSystemType
             );
-
-            // Create items with images from the type-specific folder, and attach shades if available
-            config.items = systemTypeBases.map((base) => {
-              const shades = checkForMultipleShades(
-                base.id,
-                configuringSystemType
-              );
-              return {
-                id: base.design,
-                name: base.name,
-                image:
-                  base.media && base.media.image && base.media.image.url
-                    ? base.media.image.url
-                    : "",
-                baseNumber: base.baseNumber,
-                shades: shades || null,
-              };
-            });
-
-            config.onItemSelect = (itemId) => {
-              setCurrentDesign(itemId);
-              const selectedBase = config.items.find(
-                (item) => item.id === itemId
-              );
-              const shades = selectedBase && selectedBase.shades;
-              if (shades && shades.length > 0) {
-                setAvailableShades(shades);
-                setLocalSelectedShade(shades[0].id);
-                if (typeof onShadeSelect === "function") {
-                  onShadeSelect(itemId, shades[0].id, configuringSystemType, 0);
-                }
-              } else {
-                setAvailableShades([]);
-                setLocalSelectedShade(null);
-              }
-              onSystemBaseDesignChange(itemId);
+            return {
+              id: base.design,
+              name: base.name,
+              image:
+                base.media && base.media.image && base.media.image.url
+                  ? base.media.image.url
+                  : "",
+              baseNumber: base.baseNumber,
+              shades: shades || null,
             };
-            config.selectedItem = currentDesign;
-            config.breadcrumbItems = [
-              { id: "home", name: "icon-home" },
-              { id: "system", name: "System Type" },
-              { id: "bar", name: "Bar" },
-              { id: "bar-engines", name: "Add On" },
-            ];
-          }
+          });
+
+          config.onItemSelect = (itemId) => {
+            setCurrentDesign(itemId);
+            const selectedBase = config.items.find(
+              (item) => item.id === itemId
+            );
+            const shades = selectedBase && selectedBase.shades;
+            if (shades && shades.length > 0) {
+              setAvailableShades(shades);
+              setLocalSelectedShade(shades[0].id);
+              if (typeof onShadeSelect === "function") {
+                onShadeSelect(itemId, shades[0].id, configuringSystemType, 0);
+              }
+            } else {
+              setAvailableShades([]);
+              setLocalSelectedShade(null);
+            }
+            onSystemBaseDesignChange(itemId);
+          };
+          config.selectedItem = currentDesign;
+          config.breadcrumbItems = [
+            { id: "home", name: "icon-home" },
+            { id: "system", name: "System Type" },
+            { id: "bar", name: "Add On" },
+          ];
         } else {
           // System base design selection for other system types (ball, universal)
           config.title = `${
@@ -984,6 +977,11 @@ export const ConfigPanel = ({
     console.log("handleBreadcrumbNavigation", id);
     if (id === "home") {
       // Reset to configuration type selection (first level)
+      // Clear all system-related state
+      setCurrentDesign(null);
+      setAvailableShades([]);
+      setLocalSelectedShade(null);
+      setBarNavState({ showBarEngines: false, showBarOptions: false });
       onSelectConfigurationType(null);
       // Do NOT call onClose() as we want to keep the panel open
     } else if (id === "system" && navState.level === 2) {
@@ -994,7 +992,10 @@ export const ConfigPanel = ({
         path: ["system"],
         ids: { system: true },
       });
-      // Reset bar navigation state
+      // Reset bar navigation state and design selection
+      setCurrentDesign(null);
+      setAvailableShades([]);
+      setLocalSelectedShade(null);
       setBarNavState({ showBarEngines: false, showBarOptions: false });
       onSystemTypeSelection(null);
     } else if (id === "pendant") {
@@ -1003,14 +1004,10 @@ export const ConfigPanel = ({
         onSelectConfigurationType("pendant");
       }
     } else if (id === "bar" && configuringSystemType === "bar") {
-      // If we click on Bar breadcrumb, go back to showing "Bar Engines" option
-      setBarNavState({ showBarEngines: false, showBarOptions: false });
+      // If we click on Bar breadcrumb, reset to bar options view
       setCurrentDesign(null);
       setAvailableShades([]);
       setLocalSelectedShade(null);
-    } else if (id === "bar-engines" && configuringSystemType === "bar") {
-      // If we click on "Add On" breadcrumb, stay in bar options view
-      // This is already the current state, so no action needed
     } else if (
       configuringType === "system" &&
       (id === "universal" || id === "ball")
