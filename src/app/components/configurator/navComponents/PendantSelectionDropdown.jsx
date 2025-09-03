@@ -37,6 +37,7 @@ export const PendantSelectionDropdown = ({
   onSelectConfigurationType,
   onClose,
   cables,
+  sendMessageToPlayCanvas, // Add sendMessageToPlayCanvas prop
 }) => {
   // State to track active tab on mobile
   const [activeTab, setActiveTab] = useState("configure"); // 'configure' or 'design'
@@ -69,7 +70,6 @@ export const PendantSelectionDropdown = ({
   const handleCableSizeChange = (size, selectedCables) => {
     onCableSizeChange(size, selectedCables);
   };
-  console.log("cablessss", cables[0].design);
 
   return (
     <div
@@ -280,6 +280,7 @@ export const PendantSelectionDropdown = ({
               onCableSizeChange={handleCableSizeChange}
               currentShade={null}
               onClose={onClose}
+              sendMessageToPlayCanvas={sendMessageToPlayCanvas}
               className="max-sm:static max-sm:transform-none max-sm:w-full max-sm:h-auto max-sm:bg-transparent max-sm:shadow-none max-sm:border-0"
             />
           </div>

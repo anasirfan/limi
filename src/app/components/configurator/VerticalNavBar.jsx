@@ -115,11 +115,6 @@ const VerticalNavBar = ({
   useEffect(() => {
     const cleanup = listenForWallbaseColorMessages((data, event) => {
       // handle wallbaseColor message here
-      console.log(
-        "[ConfigPanel] Received wallbaseColor message:",
-        data,
-        event.data
-      );
       // Example: open a modal, update config, etc.
       setActiveStep("baseColor");
       setOpenDropdown("baseColor");
@@ -976,6 +971,7 @@ const VerticalNavBar = ({
                           selectedLocation={selectedPendants[0]}
                           onPendantDesignChange={onPendantDesignChange}
                           onSystemBaseDesignChange={onSystemBaseDesignChange}
+                          sendMessageToPlayCanvas={sendMessageToPlayCanvas}
                           onSelectConfigurationType={(type) => {
                             // This matches the original handleConfigTypeSelection function
                             setLocalConfiguringType(type);

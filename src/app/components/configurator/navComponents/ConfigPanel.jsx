@@ -736,12 +736,13 @@ export const ConfigPanel = ({
         ];
         config.onItemSelect = (systemType) => {
           // Fire specific messages for each system type
-          if (sendMessageToPlayCanvas) {
+        
             if (systemType === "universal") {
               sendMessageToPlayCanvas("Nobars");
             } else if (systemType === "ball") {
               sendMessageToPlayCanvas("Nobars");
             } else if (systemType === "bar") {
+              console.log("Firing bar messages for selectedPendants:", selectedPendants);
               // Fire the PlayCanvas messages when bar is selected
               selectedPendants.forEach((id) => {
                 sendMessageToPlayCanvas(`cable_${id}`);
@@ -754,9 +755,8 @@ export const ConfigPanel = ({
                 );
               });
               sendMessageToPlayCanvas("allmodelsloaded");
+        
             }
-          }
-
           // Call the parent handler to update state and send message to iframe
           onSystemTypeSelection(systemType);
         };
@@ -957,7 +957,6 @@ export const ConfigPanel = ({
                 setLocalSelectedShade(null);
               }
               onSystemBaseDesignChange(itemId);
-              console.log("onSystemBaseDesignChange", itemId);
             };
             config.selectedItem = currentDesign;
             config.breadcrumbItems = [
@@ -1072,7 +1071,6 @@ export const ConfigPanel = ({
   };
 
   const panelConfig = getPanelConfig();
-  console.log("panelConfig", panelConfig);
 
   // Determine if we're in mobile view based on the className prop
   const isMobileView = className.includes("max-sm:static");

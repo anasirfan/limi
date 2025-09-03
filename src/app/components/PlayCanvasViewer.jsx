@@ -80,7 +80,6 @@ const PlayCanvasViewer = ({
   // Send default selections when app is ready
   const sendDefaultSelections = () => {
     if(localSavedConfig){
-    console.log("localSavedConfig",localSavedConfig);
       sendConfigToPlayCanvas(localSavedConfig.config);
       localSavedCables?.forEach((cable, index) => {
         if(cable.systemType){

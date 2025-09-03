@@ -88,7 +88,6 @@ const ConfiguratorLayout = () => {
     });
     return savedConfig;
   });
-  console.log("cable selected", cableMessage);
   // Cables state with localStorage persistence
   const [cables, setCables] = useState(() => {
     return loadFromLocalStorage("lightCables", [
@@ -176,9 +175,7 @@ const ConfiguratorLayout = () => {
       const uniqueOrdered = parts
         .map((m) => parseInt(m, 10))
         .filter((n) => !Number.isNaN(n) && !seen.has(n) && seen.add(n));
-      // Log for debugging
-      console.log("[ConfigPanel] selectedcable message:", message);
-      console.log("[ConfigPanel] Extracted cable indices:", uniqueOrdered);
+   
       // Save to state
       setConfig((prev) => ({
         ...prev,
@@ -403,13 +400,7 @@ const ConfiguratorLayout = () => {
     const savedCables = loadFromLocalStorage("lightCables", null);
     setLocalSavedConfig(savedConfig);
     setLocalSavedCables(savedCables);
-    console.log("localSavedConfig", localSavedConfig);
-    console.log("localSavedCables", localSavedCables);
-    console.log("savedConfig", savedConfig);
-    console.log("savedCables", savedCables);
-
     if (!savedConfig || !savedCables) {
-      console.log("initializing with defaults");
       const initialPendants = getDefaultPendantAssignments(config.lightAmount);
       const initialSystems = getDefaultSystemAssignments(config.lightAmount);
       const system = getDefaultDesigns(config.lightAmount);
@@ -537,7 +528,6 @@ const ConfiguratorLayout = () => {
       // We don't need to update pendants or other details as they will be handled by the iframe messages
     }));
     setCables(configData.config.cableConfig);
-    console.log("cablessss", configData.config.cableConfig);
   };
  useEffect(() => {
   const handleMessageLoad = (event) => {
@@ -556,12 +546,9 @@ const ConfiguratorLayout = () => {
 
         // Load saved configuration if available
         const savedConfig = loadFromLocalStorage("lightConfig", null);
-        console.log("savedConfig", savedConfig);
 
         const savedCables = loadFromLocalStorage("lightCables", null);
-        console.log("savedCables", savedCables);
         if (savedConfig && savedCables) {
-          console.log("Loading saved configuration...");
 
           // Send messages with incremental delays
           // sendMessageToPlayCanvas(`light_type:ceiling`),
@@ -758,7 +745,6 @@ const ConfiguratorLayout = () => {
         design: system.design,
       }))
     );
-    console.log("lightcables", cables);
 
     // Send messages to iframe
     setTimeout(() => {

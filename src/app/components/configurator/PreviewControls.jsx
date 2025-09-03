@@ -74,7 +74,6 @@ export const PreviewControls = ({
 
   // Reset when favorites change
   useEffect(() => {
-    console.log("selectedPendants", selectedPendants);
     // No need for carousel state anymore
   }, [favorites, selectedPendants]);
   useEffect(() => {
@@ -127,7 +126,6 @@ export const PreviewControls = ({
 
   useEffect(() => {
     // Check if mobile device
-    console.log("favorites", favorites);
     const checkIfMobile = () => {
       setIsMobile(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent));
     };
@@ -742,8 +740,7 @@ export const PreviewControls = ({
                     >
                       {favorites.map((pendant) => {
                         // Find full pendant/system object from shared data (by id or designId)
-                        console.log("pendant", pendant);
-                        console.log("systemAssignments", systemAssignments);
+                    ;
                         const assignment = systemAssignments.find(
                           (item) => pendant.id == item.design
                         );
