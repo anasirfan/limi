@@ -539,11 +539,19 @@ const ConfiguratorLayout = () => {
     setCables(configData.config.cableConfig);
     console.log("cablessss", configData.config.cableConfig);
   };
+ useEffect(() => {
+  const handleMessageLoad = (event) => {
+    if (event.data === "loadingOff") {
+      setIsLoading(false);
+    }
+  };
+  window.addEventListener("message", handleMessageLoad);
+  return () => window.removeEventListener("message", handleMessageLoad);
+}, []);
   // Listen for app:ready1 message from PlayCanvas iframe
   useEffect(() => {
     const handleMessage = (event) => {
       if (event.data === "app:ready1") {
-        setIsLoading(false);
         playCanvasReadyRef.current = true;
 
         // Load saved configuration if available
