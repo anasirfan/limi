@@ -80,7 +80,7 @@ const CableItem = ({ designName, cableType, cableSize, additionalDetails }) => (
   </details>
 );
 
-export default function SavedConfigurations() {
+export default function SavedConfigurations({ isARView = false }) {
   const router = useRouter();
   const { user } = useSelector((state) => state.user);
   const [configurations, setConfigurations] = useState([]);
@@ -250,6 +250,7 @@ export default function SavedConfigurations() {
         </div>
 
         {/* Search and filters */}
+        {!isARView && (
         <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
           <div className="relative flex-1 sm:max-w-[250px]">
             <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -301,6 +302,7 @@ export default function SavedConfigurations() {
             </button>
           </div>
         </div>
+        )}
       </div>
 
       {isLoading ? (
@@ -313,6 +315,7 @@ export default function SavedConfigurations() {
           <p className="text-gray-500 text-sm mt-2">
             Create configurations in the configurator to see them here.
           </p>
+          {!isARView && (
           <div className="mt-4">
             <Link
               href="/configurator"
@@ -321,6 +324,7 @@ export default function SavedConfigurations() {
               <span>Go to Configurator</span>
             </Link>
           </div>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -361,6 +365,7 @@ export default function SavedConfigurations() {
 
                 <div className="flex flex-wrap gap-2">
                   <button
+                  id="open_id"
                     onClick={() => viewConfigDetails(config)}
                     className="flex-1 flex items-center justify-center gap-1 bg-[#54BB74] text-white px-3 py-2 rounded hover:bg-[#48a064] transition-colors"
                   >
@@ -368,8 +373,9 @@ export default function SavedConfigurations() {
                     <span className="text-sm">View</span>
                   </button>
 
+                  {!isARView && (
                   <button
-                    id="open_id"
+                  id="open_id"
                     onClick={() => viewInConfigurator(config._id)}
                     className="flex-1 flex items-center justify-center gap-1 bg-[#292929] border border-[#54BB74] text-[#54BB74] px-3 py-2 rounded hover:bg-[#54BB74] hover:text-white transition-colors"
                   >
@@ -379,7 +385,9 @@ export default function SavedConfigurations() {
                       Open
                     </span>
                   </button>
+                  )}
 
+                  {!isARView && (
                   <button
                     onClick={() => deleteConfiguration(config._id)}
                     className="flex items-center justify-center gap-1 bg-[#292929] border border-gray-700 text-white px-3 py-2 rounded hover:bg-red-600 hover:border-red-600 transition-colors"
@@ -391,6 +399,7 @@ export default function SavedConfigurations() {
                       <FaTrash />
                     )}
                   </button>
+                  )}
                 </div>
               </div>
             </motion.div>
@@ -478,6 +487,7 @@ export default function SavedConfigurations() {
                     </div>
 
                     <div className="flex flex-col space-y-3">
+                      {!isARView && (
                       <button
                         onClick={() => viewInConfigurator(selectedConfig._id)}
                         className="group flex items-center justify-center gap-2 bg-gradient-to-r from-[#54BB74] to-[#3e8e5a] text-white px-6 py-3 rounded-lg font-medium hover:opacity-90 transition-all duration-200 transform hover:-translate-y-0.5 shadow-lg hover:shadow-[#54BB74]/20"
@@ -485,7 +495,9 @@ export default function SavedConfigurations() {
                         <FaEdit className="h-4 w-4 transition-transform group-hover:scale-110" />
                         <span>Open in Configurator</span>
                       </button>
+                      )}
 
+                      {!isARView && (
                       <button
                         onClick={() => deleteConfiguration(selectedConfig._id)}
                         disabled={isDeleting}
@@ -503,6 +515,7 @@ export default function SavedConfigurations() {
                           </>
                         )}
                       </button>
+                      )}
                     </div>
                   </div>
                 </div>
