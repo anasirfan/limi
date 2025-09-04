@@ -381,28 +381,27 @@ export default function SavedConfigurations({ isARView = false }) {
                 </div>
 
                 <div className="flex flex-wrap gap-2">
+                {!isARView && (
                   <button
-                  id="open_id"
                     onClick={() => viewConfigDetails(config)}
                     className="flex-1 flex items-center justify-center gap-1 bg-[#54BB74] text-white px-3 py-2 rounded hover:bg-[#48a064] transition-colors"
                   >
                     <FaEye />
                     <span className="text-sm">View</span>
                   </button>
-
-                  {!isARView && (
+                )}
+            
                   <button
                   id="open_id"
                     onClick={() => viewInConfigurator(config._id)}
                     className="flex-1 flex items-center justify-center gap-1 bg-[#292929] border border-[#54BB74] text-[#54BB74] px-3 py-2 rounded hover:bg-[#54BB74] hover:text-white transition-colors"
                   >
                     <FaEdit />
-
                     <span id={config._id} className="text-sm">
                       Open
                     </span>
                   </button>
-                  )}
+                  
 
                   {!isARView && (
                   <button
