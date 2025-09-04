@@ -259,13 +259,14 @@ export default function SavedConfigurations({ isARView = false }) {
     <div>
       <ToastContainer position="top-right" autoClose={3000} />
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+      {!isARView && (
         <div>
           <h2 className="text-xl font-bold text-white">Saved Configurations</h2>
           <p className="text-gray-400 text-sm">
             View and manage your saved lighting configurations
           </p>
         </div>
-
+      )}
         {/* Search and filters */}
         {!isARView && (
           <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
