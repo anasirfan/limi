@@ -509,12 +509,12 @@ export const PreviewControls = ({
                     <label className="text-gray-200 font-medium text-xs sm:text-base">
                       Color Temp
                     </label>
-                    <span className="text-xs px-1.5 py-0.5 sm:px-2 sm:py-1 rounded text-white font-medium">
+                    {/* <span className="text-xs px-1.5 py-0.5 sm:px-2 sm:py-1 rounded text-white font-medium">
                       {Math.round(
                         2700 + (colorTemperature / 100) * (6500 - 2700)
                       )}
                       K
-                    </span>
+                    </span> */}
                   </div>
                   <div className="relative">
                     <input
@@ -528,17 +528,17 @@ export const PreviewControls = ({
                       className="w-full h-2.5 sm:h-3 rounded-lg appearance-none cursor-pointer slider-enhanced"
                       style={{
                         background: `linear-gradient(to right, 
-                          #fb923c 0%, 
+                          #60a5fa 0%, 
                           #fde047 50%, 
-                          #60a5fa 100%
+                          #fb923c 100%
                         )`,
                         boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
                       }}
                     />
                     <div className="hidden sm:flex justify-between text-xs text-gray-400 mt-2">
-                      <span>Warm</span>
-                      <span>Neutral</span>
                       <span>Cool</span>
+                      <span>Neutral</span>
+                      <span>Warm</span>
                     </div>
                   </div>
                 </div>
@@ -740,7 +740,6 @@ export const PreviewControls = ({
                     >
                       {favorites.map((pendant) => {
                         // Find full pendant/system object from shared data (by id or designId)
-                    ;
                         const assignment = systemAssignments.find(
                           (item) => pendant.id == item.design
                         );

@@ -100,7 +100,7 @@ export default function SavedConfigurations({ isARView = false }) {
   useEffect(() => {
     if (isARView) {
       const urlParams = new URLSearchParams(window.location.search);
-      const urlToken = urlParams.get('token');
+      const urlToken = urlParams.get("token");
       if (urlToken) {
         setIsFetchingByToken(true);
         dispatch(fetchUserByToken(urlToken)).finally(() => {
@@ -268,57 +268,57 @@ export default function SavedConfigurations({ isARView = false }) {
 
         {/* Search and filters */}
         {!isARView && (
-        <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-          <div className="relative flex-1 sm:max-w-[250px]">
-            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <FaSearch className="text-gray-500" />
+          <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+            <div className="relative flex-1 sm:max-w-[250px]">
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <FaSearch className="text-gray-500" />
+              </div>
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="bg-[#292929] text-white w-full pl-10 pr-4 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-[#54BB74]"
+                placeholder="Search configurations..."
+              />
             </div>
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="bg-[#292929] text-white w-full pl-10 pr-4 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-[#54BB74]"
-              placeholder="Search configurations..."
-            />
-          </div>
 
-          <div className="flex gap-2">
-            <div className="relative">
+            <div className="flex gap-2">
+              <div className="relative">
+                <button
+                  onClick={() => setShowFilterDropdown(!showFilterDropdown)}
+                  className="flex items-center gap-2 bg-[#292929] text-white px-3 py-2 rounded-md hover:bg-[#333] transition-colors"
+                >
+                  <FaFilter />
+                  <span className="text-sm">
+                    {filterStatus === "all" ? "All" : filterStatus}
+                  </span>
+                  <FaChevronDown className="text-xs" />
+                </button>
+                {showFilterDropdown && (
+                  <div className="absolute top-full right-0 mt-1 bg-[#292929] rounded-md shadow-lg z-10 w-40 py-1">
+                    <button
+                      onClick={() => {
+                        setFilterStatus("all");
+                        setShowFilterDropdown(false);
+                      }}
+                      className="w-full text-left px-4 py-2 text-white hover:bg-[#333] transition-colors"
+                    >
+                      All
+                    </button>
+                  </div>
+                )}
+              </div>
+
               <button
-                onClick={() => setShowFilterDropdown(!showFilterDropdown)}
+                onClick={toggleSortOrder}
                 className="flex items-center gap-2 bg-[#292929] text-white px-3 py-2 rounded-md hover:bg-[#333] transition-colors"
               >
-                <FaFilter />
-                <span className="text-sm">
-                  {filterStatus === "all" ? "All" : filterStatus}
-                </span>
-                <FaChevronDown className="text-xs" />
+                <FaSortAmountDown
+                  className={sortOrder === "desc" ? "" : "rotate-180"}
+                />
               </button>
-              {showFilterDropdown && (
-                <div className="absolute top-full right-0 mt-1 bg-[#292929] rounded-md shadow-lg z-10 w-40 py-1">
-                  <button
-                    onClick={() => {
-                      setFilterStatus("all");
-                      setShowFilterDropdown(false);
-                    }}
-                    className="w-full text-left px-4 py-2 text-white hover:bg-[#333] transition-colors"
-                  >
-                    All
-                  </button>
-                </div>
-              )}
             </div>
-
-            <button
-              onClick={toggleSortOrder}
-              className="flex items-center gap-2 bg-[#292929] text-white px-3 py-2 rounded-md hover:bg-[#333] transition-colors"
-            >
-              <FaSortAmountDown
-                className={sortOrder === "desc" ? "" : "rotate-180"}
-              />
-            </button>
           </div>
-        </div>
         )}
       </div>
 
@@ -333,14 +333,14 @@ export default function SavedConfigurations({ isARView = false }) {
             Create configurations in the configurator to see them here.
           </p>
           {!isARView && (
-          <div className="mt-4">
-            <Link
-              href="/configurator"
-              className="inline-flex items-center gap-2 bg-[#54BB74] text-white px-4 py-2 rounded-md hover:bg-[#48a064] transition-colors"
-            >
-              <span>Go to Configurator</span>
-            </Link>
-          </div>
+            <div className="mt-4">
+              <Link
+                href="/configurator"
+                className="inline-flex items-center gap-2 bg-[#54BB74] text-white px-4 py-2 rounded-md hover:bg-[#48a064] transition-colors"
+              >
+                <span>Go to Configurator</span>
+              </Link>
+            </div>
           )}
         </div>
       ) : (
@@ -381,18 +381,18 @@ export default function SavedConfigurations({ isARView = false }) {
                 </div>
 
                 <div className="flex flex-wrap gap-2">
-                {!isARView && (
+                  {!isARView && (
+                    <button
+                      onClick={() => viewConfigDetails(config)}
+                      className="flex-1 flex items-center justify-center gap-1 bg-[#54BB74] text-white px-3 py-2 rounded hover:bg-[#48a064] transition-colors"
+                    >
+                      <FaEye />
+                      <span className="text-sm">View</span>
+                    </button>
+                  )}
+                  
                   <button
-                    onClick={() => viewConfigDetails(config)}
-                    className="flex-1 flex items-center justify-center gap-1 bg-[#54BB74] text-white px-3 py-2 rounded hover:bg-[#48a064] transition-colors"
-                  >
-                    <FaEye />
-                    <span className="text-sm">View</span>
-                  </button>
-                )}
-            
-                  <button
-                  id="open_id"
+                    id="open_id"
                     onClick={() => viewInConfigurator(config._id)}
                     className="flex-1 flex items-center justify-center gap-1 bg-[#292929] border border-[#54BB74] text-[#54BB74] px-3 py-2 rounded hover:bg-[#54BB74] hover:text-white transition-colors"
                   >
@@ -401,20 +401,19 @@ export default function SavedConfigurations({ isARView = false }) {
                       Open
                     </span>
                   </button>
-                  
 
                   {!isARView && (
-                  <button
-                    onClick={() => deleteConfiguration(config._id)}
-                    className="flex items-center justify-center gap-1 bg-[#292929] border border-gray-700 text-white px-3 py-2 rounded hover:bg-red-600 hover:border-red-600 transition-colors"
-                    disabled={isDeleting}
-                  >
-                    {isDeleting ? (
-                      <FaSpinner className="animate-spin" />
-                    ) : (
-                      <FaTrash />
-                    )}
-                  </button>
+                    <button
+                      onClick={() => deleteConfiguration(config._id)}
+                      className="flex items-center justify-center gap-1 bg-[#292929] border border-gray-700 text-white px-3 py-2 rounded hover:bg-red-600 hover:border-red-600 transition-colors"
+                      disabled={isDeleting}
+                    >
+                      {isDeleting ? (
+                        <FaSpinner className="animate-spin" />
+                      ) : (
+                        <FaTrash />
+                      )}
+                    </button>
                   )}
                 </div>
               </div>
@@ -504,33 +503,35 @@ export default function SavedConfigurations({ isARView = false }) {
 
                     <div className="flex flex-col space-y-3">
                       {!isARView && (
-                      <button
-                        onClick={() => viewInConfigurator(selectedConfig._id)}
-                        className="group flex items-center justify-center gap-2 bg-gradient-to-r from-[#54BB74] to-[#3e8e5a] text-white px-6 py-3 rounded-lg font-medium hover:opacity-90 transition-all duration-200 transform hover:-translate-y-0.5 shadow-lg hover:shadow-[#54BB74]/20"
-                      >
-                        <FaEdit className="h-4 w-4 transition-transform group-hover:scale-110" />
-                        <span>Open in Configurator</span>
-                      </button>
+                        <button
+                          onClick={() => viewInConfigurator(selectedConfig._id)}
+                          className="group flex items-center justify-center gap-2 bg-gradient-to-r from-[#54BB74] to-[#3e8e5a] text-white px-6 py-3 rounded-lg font-medium hover:opacity-90 transition-all duration-200 transform hover:-translate-y-0.5 shadow-lg hover:shadow-[#54BB74]/20"
+                        >
+                          <FaEdit className="h-4 w-4 transition-transform group-hover:scale-110" />
+                          <span>Open in Configurator</span>
+                        </button>
                       )}
 
                       {!isARView && (
-                      <button
-                        onClick={() => deleteConfiguration(selectedConfig._id)}
-                        disabled={isDeleting}
-                        className="group flex items-center justify-center gap-2 bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-3 rounded-lg font-medium hover:opacity-90 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
-                      >
-                        {isDeleting ? (
-                          <>
-                            <FaSpinner className="h-4 w-4 animate-spin" />
-                            <span>Deleting...</span>
-                          </>
-                        ) : (
-                          <>
-                            <FaTrash className="h-4 w-4 transition-transform group-hover:scale-110" />
-                            <span>Delete Configuration</span>
-                          </>
-                        )}
-                      </button>
+                        <button
+                          onClick={() =>
+                            deleteConfiguration(selectedConfig._id)
+                          }
+                          disabled={isDeleting}
+                          className="group flex items-center justify-center gap-2 bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-3 rounded-lg font-medium hover:opacity-90 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
+                        >
+                          {isDeleting ? (
+                            <>
+                              <FaSpinner className="h-4 w-4 animate-spin" />
+                              <span>Deleting...</span>
+                            </>
+                          ) : (
+                            <>
+                              <FaTrash className="h-4 w-4 transition-transform group-hover:scale-110" />
+                              <span>Delete Configuration</span>
+                            </>
+                          )}
+                        </button>
                       )}
                     </div>
                   </div>

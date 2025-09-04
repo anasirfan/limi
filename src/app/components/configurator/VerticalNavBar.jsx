@@ -507,7 +507,7 @@ const VerticalNavBar = ({
 
   const startInteractiveTour = () => {
     console.log("🚀 Starting interactive tour...");
-
+    sendMessageToPlayCanvas(`guidedtourstarted`);
     // First, set the tour state to active
     setTourState((prev) => {
       const newState = {
@@ -550,6 +550,7 @@ const VerticalNavBar = ({
   };
 
   const stopTour = () => {
+    sendMessageToPlayCanvas(`guidedtourended`);
     setTourState((prev) => ({
       ...prev,
       isActive: false,
@@ -1356,13 +1357,43 @@ function TourOverlay({
         left: rect.left - 320, // Position tooltip to the left
       });
 
-      // Find the dropdown content area
-      const dropdownElement = el.parentElement?.querySelector('.p-4') || 
-                              el.parentElement?.querySelector('[style*="padding"]') ||
-                              el.parentElement?.querySelector('div[style]');
-      if (dropdownElement) {
+      // Find the dropdown content area - only if dropdown is actually open
+      let dropdownElement = el.parentElement?.querySelector('.p-4') || 
+                            el.parentElement?.querySelector('[style*="padding"]') ||
+                            el.parentElement?.querySelector('div[style]');
+      
+      // Special case for pendantSelection - look for ConfigPanel
+      if (step.id === 'pendantSelection') {
+        const configPanel = document.querySelector('div[class*="fixed"][class*="bottom-0"], div[class*="absolute"][class*="bottom-1"]');
+        if (configPanel && configPanel.offsetHeight > 0 && configPanel.offsetWidth > 0) {
+          const configBounds = configPanel.getBoundingClientRect();
+          setDropdownRect(configBounds);
+          return;
+        }
+      }
+      
+      // Check if dropdown is visible and if the parent dropdown is actually open
+      const parentDropdown = el.parentElement;
+      const isDropdownOpen = parentDropdown && (
+        parentDropdown.style.display !== 'none' &&
+        parentDropdown.offsetHeight > 0 &&
+        parentDropdown.offsetWidth > 0 &&
+        !parentDropdown.hasAttribute('hidden') &&
+        !parentDropdown.classList.contains('hidden')
+      );
+      
+      // Also check if the dropdown content itself is visible
+      const isContentVisible = dropdownElement && 
+        dropdownElement.offsetHeight > 0 && 
+        dropdownElement.offsetWidth > 0 &&
+        getComputedStyle(dropdownElement).visibility !== 'hidden' &&
+        getComputedStyle(dropdownElement).display !== 'none';
+      
+      if (isContentVisible && isDropdownOpen) {
         const dropdownBounds = dropdownElement.getBoundingClientRect();
         setDropdownRect(dropdownBounds);
+      } else {
+        setDropdownRect(null);
       }
     }
   }, [step]);
@@ -1371,7 +1402,7 @@ function TourOverlay({
 
   return createPortal(
     <>
-      {/* Background Overlay with dropdown cutout */}
+      {/* Background Overlay with dropdown cutout and center spotlight */}
       <svg
         className="fixed inset-0 z-[10000] pointer-events-none"
         width={typeof window !== "undefined" ? window.innerWidth : 0}
@@ -1385,8 +1416,21 @@ function TourOverlay({
         aria-hidden="true"
       >
         <defs>
+          <radialGradient id="center-spotlight" cx="50%" cy="50%" r="25%">
+            <stop offset="0%" stopColor="white" stopOpacity="0.3" />
+            <stop offset="70%" stopColor="white" stopOpacity="0.1" />
+            <stop offset="100%" stopColor="white" stopOpacity="0" />
+          </radialGradient>
           <mask id="dropdown-cutout-mask">
             <rect x="0" y="0" width="100%" height="100%" fill="white" />
+            {/* Center spotlight cutout */}
+            <circle
+              cx="50%"
+              cy="50%"
+              r="200"
+              fill="black"
+              opacity="0.7"
+            />
             {dropdownRect && (
               <rect
                 x={dropdownRect.left - 1}
@@ -1409,87 +1453,67 @@ function TourOverlay({
           style={{ backdropFilter: "blur(4px)", pointerEvents: "none" }}
           mask="url(#dropdown-cutout-mask)"
         />
+        {/* Center spotlight overlay */}
+        <circle
+          cx="50%"
+          cy="50%"
+          r="200"
+          fill="url(#center-spotlight)"
+          style={{ pointerEvents: "none" }}
+        />
       </svg>
 
 
       {/* Tour Tooltip */}
       <div
-        className="fixed z-[10020] bg-gradient-to-br from-white to-gray-50 text-gray-800 rounded-xl shadow-2xl px-6 py-5 flex flex-col gap-3 w-[300px] animate-fadeIn border border-gray-100"
+        className="fixed z-[10020] bg-white text-gray-800 rounded-lg shadow-lg px-4 py-3 w-[240px] sm:w-[240px] animate-fadeIn border border-gray-200"
         style={{
-          top: Math.max(tooltipPos.top - 100, 24),
-          left: Math.max(tooltipPos.left - 300, 24),
+          ...(typeof window !== "undefined" && window.innerWidth < 640 
+            ? {
+                bottom: "280px",
+                left: "30%",
+                transform: "translateX(-50%)",
+                top: "auto"
+              }
+            : {
+                top: Math.max(tooltipPos.top - 80, 24),
+                left: Math.max(tooltipPos.left - 240, 24),
+                transform: "none",
+                bottom: "auto"
+              }
+          ),
           pointerEvents: "auto",
         }}
         role="dialog"
         aria-modal="true"
       >
         {/* Header */}
-        <div className="flex justify-between items-center">
-          <div className="flex-1">
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-gray-900 text-lg">
-                {step.title}
-              </span>
-              <span className="text-xs bg-emerald-100 text-emerald-600 px-2 py-0.5 rounded-full">
-                Step {stepIndex + 1} of {totalSteps}
-              </span>
-            </div>
-            {/* Progress bar */}
-            <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
-              <div
-                className="bg-emerald-500 h-1.5 rounded-full transition-all duration-300 ease-out"
-                style={{
-                  width: `${((stepIndex + 1) / totalSteps) * 100}%`,
-                }}
-              />
-            </div>
-          </div>
+        <div className="flex justify-between items-center mb-2">
+          <span className="font-semibold text-gray-900 text-sm">
+            {step.title}
+          </span>
           <button
             onClick={onSkip}
-            className="ml-2 p-1.5 rounded-full hover:bg-gray-100 transition-colors duration-200 text-gray-500 hover:text-gray-700"
+            className="p-1 rounded hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-600"
             aria-label="Skip tour"
           >
-            <FiX size={18} />
+            <FiX size={14} />
           </button>
         </div>
 
         {/* Description */}
-        <div className="text-sm text-gray-600 leading-relaxed">
+        <div className="text-xs text-gray-600 mb-3">
           {step.description}
         </div>
 
-        {/* Interactive instruction */}
-        <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3 mt-3">
-          <div className="text-sm font-medium text-emerald-800 mb-1">
-            What to do:
-          </div>
-          <div className="text-sm text-emerald-700">{step.instruction}</div>
-        </div>
-
-        {/* User interaction status */}
-        <div className="flex items-center justify-between gap-3 mt-3">
-          {waitingForUser ? (
-            <div className="flex items-center gap-2 text-xs text-blue-600">
-              <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-              <span>Waiting for your selection...</span>
-            </div>
-          ) : userCompletedStep ? (
-            <div className="flex items-center gap-2 text-xs text-green-600">
-              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span>Great! Moving to next step...</span>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2 text-xs text-gray-500">
-              <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-              <span>Getting ready...</span>
-            </div>
-          )}
-
+        {/* Progress indicator */}
+        <div className="flex items-center justify-between text-xs text-gray-500">
+          <span>{stepIndex + 1} of {totalSteps}</span>
           <button
             onClick={onSkip}
-            className="px-4 py-2 rounded-lg font-medium text-sm text-gray-600 hover:bg-gray-100 transition-colors duration-200"
+            className="text-emerald-600 hover:text-emerald-700 font-medium"
           >
-            Skip Tour
+            Skip
           </button>
         </div>
       </div>
