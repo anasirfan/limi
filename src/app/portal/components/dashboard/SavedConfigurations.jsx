@@ -5,8 +5,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
+import { fetchUserByToken } from "../../../redux/slices/userSlice";
 import "react-toastify/dist/ReactToastify.css";
 import {
   FaEye,
@@ -82,7 +83,9 @@ const CableItem = ({ designName, cableType, cableSize, additionalDetails }) => (
 
 export default function SavedConfigurations({ isARView = false }) {
   const router = useRouter();
+  const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
+  const [isFetchingByToken, setIsFetchingByToken] = useState(false);
   const [configurations, setConfigurations] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -92,6 +95,20 @@ export default function SavedConfigurations({ isARView = false }) {
   const [filterStatus, setFilterStatus] = useState("all");
   const [selectedConfig, setSelectedConfig] = useState(null);
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+
+  // Token-based auto-login for AR view
+  useEffect(() => {
+    if (isARView) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlToken = urlParams.get('token');
+      if (urlToken) {
+        setIsFetchingByToken(true);
+        dispatch(fetchUserByToken(urlToken)).finally(() => {
+          setIsFetchingByToken(false);
+        });
+      }
+    }
+  }, [dispatch, isARView]);
 
   // Fetch configurations when component mounts
   useEffect(() => {
