@@ -42,6 +42,7 @@ const ConfiguratorLayout = () => {
   const [selectedCableIndices, setSelectedCableIndices] = useState([]);
   const [cableMessage, setCableMessage] = useState("");
   const [isLightingPanelOpen, setIsLightingPanelOpen] = useState(false);
+  const [showPendantLoadingScreen, setShowPendantLoadingScreen] = useState(false);
 
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
@@ -1439,6 +1440,8 @@ const ConfiguratorLayout = () => {
           setCables={setCables}
           sendMessagesForDesign={sendMessagesForDesign}
           cableMessage={cableMessage}
+          showPendantLoadingScreen={showPendantLoadingScreen}
+          setShowPendantLoadingScreen={setShowPendantLoadingScreen}
 
           onStartTour={() => {
             if (typeof window !== "undefined" && window.startConfiguratorTour) {
@@ -1490,6 +1493,8 @@ const ConfiguratorLayout = () => {
               onShadeSelect={handleShadeSelect}
               setCableMessage={setCableMessage}
               sendMessageToPlayCanvas={sendMessageToPlayCanvas}
+              setShowPendantLoadingScreen={setShowPendantLoadingScreen}
+
             />
           )}
 

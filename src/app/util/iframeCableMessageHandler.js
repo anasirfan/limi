@@ -115,3 +115,15 @@ export function listenForConnectorColorMessages(callback) {
   // Return cleanup
   return () => window.removeEventListener("message", handleMessage);
 }
+
+// Listen for loading screen messages
+export function listenForLoadingMessages(callback) {
+  function handleMessage(event) {
+    if (typeof event.data === "string" && event.data === "loadingOff") {
+      callback(event.data, event);
+    }
+  }
+  window.addEventListener("message", handleMessage);
+  // Return cleanup
+  return () => window.removeEventListener("message", handleMessage);
+}

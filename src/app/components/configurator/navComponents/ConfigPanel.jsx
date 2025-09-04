@@ -32,6 +32,7 @@ export const ConfigPanel = ({
   showConfigurationTypeSelector,
   onBreadcrumbNavigation,
   onSystemTypeSelection,
+  setShowPendantLoadingScreen,
   selectedLocation,
   selectedPendants,
   cables, // Add cables prop
@@ -702,6 +703,8 @@ export const ConfigPanel = ({
         baseNumber: pendant.baseNumber,
       }));
       config.onItemSelect = (itemId) => {
+        setShowPendantLoadingScreen(true);
+        
         setCurrentDesign(itemId);
         // Use all selected pendants if available, otherwise fall back to just the first one
         const pendantsToUpdate =
@@ -735,6 +738,7 @@ export const ConfigPanel = ({
           },
         ];
         config.onItemSelect = (systemType) => {
+         
           // Fire specific messages for each system type
         
             if (systemType === "universal") {
@@ -796,6 +800,8 @@ export const ConfigPanel = ({
           });
 
           config.onItemSelect = (itemId) => {
+            setShowPendantLoadingScreen(true);
+            console.log("showPendantLoadingScreen");
             setCurrentDesign(itemId);
             const selectedBase = config.items.find(
               (item) => item.id === itemId
@@ -899,6 +905,8 @@ export const ConfigPanel = ({
             } else {
               // Show base options
               config.onItemSelect = (itemId) => {
+                setShowPendantLoadingScreen(true);
+                console.log("showPendantLoadingScreen");
                 setCurrentDesign(itemId);
                 const selectedBase = config.items.find(
                   (item) => item.id === itemId

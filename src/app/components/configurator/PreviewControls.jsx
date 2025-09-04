@@ -26,7 +26,8 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { listenForAppReady1 } from "../../util/iframeCableMessageHandler";
 import { systemAssignments } from "./pendantSystemData";
-import { listenForOffconfigMessages } from "../../util/iframeCableMessageHandler";
+import { listenForOffconfigMessages, listenForLoadingMessages } from "../../util/iframeCableMessageHandler";
+import LoadingScreen from "./LoadingScreen";
 
 export const PreviewControls = ({
   isPreviewMode,
@@ -43,6 +44,9 @@ export const PreviewControls = ({
   selectedPendants,
   selectedLocation,
   cableMessage,
+  showPendantLoadingScreen,
+  setShowPendantLoadingScreen,
+
   brightness,
   setBrightness,
   colorTemperature,
@@ -59,6 +63,7 @@ export const PreviewControls = ({
   const [currentSlide, setCurrentSlide] = useState(0);
   const [slidesToShow] = useState(3); // Number of items to show at once
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showLoadingScreen, setShowLoadingScreen] = useState(false);
   const brightnessDebounceTimeout = useRef();
   const colorTempDebounceTimeout = useRef();
   const prevLightingPanelWasOpenRef = useRef(false);
@@ -96,7 +101,21 @@ export const PreviewControls = ({
       }
     }
   }, []);
-
+  // Listen for 'loadingoff' message from iframe
+  useEffect(() => {
+    const cleanup = listenForLoadingMessages((msg) => {
+      if (msg === "loadingOff" || msg === "loadingoff") {
+        console.log(`🟢 Received '${msg}' message from iframe. Hiding loading screen.`);
+        setShowPendantLoadingScreen(false);
+        console.log("🟠 showPendantLoadingScreen should now be FALSE.");
+      } else {
+        console.log("🔵 Received loading message:", msg);
+      }
+    });
+    return () => {
+      if (typeof cleanup === 'function') cleanup();
+    };
+  }, [setShowPendantLoadingScreen]);
   // Close lighting panel when navigation guide is hovered
   useEffect(() => {
     // If lighting panel is open and info is hovered, close the panel
@@ -122,6 +141,18 @@ export const PreviewControls = ({
     });
     return cleanup;
   }, [cableMessage]);
+
+  // Listen for loading screen messages
+  useEffect(() => {
+    const cleanup = listenForLoadingMessages((message, event) => {
+      if (message === "loadingOpen") {
+        setShowLoadingScreen(true);
+      } else if (message === "loadingOff") {
+        setShowLoadingScreen(false);
+      }
+    });
+    return cleanup;
+  }, []);
   const guideRef = useRef(null);
 
   useEffect(() => {
@@ -942,6 +973,12 @@ export const PreviewControls = ({
           }
         }
       `}</style>
+
+      {/* Loading Screen */}
+      <LoadingScreen 
+        isVisible={showPendantLoadingScreen} 
+        onHide={() => setShowPendantLoadingScreen(false)}
+      />
     </div>
   );
 };

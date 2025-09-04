@@ -26,6 +26,7 @@ export const PendantSelectionDropdown = ({
   applyToAllPendants,
   getImageSrc,
   handleSaveConfig,
+  setShowPendantLoadingScreen,
   configuringType,
   configuringSystemType,
   breadcrumbPath,
@@ -280,6 +281,7 @@ export const PendantSelectionDropdown = ({
               onCableSizeChange={handleCableSizeChange}
               currentShade={null}
               onClose={onClose}
+              setShowPendantLoadingScreen={setShowPendantLoadingScreen}
               sendMessageToPlayCanvas={sendMessageToPlayCanvas}
               className="max-sm:static max-sm:transform-none max-sm:w-full max-sm:h-auto max-sm:bg-transparent max-sm:shadow-none max-sm:border-0"
             />

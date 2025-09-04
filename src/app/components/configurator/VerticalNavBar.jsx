@@ -59,6 +59,7 @@ const VerticalNavBar = ({
   containerDimensions,
   onShadeSelect, // Add onShadeSelect prop
   sendMessageToPlayCanvas, // Add sendMessageToPlayCanvas prop
+  setShowPendantLoadingScreen, // Add setShowPendantLoadingScreen prop
 }) => {
   // Define colors from LIMI brand palette
   const emerald = "#50C878";
@@ -947,6 +948,7 @@ const VerticalNavBar = ({
                       openDropdown === step?.id && (
                         <PendantSelectionDropdown
                           pendants={pendants}
+                          setShowPendantLoadingScreen={setShowPendantLoadingScreen}
                           selectedPendants={selectedPendants}
                           cables={cables} // Pass cables prop to child component
                           currentDesign={currentDesign}
@@ -1029,6 +1031,7 @@ const VerticalNavBar = ({
               onPendantDesignChange={onPendantDesignChange}
               onSystemBaseDesignChange={onSystemBaseDesignChange}
               onShadeSelect={onShadeSelect}
+              setShowPendantLoadingScreen={setShowPendantLoadingScreen}
               currentShade={null}
               showConfigurationTypeSelector={showConfigurationTypeSelector}
               sendMessageToPlayCanvas={sendMessageToPlayCanvas}
