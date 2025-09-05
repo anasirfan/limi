@@ -108,15 +108,15 @@ export const PreviewControls = ({
         // Ensure loading screen stays visible for at least 500ms
         if (!window.limiLoadingStartTime) window.limiLoadingStartTime = Date.now();
         const elapsed = Date.now() - window.limiLoadingStartTime;
-        if (elapsed < 500) {
-          setTimeout(() => {
-            setShowPendantLoadingScreen(false);
-            window.limiLoadingStartTime = null;
-          }, 500 - elapsed);
-        } else {
-          setShowPendantLoadingScreen(false);
-          window.limiLoadingStartTime = null;
-        }
+        // if (elapsed < 500) {
+        //   setTimeout(() => {
+        //     setShowPendantLoadingScreen(false);
+        //     window.limiLoadingStartTime = null;
+        //   }, 500 - elapsed);
+        // } else {
+        //   setShowPendantLoadingScreen(false);
+        //   window.limiLoadingStartTime = null;
+        // }
       } 
     });
     return () => {

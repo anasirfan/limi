@@ -865,6 +865,8 @@ const ConfiguratorLayout = () => {
     }
   };
 
+
+
   // Handle pendant design change
   const handlePendantDesignChange = useCallback(
     (pendantIds, design) => {
@@ -885,7 +887,7 @@ const ConfiguratorLayout = () => {
         });
         return updatedCables;
       });
-
+ 
       // This ensures we don't have race conditions between state updates and messaging
       setTimeout(() => {
         // Group pendants by design and send system type + messages per design
@@ -905,7 +907,22 @@ const ConfiguratorLayout = () => {
     },
     [config.lightAmount]
   );
+  useEffect(() => {
+    console.log("State:", showPendantLoadingScreen);  // Will show current state
+    setShowPendantLoadingScreen(true);
+    console.log("State after setState - won't show new value yet:", showPendantLoadingScreen);
+    
+    const timer = setTimeout(() => {
+      console.log("State after timeout - will show true:", showPendantLoadingScreen);
+      setShowPendantLoadingScreen(false);
+    }, 500);
+    
+    return () => clearTimeout(timer);
+  }, [handlePendantDesignChange]);
 
+  useEffect(() => {
+    console.log("State changed to:", showPendantLoadingScreen);
+  }, [showPendantLoadingScreen]);
   // Handle base type change
   const handleBaseTypeChange = useCallback((baseType) => {
     // Update config state
