@@ -130,7 +130,6 @@ const ConfiguratorLayout = () => {
       // Do something with the message, e.g. open UI, update state, etc.
       console.log("[ConfigPanel] Received cable message:", message, event.data);
    
-      // setIsCableModalOpen(true);
       setCableMessage(message);
     });
     return cleanup;
