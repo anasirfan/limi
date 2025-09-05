@@ -187,11 +187,11 @@ const MobileBottomMenu = ({
             {getTitle()}
           </h3>
           {/* Selected pendants info */}
-          {activeStep === 'pendantSelection' && selectedPendants && selectedPendants.length > 0 && (
+          {/* {activeStep === 'pendantSelection' && selectedPendants && selectedPendants.length > 0 && (
             <div className="text-emerald-400 text-sm mt-1">
               Selected: {selectedPendants.map(id => id + 1).join(', ')}
             </div>
-          )}
+          )} */}
         </div>
         <button
           onClick={onClose}

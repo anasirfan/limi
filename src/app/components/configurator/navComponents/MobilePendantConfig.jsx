@@ -197,9 +197,7 @@ const MobilePendantConfig = ({
     if (!localConfiguringType) {
       return (
         <div className="space-y-4">
-          <div className="text-white text-sm mb-4">
-            Choose configuration type
-          </div>
+      
 
           {/* Configuration type buttons with circular icons */}
           <div className="flex justify-center gap-8">
