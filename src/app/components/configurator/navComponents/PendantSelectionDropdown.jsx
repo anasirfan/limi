@@ -27,7 +27,6 @@ export const PendantSelectionDropdown = ({
   applyToAllPendants,
   getImageSrc,
   handleSaveConfig,
-  setShowPendantLoadingScreen,
   configuringType,
   configuringSystemType,
   breadcrumbPath,

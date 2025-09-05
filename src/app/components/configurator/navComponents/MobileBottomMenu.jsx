@@ -29,7 +29,6 @@ const MobileBottomMenu = ({
   pendants,
   setShowConfigurationTypeSelector,
   setLocalConfiguringType,
-  setShowPendantLoadingScreen,
   selectedPendants,
   cables,
   currentDesign,
@@ -138,7 +137,6 @@ const MobileBottomMenu = ({
             localConfiguringType={localConfiguringType}
             setLocalConfiguringType={setLocalConfiguringType}
             onSystemTypeSelection={onSystemTypeSelection}
-            setShowPendantLoadingScreen={setShowPendantLoadingScreen}
           />
         );
       

@@ -22,7 +22,6 @@ const MobilePendantConfig = ({
   localConfiguringType,
   setLocalConfiguringType,
   onSystemTypeSelection,
-  setShowPendantLoadingScreen,
 }) => {
   const [activeTab, setActiveTab] = useState('selection');
   const [configuringSystemType, setConfiguringSystemType] = useState(null);
@@ -101,7 +100,6 @@ const MobilePendantConfig = ({
 
   // Handle pendant design selection
   const handlePendantDesignSelection = (design) => {
-    setShowPendantLoadingScreen(true);
     setCurrentDesign(design);
     
     // Use all selected pendants if available, otherwise fall back to just the first one
