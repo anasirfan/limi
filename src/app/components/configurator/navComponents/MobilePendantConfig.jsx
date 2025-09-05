@@ -193,7 +193,7 @@ const MobilePendantConfig = ({
 
   // Render design options (pendant/system)
   const renderDesignOptions = () => {
-    // If no configuration type selected, show main options
+    // If no configuration type selected
     if (!localConfiguringType) {
       return (
         <div className="space-y-4">
