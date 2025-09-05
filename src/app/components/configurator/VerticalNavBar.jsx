@@ -1,31 +1,40 @@
 "use client";
-import { motion, AnimatePresence } from "framer-motion";
-import { useState, useRef, useEffect } from "react";
-// Add these imports at the top with other imports
-import { createPortal } from "react-dom";
-import {
-  FiX,
-  FiChevronLeft,
-  FiChevronRight,
-  FiHelpCircle,
-} from "react-icons/fi";
-import {
-  NavButton,
-  ProgressIndicator,
-  LightTypeDropdown,
-  BaseTypeDropdown,
-  LightAmountDropdown,
-  SystemTypeDropdown,
-  PendantSelectionDropdown,
-  SystemConfigurationDropdown,
-  SaveConfigurationModal,
-  useNavSteps,
-  useNavDropdown,
-  usePendantSelection,
-} from "./navComponents";
-import { IndividualConfigurationPanel } from "./navComponents/IndividualConfigurationPanel";
-import { ConfigPanel } from "./navComponents/ConfigPanel";
+import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect, useLayoutEffect } from 'react';
+import { createPortal } from 'react-dom';
+import { 
+  FaArrowLeft, 
+  FaArrowRight, 
+  FaTimes,
+  FaLightbulb, 
+  FaLayerGroup, 
+  FaRegLightbulb, 
+  FaObjectGroup, 
+  FaList, 
+  FaCubes,
+  FaPalette 
+} from 'react-icons/fa';
+import { FiX, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import { NavButton } from './navComponents/NavButton';
+import { LightTypeDropdown } from './navComponents/LightTypeDropdown';
+import { BaseTypeDropdown } from './navComponents/BaseTypeDropdown';
+import { LightAmountDropdown } from './navComponents/LightAmountDropdown';
+import { PendantSelectionDropdown } from './navComponents/PendantSelectionDropdown';
+import { SystemTypeDropdown } from './navComponents/SystemTypeDropdown';
+import { SystemConfigurationDropdown } from './navComponents/SystemConfigurationDropdown';
+import { ConfigPanel } from './navComponents/ConfigPanel';
+import MobileBottomMenu from './navComponents/MobileBottomMenu';
 import BaseColorPanel from "./navComponents/BaseColorPanel";
+import {ProgressIndicator} from './navComponents/ProgressIndicator';
+import SaveConfigurationModal from './navComponents/SaveConfigurationModal';
+import { useNavSteps } from './navComponents/useNavSteps';
+import { useNavDropdown } from './navComponents/useNavDropdown';
+import {
+  listenForConnectorColorMessages,
+  listenForWallbaseColorMessages,
+  listenForOffconfigMessages,
+} from "../../util/iframeCableMessageHandler";
+
 const VerticalNavBar = ({
   activeStep,
   setActiveStep,
@@ -52,6 +61,7 @@ const VerticalNavBar = ({
   configuringType,
   configuringSystemType,
   breadcrumbPath,
+
   onBreadcrumbNavigation,
   cableMessage,
   setCableMessage,
@@ -81,6 +91,8 @@ const VerticalNavBar = ({
   // Welcome modal state
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   const [activeTab, setActiveTab] = useState("base");
+  const [mobileBottomMenuOpen, setMobileBottomMenuOpen] = useState(false);
+  const [mobileActiveStep, setMobileActiveStep] = useState(null);
 
   // Tour system state
   const [tourState, setTourState] = useState({
@@ -172,38 +184,41 @@ const VerticalNavBar = ({
       const match = cableMessage.match(/^cable_(\d+)/);
       if (match) {
         const cableId = Number(match[1]);
-        if (config.lightAmount === 1) {
-          setShowConfigurationTypeSelector(false);
-          setOpenBase(false);
-          // 1. Open the pendant selection step
-          setActiveStep("pendantSelection");
-          
-          
-          setIsLightingPanelOpen(true);
-          // 2. Select the pendant with the extracte
-          setSelectedPendants([cableId]);
-          // 3. Show the configuration type selector
-          setTimeout(() => {
-            setShowConfigurationTypeSelector(true);
-            setLocalConfiguringType(null);
-          }, 200);
-        } else {
-          setShowConfigurationTypeSelector(false);
-          setOpenBase(false);
-          // 1. Open the pendant selection step
-          setActiveStep("pendantSelection");
-          setOpenDropdown("pendantSelection");
-       
-          setIsLightingPanelOpen(true);
-          // 2. Select the pendant with the extracted id
-          setSelectedPendants([cableId]);
-          // 3. Show the configuration type selector
-          setTimeout(() => {
-            setShowConfigurationTypeSelector(true);
-            setLocalConfiguringType(null);
-          }, 200);
-        }
-        setCableMessage("");
+        // Schedule state updates to avoid setState during render
+        setTimeout(() => {
+          if (config.lightAmount === 1) {
+            setShowConfigurationTypeSelector(false);
+            setOpenBase(false);
+            // 1. Open the pendant selection step
+            setActiveStep("pendantSelection");
+            
+            
+            setIsLightingPanelOpen(true);
+            // 2. Select the pendant with the extracte
+            setSelectedPendants([cableId]);
+            // 3. Show the configuration type selector
+            setTimeout(() => {
+              setShowConfigurationTypeSelector(true);
+              setLocalConfiguringType(null);
+            }, 200);
+          } else {
+            setShowConfigurationTypeSelector(false);
+            setOpenBase(false);
+            // 1. Open the pendant selection step
+            setActiveStep("pendantSelection");
+            setOpenDropdown("pendantSelection");
+         
+            setIsLightingPanelOpen(true);
+            // 2. Select the pendant with the extracted id
+            setSelectedPendants([cableId]);
+            // 3. Show the configuration type selector
+            setTimeout(() => {
+              setShowConfigurationTypeSelector(true);
+              setLocalConfiguringType(null);
+            }, 200);
+          }
+          setCableMessage("");
+        }, 0);
       }
     }
   }, [cableMessage, setActiveStep, setSelectedPendants, setCableMessage]);
@@ -711,27 +726,53 @@ const VerticalNavBar = ({
     setLocalConfiguringType(configuringType);
   }, [configuringType]);
 
-  // Pendant selection functionality
-  const {
-    currentDesign,
-    setCurrentDesign,
-    carouselRef,
-    scrollCarousel,
-    togglePendantSelection,
-    selectAllPendants,
-    clearSelections,
-    applyDesignToSelected,
-    applyToAllPendants,
-    getImageSrc,
-  } = usePendantSelection(
-    pendants,
-    cables,
-    selectedPendants,
-    setSelectedPendants,
-    onPendantDesignChange,
-    setShowConfigurationTypeSelector,
-    setOpenBase
-  );
+  // Pendant selection functionality - create local state and functions
+  const [currentDesign, setCurrentDesign] = useState(null);
+  const carouselRef = { current: null };
+  
+  const scrollCarousel = (direction) => {
+    // Implement carousel scrolling logic
+    if (carouselRef.current) {
+      const scrollAmount = 200;
+      carouselRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  const togglePendantSelection = (locationIndex) => {
+    if (selectedPendants.includes(locationIndex)) {
+      setSelectedPendants(selectedPendants.filter(id => id !== locationIndex));
+    } else {
+      setSelectedPendants([...selectedPendants, locationIndex]);
+    }
+  };
+
+  const selectAllPendants = () => {
+    const allPendantIds = pendants.map((_, index) => index);
+    setSelectedPendants(allPendantIds);
+  };
+
+  const clearSelections = () => {
+    setSelectedPendants([]);
+  };
+
+  const applyDesignToSelected = (design) => {
+    selectedPendants.forEach(pendantId => {
+      onPendantDesignChange(pendantId, design);
+    });
+  };
+
+  const applyToAllPendants = (design) => {
+    pendants.forEach((_, index) => {
+      onPendantDesignChange(index, design);
+    });
+  };
+
+  const getImageSrc = (pendant) => {
+    return pendant?.image || '/default-pendant.png';
+  };
 
   // Handle pendant location selection to show configuration type selector
   const handlePendantLocationClick = (locationIndex) => {
@@ -791,11 +832,16 @@ const VerticalNavBar = ({
 
   // Function to get icon for navigation buttons
   const getNavIcon = (stepId) => {
-    // Find the step with this ID
-    const step = steps.find((s) => s.id === stepId);
-
-    // Return the image path if it exists, otherwise null to use the React icon
-    return step?.image || null;
+    const iconMap = {
+      lightType: <FaLightbulb />,
+      baseType: <FaLayerGroup />, 
+      baseColor: <FaPalette />,
+      lightAmount: <FaList />,
+      pendantSelection: <FaRegLightbulb />,
+      systemType: <FaCubes />,
+      systemConfiguration: <FaObjectGroup />
+    };
+    return iconMap[stepId] || <FaList />;
   };
 
   // Determine if we should show the vertical nav bar
@@ -846,8 +892,8 @@ const VerticalNavBar = ({
         />
       )}
 
-      {/* Only show vertical nav when not configuring individual pendant/system */}
-      {showVerticalNav && (
+      {/* Desktop vertical nav */}
+      {showVerticalNav && !isMobile && (
         <div
           className="absolute right-4 top-1/2 transform -translate-y-1/2 z-[100] pointer-events-auto"
           onClick={(e) => e.stopPropagation()}
@@ -1021,6 +1067,107 @@ const VerticalNavBar = ({
         </div>
       )}
 
+      {/* Mobile vertical nav */}
+      {showVerticalNav && isMobile && (
+        <div
+          className="fixed right-4 top-1/2 transform -translate-y-1/2 z-[100] pointer-events-auto"
+          onClick={(e) => e.stopPropagation()}
+          onTouchStart={(e) => e.stopPropagation()}
+        >
+          <ProgressIndicator progress={calculateProgress()} emerald={emerald} />
+          <motion.div
+            className="p-2 rounded-full flex flex-col gap-3"
+            style={{ backgroundColor: charlestonGreen }}
+            onClick={(e) => e.stopPropagation()}
+            onTouchStart={(e) => e.stopPropagation()}
+          >
+            {steps
+              .filter((step) => {
+                if (
+                  (step.id === "baseType" || step.id === "baseColor") &&
+                  config.lightType !== "ceiling"
+                ) {
+                  return false;
+                }
+                return true;
+              })
+              .map((step, index) => (
+                <div className="relative" key={step.id}>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      // Close any existing dropdowns first
+                      setOpenDropdown(null);
+                      // Set mobile active step and open bottom menu
+                      setMobileActiveStep(step.id);
+                      setMobileBottomMenuOpen(true);
+                      // Also set the active step for consistency
+                      setActiveStep(step.id);
+                    }}
+                    className={`w-12 h-12 rounded-full flex items-center justify-center text-base transition-all duration-200 ${
+                      mobileActiveStep === step.id && mobileBottomMenuOpen
+                        ? `text-white`
+                        : "text-gray-400 hover:text-white"
+                    }`}
+                    style={{
+                      backgroundColor:
+                        mobileActiveStep === step.id && mobileBottomMenuOpen ? emerald : "transparent",
+                    }}
+                  >
+                    {getNavIcon(step.id)}
+                  </button>
+                </div>
+              ))}
+          </motion.div>
+        </div>
+      )}
+
+      {/* Mobile Bottom Menu */}
+      <MobileBottomMenu
+        isOpen={mobileBottomMenuOpen && isMobile}
+        activeStep={mobileActiveStep}
+        setLocalConfiguringType={setLocalConfiguringType}
+        onClose={() => setMobileBottomMenuOpen(false)}
+        config={config}
+        onLightTypeChange={onLightTypeChange}
+        onBaseTypeChange={onBaseTypeChange}
+        onBaseColorChange={onBaseColorChange}
+        onConnectorColorChange={onConnectorColorChange}
+        onLightAmountChange={onLightAmountChange}
+        onSystemTypeChange={onSystemTypeChange}
+        setActiveStep={setActiveStep}
+        setOpenDropdown={setOpenDropdown}
+        tourState={tourState}
+        handleTourSubSelection={handleTourSubSelection}
+        pendants={pendants}
+        setShowPendantLoadingScreen={setShowPendantLoadingScreen}
+        selectedPendants={selectedPendants}
+        cables={cables}
+        currentDesign={currentDesign}
+        setOpenBase={setOpenBase}
+        setCurrentDesign={setCurrentDesign}
+        carouselRef={carouselRef}
+        onCableSizeChange={onCableSizeChange}
+        scrollCarousel={scrollCarousel}
+        handlePendantLocationClick={handlePendantLocationClick}
+        selectAllPendants={selectAllPendants}
+        clearSelections={clearSelections}
+        applyDesignToSelected={applyDesignToSelected}
+        applyToAllPendants={applyToAllPendants}
+        getImageSrc={getImageSrc}
+        handleSaveConfig={handleSaveConfig}
+        localConfiguringType={localConfiguringType}
+        configuringSystemType={configuringSystemType}
+        breadcrumbPath={breadcrumbPath}
+        onBreadcrumbNavigation={onBreadcrumbNavigation}
+        onSystemTypeSelection={onSystemTypeSelection}
+        setSelectedPendants={setSelectedPendants}
+        onPendantDesignChange={onPendantDesignChange}
+        onSystemBaseDesignChange={onSystemBaseDesignChange}
+        sendMessageToPlayCanvas={sendMessageToPlayCanvas}
+        onConfigurationTypeChange={onConfigurationTypeChange}
+      />
+
       {/* Configuration Panel */}
 
       <AnimatePresence>
@@ -1091,12 +1238,6 @@ const VerticalNavBar = ({
 };
 
 // GuidedTourOverlay component
-import { useLayoutEffect } from "react";
-import {
-  listenForConnectorColorMessages,
-  listenForWallbaseColorMessages,
-  listenForOffconfigMessages,
-} from "../../util/iframeCableMessageHandler";
 
 function GuidedTourOverlay({
   isActive,

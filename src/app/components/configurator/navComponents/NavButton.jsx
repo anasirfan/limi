@@ -1,7 +1,31 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import Image from 'next/image';
 import { Tooltip } from '../Tooltip';
 import { useState, useEffect } from 'react';
+import { 
+  FaLightbulb, 
+  FaLayerGroup, 
+  FaRegLightbulb, 
+  FaObjectGroup, 
+  FaList, 
+  FaCubes,
+  FaPalette 
+} from "react-icons/fa";
+
+// Function to get React icon based on step ID
+const getStepIcon = (stepId) => {
+  const iconMap = {
+    lightType: FaLightbulb,
+    baseType: FaLayerGroup,
+    baseColor: FaPalette,
+    lightAmount: FaList,
+    pendantSelection: FaRegLightbulb,
+    systemType: FaCubes,
+    systemConfiguration: FaObjectGroup
+  };
+  
+  const IconComponent = iconMap[stepId] || FaList;
+  return <IconComponent size={24} />;
+};
 
 export const NavButton = ({
   step,
@@ -10,7 +34,7 @@ export const NavButton = ({
   openDropdown,
   handleStepClick,
   toggleDropdown,
-  getNavIcon,
+  getNavIcon, // Extract this prop to prevent it from being passed to DOM
   emerald,
   charlestonGreen,
   textColor,
@@ -19,7 +43,7 @@ export const NavButton = ({
   isGuided = false,
   isCompleted = false,
   children,
-  ...rest
+  // Remove ...rest to prevent function props from being passed to DOM elements
 }) => {
   // State to track if we're on mobile and screen dimensions
   const [isMobile, setIsMobile] = useState(false);
@@ -54,13 +78,13 @@ export const NavButton = ({
   if (!step) return null;
   
   return (
-    <div key={step?.id} className="relative" {...rest}>
+    <div key={step?.id} className="relative">
       {/* Tooltip only shows when dropdown is closed */}
       {openDropdown !== step?.id && (
         <Tooltip content={step?.tooltip || 'Navigation option'} position="left" className="">
           <div className="relative group">
             <motion.button
-              className={`relative w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ${activeStep === step?.id ? 'shadow-lg' : 'opacity-80 hover:opacity-100'} ${step?.disabled ? 'opacity-50 cursor-not-allowed' : ''} ${isCompleted ? 'ring-2 ring-emerald-500' : ''}`}
+              className={`relative w-12 h-12 rounded-full flex items-center justify-center text-base transition-all duration-300 ${activeStep === step?.id ? 'shadow-lg' : 'opacity-80 hover:opacity-100'} ${step?.disabled ? 'opacity-50 cursor-not-allowed' : ''} ${isCompleted ? 'ring-2 ring-emerald-500' : ''}`}
               onClick={() => !step?.disabled && handleStepClick(step?.id)}
               // whileHover={!step?.disabled ? { scale: 1.1 } : {}}
               
@@ -72,24 +96,7 @@ export const NavButton = ({
                 boxShadow: 'none'
               }}
             >
-              {getNavIcon && step?.id && getNavIcon(step.id) ? (
-                <Image 
-                  src={getNavIcon(step.id)}
-                  alt={step?.label || 'Navigation button'}
-                  width={24}
-                  height={24}
-                  className="object-contain"
-                  onError={(e) => {
-                    // Fallback to the original icon if image fails to load
-                    e.target.style.display = 'none';
-                    e.target.nextSibling.style.display = 'block';
-                  }}
-                />
-              ) : (
-                <div>
-                  {step?.icon}
-                </div>
-              )}
+              {getStepIcon(step?.id)}
             </motion.button>
           </div>
         </Tooltip>
@@ -98,7 +105,7 @@ export const NavButton = ({
       {/* Button without tooltip when dropdown is open */}
       {openDropdown === step?.id && (
         <motion.button
-          className={`relative w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ${activeStep === step?.id ? 'shadow-lg' : 'opacity-80 hover:opacity-100'} ${step?.disabled ? 'opacity-50 cursor-not-allowed' : ''} ${isCompleted ? 'ring-2 ring-emerald-500' : ''}`}
+          className={`relative w-12 h-12 rounded-full flex items-center justify-center text-base transition-all duration-300 ${activeStep === step?.id ? 'shadow-lg' : 'opacity-80 hover:opacity-100'} ${step?.disabled ? 'opacity-50 cursor-not-allowed' : ''} ${isCompleted ? 'ring-2 ring-emerald-500' : ''}`}
           style={{
             backgroundColor: isMobile ? charlestonGreen : emerald,
             color: '#FFFFFF'
@@ -110,24 +117,7 @@ export const NavButton = ({
           onTouchStart={(e) => e.stopPropagation()}
           
         >
-          {getNavIcon && step?.id && getNavIcon(step?.id) ? (
-            <Image 
-              src={getNavIcon(step?.id)}
-              alt={step?.label || 'Navigation button'}
-              width={24}
-              height={24}
-              className="object-contain"
-              onError={(e) => {
-                // Fallback to the original icon if image fails to load
-                e.target.style.display = 'none';
-                e.target.nextSibling.style.display = 'block';
-              }}
-            />
-          ) : (
-            <div>
-              {step?.icon}
-            </div>
-          )}
+          {getStepIcon(step?.id)}
         </motion.button>
       )}
       

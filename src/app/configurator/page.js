@@ -23,10 +23,22 @@ const LightConfigurator = dynamic(
 export default function ConfiguratorPage() {
   const headerRef = useRef(null);
   const [isFullScreen, setIsFullScreen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     // Scroll to top on page load
     window.scrollTo(0, 0);
+
+    // Check if we're on mobile
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    
+    // Initial check
+    checkMobile();
+    
+    // Add resize listener
+    window.addEventListener('resize', checkMobile);
 
     // Apply custom header styling for configurator page only
     if (headerRef.current) {
@@ -51,6 +63,7 @@ export default function ConfiguratorPage() {
             backdropElement.style.backdropFilter = originalBackdrop;
             backdropElement.style.backgroundColor = '';
           }
+          window.removeEventListener('resize', checkMobile);
         };
       }
     }
@@ -63,7 +76,10 @@ export default function ConfiguratorPage() {
     };
 
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('resize', checkMobile);
+    };
   }, []);
 
   return (
@@ -78,7 +94,7 @@ export default function ConfiguratorPage() {
         )}
       </div>
       
-      {!isFullScreen && <Footer />}
+      {!isFullScreen && !isMobile && <Footer />}
     </main>
   );
 }
