@@ -992,6 +992,7 @@ const ConfiguratorLayout = () => {
   }, []);
 
   const handleSystemBaseDesignChange = useCallback((design) => {
+    console.log("designssss",design);
     // Update the system base design in the config
     setConfig((prev) => ({ ...prev, systemBaseDesign: design }));
     setCurrentShade(null);
@@ -1027,6 +1028,7 @@ const ConfiguratorLayout = () => {
         const designToIds = {};
         selectedCables.forEach((id) => {
           const system = systemAssignments.find((a) => a.design === design);
+          console.log("system",system);
           if (!designToIds[system.design]) designToIds[system.design] = [];
           designToIds[system.design].push(id);
         });

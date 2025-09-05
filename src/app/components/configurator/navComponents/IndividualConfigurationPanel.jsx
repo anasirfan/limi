@@ -222,7 +222,7 @@ export const IndividualConfigurationPanel = ({
   
   return (
     <motion.div 
-      className="absolute bottom-0 left-0 right-0 bg-black/90 backdrop-blur-sm border-t border-gray-800 z-40"
+      className="absolute bottom-0 left-0 right-0 bg-black/90 sm:backdrop-blur-sm border-t border-gray-800 z-40"
       initial={{ y: 50, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       exit={{ y: 50, opacity: 0 }}

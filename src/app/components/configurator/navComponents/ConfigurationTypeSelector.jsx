@@ -14,7 +14,7 @@ export const ConfigurationTypeSelector = ({
       exit={{ opacity: 0, y: 50 }}
       transition={{ type: 'spring', damping: 25 }}
     >
-      <div className="p-4 rounded-xl bg-black/90 backdrop-blur-md shadow-lg border border-gray-800">
+      <div className="p-4 rounded-xl bg-black/90 sm:backdrop-blur-md shadow-lg border border-gray-800">
         <div className="flex justify-between items-center mb-3">
           <h4 className="text-sm font-bold text-white">
             Configure Location {selectedLocation + 1}

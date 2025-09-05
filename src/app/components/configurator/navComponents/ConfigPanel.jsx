@@ -1086,7 +1086,7 @@ export const ConfigPanel = ({
   return (
     <div className="flex justify-center items-center w-full">
       <motion.div
-        className={`fixed h-[150px] sm:absolute bottom-0 sm:bottom-1 -translate-x-1/2 bg-black/95 backdrop-blur-sm border border-gray-700 rounded-t-lg sm:rounded-lg z-40 w-full sm:max-w-[320px] md:max-w-[400px] lg:max-w-[480px] xl:max-w-[540px] sm:w-[80vw] md:w-[55vw] lg:w-[40vw] xl:w-[24vw] max-h-[60vh] sm:max-h-[30vh] shadow-lg overflow-hidden ${className}`}
+        className={`fixed h-[150px] sm:absolute bottom-0 sm:bottom-1 -translate-x-1/2 bg-black/95 sm:backdrop-blur-sm border border-gray-700 rounded-t-lg sm:rounded-lg z-40 w-full sm:max-w-[320px] md:max-w-[400px] lg:max-w-[480px] xl:max-w-[540px] sm:w-[80vw] md:w-[55vw] lg:w-[40vw] xl:w-[24vw] max-h-[60vh] sm:max-h-[30vh] shadow-lg overflow-hidden ${className}`}
         initial={
           isMobileView ? { y: "100%", opacity: 0 } : { y: 30, opacity: 0 }
         }

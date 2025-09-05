@@ -9,6 +9,7 @@ import {
   FaSave,
 } from "react-icons/fa";
 import { ConfigPanel } from "./ConfigPanel";
+import { MobilePendantSelector } from "./MobilePendantSelector";
 
 export const PendantSelectionDropdown = ({
   pendants,
@@ -72,131 +73,83 @@ export const PendantSelectionDropdown = ({
     onCableSizeChange(size, selectedCables);
   };
 
+  // Use mobile component for mobile devices
+  if (isMobile) {
+    return (
+      <MobilePendantSelector
+        pendants={pendants}
+        cables={cables}
+        selectedPendants={selectedPendants}
+        onPendantDesignChange={onPendantDesignChange}
+        onClose={onClose}
+        isOpen={true} // Always open when this component is rendered
+        getImageSrc={getImageSrc}
+        togglePendantSelection={togglePendantSelection}
+        selectAllPendants={selectAllPendants}
+        clearSelections={clearSelections}
+        applyToAllPendants={applyToAllPendants}
+        handleSaveConfig={handleSaveConfig}
+        sendMessageToPlayCanvas={sendMessageToPlayCanvas}
+      />
+    );
+  }
+
+  // Desktop UI
   return (
     <div
-      className="p-4 mb-10"
+      className="p-4"
       onClick={(e) => e.stopPropagation()}
       onTouchStart={(e) => e.stopPropagation()}
     >
-      {/* Mobile tabs - only show on mobile */}
-      {isMobile && (
-        <div className="mb-4">
-          <div className="flex rounded-lg overflow-hidden border border-gray-700">
+      {/* Desktop title */}
+      <div>
+        <h3 className="text-base font-bold text-white mb-3 font-['Amenti']">
+          Configure Pendants
+        </h3>
+      </div>
+
+      {/* Pendant selection controls */}
+      <div className="flex justify-between mb-3">
+        {selectedPendants.length > 0 && (
+          <>
             <button
-              className={`flex-1 py-2 text-center text-sm font-medium ${
-                activeTab === "configure"
-                  ? "bg-emerald-500 text-white"
-                  : "bg-gray-700 text-gray-300 hover:bg-gray-600"
-              }`}
-              onClick={() => setActiveTab("configure")}
+              onClick={selectAllPendants}
+              className="px-3 py-1 rounded-lg text-xs bg-gray-700 hover:bg-gray-600 text-white"
             >
-              Configure Pendants
+              Select All
             </button>
+
             <button
-              className={`flex-1 py-2 text-center text-sm font-medium ${
-                activeTab === "design"
-                  ? "bg-emerald-500 text-white"
-                  : "bg-gray-700 text-gray-300 hover:bg-gray-600"
-              }`}
-              onClick={() => setActiveTab("design")}
+              onClick={clearSelections}
+              className="px-3 py-1 rounded-lg text-xs bg-gray-700 hover:bg-gray-600 text-white"
             >
-              Select Design
+              Clear ({selectedPendants.length})
             </button>
-          </div>
+          </>
+        )}
+      </div>
+
+      {/* Pendant selector carousel */}
+      <div className="relative mb-4">
+        <div className="absolute left-0 top-1/2 -translate-y-1/2 z-10">
+          <button
+            onClick={() => scrollCarousel("left")}
+            className="w-8 h-8 rounded-full bg-gray-800 text-white flex items-center justify-center hover:bg-gray-700 transition-colors"
+          >
+            <FaChevronLeft size={14} />
+          </button>
         </div>
-      )}
 
-      {/* Desktop title - always visible on desktop */}
-      {!isMobile && (
-        <div>
-          <h3 className="text-base font-bold text-white mb-3 font-['Amenti']">
-            Configure Pendants
-          </h3>
-        </div>
-      )}
-
-      {/* Configure Pendants Tab Content */}
-      {(!isMobile || activeTab === "configure") && (
-        <>
-          {/* Pendant selection controls */}
-          <div className="flex justify-between mb-3">
-            {selectedPendants.length > 0 && (
-              <>
-                <button
-                  onClick={selectAllPendants}
-                  className="px-3 py-1 rounded-lg text-xs bg-gray-700 hover:bg-gray-600 text-white"
-                >
-                  Select All
-                </button>
-
-                <button
-                  onClick={clearSelections}
-                  className="px-3 py-1 rounded-lg text-xs bg-gray-700 hover:bg-gray-600 text-white"
-                >
-                  Clear ({selectedPendants.length})
-                </button>
-              </>
-            )}
-          </div>
-
-          {/* Pendant selector carousel */}
-          <div className="relative mb-4">
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 z-10">
-              <button
-                onClick={() => scrollCarousel("left")}
-                className="w-8 h-8 rounded-full bg-gray-800 text-white flex items-center justify-center hover:bg-gray-700 transition-colors"
-              >
-                <FaChevronLeft size={14} />
-              </button>
-            </div>
-
-            <div
-              ref={carouselRef}
-              className="flex gap-3 overflow-x-auto scrollbar-hide py-2 px-8 max-w-full"
-              style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-            >
-              {cables && cables.length > 0
-                ? cables.map(
-                    (cable, index) => (
-                      console.log("cablesss", cable.design),
-                      (
-                        <motion.div
-                          key={index}
-                          className="flex-shrink-0 cursor-pointer"
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => togglePendantSelection(index)}
-                          style={{ userSelect: "none" }}
-                        >
-                          <div
-                            className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold transition-all overflow-hidden relative ${
-                              selectedPendants.includes(index)
-                                ? "ring-2 ring-emerald-500 ring-offset-2 ring-offset-gray-800"
-                                : "bg-gray-700 text-white hover:bg-gray-600"
-                            }`}
-                          >
-                            {/* Show pendant design as background if it has one */}
-
-                            {cable.design && (
-                              <div className="absolute inset-0 opacity-30">
-                                <Image
-                                  src={
-                                    getImageSrc(cable.design) ||
-                                    `/images/configOptions/2.png`
-                                  }
-                                  alt={cable.design}
-                                  fill
-                                  className="object-cover"
-                                />
-                              </div>
-                            )}
-                            <span className="relative z-10">{index + 1}</span>
-                          </div>
-                        </motion.div>
-                      )
-                    )
-                  )
-                : pendants.map((pendant, index) => (
+        <div
+          ref={carouselRef}
+          className="flex gap-3 overflow-x-auto scrollbar-hide py-2 px-8 max-w-full"
+          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+        >
+          {cables && cables.length > 0
+            ? cables.map(
+                (cable, index) => (
+                  console.log("cablesss", cable.design),
+                  (
                     <motion.div
                       key={index}
                       className="flex-shrink-0 cursor-pointer"
@@ -213,14 +166,14 @@ export const PendantSelectionDropdown = ({
                         }`}
                       >
                         {/* Show pendant design as background if it has one */}
-                        {pendant.design && (
+                        {cable.design && (
                           <div className="absolute inset-0 opacity-30">
                             <Image
                               src={
-                                getImageSrc(pendant.design) ||
+                                getImageSrc(cable.design) ||
                                 `/images/configOptions/2.png`
                               }
-                              alt={pendant.design}
+                              alt={cable.design}
                               fill
                               className="object-cover"
                             />
@@ -229,48 +182,54 @@ export const PendantSelectionDropdown = ({
                         <span className="relative z-10">{index + 1}</span>
                       </div>
                     </motion.div>
-                  ))}
-            </div>
-
-            <div className="absolute right-0 top-1/2 -translate-y-1/2 z-10">
-              <button
-                onClick={() => scrollCarousel("right")}
-                className="w-8 h-8 rounded-full bg-gray-800 text-white flex items-center justify-center hover:bg-gray-700 transition-colors"
-              >
-                <FaChevronRight size={14} />
-              </button>
-            </div>
-          </div>
-        </>
-      )}
-
-      {/* Select Design Tab Content */}
-      {isMobile && activeTab === "design" && (
-        <div className="max-sm:w-full max-sm:h-auto max-sm:relative">
-          {/* Wrap ConfigPanel in a div with mobile-specific styles */}
-          <div className="max-sm:relative max-sm:w-full max-sm:h-auto max-sm:bg-transparent max-sm:border-0 max-sm:shadow-none mb-8">
-            <ConfigPanel
-              configuringType={configuringType}
-              configuringSystemType={configuringSystemType}
-              breadcrumbPath={breadcrumbPath}
-              onBreadcrumbNavigation={onBreadcrumbNavigation}
-              onSystemTypeSelection={onSystemTypeSelection}
-              selectedLocation={selectedLocation}
-              selectedPendants={selectedPendants}
-              onPendantDesignChange={onPendantDesignChange}
-              onSystemBaseDesignChange={onSystemBaseDesignChange}
-              onSelectConfigurationType={onSelectConfigurationType}
-              onShadeSelect={() => {}}
-              onCableSizeChange={handleCableSizeChange}
-              currentShade={null}
-              onClose={onClose}
-              setShowPendantLoadingScreen={setShowPendantLoadingScreen}
-              sendMessageToPlayCanvas={sendMessageToPlayCanvas}
-              className="max-sm:static max-sm:transform-none max-sm:w-full max-sm:h-auto max-sm:bg-transparent max-sm:shadow-none max-sm:border-0"
-            />
-          </div>
+                  )
+                )
+              )
+            : pendants.map((pendant, index) => (
+                <motion.div
+                  key={index}
+                  className="flex-shrink-0 cursor-pointer"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => togglePendantSelection(index)}
+                  style={{ userSelect: "none" }}
+                >
+                  <div
+                    className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold transition-all overflow-hidden relative ${
+                      selectedPendants.includes(index)
+                        ? "ring-2 ring-emerald-500 ring-offset-2 ring-offset-gray-800"
+                        : "bg-gray-700 text-white hover:bg-gray-600"
+                    }`}
+                  >
+                    {/* Show pendant design as background if it has one */}
+                    {pendant.design && (
+                      <div className="absolute inset-0 opacity-30">
+                        <Image
+                          src={
+                            getImageSrc(pendant.design) ||
+                            `/images/configOptions/2.png`
+                          }
+                          alt={pendant.design}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                    )}
+                    <span className="relative z-10">{index + 1}</span>
+                  </div>
+                </motion.div>
+              ))}
         </div>
-      )}
+
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 z-10">
+          <button
+            onClick={() => scrollCarousel("right")}
+            className="w-8 h-8 rounded-full bg-gray-800 text-white flex items-center justify-center hover:bg-gray-700 transition-colors"
+          >
+            <FaChevronRight size={14} />
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

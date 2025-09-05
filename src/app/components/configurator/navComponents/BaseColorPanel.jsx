@@ -16,6 +16,17 @@ const BaseColorPanel = ({
 
   const [selectedBaseColor, setSelectedBaseColor] = useState(currentBaseColor || 'black');
   const [selectedConnectorColor, setSelectedConnectorColor] = useState(currentConnectorColor || 'black');
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
     useEffect(() => {
       const cleanup = listenForConnectorColorMessages((data, event) => {
@@ -145,7 +156,7 @@ const BaseColorPanel = ({
       </div> */}
       {activeTab === 'base' && (
         <>
-          <h3 style={styles.title}>Base Color</h3>
+          {!isMobile && <h3 style={styles.title}>Base Color</h3>}
           <div style={styles.colorPalette}>
             {colorOptions.map((color) => (
               <motion.div
@@ -176,7 +187,7 @@ const BaseColorPanel = ({
       )}
       {activeTab === 'connector' && (
         <>
-          <h3 style={styles.title}>Connector Color</h3>
+          {!isMobile && <h3 style={styles.title}>Connector Color</h3>}
           <div style={styles.colorPalette}>
             {colorOptions.map((color) => (
               <motion.div
