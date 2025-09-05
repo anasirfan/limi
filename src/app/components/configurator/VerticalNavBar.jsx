@@ -411,6 +411,16 @@ const VerticalNavBar = ({
         return true;
       } else {
         console.log(`❌ Incorrect selection for ${stepId}. Expected: ${expectedValue}, Got: ${selectedValue}`);
+        
+        // During tour, keep dropdown open if wrong selection is made
+        if (tourState.isActive && tourState.waitingForUser) {
+          console.log(`🔄 Keeping dropdown open for tour - wrong selection made`);
+          // Re-open the dropdown to allow user to try again
+          setTimeout(() => {
+            setActiveStep(stepId);
+            setOpenDropdown(stepId);
+          }, 100);
+        }
       }
     }
     return false;
@@ -1456,14 +1466,14 @@ function TourOverlay({
           style={{ backdropFilter: "blur(4px)", pointerEvents: "none" }}
           mask="url(#dropdown-cutout-mask)"
         />
-        {/* Center spotlight overlay */}
-        <circle
+        {/* Center spotlight overlay - adjust position for baseType step */}
+        {/* <circle
           cx="50%"
-          cy="50%"
+          cy={step?.id === 'baseType' ? '20%' : '50%'}
           r="200"
           fill="url(#center-spotlight)"
           style={{ pointerEvents: "none" }}
-        />
+        /> */}
       </svg>
 
 

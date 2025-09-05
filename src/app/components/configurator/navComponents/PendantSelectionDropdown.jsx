@@ -74,7 +74,7 @@ export const PendantSelectionDropdown = ({
 
   return (
     <div
-      className="p-4"
+      className="p-4 mb-10"
       onClick={(e) => e.stopPropagation()}
       onTouchStart={(e) => e.stopPropagation()}
     >
@@ -241,29 +241,12 @@ export const PendantSelectionDropdown = ({
               </button>
             </div>
           </div>
-
-          {/* Desktop - Design selection button */}
-          {/* {!isMobile && (
-            <div className="mt-4">
-              {selectedPendants.length > 0 && (
-                <button
-                  onClick={() => setActiveTab('design')}
-                  className="w-full py-2 px-4 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg flex items-center justify-center gap-2"
-                >
-                  <span>Select Design</span>
-                  <FaChevronRight size={12} />
-                </button>
-              )}
-            </div>
-          )} */}
         </>
       )}
 
       {/* Select Design Tab Content */}
       {isMobile && activeTab === "design" && (
         <div className="max-sm:w-full max-sm:h-auto max-sm:relative">
-          {/* <h3 className="text-base font-bold text-white mb-3 font-['Amenti']">Select Design</h3> */}
-
           {/* Wrap ConfigPanel in a div with mobile-specific styles */}
           <div className="max-sm:relative max-sm:w-full max-sm:h-auto max-sm:bg-transparent max-sm:border-0 max-sm:shadow-none mb-8">
             <ConfigPanel
