@@ -74,7 +74,7 @@ export const PendantSelectionDropdown = ({
 
   return (
     <div
-      className="p-4 mb-10"
+      className="p-4"
       onClick={(e) => e.stopPropagation()}
       onTouchStart={(e) => e.stopPropagation()}
     >

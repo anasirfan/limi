@@ -703,8 +703,11 @@ export const ConfigPanel = ({
         baseNumber: pendant.baseNumber,
       }));
       config.onItemSelect = (itemId) => {
-        setShowPendantLoadingScreen(true);
-        
+        console.log("Attempting to set loading screen TRUE. Current:");
+  setShowPendantLoadingScreen(prev => {
+    console.log("Setter called. Previous:", prev);
+    return prev ? prev : true;
+  });
         setCurrentDesign(itemId);
         // Use all selected pendants if available, otherwise fall back to just the first one
         const pendantsToUpdate =
@@ -800,9 +803,12 @@ export const ConfigPanel = ({
           });
 
           config.onItemSelect = (itemId) => {
-            setShowPendantLoadingScreen(true);
-            console.log("showPendantLoadingScreen");
-            setCurrentDesign(itemId);
+            console.log("Attempting to set loading screen TRUE. Current:");
+            setShowPendantLoadingScreen(prev => {
+              console.log("Setter called. Previous:", prev);
+              return prev ? prev : true;
+            }),
+             setCurrentDesign(itemId);
             const selectedBase = config.items.find(
               (item) => item.id === itemId
             );
@@ -905,8 +911,11 @@ export const ConfigPanel = ({
             } else {
               // Show base options
               config.onItemSelect = (itemId) => {
-                setShowPendantLoadingScreen(true);
-                console.log("showPendantLoadingScreen");
+                console.log("Attempting to set loading screen TRUE. Current:");
+                setShowPendantLoadingScreen(prev => {
+                  console.log("Setter called. Previous:", prev);
+                  return prev ? prev : true;
+                });
                 setCurrentDesign(itemId);
                 const selectedBase = config.items.find(
                   (item) => item.id === itemId

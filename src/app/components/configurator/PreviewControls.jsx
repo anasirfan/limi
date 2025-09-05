@@ -105,12 +105,19 @@ export const PreviewControls = ({
   useEffect(() => {
     const cleanup = listenForLoadingMessages((msg) => {
       if (msg === "loadingOff" || msg === "loadingoff") {
-        console.log(`🟢 Received '${msg}' message from iframe. Hiding loading screen.`);
-        setShowPendantLoadingScreen(false);
-        console.log("🟠 showPendantLoadingScreen should now be FALSE.");
-      } else {
-        console.log("🔵 Received loading message:", msg);
-      }
+        // Ensure loading screen stays visible for at least 500ms
+        if (!window.limiLoadingStartTime) window.limiLoadingStartTime = Date.now();
+        const elapsed = Date.now() - window.limiLoadingStartTime;
+        if (elapsed < 500) {
+          setTimeout(() => {
+            setShowPendantLoadingScreen(false);
+            window.limiLoadingStartTime = null;
+          }, 500 - elapsed);
+        } else {
+          setShowPendantLoadingScreen(false);
+          window.limiLoadingStartTime = null;
+        }
+      } 
     });
     return () => {
       if (typeof cleanup === 'function') cleanup();
