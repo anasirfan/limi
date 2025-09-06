@@ -164,7 +164,7 @@ const MobilePendantConfig = ({
                 key={index}
                 onClick={() => handlePendantLocationClick(index)}
                 className={`
-                  w-16 h-16 rounded-full flex items-center justify-center text-xs font-medium
+                  w-12 h-12 rounded-full flex items-center justify-center text-xs font-medium
                   transition-all duration-200 border-2 relative overflow-hidden
                   ${selectedPendants.includes(index)
                     ? 'border-emerald-400 shadow-lg shadow-emerald-400/30'
@@ -185,7 +185,7 @@ const MobilePendantConfig = ({
                 
                 {/* Content */}
                 <div className="relative z-10 flex items-center justify-center text-white">
-                  <div className="text-lg font-bold">{index + 1}</div>
+                  <div className="text-base font-bold">{index + 1}</div>
                 </div>
 
                 {/* Selection indicator */}
@@ -492,7 +492,7 @@ const MobilePendantConfig = ({
       </div>
 
       {/* Tab Content */}
-      <div className="flex-1 overflow-y-auto px-6">
+      <div className="flex-1 overflow-y-auto px-4 pb-6">
         <motion.div
           key={activeTab}
           initial={{ opacity: 0, x: 20 }}
