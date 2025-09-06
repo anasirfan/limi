@@ -137,6 +137,7 @@ const MobileBottomMenu = ({
             localConfiguringType={localConfiguringType}
             setLocalConfiguringType={setLocalConfiguringType}
             onSystemTypeSelection={onSystemTypeSelection}
+            onClose={onClose}
           />
         );
       
@@ -178,29 +179,25 @@ const MobileBottomMenu = ({
       transition={{ type: 'spring', damping: 25, stiffness: 300 }}
       className="fixed bottom-0 left-0 right-0 bg-[#1a1a1a] z-[9999] h-30 rounded-t-2xl border-t border-gray-700"
     >
-      {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-700">
-        <div className="flex-1">
-          <h3 className="text-white font-medium text-lg">
-            {getTitle()}
-          </h3>
-          {/* Selected pendants info */}
-          {/* {activeStep === 'pendantSelection' && selectedPendants && selectedPendants.length > 0 && (
-            <div className="text-emerald-400 text-sm mt-1">
-              Selected: {selectedPendants.map(id => id + 1).join(', ')}
-            </div>
-          )} */}
+      {/* Header - only show for non-pendant selection steps */}
+      {activeStep !== 'pendantSelection' && (
+        <div className="flex items-center justify-between p-4 border-b border-gray-700">
+          <div className="flex-1">
+            <h3 className="text-white font-medium text-lg">
+              {getTitle()}
+            </h3>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-white transition-colors"
+          >
+            ✕
+          </button>
         </div>
-        <button
-          onClick={onClose}
-          className="text-gray-400 hover:text-white transition-colors"
-        >
-          ✕
-        </button>
-      </div>
+      )}
       
       {/* Content */}
-      <div className="flex-1 overflow-y-auto p-4">
+      <div className={`flex-1 overflow-y-auto ${activeStep === 'pendantSelection' ? 'p-0' : 'p-4'}`}>
         {renderContent()}
       </div>
     </motion.div>
