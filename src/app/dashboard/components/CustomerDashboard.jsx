@@ -1,16 +1,47 @@
 "use client";
 
-import React, { useState, useEffect, Fragment } from 'react';
-import Image from 'next/image';
-import { FaSort, FaInbox,FaChartLine, FaSpinner, FaEnvelope, FaSortUp, FaSortDown, FaSearch, FaEye, FaTimes, FaFilter, FaGlobe, FaClock, FaDesktop, FaTabletAlt, FaMobileAlt, FaUsers, FaBoxOpen, FaShoppingCart, FaBox, FaSlideshare, FaUserPlus, FaTrash } from 'react-icons/fa';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
-import SlideManagement from './SlideManagement';
-import AddCustomerModal from './SlideManagement/AddCustomerModal';
-import DistributorDetailsModal from './DistributorDetailsModal';
-import SlideInsights from './SlideInsights';
-import MarketingTab from './MarketingTab';
-import LimiFutureAnalytics from './LimiFutureAnalytics';
-
+import React, { useState, useEffect, Fragment } from "react";
+import Image from "next/image";
+import {
+  FaSort,
+  FaInbox,
+  FaSpinner,
+  FaEnvelope,
+  FaSortUp,
+  FaSortDown,
+  FaSearch,
+  FaEye,
+  FaTimes,
+  FaFilter,
+  FaGlobe,
+  FaClock,
+  FaDesktop,
+  FaTabletAlt,
+  FaMobileAlt,
+  FaUsers,
+  FaBoxOpen,
+  FaShoppingCart,
+  FaBox,
+  FaSlideshare,
+  FaUserPlus,
+  FaTrash,
+} from "react-icons/fa";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  LineChart,
+  Line,
+} from "recharts";
+import { FaPlus, FaEdit, FaImage, FaCube,FaChartLine  } from "react-icons/fa";
 import { generateName } from "./PendantSystemManager/utils/nameGenerator";
 import ProductManagement from "./ProductManagement";
 import { getSessionDataFromLocalStorage } from "../../utils/slideAnalytics";
@@ -20,6 +51,10 @@ import PendantSystemManager from "./PendantSystemManager";
 import DistributorApplications from "./DistributorApplications";
 import ContactFormSubmissions from "./ContactFormSubmissions";
 import CommunitySubscriptions from "./CommunitySubscriptions";
+import SlideInsights from "./SlideInsights";
+import MarketingTab from "./MarketingTab";
+import AddCustomerModal from "./SlideManagement/AddCustomerModal";
+import SlideManagement from "./SlideManagement";
 
 export default function CustomerDashboard({ token }) {
   const [editingItem, setEditingItem] = useState(null);
@@ -1514,16 +1549,9 @@ export default function CustomerDashboard({ token }) {
           </div>
         </div>
       )}
-      
-      {activeTab === 'limifuture' && (
-        <div className="bg-[#1e1e1e] rounded-lg shadow-lg overflow-hidden border border-[#3a3a3a] mt-6">
-          <div className="px-6 py-5 bg-[#1e1e1e] border-b border-[#3a3a3a]">
-            <h2 className="text-3xl font-bold text-white font-[Amenti]">LimiFuture Analytics Dashboard</h2>
-            <p className="text-gray-400 mt-2">Track slide interactions, user engagement, and carousel analytics</p>
-          </div>
-          <div className="p-6">
-            <LimiFutureAnalytics />
-          </div>
+      {activeTab === "limitless-ai" && (
+        <div className="mt-6">
+          <InvestorDetails />
         </div>
       )}
 

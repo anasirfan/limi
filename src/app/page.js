@@ -139,6 +139,8 @@ export default function Home() {
 </div>
       <TransitionLayout>
         <Header />
+      { !hideNavFooter && <Header /> }
+      
         <HeroSection />
         <ProductShowcase />
         <HowItWorks />
