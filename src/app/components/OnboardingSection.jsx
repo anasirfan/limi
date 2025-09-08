@@ -164,24 +164,61 @@ export default function OnboardingSection() {
               );
             }
 
+          
+
             if (lightType === "floor") {
-              iframeRef.current.contentWindow.postMessage(
-                "cable_0:product_2",
-                "*"
-              );
-              iframeRef.current.contentWindow.postMessage(
-                "cable_1:product_2",
-                "*"
-              );
-              iframeRef.current.contentWindow.postMessage(
-                "cable_2:product_2",
-                "*"
-              );
+              const messages = [
+                "cable_0",
+                "glass_none",
+                "color_gold",
+                "silver_none",
+                "product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756967810887.glb",
+                "product_5",
+                "cable_1",
+                "glass_none",
+                "color_gold",
+                "silver_none",
+                "product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756967810887.glb",
+                "product_5",
+                "cable_2",
+                "glass_none",
+                "color_gold",
+                "silver_none",
+                "product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756967810887.glb",
+                "product_5",
+                "allmodelsload"
+              ];
+              
+              messages.forEach(message => {
+                iframeRef.current.contentWindow.postMessage(message, "*");
+              });
+            // if (lightType === "floor") {
+            //   iframeRef.current.contentWindow.postMessage(
+            //     "cable_0:product_2",
+            //     "*"
+            //   );
+            //   iframeRef.current.contentWindow.postMessage(
+            //     "cable_1:product_2",
+            //     "*"
+            //   );
+            //   iframeRef.current.contentWindow.postMessage(
+            //     "cable_2:product_2",
+            //     "*"
+            //   );
             } else {
-              iframeRef.current.contentWindow.postMessage(
-                "cable_0:product_1",
-                "*"
-              );
+              const messages = [
+                "cable_0",
+                "glass_none",
+                "color_gold",
+                "silver_none",
+                "product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756967810887.glb",
+                "product_5",
+                "allmodelsload"
+              ];
+              
+              messages.forEach(message => {
+                iframeRef.current.contentWindow.postMessage(message, "*");
+              });
             }
           }
           break;

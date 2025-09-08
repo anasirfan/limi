@@ -55,6 +55,41 @@ export default function OnboardingWizard({ onComplete, onStepChange, lightType }
     }
   };
 
+   const sendMessagesForDesign = (designName, idOrIds) => {
+      const assignment = systemAssignments.find((a) => a.design === designName);
+      if (!assignment) return;
+  
+      // Helper to send all messages for a single id
+      const sendAllMessages = (id) => {
+        if (assignment.systemType === "bar") {
+          sendMessageToPlayCanvas("barextra");
+        }
+        sendMessageToPlayCanvas(`cable_${id}`);
+        sendMessageToPlayCanvas(
+          `glass_${assignment.hasGlass ? "attached" : "none"}`
+        );
+        sendMessageToPlayCanvas(`color_${assignment.hasGold ? "gold" : "none"}`);
+        sendMessageToPlayCanvas(
+          `silver_${assignment.hasSilver ? "attached" : "none"}`
+        );
+        sendMessageToPlayCanvas(`product_${assignment.media?.model?.url}`);
+        sendMessageToPlayCanvas(`${assignment.message}`);
+      };
+  
+      if (Array.isArray(idOrIds)) {
+        idOrIds.forEach((id) => {
+          sendAllMessages(id);
+        });
+        // Fire allmodelsloaded ONCE at the end
+        sendMessageToPlayCanvas("allmodelsloaded");
+      } else {
+        sendAllMessages(idOrIds);
+        // Fire allmodelsloaded after the single id
+        sendMessageToPlayCanvas("allmodelsloaded");
+      }
+    };
+
+
   return (
     <div className="bg-[#2B2D2F] rounded-xl sm:rounded-2xl shadow-xl overflow-hidden">
       <div className="p-2 sm:p-4 sm:pr-20">

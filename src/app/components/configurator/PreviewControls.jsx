@@ -678,8 +678,6 @@ export const PreviewControls = ({
           <FaEye size={16} />
         </button>
 
-<<<<<<< HEAD
-=======
         {/* Tour Guide Button */}
         <motion.button
           whileHover={{ scale: 1.05 }}
@@ -886,7 +884,6 @@ export const PreviewControls = ({
           )}
         </div>
 
->>>>>>> fe8651ab8c21f2e668cc470a8125a6b269255501
         <button
           type="button"
           className="p-2 rounded-full bg-gray-800 text-gray-300 hover:opacity-90 transition-all"
