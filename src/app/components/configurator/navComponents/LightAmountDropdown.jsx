@@ -1,15 +1,28 @@
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 export const LightAmountDropdown = ({ 
   config, 
   onLightAmountChange, 
   setActiveStep, 
-  setOpenDropdown 
+  setOpenDropdown,
+  tourActive,
+  onTourSelection
 }) => {
   const carouselRef = useRef(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
   
   // Function to scroll the carousel
   const scrollCarousel = (direction) => {
@@ -49,6 +62,13 @@ export const LightAmountDropdown = ({
       key={amount}
       className={`flex-shrink-0 flex flex-col items-center ${config.lightAmount === amount ? 'text-emerald-500' : 'text-gray-300 hover:text-white'}`}
       onClick={() => {
+        console.log(`🖱️ User clicked on light amount: ${amount}`);
+        
+        // If tour is active, call tour selection handler
+        if (tourActive && onTourSelection) {
+          onTourSelection('lightAmount', amount);
+        }
+        
         onLightAmountChange(amount);
         // Always go to pendant selection next
         setActiveStep('pendantSelection');
@@ -72,7 +92,7 @@ export const LightAmountDropdown = ({
 
   return (
     <div className="p-4">
-      <h3 className="text-base font-bold text-white mb-3 font-['Amenti']">Light Amount</h3>
+      {!isMobile && <h3 className="text-base font-bold text-white mb-3 font-['Amenti']">Light Amount</h3>}
       
       {/* Light amount options */}
       <div className="relative">

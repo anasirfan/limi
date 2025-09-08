@@ -3,6 +3,12 @@ import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { useSelector, useDispatch } from "react-redux";
 import {
+  pendantAssignments,
+  barAssignments,
+  ballAssignments,
+  universalAssignments,
+} from "../pendantSystemData";
+import {
   FaHeart,
   FaTimes,
   FaChevronLeft,
@@ -16,6 +22,7 @@ import { FaArrow } from "react-icons/fa";
 import {
   addToFavorites,
   removeFromFavorites,
+  fetchFavorites,
 } from "../../../redux/slices/favoritesSlice";
 
 export const ConfigPanel = ({
@@ -25,6 +32,7 @@ export const ConfigPanel = ({
   showConfigurationTypeSelector,
   onBreadcrumbNavigation,
   onSystemTypeSelection,
+   antLoadingScreen,
   selectedLocation,
   selectedPendants,
   cables, // Add cables prop
@@ -37,6 +45,7 @@ export const ConfigPanel = ({
   onCableSizeChange, // NEW PROP
   onClose,
   className = "", // Add className prop with default empty string
+  sendMessageToPlayCanvas, // Add sendMessageToPlayCanvas prop
 }) => {
   // Clear shade state when entering pendant mode (defensive, avoids render loop)
   // Only runs when configuringType changes
@@ -55,6 +64,11 @@ export const ConfigPanel = ({
         "showConfigurationTypeSelector",
         showConfigurationTypeSelector
       );
+      // Reset all state when panel is opened
+      setCurrentDesign(null);
+      setAvailableShades([]);
+      setLocalSelectedShade(null);
+      setBarNavState({ showBarEngines: false, showBarOptions: false });
       handleBreadcrumbNavigation("home");
     }
   }, [showConfigurationTypeSelector]);
@@ -63,6 +77,21 @@ export const ConfigPanel = ({
   const [currentDesign, setCurrentDesign] = useState(null);
   // Internal state for selected cable size (for immediate UI feedback)
   const [localSelectedCableSize, setLocalSelectedCableSize] = useState(1);
+
+  const syncWishlistWithAPI = async (wishlistArray) => {
+    const token = localStorage.getItem("limiToken");
+    await fetch(
+      "https://dev.api1.limitless-lighting.co.uk/admin/products/light-configs/wishlist",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ wishlist: wishlistArray }),
+      }
+    );
+  };
 
   // Sync localSelectedCableSize with props when relevant data changes
   useEffect(() => {
@@ -95,6 +124,12 @@ export const ConfigPanel = ({
     level: configuringType ? (configuringSystemType ? 2 : 1) : 0,
     path: [],
     ids: {},
+  });
+
+  // Track bar system nested navigation
+  const [barNavState, setBarNavState] = useState({
+    showBarEngines: false, // true when showing "Bar Engines" option
+    showBarOptions: false, // true when showing actual bar options
   });
 
   const [currentConfig, SetcurrentConfig] = useState(null);
@@ -297,13 +332,14 @@ export const ConfigPanel = ({
           baseNumber: "19",
           image: "/images/configOptions/universal/19.png",
           message: "system_base_19",
-          },
+        },
         {
           id: "meteor",
           name: "Meteor",
           baseNumber: "20",
           image: "/images/configOptions/universal/20.png",
-          message: "system_base_20",},
+          message: "system_base_20",
+        },
         {
           id: "asteroid",
           name: "Asteroid",
@@ -412,6 +448,24 @@ export const ConfigPanel = ({
   // Update navigation state when configuringType or configuringSystemType changes
   useEffect(() => {
     updateNavigationState();
+    // Reset bar navigation state when system type changes
+    if (configuringSystemType !== "bar") {
+      setBarNavState({ showBarEngines: false, showBarOptions: false });
+    }
+    
+    // Reset all state when configuringType becomes null (panel closed)
+    if (!configuringType) {
+      setCurrentDesign(null);
+      setAvailableShades([]);
+      setLocalSelectedShade(null);
+      setBarNavState({ showBarEngines: false, showBarOptions: false });
+      // Reset navigation state completely
+      setNavState({
+        level: 0,
+        path: [],
+        ids: {},
+      });
+    }
   }, [configuringType, configuringSystemType]);
 
   // Debug log for tracking props and state
@@ -489,42 +543,42 @@ export const ConfigPanel = ({
     const shadeOptions = {
       // Universal system shades
       // universal: {
-        // atom: [
-        //   { id: "shallowdome", name: "Shallow Dome", color: "#2B2D2F" },
-        //   { id: "deepdome", name: "Deep Dome", color: "#50C878" },
-        //   { id: "flatplate", name: "Flat Plate", color: "#87CEAB" },
-        // ],
-        // nebula: [
-        //   { id: "cone", name: "Cone", color: "#2B2D2F" },
-        //   { id: "cylinder", name: "Cylinder", color: "#50C878" },
-        // ],
-        // cosmos: [
-        //   { id: "sphere", name: "Sphere", color: "#2B2D2F" },
-        //   { id: "hemisphere", name: "Hemisphere", color: "#50C878" },
-        //   { id: "disc", name: "Disc", color: "#87CEAB" },
-        //   { id: "ring", name: "Ring", color: "#F2F0E6" },
-        // ],
-        // stellar: [
-        //   { id: "pyramid", name: "Pyramid", color: "#2B2D2F" },
-        //   { id: "cube", name: "Cube", color: "#50C878" },
-        //   { id: "prism", name: "Prism", color: "#87CEAB" },
-        // ],
-        // eclipse: [
-        //   { id: "oval", name: "Oval", color: "#2B2D2F" },
-        //   { id: "rectangle", name: "Rectangle", color: "#50C878" },
-        // ],
+      // atom: [
+      //   { id: "shallowdome", name: "Shallow Dome", color: "#2B2D2F" },
+      //   { id: "deepdome", name: "Deep Dome", color: "#50C878" },
+      //   { id: "flatplate", name: "Flat Plate", color: "#87CEAB" },
+      // ],
+      // nebula: [
+      //   { id: "cone", name: "Cone", color: "#2B2D2F" },
+      //   { id: "cylinder", name: "Cylinder", color: "#50C878" },
+      // ],
+      // cosmos: [
+      //   { id: "sphere", name: "Sphere", color: "#2B2D2F" },
+      //   { id: "hemisphere", name: "Hemisphere", color: "#50C878" },
+      //   { id: "disc", name: "Disc", color: "#87CEAB" },
+      //   { id: "ring", name: "Ring", color: "#F2F0E6" },
+      // ],
+      // stellar: [
+      //   { id: "pyramid", name: "Pyramid", color: "#2B2D2F" },
+      //   { id: "cube", name: "Cube", color: "#50C878" },
+      //   { id: "prism", name: "Prism", color: "#87CEAB" },
+      // ],
+      // eclipse: [
+      //   { id: "oval", name: "Oval", color: "#2B2D2F" },
+      //   { id: "rectangle", name: "Rectangle", color: "#50C878" },
+      // ],
       // },
       // Bar system shades
       // bar: {
-        // prism: [
-        //   { id: "standard", name: "Standard", color: "#2B2D2F" },
-        //   { id: "extended", name: "Extended", color: "#50C878" },
-        // ],
-        // helix: [
-        //   { id: "single", name: "Single", color: "#2B2D2F" },
-        //   { id: "double", name: "Double", color: "#50C878" },
-        //   { id: "triple", name: "Triple", color: "#87CEAB" },
-        // ],
+      // prism: [
+      //   { id: "standard", name: "Standard", color: "#2B2D2F" },
+      //   { id: "extended", name: "Extended", color: "#50C878" },
+      // ],
+      // helix: [
+      //   { id: "single", name: "Single", color: "#2B2D2F" },
+      //   { id: "double", name: "Double", color: "#50C878" },
+      //   { id: "triple", name: "Triple", color: "#87CEAB" },
+      // ],
       // },
     };
 
@@ -553,7 +607,7 @@ export const ConfigPanel = ({
 
     // Home/Configuration Type Selection
     if (!configuringType) {
-      config.title = "Configuration Type";
+      config.title = "Cable Selected";
       config.showBreadcrumb = false;
       config.items = [
         {
@@ -572,7 +626,32 @@ export const ConfigPanel = ({
         //   image: "/images/configOptions/cable.png",
         // },
       ];
-      config.onItemSelect = onSelectConfigurationType;
+      config.onItemSelect = (itemId) => {
+        // Fire messages for configuration type selection
+        if (sendMessageToPlayCanvas) {
+          if (itemId === "pendant") {
+            sendMessageToPlayCanvas("Nobars");
+          } else if (itemId === "system") {
+            sendMessageToPlayCanvas("Nobars");
+          }
+        }
+        
+        // Reset system type state when selecting system
+        if (itemId === "system") {
+          setCurrentDesign(null);
+          setAvailableShades([]);
+          setLocalSelectedShade(null);
+          setBarNavState({ showBarEngines: false, showBarOptions: false });
+          // Reset navigation state to ensure we show system type selection
+          setNavState({
+            level: 1,
+            path: ["system"],
+            ids: { system: true },
+          });
+        }
+        
+        onSelectConfigurationType(itemId);
+      };
       config.selectedItem = null;
       config.useIcon = true;
       config.showCloseButton = true;
@@ -613,12 +692,16 @@ export const ConfigPanel = ({
     else if (configuringType === "pendant") {
       config.title = "Pendant Design";
       config.showBreadcrumb = true;
-      config.items = [
-        { id: "bumble", name: "Bumble",message:"product_1", image: "/images/configOptions/1.png" },
-        { id: "radial", name: "Radial",message:"product_2", image: "/images/configOptions/2.png" },
-        { id: "ico", name: "Ico",message:"product_4", image: "/images/configOptions/4.png" },
-        { id: "piko", name: "Piko",message:"product_5", image: "/images/configOptions/5.png" },
-      ];
+      config.items = pendantAssignments.map((pendant) => ({
+        id: pendant.design,
+        name: pendant.name,
+        image:
+          pendant.media && pendant.media.image && pendant.media.image.url
+            ? pendant.media.image.url
+            : "",
+        message: pendant.message,
+        baseNumber: pendant.baseNumber,
+      }));
       config.onItemSelect = (itemId) => {
         setCurrentDesign(itemId);
         // Use all selected pendants if available, otherwise fall back to just the first one
@@ -653,6 +736,29 @@ export const ConfigPanel = ({
           },
         ];
         config.onItemSelect = (systemType) => {
+         
+          // Fire specific messages for each system type
+        
+            if (systemType === "universal") {
+              sendMessageToPlayCanvas("Nobars");
+            } else if (systemType === "ball") {
+              sendMessageToPlayCanvas("Nobars");
+            } else if (systemType === "bar") {
+              console.log("Firing bar messages for selectedPendants:", selectedPendants);
+              // Fire the PlayCanvas messages when bar is selected
+              selectedPendants.forEach((id) => {
+                sendMessageToPlayCanvas(`cable_${id}`);
+                sendMessageToPlayCanvas("bars");
+                sendMessageToPlayCanvas("glass_none");
+                sendMessageToPlayCanvas("color_gold");
+                sendMessageToPlayCanvas("silver_none");
+                sendMessageToPlayCanvas(
+                  "product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/Bar_1756732230450.glb"
+                );
+              });
+              sendMessageToPlayCanvas("allmodelsloaded");
+        
+            }
           // Call the parent handler to update state and send message to iframe
           onSystemTypeSelection(systemType);
         };
@@ -663,353 +769,178 @@ export const ConfigPanel = ({
           { id: "system", name: "System Type" },
         ];
       } else {
-        // System base design selection based on the selected system type
-        config.title = `${
-          configuringSystemType.charAt(0).toUpperCase() +
-          configuringSystemType.slice(1)
-        } System`;
-        config.showBreadcrumb = true;
+        // Handle bar system - show bar options directly
+        if (configuringSystemType === "bar") {
+          config.title = "Add On";
+          config.showBreadcrumb = true;
 
-        // Map of base IDs to names and image numbers based on available files
-        const baseOptions = {
-          bar: [
-            {
-              id: "prism",
-              name: "Prism",
-              baseNumber: "1",
-              image: "/images/configOptions/bar/1.png",
-              type: "bar",
-              message: "system_base_1",
-            },
-            {
-              id: "helix",
-              name: "Helix",
-              baseNumber: "2",
-              image: "/images/configOptions/bar/2.png",
-              type: "bar",
-              message: "system_base_2",
-            },
-            {
-              id: "orbit",
-              name: "Orbit",
-              baseNumber: "3",
-              image: "/images/configOptions/bar/3.png",
-              type: "bar",
-              message: "system_base_3",
-            },
-            {
-              id: "zenith",
-              name: "Zenith",
-              baseNumber: "4",
-              image: "/images/configOptions/bar/4.jpg",
-              type: "bar",
-              message: "system_base_4",
-            },
-            {
-              id: "pulse",
-              name: "Pulse",
-              baseNumber: "5",
-              image: "/images/configOptions/bar/5.jpg",
-              type: "bar",
-              message: "system_base_5",
-            },
-            {
-              id: "vortex",
-              name: "Vortex",
-              baseNumber: "6",
-              image: "/images/configOptions/bar/6.jpg",
-              type: "bar",
-              message: "system_base_6",
-            },
-            {
-              id: "nexus",
-              name: "Nexus",
-              baseNumber: "7",
-              image: "/images/configOptions/bar/7.jpg",
-              type: "bar",
-              message: "system_base_7",
-            },
-            {
-              id: "quasar",
-              name: "Quasar",
-              baseNumber: "8",
-              image: "/images/configOptions/bar/8.jpg",
-              type: "bar",
-              message: "system_base_8",
-            },
-            {
-              id: "nova",
-              name: "Nova",
-              baseNumber: "9",
-              image: "/images/configOptions/bar/9.jpg",
-              type: "bar",
-              message: "system_base_9",
-            },
-          ],
-          universal: [
-            {
-              id: "atom",
-              name: "Atom",
-              baseNumber: "1",
-              image: "/images/configOptions/universal/1.png",
-            },
-            {
-              id: "nebula",
-              name: "Nebula",
-              baseNumber: "2",
-              image: "/images/configOptions/universal/2.png",
-            },
-            {
-              id: "cosmos",
-              name: "Cosmos",
-              baseNumber: "3",
-              image: "/images/configOptions/universal/3.png",
-            },
-            {
-              id: "stellar",
-              name: "Stellar",
-              baseNumber: "4",
-              image: "/images/configOptions/universal/4.png",
-            },
-            {
-              id: "eclipse",
-              name: "Eclipse",
-              baseNumber: "5",
-              image: "/images/configOptions/universal/5.png",
-            },
-            {
-              id: "aurora",
-              name: "Aurora",
-              baseNumber: "6",
-              image: "/images/configOptions/universal/6.png",
-            },
-            {
-              id: "solstice",
-              name: "Solstice",
-              baseNumber: "7",
-              image: "/images/configOptions/universal/7.png",
-            },
-            {
-              id: "quantum",
-              name: "Quantum",
-              baseNumber: "8",
-              image: "/images/configOptions/universal/8.png",
-            },
-            {
-              id: "vertex",
-              name: "Vertex",
-              baseNumber: "9",
-              image: "/images/configOptions/universal/9.png",
-            },
-            {
-              id: "horizon",
-              name: "Horizon",
-              baseNumber: "10",
-              image: "/images/configOptions/universal/10.png",
-            },
-            {
-              id: "zoneith",
-              name: "Zoneith",
-              baseNumber: "11",
-              image: "/images/configOptions/universal/11.png",
-            },
-            {
-              id: "equinox",
-              name: "Equinox",
-              baseNumber: "12",
-              image: "/images/configOptions/universal/12.png",
-            },
-            {
-              id: "meridian",
-              name: "Meridian",
-              baseNumber: "13",
-              image: "/images/configOptions/universal/13.png",
-            },
-            {
-              id: "polaris",
-              name: "Polaris",
-              baseNumber: "14",
-              image: "/images/configOptions/universal/14.png",
-            },
-            {
-              id: "pulsar",
-              name: "Pulsar",
-              baseNumber: "15",
-              image: "/images/configOptions/universal/15.png",
-            },
-            {
-              id: "quasar",
-              name: "Quasar",
-              baseNumber: "16",
-              image: "/images/configOptions/universal/16.png",
-            },
-            {
-              id: "supernova",
-              name: "Supernova",
-              baseNumber: "17",
-              image: "/images/configOptions/universal/17.png",
-            },
-            {
-              id: "galaxy",
-              name: "Galaxy",
-              baseNumber: "18",
-              image: "/images/configOptions/universal/18.png",
-            },
-            {
-              id: "comet",
-              name: "Comet",
-              baseNumber: "19",
-              image: "/images/configOptions/universal/19.png",
-            },
-            {
-              id: "meteor",
-              name: "Meteor",
-              baseNumber: "20",
-              image: "/images/configOptions/universal/20.png",
-            },
-            {
-              id: "asteroid",
-              name: "Asteroid",
-              baseNumber: "21",
-              image: "/images/configOptions/universal/21.png",
-            },
-            {
-              id: "celestial",
-              name: "Celestial",
-              baseNumber: "22",
-              image: "/images/configOptions/universal/22.png",
-            },
-            {
-              id: "orbital",
-              name: "Orbital",
-              baseNumber: "23",
-              image: "/images/configOptions/universal/23.png",
-            },
-            {
-              id: "lunar",
-              name: "Lunar",
-              baseNumber: "24",
-              image: "/images/configOptions/universal/24.png",
-            },
-            {
-              id: "solar",
-              name: "Solar",
-              baseNumber: "25",
-              image: "/images/configOptions/universal/25.png",
-            },
-            {
-              id: "nova",
-              name: "Nova",
-              baseNumber: "26",
-              image: "/images/configOptions/universal/26.png",
-            },
-            {
-              id: "photon",
-              name: "Photon",
-              baseNumber: "27",
-              image: "/images/configOptions/universal/27.png",
-            },
-            {
-              id: "gravity",
-              name: "Gravity",
-              baseNumber: "28",
-              image: "/images/configOptions/universal/28.png",
-            },
-            {
-              id: "spectrum",
-              name: "Spectrum",
-              baseNumber: "29",
-              image: "/images/configOptions/universal/29.png",
-            },
-            {
-              id: "infinity",
-              name: "Infinity",
-              baseNumber: "30",
-              image: "/images/configOptions/universal/30.png",
-            },
-            // {
-            //   id: "void",
-            //   name: "Void",
-            //   baseNumber: "31",
-            //   image: "/images/configOptions/universal/31.png",
-            // },
-            // {
-            //   id: "blackhole",
-            //   name: "Blackhole",
-            //   baseNumber: "32",
-            //   image: "/images/configOptions/universal/32.png",
-            // },
-            // {
-            //   id: "singularity",
-            //   name: "Singularity",
-            //   baseNumber: "33",
-            //   image: "/images/configOptions/universal/33.png",
-            // },
-            // {
-            //   id: "supernova",
-            //   name: "Supernova",
-            //   baseNumber: "34",
-            //   image: "/images/configOptions/universal/34.png",
-            // },
-          ],
-        };
-
-        // Get the appropriate bases for the selected system type
-        const systemTypeBases = baseOptions[configuringSystemType] || [];
-
-        // Create items with images from the type-specific folder, and attach shades if available
-        config.items = systemTypeBases.map((base) => {
-          const shades = checkForMultipleShades(base.id, configuringSystemType);
-          return {
-            id: base.id,
-            name: base.name,
-            image: base.image,
-            baseNumber: base.baseNumber,
-            shades: shades || null,
-          };
-        });
-
-        // If a base is selected and it has shades, show those as the next options (inside the same panel)
-        if (currentDesign) {
-          const selectedBase = config.items.find(
-            (item) => item.id === currentDesign
+          // Get bar assignments and filter out "Luga" design
+          const systemTypeBases = (barAssignments || []).filter(
+            (base) => base.design !== "luga"
           );
-          const shades = selectedBase && selectedBase.shades;
 
-          if (shades && shades.length > 0) {
-            // Replace items with shades for this step
-            config.items = shades.map((shade, idx) => ({
-              ...shade,
-              id: shade.id,
-              name: shade.name,
-              color: shade.color,
-              index: idx,
-            }));
-            config.onItemSelect = (shadeId) => {
-              setLocalSelectedShade(shadeId);
-              if (typeof onShadeSelect === "function") {
-                onShadeSelect(
-                  selectedBase.baseNumber,
-                  shadeId,
-                  configuringSystemType,
-                  config.items.findIndex((s) => s.id === shadeId)
-                );
-              }
+          // Create items with images from the type-specific folder, and attach shades if available
+          config.items = systemTypeBases.map((base) => {
+            const shades = checkForMultipleShades(
+              base.id,
+              configuringSystemType
+            );
+            return {
+              id: base.design,
+              name: base.name,
+              image:
+                base.media && base.media.image && base.media.image.url
+                  ? base.media.image.url
+                  : "",
+              baseNumber: base.baseNumber,
+              shades: shades || null,
             };
-            config.selectedItem = localSelectedShade;
-            config.breadcrumbItems = [
-              { id: "home", name: "icon-home" },
-              { id: "system", name: "System" },
-              {
-                id: configuringSystemType,
-                name: `${
-                  configuringSystemType.charAt(0).toUpperCase() +
-                  configuringSystemType.slice(1)
-                } System`,
-              },
-              { id: "shades", name: "Shades" },
-            ];
-            config.title = "Shades";
+          });
+
+          config.onItemSelect = (itemId) => {
+           
+             setCurrentDesign(itemId);
+            const selectedBase = config.items.find(
+              (item) => item.id === itemId
+            );
+            const shades = selectedBase && selectedBase.shades;
+            if (shades && shades.length > 0) {
+              setAvailableShades(shades);
+              setLocalSelectedShade(shades[0].id);
+              if (typeof onShadeSelect === "function") {
+                onShadeSelect(itemId, shades[0].id, configuringSystemType, 0);
+              }
+            } else {
+              setAvailableShades([]);
+              setLocalSelectedShade(null);
+            }
+            onSystemBaseDesignChange(itemId);
+          };
+          config.selectedItem = currentDesign;
+          config.breadcrumbItems = [
+            { id: "home", name: "icon-home" },
+            { id: "system", name: "System Type" },
+            { id: "bar", name: "Add On" },
+          ];
+        } else {
+          // System base design selection for other system types (ball, universal)
+          config.title = `${
+            configuringSystemType.charAt(0).toUpperCase() +
+            configuringSystemType.slice(1)
+          }`;
+          config.showBreadcrumb = true;
+
+          // Map of base IDs to names and image numbers based on available files
+          const baseOptions = {
+            bar: barAssignments,
+            ball: ballAssignments,
+            universal: universalAssignments,
+          };
+
+          // Get the appropriate bases for the selected system type
+          const systemTypeBases = baseOptions[configuringSystemType] || [];
+
+          // Create items with images from the type-specific folder, and attach shades if available
+          config.items = systemTypeBases.map((base) => {
+            const shades = checkForMultipleShades(
+              base.id,
+              configuringSystemType
+            );
+            return {
+              id: base.design,
+              name: base.name,
+              image:
+                base.media && base.media.image && base.media.image.url
+                  ? base.media.image.url
+                  : "",
+              baseNumber: base.baseNumber,
+              shades: shades || null,
+            };
+          });
+
+          // If a base is selected and it has shades, show those as the next options (inside the same panel)
+          if (currentDesign) {
+            const selectedBase = config.items.find(
+              (item) => item.id === currentDesign
+            );
+            const shades = selectedBase && selectedBase.shades;
+
+            if (shades && shades.length > 0) {
+              // Replace items with shades for this step
+              config.items = shades.map((shade, idx) => ({
+                ...shade,
+                id: shade.id,
+                name: shade.name,
+                color: shade.color,
+                index: idx,
+              }));
+              config.onItemSelect = (shadeId) => {
+                setLocalSelectedShade(shadeId);
+                if (typeof onShadeSelect === "function") {
+                  onShadeSelect(
+                    selectedBase.baseNumber,
+                    shadeId,
+                    configuringSystemType,
+                    config.items.findIndex((s) => s.id === shadeId)
+                  );
+                }
+              };
+              config.selectedItem = localSelectedShade;
+              config.breadcrumbItems = [
+                { id: "home", name: "icon-home" },
+                { id: "system", name: "System Type" },
+                {
+                  id: configuringSystemType,
+                  name: `${
+                    configuringSystemType.charAt(0).toUpperCase() +
+                    configuringSystemType.slice(1)
+                  }`,
+                },
+                { id: "shades", name: "Shades" },
+              ];
+              config.title = "Shades";
+            } else {
+              // Show base options
+              config.onItemSelect = (itemId) => {
+                setCurrentDesign(itemId);
+                const selectedBase = config.items.find(
+                  (item) => item.id === itemId
+                );
+                const shades = selectedBase && selectedBase.shades;
+                if (shades && shades.length > 0) {
+                  setAvailableShades(shades);
+                  setLocalSelectedShade(shades[0].id);
+                  if (typeof onShadeSelect === "function") {
+                    onShadeSelect(
+                      itemId,
+                      shades[0].id,
+                      configuringSystemType,
+                      0
+                    );
+                  }
+                } else {
+                  setAvailableShades([]);
+                  setLocalSelectedShade(null);
+                }
+                onSystemBaseDesignChange(itemId);
+              };
+              config.selectedItem = currentDesign;
+              config.breadcrumbItems = [
+                { id: "home", name: "icon-home" },
+                { id: "system", name: "System Type" },
+                {
+                  id: configuringSystemType,
+                  name: `${
+                    configuringSystemType.charAt(0).toUpperCase() +
+                    configuringSystemType.slice(1)
+                  }`,
+                },
+              ];
+              config.title = `${
+                configuringSystemType.charAt(0).toUpperCase() +
+                configuringSystemType.slice(1)
+              }`;
+            }
           } else {
             // Show base options
             config.onItemSelect = (itemId) => {
@@ -1033,56 +964,20 @@ export const ConfigPanel = ({
             config.selectedItem = currentDesign;
             config.breadcrumbItems = [
               { id: "home", name: "icon-home" },
-              { id: "system", name: "System" },
+              { id: "system", name: "System Type" },
               {
                 id: configuringSystemType,
                 name: `${
                   configuringSystemType.charAt(0).toUpperCase() +
                   configuringSystemType.slice(1)
-                } System`,
+                }`,
               },
             ];
             config.title = `${
               configuringSystemType.charAt(0).toUpperCase() +
               configuringSystemType.slice(1)
-            } System`;
+            }`;
           }
-        } else {
-          // Show base options
-          config.onItemSelect = (itemId) => {
-            setCurrentDesign(itemId);
-            const selectedBase = config.items.find(
-              (item) => item.id === itemId
-            );
-            const shades = selectedBase && selectedBase.shades;
-            if (shades && shades.length > 0) {
-              setAvailableShades(shades);
-              setLocalSelectedShade(shades[0].id);
-              if (typeof onShadeSelect === "function") {
-                onShadeSelect(itemId, shades[0].id, configuringSystemType, 0);
-              }
-            } else {
-              setAvailableShades([]);
-              setLocalSelectedShade(null);
-            }
-            onSystemBaseDesignChange(itemId);
-          };
-          config.selectedItem = currentDesign;
-          config.breadcrumbItems = [
-            { id: "home", name: "icon-home" },
-            { id: "system", name: "System" },
-            {
-              id: configuringSystemType,
-              name: `${
-                configuringSystemType.charAt(0).toUpperCase() +
-                configuringSystemType.slice(1)
-              } System`,
-            },
-          ];
-          config.title = `${
-            configuringSystemType.charAt(0).toUpperCase() +
-            configuringSystemType.slice(1)
-          } System`;
         }
       }
     }
@@ -1096,6 +991,11 @@ export const ConfigPanel = ({
     console.log("handleBreadcrumbNavigation", id);
     if (id === "home") {
       // Reset to configuration type selection (first level)
+      // Clear all system-related state
+      setCurrentDesign(null);
+      setAvailableShades([]);
+      setLocalSelectedShade(null);
+      setBarNavState({ showBarEngines: false, showBarOptions: false });
       onSelectConfigurationType(null);
       // Do NOT call onClose() as we want to keep the panel open
     } else if (id === "system" && navState.level === 2) {
@@ -1106,17 +1006,27 @@ export const ConfigPanel = ({
         path: ["system"],
         ids: { system: true },
       });
+      // Reset bar navigation state and design selection
+      setCurrentDesign(null);
+      setAvailableShades([]);
+      setLocalSelectedShade(null);
+      setBarNavState({ showBarEngines: false, showBarOptions: false });
       onSystemTypeSelection(null);
     } else if (id === "pendant") {
       // If we click on Pendant Design breadcrumb, ensure we're at that level
       if (configuringType !== "pendant") {
         onSelectConfigurationType("pendant");
       }
+    } else if (id === "bar" && configuringSystemType === "bar") {
+      // If we click on Bar breadcrumb, reset to bar options view
+      setCurrentDesign(null);
+      setAvailableShades([]);
+      setLocalSelectedShade(null);
     } else if (
       configuringType === "system" &&
-      (id === "universal" || id === "bar" || id === "ball")
+      (id === "universal" || id === "ball")
     ) {
-      // If we click on a system base (e.g., Universal System, Bar System) breadcrumb,
+      // If we click on a system base (e.g., Universal, Ball) breadcrumb,
       // reset to show base options for that system
       setCurrentDesign(null);
       setAvailableShades([]);
@@ -1171,7 +1081,7 @@ export const ConfigPanel = ({
   return (
     <div className="flex justify-center items-center w-full">
       <motion.div
-        className={`fixed h-[150px] sm:absolute bottom-0 sm:bottom-1 -translate-x-1/2 bg-black/95 backdrop-blur-sm border border-gray-700 rounded-t-lg sm:rounded-lg z-40 w-full sm:max-w-[320px] md:max-w-[400px] lg:max-w-[480px] xl:max-w-[540px] sm:w-[80vw] md:w-[55vw] lg:w-[40vw] xl:w-[24vw] max-h-[60vh] sm:max-h-[30vh] shadow-lg overflow-hidden ${className}`}
+        className={`fixed h-[150px] sm:absolute bottom-0 sm:bottom-1 -translate-x-1/2 bg-black/95 sm:backdrop-blur-sm border border-gray-700 rounded-t-lg sm:rounded-lg z-40 w-full sm:max-w-[320px] md:max-w-[400px] lg:max-w-[480px] xl:max-w-[540px] sm:w-[80vw] md:w-[55vw] lg:w-[40vw] xl:w-[24vw] max-h-[60vh] sm:max-h-[30vh] shadow-lg overflow-hidden ${className}`}
         initial={
           isMobileView ? { y: "100%", opacity: 0 } : { y: 30, opacity: 0 }
         }
@@ -1209,15 +1119,7 @@ export const ConfigPanel = ({
               <>
                 <div className="flex-1">
                   <h3 className="text-xs sm:text-sm font-medium text-white font-['Amenti'] truncate">
-                    {panelConfig.showLocationLabel
-                      ? `Configure Cable${
-                          selectedPendants && selectedPendants.length > 1
-                            ? "s"
-                            : ""
-                        } ${formatSelectedLocations(
-                          selectedPendants || selectedLocation
-                        )}`
-                      : panelConfig.title}
+                    {panelConfig.title}
                   </h3>
                 </div>
                 {panelConfig.showCloseButton && (
@@ -1295,41 +1197,53 @@ export const ConfigPanel = ({
                       }`}
                     >
                       {/* Wishlist Icon Overlay */}
-                      {item.id !== "pendant" && item.id !== "system" && item.id !== "bar" && item.id !== "ball" && item.id !== "universal" && (
-                        <button
-                          type="button"
-                          className="absolute top-1 right-1 z-10 bg-white/80 rounded-full p-1 hover:bg-rose-200 transition-all"
-                          onClick={(e) => {
-                            e.stopPropagation(); // Prevent triggering parent click
-                            if (favorites.some((fav) => fav.id === item.id)) {
-                              dispatch(removeFromFavorites(item.id));
-                            } else {
-                              dispatch(
-                                addToFavorites({
-                                  id: item.id,
-                                  name: item.name,
-                                  image: item.image,
-                                  type: item.type,
-                                  message: item.message,
-                                })
-                              );
-                            }
-                          }}
-                          title={
-                            favorites.some((fav) => fav.id === item.id)
-                              ? "Remove from Wishlist"
-                              : "Add to Wishlist"
-                          }
-                        >
-                          <FaHeart
-                            className={
+                      {item.id !== "pendant" &&
+                        item.id !== "system" &&
+                        item.id !== "bar" &&
+                        item.id !== "ball" &&
+                        item.id !== "universal" && (
+                          <button
+                            type="button"
+                            className="absolute top-1 right-1 z-10 bg-white/80 rounded-full p-1 hover:bg-rose-200 transition-all"
+                            onClick={async (e) => {
+                              e.stopPropagation();
+                              let newWishlist;
+
+                              if (favorites.some((fav) => fav.id === item.id)) {
+                                // Remove from Redux state
+                                dispatch(removeFromFavorites(item.id));
+                                // Remove from wishlist array
+                                newWishlist = favorites
+                                  .filter((fav) => fav.id !== item.id)
+                                  .map((fav) => fav.id);
+                              } else {
+                                // Add to Redux state
+                                dispatch(addToFavorites({ id: item.id }));
+                                // Add to wishlist array
+                                newWishlist = [
+                                  ...favorites.map((fav) => fav.id),
+                                  item.id,
+                                ];
+                              }
+
+                              // Sync with backend
+                              await syncWishlistWithAPI(newWishlist);
+                            }}
+                            title={
                               favorites.some((fav) => fav.id === item.id)
-                                ? "text-rose-500"
-                                : "text-gray-400"
+                                ? "Remove from Wishlist"
+                                : "Add to Wishlist"
                             }
-                          />
-                        </button>
-                      )}
+                          >
+                            <FaHeart
+                              className={
+                                favorites.some((fav) => fav.id === item.id)
+                                  ? "text-rose-500"
+                                  : "text-gray-400"
+                              }
+                            />
+                          </button>
+                        )}
                       {item.image ? (
                         <Image
                           src={item.image}

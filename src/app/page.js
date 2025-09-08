@@ -30,6 +30,7 @@ import ScrollToTop from './components/ScrollToTop';
 import SplashScreen from './components/SplashScreen';
 import CookieConsent from './components/CookieConsent';
 import { useEffect, useState, Suspense } from 'react';
+import { useHideNavFooter } from './components/context/HideNavFooterContext';
 import { initTracking, sendTrackingData, cleanupTracking } from './services/trackingService';
 import { initDynamicThemeSwitcher, setDayNightTheme } from './utils/dynamicThemeSwitcher';
 import HourSelector from './components/ui/HourSelector';
@@ -56,7 +57,9 @@ export default function Home() {
   const [userType, setUserType] = useState(null);
   const [showSplash, setShowSplash] = useState(true);
   const [showUserSelection, setShowUserSelection] = useState(false);
-  
+  const { hideNavFooter, setHideNavFooter } = useHideNavFooter();
+  console.log("hideNavFooterHeader", hideNavFooter);
+
   useEffect(() => {
     // Initialize dynamic hourly theme switcher
     if (typeof window !== 'undefined') {
@@ -76,7 +79,7 @@ export default function Home() {
       window.removeEventListener('resize', checkMobile);
     };
   }, []);
-
+ 
   // Custom hook to handle splash screen completion
   useEffect(() => {
     // Listen for splash screen completion
@@ -156,7 +159,7 @@ export default function Home() {
         */}
       </TransitionLayout>
       {/* {!isMobile && <MouseTrail />} */}
-      <Footer />
+      { !hideNavFooter && <Footer /> }
       <SectionNavigation />
       {/* <ScrollToTop /> */}
       <CookieConsent onAccept={handleTrackingConsent} onDecline={() => {}} />

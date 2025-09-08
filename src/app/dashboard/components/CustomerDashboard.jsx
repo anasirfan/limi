@@ -1,5 +1,6 @@
 "use client";
 
+<<<<<<< HEAD
 import React, { useState, useEffect, Fragment } from 'react';
 import Image from 'next/image';
 import { FaSort, FaInbox, FaSpinner, FaEnvelope, FaSortUp, FaSortDown, FaSearch, FaEye, FaTimes, FaFilter, FaGlobe, FaClock, FaDesktop, FaTabletAlt, FaMobileAlt, FaUsers, FaBoxOpen, FaShoppingCart, FaBox, FaSlideshare, FaUserPlus, FaTrash } from 'react-icons/fa';
@@ -11,8 +12,67 @@ import DistributorDetailsModal from './DistributorDetailsModal';
 import SlideInsights from './SlideInsights';
 import MarketingTab from './MarketingTab';
 import LimiFutureAnalytics from './LimiFutureAnalytics';
+=======
+import React, { useState, useEffect, Fragment } from "react";
+import Image from "next/image";
+import {
+  FaSort,
+  FaInbox,
+  FaSpinner,
+  FaEnvelope,
+  FaSortUp,
+  FaSortDown,
+  FaSearch,
+  FaEye,
+  FaTimes,
+  FaFilter,
+  FaGlobe,
+  FaClock,
+  FaDesktop,
+  FaTabletAlt,
+  FaMobileAlt,
+  FaUsers,
+  FaBoxOpen,
+  FaShoppingCart,
+  FaBox,
+  FaSlideshare,
+  FaUserPlus,
+  FaTrash,
+} from "react-icons/fa";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  LineChart,
+  Line,
+} from "recharts";
+import { FaPlus, FaEdit, FaImage, FaCube,FaChartLine  } from "react-icons/fa";
+import { generateName } from "./PendantSystemManager/utils/nameGenerator";
+import ProductManagement from "./ProductManagement";
+import SlideManagement from "./SlideManagement";
+import AddCustomerModal from "./SlideManagement/AddCustomerModal";
+import DistributorDetailsModal from "./DistributorDetailsModal";
+import SlideInsights from "./SlideInsights";
+import { getSessionDataFromLocalStorage } from "../../utils/slideAnalytics";
+import MarketingTab from "./MarketingTab";
+import InvestorDetails from "./InvestorDetails";
+import DashboardNavButton from "./DashboardNavButton";
+import PendantSystemManager from "./PendantSystemManager";
+import DistributorApplications from "./DistributorApplications";
+import ContactFormSubmissions from "./ContactFormSubmissions";
+import CommunitySubscriptions from "./CommunitySubscriptions";
+>>>>>>> fe8651ab8c21f2e668cc470a8125a6b269255501
 
 export default function CustomerDashboard({ token }) {
+  const [editingItem, setEditingItem] = useState(null);
   const [slideshowTab, setSlideshowTab] = useState("edit");
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -74,6 +134,25 @@ export default function CustomerDashboard({ token }) {
   const [deleteError, setDeleteError] = useState(null);
   const [deleteSuccess, setDeleteSuccess] = useState(false);
 
+  // Add Pendant state
+  const [pendantSystemData, setPendantSystemData] = useState([]);
+  const [pendantLoading, setPendantLoading] = useState(false);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newPendantData, setNewPendantData] = useState({
+    systemType: "",
+    name: "",
+    design: "",
+    message: "",
+    isSystem: false,
+    image: "",
+
+  });
+  const [pendantSaving, setPendantSaving] = useState(false);
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState("");
+  const [modelFile, setModelFile] = useState(null);
+  const [modelPreview, setModelPreview] = useState("");
+
   // Mobile traffic tab state
   const [mobileUsers, setMobileUsers] = useState([]);
   const [mobileUsersLoading, setMobileUsersLoading] = useState(false);
@@ -98,6 +177,296 @@ export default function CustomerDashboard({ token }) {
     useState("desc");
   const [registrationCurrentPage, setRegistrationCurrentPage] = useState(1);
   const [registrationsPerPage, setRegistrationsPerPage] = useState(10);
+
+  // Fetch pendant/system data
+  const fetchPendantSystemData = async () => {
+    setPendantLoading(true);
+    try {
+      const response = await fetch(
+        "https://dev.api1.limitless-lighting.co.uk/admin/configurator/system",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch pendant/system data");
+      }
+
+      const data = await response.json();
+      console.log("pendantData", data)
+      const formattedData = Array.isArray(data) ? data : data?.data || [];
+      setPendantSystemData(formattedData);
+    } catch (error) {
+      console.error("Error fetching pendant/system data:", error);
+      setPendantSystemData([]);
+    } finally {
+      setPendantLoading(false);
+    }
+  };
+
+  // Update pendant/system data
+  const updatePendantSystem = async (id, changedFields) => {
+    console.log("id", id);
+    console.log("changedFields", changedFields);
+    setPendantSaving(true);
+    try {
+      const formData = new FormData();
+      Object.entries(changedFields).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          if (key === 'imageBinary' && value instanceof Uint8Array) {
+            // Handle binary image data
+            const blob = new Blob([value], { type: 'image/jpeg' });
+            formData.append('image', blob, "image.jpg");
+          } else if (key === 'image' && typeof value === 'string' && value.startsWith('data:image')) {
+            // Convert base64 to binary for image uploads
+            const binaryData = base64ToUint8Array(value);
+            const blob = new Blob([binaryData], { type: 'image/jpeg' });
+            formData.append('image', blob, "image.jpg");
+          } else if (key === 'modelBinary' && value instanceof Uint8Array) {
+            // Handle binary model data
+            const blob = new Blob([value], { type: 'model/gltf-binary' });
+            formData.append('model', blob, "model.glb");
+          } else if (key === 'model' && typeof value === 'string' && (value.startsWith('data:') || value.includes('base64'))) {
+            // Convert base64 model to binary for uploads
+            const binaryData = base64ToUint8Array(value);
+            const blob = new Blob([binaryData], { type: 'model/gltf-binary' });
+            formData.append('model', blob, "model.glb");
+          } else if (key !== 'imageBinary' && key !== 'modelBinary') {
+            // Skip binary fields as they're handled above
+            formData.append(key, value);
+          }
+        }
+      });
+      console.log("formData entries:");
+      for (let pair of formData.entries()) {
+        console.log(pair[0], pair[1]);
+      }
+      const response = await fetch(
+        `https://dev.api1.limitless-lighting.co.uk/admin/configurator/system/${id}`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: formData,
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to update pendant/system");
+      }
+      setShowAddForm(false);
+      setEditingItem(null);
+      fetchPendantSystemData();
+    } catch (error) {
+      console.error("Error updating pendant/system:", error);
+      alert("Failed to update pendant/system");
+    } finally {
+      setPendantSaving(false);
+    }
+  };
+
+  const deletePendantSystem = async (id) => {
+    console.log("id",id)
+    setPendantSaving(true);
+    try {
+      const response = await fetch(
+        `https://dev.api1.limitless-lighting.co.uk/admin/configurator/system/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to delete pendant/system");
+      }
+      fetchPendantSystemData();
+    } catch (error) {
+      console.error("Error deleting pendant/system:", error);
+      alert("Failed to delete pendant/system");
+    } finally {
+      setPendantSaving(false);
+    }
+  };
+  // Save pendant/system data
+  const savePendantSystem = async () => {
+    if (!newPendantData.name || !newPendantData.design) {
+      alert("Please fill in all required fields");
+      return;
+    }
+
+    setPendantSaving(true);
+
+    try {
+      const formData = new FormData();
+      // Use binary data if available, otherwise use original file
+      if (newPendantData.imageBinary) {
+        const blob = new Blob([newPendantData.imageBinary], { type: 'image/jpeg' });
+        formData.append("image", blob, "image.jpg");
+      } else if (imageFile) {
+        formData.append("image", imageFile);
+      }
+      if (modelFile) formData.append("model", modelFile);
+      formData.append("systemType", newPendantData.systemType || "");
+      formData.append("name", newPendantData.name || "");
+      formData.append("design", newPendantData.design || "");
+      formData.append("message", newPendantData.message || "");
+      formData.append("isSystem", newPendantData.isSystem ? "true" : "false");
+      formData.append("hasGlass", newPendantData.hasGlass ? "true" : "false");
+      formData.append("hasGold", newPendantData.hasGold ? "true" : "false");
+      formData.append("hasSilver", newPendantData.hasSilver ? "true" : "false");
+
+      const response = await fetch(
+        "https://dev.api1.limitless-lighting.co.uk/admin/configurator/system",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: formData,
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to save pendant/system");
+      }
+
+      // Reset form
+      setNewPendantData({
+        systemType: "",
+        name: "",
+        design: "",
+        message: "",
+        isSystem: false,
+        image: "",
+        hasGlass: false,
+        hasColor: false
+      });
+      setImageFile(null);
+      setImagePreview("");
+      setModelFile(null);
+      setModelPreview("");
+      setShowAddForm(false);
+      fetchPendantSystemData();
+    } catch (error) {
+      console.error("Error saving pendant/system:", error);
+      alert("Failed to save pendant/system");
+    } finally {
+      setPendantSaving(false);
+    }
+  };
+
+
+  // Handle form input changes
+  const handlePendantInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+
+    if (name === "systemType") {
+      // Auto-set isSystem based on selection
+      const isSystem = value !== ""; // Empty value means Individual Pendant
+
+      // Only auto-generate names when NOT in edit mode
+      if (!editingItem) {
+        // Calculate next index for auto-population
+        const getNextIndex = (type) => {
+          if (type === "") {
+            // For pendants, count all non-system items
+            const pendantCount = pendantSystemData.filter(
+              (item) => !item.isSystem
+            ).length;
+            return pendantCount + 1;
+          } else {
+            // For systems, count items of the same system type
+            const systemCount = pendantSystemData.filter(
+              (item) => item.isSystem && item.systemType === type
+            ).length;
+            return systemCount + 1;
+          }
+        };
+
+        const nextIndex = getNextIndex(value);
+
+        // Auto-populate fields based on selection using generateName
+        const existingNames = pendantSystemData.map(
+          (p) => p.name?.toLowerCase?.() || ""
+        );
+        
+        let autoName = "";
+        let autoMessage = "";
+
+        if (value === "") {
+          // Individual Pendant - use generateName
+          do {
+            autoName = generateName(existingNames);
+          } while (existingNames.includes(autoName.toLowerCase()));
+          autoMessage = `product_${nextIndex}`;
+        } else {
+          // System Configuration - use generateName
+          do {
+            autoName = generateName(existingNames);
+          } while (existingNames.includes(autoName.toLowerCase()));
+          autoMessage = `system_base_${nextIndex}`;
+        }
+
+        setNewPendantData((prev) => ({
+          ...prev,
+          [name]: value,
+          isSystem: isSystem,
+          name: autoName,
+          message: autoMessage,
+          design: autoName.toLowerCase(), // Auto-generate design identifier
+        }));
+      } else {
+        // In edit mode, only update systemType and isSystem, preserve existing name/message/design
+        setNewPendantData((prev) => ({
+          ...prev,
+          [name]: value,
+          isSystem: isSystem,
+        }));
+      }
+    } else if (name === "name") {
+      // Auto-generate design identifier from product name
+      const designIdentifier = value.toLowerCase();
+      setNewPendantData((prev) => ({
+        ...prev,
+        [name]: value,
+        design: designIdentifier,
+      }));
+    } else {
+      setNewPendantData((prev) => ({
+        ...prev,
+        [name]: type === "checkbox" ? checked : value,
+      }));
+    }
+  };
+
+  // Handle icon image file selection
+  const handleIconImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Handle 3D model file selection
+  const handle3DModelChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setModelFile(file);
+      setModelPreview(file.name);
+    }
+  };
 
   // Fetch community subscription registrations
   const fetchRegistrations = async () => {
@@ -243,6 +612,8 @@ export default function CustomerDashboard({ token }) {
       fetchRegistrations();
     } else if (activeTab === "mobile-users") {
       fetchMobileUsers();
+    } else if (activeTab === "addPendant") {
+      fetchPendantSystemData();
     }
   }, [activeTab]);
 
@@ -1070,112 +1441,72 @@ export default function CustomerDashboard({ token }) {
     <div>
       {/* Dashboard Navigation */}
       <div className="bg-[#292929] p-4 flex flex-wrap gap-2">
-        <button
+        <DashboardNavButton
+          icon={<FaUsers />}
+          label="Customers"
+          active={activeTab === "customers"}
           onClick={() => setActiveTab("customers")}
-          className={`px-4 py-2 rounded-md flex items-center ${
-            activeTab === "customers"
-              ? "bg-[#54BB74] text-[#1e1e1e] font-medium"
-              : "bg-[#333333] text-white hover:bg-[#444444]"
-          }`}
-        >
-          <FaUsers className="mr-2" />
-          Customers
-        </button>
-
-        <button
+        />
+        <DashboardNavButton
+          icon={<FaChartLine />}
+          label="Limitless AI"
+          active={activeTab === "limitless-ai"}
           onClick={() => setActiveTab("limitless-ai")}
-          className={`px-4 py-2 rounded-md flex items-center ${
-            activeTab === "limitless-ai"
-              ? "bg-[#54BB74] text-[#1e1e1e] font-medium"
-              : "bg-[#333333] text-white hover:bg-[#444444]"
-          }`}
-        >
-          <FaChartLine className="mr-2" />
-          Limitless AI
-        </button>
-        
-        <button
+        />
+        <DashboardNavButton
+          icon={<FaGlobe />}
+          label="Visitor Tracking"
+          active={activeTab === "tracking"}
           onClick={() => setActiveTab("tracking")}
-          className={`px-4 py-2 rounded-md flex items-center ${
-            activeTab === "tracking"
-              ? "bg-[#54BB74] text-[#1e1e1e] font-medium"
-              : "bg-[#333333] text-white hover:bg-[#444444]"
-          }`}
-        >
-          <FaGlobe className="mr-2" />
-          Visitor Tracking
-        </button>
-
-        <button
+        />
+        <DashboardNavButton
+          icon={<FaMobileAlt />}
+          label="Mobile Users"
+          active={activeTab === "mobile"}
           onClick={() => setActiveTab("mobile")}
-          className={`px-4 py-2 rounded-md flex items-center ${
-            activeTab === "mobile"
-              ? "bg-[#54BB74] text-[#1e1e1e] font-medium"
-              : "bg-[#333333] text-white hover:bg-[#444444]"
-          }`}
-        >
-          <FaMobileAlt className="mr-2" />
-          Mobile Users
-        </button>
-
-        <button
+        />
+        <DashboardNavButton
+          icon={<FaBox />}
+          label="Product Management"
+          active={activeTab === "productManagement"}
           onClick={() => setActiveTab("productManagement")}
-          className={`px-4 py-2 rounded-md flex items-center ${
-            activeTab === "productManagement"
-              ? "bg-[#54BB74] text-[#1e1e1e] font-medium"
-              : "bg-[#333333] text-white hover:bg-[#444444]"
-          }`}
-        >
-          <FaBox className="mr-2" />
-          Product Management
-        </button>
-
-        <button
+        />
+        <DashboardNavButton
+          icon={<FaSlideshare />}
+          label="Slideshow"
+          active={activeTab === "slideshow"}
           onClick={() => setActiveTab("slideshow")}
-          className={`px-4 py-2 rounded-md flex items-center ${
-            activeTab === "slideshow"
-              ? "bg-[#54BB74] text-[#1e1e1e] font-medium"
-              : "bg-[#333333] text-white hover:bg-[#444444]"
-          }`}
-        >
-          <FaSlideshare className="mr-2" />
-          Slideshow
-        </button>
-        <button
+        />
+        <DashboardNavButton
+          icon={<FaEnvelope />}
+          label="Contact Queries"
+          active={activeTab === "query"}
           onClick={() => setActiveTab("query")}
-          className={`px-4 py-2 rounded-md flex items-center ${
-            activeTab === "query"
-              ? "bg-[#54BB74] text-[#1e1e1e] font-medium"
-              : "bg-[#333333] text-white hover:bg-[#444444]"
-          }`}
-        >
-          <FaEnvelope className="mr-2" />
-          Contact Queries
-        </button>
-        <button
+        />
+        <DashboardNavButton
+          icon={<FaBox />}
+          label="Add Pendant"
+          active={activeTab === "addPendant"}
+          onClick={() => setActiveTab("addPendant")}
+        />
+        <DashboardNavButton
+          icon={<FaEnvelope />}
+          label="Distributor Queries"
+          active={activeTab === "distributorQuery"}
           onClick={() => setActiveTab("distributorQuery")}
-          className={`px-4 py-2 rounded-md flex items-center ${
-            activeTab === "distributorQuery"
-              ? "bg-[#54BB74] text-[#1e1e1e] font-medium"
-              : "bg-[#333333] text-white hover:bg-[#444444]"
-          }`}
-        >
-          <FaEnvelope className="mr-2" />
-          Distributor Queries
-        </button>
-        <button
+        />
+        <DashboardNavButton
+          icon={<FaUserPlus />}
+          label="Registrations"
+          active={activeTab === "registrations"}
           onClick={() => setActiveTab("registrations")}
-          className={`px-4 py-2 rounded-md flex items-center ${
-            activeTab === "registrations"
-              ? "bg-[#54BB74] text-[#1e1e1e] font-medium"
-              : "bg-[#333333] text-white hover:bg-[#444444]"
-          }`}
-        >
-          <FaUserPlus className="mr-2" />
-          Registrations
-        </button>
-        <button
+        />
+        <DashboardNavButton
+          icon={<FaBoxOpen />}
+          label="Marketing"
+          active={activeTab === "marketing"}
           onClick={() => setActiveTab("marketing")}
+<<<<<<< HEAD
           className={`px-4 py-2 rounded-md flex items-center ${
             activeTab === "marketing"
               ? "bg-[#54BB74] text-[#1e1e1e] font-medium"
@@ -1192,7 +1523,50 @@ export default function CustomerDashboard({ token }) {
           <FaSlideshare className="mr-2" />
           LimiFuture Analytics
         </button>
+=======
+        />
+>>>>>>> fe8651ab8c21f2e668cc470a8125a6b269255501
       </div>
+
+      {activeTab === "addPendant" && (
+        <PendantSystemManager
+          pendantSystemData={pendantSystemData}
+          showAddForm={showAddForm}
+          setShowAddForm={setShowAddForm}
+          newPendantData={newPendantData}
+          handlePendantInputChange={handlePendantInputChange}
+          handleIconImageChange={handleIconImageChange}
+          handle3DModelChange={handle3DModelChange}
+          imagePreview={imagePreview}
+          setImageFile={setImageFile}
+          setImagePreview={setImagePreview}
+          modelPreview={modelPreview}
+          setModelFile={setModelFile}
+          setModelPreview={setModelPreview}
+          pendantLoading={pendantLoading}
+          pendantSaving={pendantSaving}
+          savePendantSystem={savePendantSystem}
+          editingItem={editingItem}
+          setEditingItem={setEditingItem}
+          updatePendantSystem={updatePendantSystem}
+          setNewPendantData={setNewPendantData}
+          deletePendantSystem={deletePendantSystem}
+          modelFile={modelFile}
+        />
+      )}
+
+      {activeTab === "distributorQuery" && (
+        <DistributorApplications
+          searchDistributorQuery={searchDistributorQuery}
+          setSearchDistributorQuery={setSearchDistributorQuery}
+          isLoadingDistributorQueries={isLoadingDistributorQueries}
+          distributorQueryError={distributorQueryError}
+          distributorQueries={distributorQueries}
+          setSelectedDistributor={setSelectedDistributor}
+          setNotes={setNotes}
+          setIsDistributorModalOpen={setIsDistributorModalOpen}
+        />
+      )}
 
       {activeTab === "marketing" && (
         <div className="bg-[#1e1e1e] rounded-lg shadow-lg overflow-hidden border border-[#3a3a3a] mt-6">
@@ -1221,6 +1595,7 @@ export default function CustomerDashboard({ token }) {
           </div>
         </div>
       )}
+<<<<<<< HEAD
  
      
       {activeTab === "distributorQuery" && (
@@ -1395,420 +1770,36 @@ export default function CustomerDashboard({ token }) {
           </div>
         </div>
       )}
+=======
+>>>>>>> fe8651ab8c21f2e668cc470a8125a6b269255501
 
       {activeTab === "registrations" && (
-        <div className="bg-[#1e1e1e] rounded-lg shadow-lg overflow-hidden border border-[#3a3a3a]">
-          {/* Header Section */}
-          <div className="px-6 py-5 bg-[#1e1e1e] border-b border-[#3a3a3a]">
-            <div className="flex flex-col space-y-4 md:space-y-0 md:flex-row md:items-center md:justify-between">
-              <div className="space-y-1">
-                <h2 className="text-3xl font-bold text-white">
-                  Community Subscriptions
-                </h2>
-                <p className="text-[#a0a0a0] text-base">
-                  View and manage all community email subscriptions
-                </p>
-              </div>
-              <div className="relative w-full md:w-96">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FaSearch className="text-[#a0a0a0] h-4 w-4" />
-                </div>
-                <input
-                  type="text"
-                  placeholder="Search by email or community type..."
-                  className="bg-[#292929] text-white pl-10 pr-4 py-3 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-[#54bb74] border border-[#3a3a3a] focus:border-[#54bb74] transition-colors text-base placeholder-gray-500"
-                  value={searchRegistration}
-                  onChange={(e) => setSearchRegistration(e.target.value)}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Content Section */}
-          <div className="p-0">
-            {registrationsLoading ? (
-              <div className="flex flex-col items-center justify-center min-h-[300px]">
-                <div className="w-16 h-16 border-t-4 border-[#93cfa2] border-solid rounded-full animate-spin mb-6"></div>
-                <p className="text-gray-300">Loading subscriptions...</p>
-              </div>
-            ) : registrationsError ? (
-              <div className="mx-6 my-4 bg-red-900/20 border border-red-700/30 text-red-200 px-4 py-3 rounded-md flex items-center">
-                <FaTimes className="mr-3 flex-shrink-0" />
-                <span className="text-base">{registrationsError}</span>
-              </div>
-            ) : registrations.length === 0 ? (
-              <div className="bg-[#292929] mx-6 my-4 p-10 rounded-lg text-center border border-[#3a3a3a]">
-                <FaInbox className="mx-auto text-4xl text-[#a0a0a0] mb-4" />
-                <h3 className="text-white font-semibold text-xl mb-2">
-                  No subscriptions found
-                </h3>
-                <p className="text-[#a0a0a0] text-base">
-                  {searchRegistration
-                    ? "No results match your search."
-                    : "No community subscriptions have been made yet."}
-                </p>
-              </div>
-            ) : (
-              <div className="overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="w-full divide-y divide-[#3a3a3a]">
-                    <thead className="bg-[#292929]">
-                      <tr>
-                        <th
-                          className="px-6 py-4 text-left text-lg font-bold text-gray-300 hover:text-white tracking-wider cursor-pointer"
-                          onClick={() => handleRegistrationSort("email")}
-                        >
-                          <div className="flex items-center">
-                            Email
-                            {registrationSortField === "email" &&
-                              (registrationSortDirection === "asc" ? (
-                                <FaSortUp className="ml-1" />
-                              ) : (
-                                <FaSortDown className="ml-1" />
-                              ))}
-                          </div>
-                        </th>
-                        <th
-                          className="px-6 py-4 text-left text-lg font-bold text-gray-300 hover:text-white tracking-wider cursor-pointer"
-                          onClick={() =>
-                            handleRegistrationSort("communityType")
-                          }
-                        >
-                          <div className="flex items-center">
-                            Community Type
-                            {registrationSortField === "communityType" &&
-                              (registrationSortDirection === "asc" ? (
-                                <FaSortUp className="ml-1" />
-                              ) : (
-                                <FaSortDown className="ml-1" />
-                              ))}
-                          </div>
-                        </th>
-                        <th
-                          className="px-6 py-4 text-left text-lg font-bold text-gray-300 hover:text-white tracking-wider cursor-pointer"
-                          onClick={() => handleRegistrationSort("createdAt")}
-                        >
-                          <div className="flex items-center">
-                            Date Subscribed
-                            {registrationSortField === "createdAt" &&
-                              (registrationSortDirection === "asc" ? (
-                                <FaSortUp className="ml-1" />
-                              ) : (
-                                <FaSortDown className="ml-1" />
-                              ))}
-                          </div>
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-[#1e1e1e] divide-y divide-[#3a3a3a]">
-                      {registrations
-                        .filter((reg) => {
-                          if (!searchRegistration) return true;
-                          const search = searchRegistration.toLowerCase();
-                          return (
-                            reg.email?.toLowerCase().includes(search) ||
-                            "" ||
-                            reg.communityType?.toLowerCase().includes(search) ||
-                            ""
-                          );
-                        })
-                        .sort((a, b) => {
-                          let valueA = a[registrationSortField];
-                          let valueB = b[registrationSortField];
-
-                          if (registrationSortField === "createdAt") {
-                            valueA = new Date(valueA);
-                            valueB = new Date(valueB);
-                          } else {
-                            valueA = String(valueA).toLowerCase();
-                            valueB = String(valueB).toLowerCase();
-                          }
-
-                          if (valueA < valueB) {
-                            return registrationSortDirection === "asc" ? -1 : 1;
-                          }
-                          if (valueA > valueB) {
-                            return registrationSortDirection === "asc" ? 1 : -1;
-                          }
-                          return 0;
-                        })
-                        .slice(
-                          (registrationCurrentPage - 1) * registrationsPerPage,
-                          registrationCurrentPage * registrationsPerPage
-                        )
-                        .map((reg, index) => (
-                          <tr
-                            key={index}
-                            className="hover:bg-[#292929] transition-colors"
-                          >
-                            <td className="px-6 py-4">
-                              <div className="text-white">
-                                {reg.email || "N/A"}
-                              </div>
-                            </td>
-                            <td className="px-6 py-4">
-                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#54bb74] bg-opacity-20 text-[#93cfa2]">
-                                {reg.communityType || "N/A"}
-                              </span>
-                            </td>
-                            <td className="px-6 py-4 text-gray-400">
-                              {new Date(reg.createdAt).toLocaleDateString(
-                                "en-US",
-                                {
-                                  year: "numeric",
-                                  month: "short",
-                                  day: "numeric",
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                }
-                              )}
-                            </td>
-                          </tr>
-                        ))}
-                    </tbody>
-                  </table>
-                </div>
-
-                {/* Pagination */}
-                {Math.ceil(registrations.length / registrationsPerPage) > 1 && (
-                  <div className="px-6 py-4 bg-[#1e1e1e] border-t border-[#3a3a3a] flex items-center justify-between">
-                    <div className="text-sm text-gray-400">
-                      Showing{" "}
-                      <span className="font-medium">
-                        {(registrationCurrentPage - 1) * registrationsPerPage +
-                          1}
-                      </span>{" "}
-                      to{" "}
-                      <span className="font-medium">
-                        {Math.min(
-                          registrationCurrentPage * registrationsPerPage,
-                          registrations.length
-                        )}
-                      </span>{" "}
-                      of{" "}
-                      <span className="font-medium">
-                        {registrations.length}
-                      </span>{" "}
-                      results
-                    </div>
-                    <div className="flex space-x-2">
-                      <button
-                        onClick={() =>
-                          setRegistrationCurrentPage((prev) =>
-                            Math.max(prev - 1, 1)
-                          )
-                        }
-                        disabled={registrationCurrentPage === 1}
-                        className={`px-3 py-1 rounded-md ${
-                          registrationCurrentPage === 1
-                            ? "bg-[#333333] text-gray-600 cursor-not-allowed"
-                            : "bg-[#333333] text-white hover:bg-[#444444]"
-                        }`}
-                      >
-                        Previous
-                      </button>
-                      <button
-                        onClick={() =>
-                          setRegistrationCurrentPage((prev) => prev + 1)
-                        }
-                        disabled={
-                          registrationCurrentPage * registrationsPerPage >=
-                          registrations.length
-                        }
-                        className={`px-3 py-1 rounded-md ${
-                          registrationCurrentPage * registrationsPerPage >=
-                          registrations.length
-                            ? "bg-[#333333] text-gray-600 cursor-not-allowed"
-                            : "bg-[#333333] text-white hover:bg-[#444444]"
-                        }`}
-                      >
-                        Next
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
+        <CommunitySubscriptions
+          searchRegistration={searchRegistration}
+          setSearchRegistration={setSearchRegistration}
+          registrationsLoading={registrationsLoading}
+          registrationsError={registrationsError}
+          registrations={registrations}
+          registrationSortField={registrationSortField}
+          registrationSortDirection={registrationSortDirection}
+          handleRegistrationSort={handleRegistrationSort}
+          registrationCurrentPage={registrationCurrentPage}
+          setRegistrationCurrentPage={setRegistrationCurrentPage}
+          registrationsPerPage={registrationsPerPage}
+        />
       )}
 
       {activeTab === "query" && (
-        <div className="bg-[#1e1e1e] rounded-lg shadow-lg overflow-hidden border border-[#3a3a3a]">
-          {/* Header Section */}
-          <div className="px-6 py-5 bg-[#1e1e1e] border-b border-[#3a3a3a]">
-            <div className="flex flex-col space-y-4 md:space-y-0 md:flex-row md:items-center md:justify-between">
-              <div className="space-y-1">
-                <h2 className="text-3xl font-bold text-white">
-                  Contact Form Submissions
-                </h2>
-                {/* <p className="text-[#a0a0a0] text-base">View and manage all contact form submissions</p> */}
-              </div>
-              <div className="relative w-full md:w-96">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FaSearch className="text-[#a0a0a0] h-4 w-4" />
-                </div>
-                <input
-                  type="text"
-                  placeholder="Search by name, email, or message..."
-                  className="bg-[#292929] text-white pl-10 pr-4 py-3 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-[#54bb74] border border-[#3a3a3a] focus:border-[#54bb74] transition-colors text-base placeholder-gray-500"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Content Section */}
-          <div className="p-0">
-            {isLoadingQueries ? (
-              <div className="flex flex-col items-center justify-center min-h-[300px]">
-                <div className="w-16 h-16 border-t-4 border-[#93cfa2] border-solid rounded-full animate-spin mb-6"></div>
-                <p className="text-gray-300">Loading contact queries...</p>
-              </div>
-            ) : queryError ? (
-              <div className="mx-6 my-4 bg-red-900/20 border border-red-700/30 text-red-200 px-4 py-3 rounded-md flex items-center">
-                <FaTimesCircle className="mr-3 flex-shrink-0" />
-                <span className="text-base">{queryError}</span>
-              </div>
-            ) : filteredQueries.length === 0 ? (
-              <div className="bg-[#292929] mx-6 my-4 p-10 rounded-lg text-center border border-[#3a3a3a]">
-                <FaInbox className="mx-auto text-4xl text-[#a0a0a0] mb-4" />
-                <h3 className="text-white font-semibold text-xl mb-2">
-                  No queries found
-                </h3>
-                <p className="text-[#a0a0a0] text-base">
-                  {searchQuery
-                    ? "No results match your search. Try different keywords."
-                    : "No contact form submissions have been received yet."}
-                </p>
-              </div>
-            ) : (
-              <div className="overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-[#3a3a3a]">
-                    <thead className="bg-[#292929]">
-                      <tr>
-                        <th className="px-6 py-4 text-left text-lg font-bold text-gray-300 hover:text-white  tracking-wider cursor-pointer">
-                          <div className="flex items-center space-x-1">
-                            <span>Name</span>
-                            <FaSort className="text-gray-500 text-xs" />
-                          </div>
-                        </th>
-                        <th className="px-6 py-4 text-left text-lg  font-bold text-gray-300 hover:text-white  tracking-wider cursor-pointer">
-                          <div className="flex items-center space-x-1">
-                            <span>Email</span>
-                            <FaSort className="text-gray-500 text-xs" />
-                          </div>
-                        </th>
-                        <th className="px-6 py-4 text-left text-lg font-bold text-gray-300 hover:text-white  tracking-wider cursor-pointer">
-                          <div className="flex items-center space-x-1">
-                            <span>Subject</span>
-                            <FaSort className="text-gray-500 text-xs" />
-                          </div>
-                        </th>
-                        <th className="px-6 py-4 text-left text-lg font-bold text-gray-300 hover:text-white  tracking-wider cursor-pointer">
-                          <div className="flex items-center space-x-1">
-                            <span>Message</span>
-                            <FaSort className="text-gray-500 text-xs" />
-                          </div>
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-[#1e1e1e] divide-y divide-[#3a3a3a]">
-                      {filteredQueries.map((query, index) => (
-                        <tr
-                          key={index}
-                          className={`${
-                            index % 2 === 0 ? "bg-[#1e1e1e]" : "bg-[#252525]"
-                          } hover:bg-[#2d2d2d] transition-colors duration-200`}
-                        >
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-base text-[#93cfa2] font-medium">
-                              {query.name || "N/A"}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-base text-gray-400 group">
-                              <a
-                                href={`mailto:${query.email}`}
-                                className="hover:text-[#93cfa2] transition-colors"
-                                title="Click to email"
-                              >
-                                {query.email || "N/A"}
-                              </a>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-base text-gray-400">
-                              {query.subject || "No Subject"}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="flex items-center">
-                              <div
-                                id={`message-${index}`}
-                                className="text-base text-gray-400 max-w-xs truncate"
-                                ref={(el) => {
-                                  if (el && query.message) {
-                                    const isTruncated =
-                                      el.scrollWidth > el.clientWidth ||
-                                      el.scrollHeight > el.clientHeight;
-                                    if (
-                                      isTruncated !==
-                                      truncatedMessages[`message-${index}`]
-                                    ) {
-                                      setTruncatedMessages((prev) => ({
-                                        ...prev,
-                                        [`message-${index}`]: isTruncated,
-                                      }));
-                                    }
-                                  }
-                                }}
-                              >
-                                {query.message || "No message content"}
-                              </div>
-                              {truncatedMessages[`message-${index}`] && (
-                                <button
-                                  onClick={() =>
-                                    handleViewMessage(
-                                      query.message,
-                                      `message-${index}`
-                                    )
-                                  }
-                                  className=" text-[#54BB74] hover:text-[#48a064] focus:outline-none transition-colors"
-                                  title="View full message"
-                                >
-                                  <span>view more</span>
-                                </button>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-
-                {/* Pagination - Add this if you implement pagination later */}
-                {/* <div className="bg-[#2d2d2d] px-6 py-3 flex items-center justify-between border-t border-[#3a3a3a]">
-                <div className="text-sm text-[#a0a0a0]">
-                  Showing <span className="font-medium">1</span> to <span className="font-medium">10</span> of{' '}
-                  <span className="font-medium">{filteredQueries.length}</span> results
-                </div>
-                <div className="flex space-x-2">
-                  <button className="px-3 py-1 rounded-md bg-[#3a3a3a] text-[#a0a0a0] hover:bg-[#4a4a4a] disabled:opacity-50" disabled={true}>
-                    Previous
-                  </button>
-                  <button className="px-3 py-1 rounded-md bg-[#54bb74] text-white hover:bg-[#4aaa64] disabled:opacity-50" disabled={filteredQueries.length <= 10}>
-                    Next
-                  </button>
-                </div>
-              </div> */}
-              </div>
-            )}
-          </div>
-        </div>
+        <ContactFormSubmissions
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          isLoadingQueries={isLoadingQueries}
+          queryError={queryError}
+          filteredQueries={filteredQueries}
+          truncatedMessages={truncatedMessages}
+          setTruncatedMessages={setTruncatedMessages}
+          handleViewMessage={handleViewMessage}
+        />
       )}
 
       {/* Message Modal */}

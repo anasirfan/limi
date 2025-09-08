@@ -5,8 +5,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
+import { fetchUserByToken } from "../../../redux/slices/userSlice";
 import "react-toastify/dist/ReactToastify.css";
 import {
   FaEye,
@@ -66,7 +67,9 @@ const CableItem = ({ designName, cableType, cableSize, additionalDetails }) => (
             <div className="space-y-2">
               {additionalDetails.map(({ key, value }, idx) => (
                 <div key={idx} className="flex justify-between text-sm py-1">
-                  <span className="text-gray-400">{key.replace(/_/g, " ")}:</span>
+                  <span className="text-gray-400">
+                    {key.replace(/_/g, " ")}:
+                  </span>
                   <span className="text-white">{value}</span>
                 </div>
               ))}
@@ -78,9 +81,11 @@ const CableItem = ({ designName, cableType, cableSize, additionalDetails }) => (
   </details>
 );
 
-export default function SavedConfigurations() {
+export default function SavedConfigurations({ isARView = false }) {
   const router = useRouter();
+  const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
+  const [isFetchingByToken, setIsFetchingByToken] = useState(false);
   const [configurations, setConfigurations] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -90,6 +95,20 @@ export default function SavedConfigurations() {
   const [filterStatus, setFilterStatus] = useState("all");
   const [selectedConfig, setSelectedConfig] = useState(null);
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+
+  // Token-based auto-login for AR view
+  useEffect(() => {
+    if (isARView) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlToken = urlParams.get("token");
+      if (urlToken) {
+        setIsFetchingByToken(true);
+        dispatch(fetchUserByToken(urlToken)).finally(() => {
+          setIsFetchingByToken(false);
+        });
+      }
+    }
+  }, [dispatch, isARView]);
 
   // Fetch configurations when component mounts
   useEffect(() => {
@@ -240,65 +259,68 @@ export default function SavedConfigurations() {
     <div>
       <ToastContainer position="top-right" autoClose={3000} />
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+      {!isARView && (
         <div>
           <h2 className="text-xl font-bold text-white">Saved Configurations</h2>
           <p className="text-gray-400 text-sm">
             View and manage your saved lighting configurations
           </p>
         </div>
-
+      )}
         {/* Search and filters */}
-        <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-          <div className="relative flex-1 sm:max-w-[250px]">
-            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <FaSearch className="text-gray-500" />
+        {!isARView && (
+          <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+            <div className="relative flex-1 sm:max-w-[250px]">
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <FaSearch className="text-gray-500" />
+              </div>
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="bg-[#292929] text-white w-full pl-10 pr-4 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-[#54BB74]"
+                placeholder="Search configurations..."
+              />
             </div>
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="bg-[#292929] text-white w-full pl-10 pr-4 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-[#54BB74]"
-              placeholder="Search configurations..."
-            />
-          </div>
 
-          <div className="flex gap-2">
-            <div className="relative">
+            <div className="flex gap-2">
+              <div className="relative">
+                <button
+                  onClick={() => setShowFilterDropdown(!showFilterDropdown)}
+                  className="flex items-center gap-2 bg-[#292929] text-white px-3 py-2 rounded-md hover:bg-[#333] transition-colors"
+                >
+                  <FaFilter />
+                  <span className="text-sm">
+                    {filterStatus === "all" ? "All" : filterStatus}
+                  </span>
+                  <FaChevronDown className="text-xs" />
+                </button>
+                {showFilterDropdown && (
+                  <div className="absolute top-full right-0 mt-1 bg-[#292929] rounded-md shadow-lg z-10 w-40 py-1">
+                    <button
+                      onClick={() => {
+                        setFilterStatus("all");
+                        setShowFilterDropdown(false);
+                      }}
+                      className="w-full text-left px-4 py-2 text-white hover:bg-[#333] transition-colors"
+                    >
+                      All
+                    </button>
+                  </div>
+                )}
+              </div>
+
               <button
-                onClick={() => setShowFilterDropdown(!showFilterDropdown)}
+                onClick={toggleSortOrder}
                 className="flex items-center gap-2 bg-[#292929] text-white px-3 py-2 rounded-md hover:bg-[#333] transition-colors"
               >
-                <FaFilter />
-                <span className="text-sm">
-                  {filterStatus === "all" ? "All" : filterStatus}
-                </span>
-                <FaChevronDown className="text-xs" />
+                <FaSortAmountDown
+                  className={sortOrder === "desc" ? "" : "rotate-180"}
+                />
               </button>
-              {showFilterDropdown && (
-                <div className="absolute top-full right-0 mt-1 bg-[#292929] rounded-md shadow-lg z-10 w-40 py-1">
-                  <button
-                    onClick={() => {
-                      setFilterStatus("all");
-                      setShowFilterDropdown(false);
-                    }}
-                    className="w-full text-left px-4 py-2 text-white hover:bg-[#333] transition-colors"
-                  >
-                    All
-                  </button>
-                </div>
-              )}
             </div>
-
-            <button
-              onClick={toggleSortOrder}
-              className="flex items-center gap-2 bg-[#292929] text-white px-3 py-2 rounded-md hover:bg-[#333] transition-colors"
-            >
-              <FaSortAmountDown
-                className={sortOrder === "desc" ? "" : "rotate-180"}
-              />
-            </button>
           </div>
-        </div>
+        )}
       </div>
 
       {isLoading ? (
@@ -311,14 +333,16 @@ export default function SavedConfigurations() {
           <p className="text-gray-500 text-sm mt-2">
             Create configurations in the configurator to see them here.
           </p>
-          <div className="mt-4">
-            <Link
-              href="/configurator"
-              className="inline-flex items-center gap-2 bg-[#54BB74] text-white px-4 py-2 rounded-md hover:bg-[#48a064] transition-colors"
-            >
-              <span>Go to Configurator</span>
-            </Link>
-          </div>
+          {!isARView && (
+            <div className="mt-4">
+              <Link
+                href="/configurator"
+                className="inline-flex items-center gap-2 bg-[#54BB74] text-white px-4 py-2 rounded-md hover:bg-[#48a064] transition-colors"
+              >
+                <span>Go to Configurator</span>
+              </Link>
+            </div>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -333,16 +357,15 @@ export default function SavedConfigurations() {
               <div className="flex items-center h-[200px] w-full justify-center py-2 bg-[#292929] border-b border-gray-200">
                 <Image
                   src={
-                    `https://dev.api1.limitless-lighting.co.uk/${config.thumbnail?.url}` ||
+                    // `https://dev.api1.limitless-lighting.co.uk/${config.thumbnail?.url}` ||
                     `/images/homepage-products/${
                       Math.floor(Math.random() * 7) + 1
                     }-mobile.jpg`
                   }
                   alt={config.name || "Configuration"}
-                height={1000}
-                width={1000}
-              
-                   className="w-full h-full object-contain"
+                  height={1000}
+                  width={1000}
+                  className="w-full h-full object-cover"
                   priority
                 />
               </div>
@@ -359,37 +382,40 @@ export default function SavedConfigurations() {
                 </div>
 
                 <div className="flex flex-wrap gap-2">
-                  <button
-                    onClick={() => viewConfigDetails(config)}
-                    className="flex-1 flex items-center justify-center gap-1 bg-[#54BB74] text-white px-3 py-2 rounded hover:bg-[#48a064] transition-colors"
-                  >
-                    <FaEye />
-                    <span className="text-sm">View</span>
-                  </button>
-
+                  {!isARView && (
+                    <button
+                      onClick={() => viewConfigDetails(config)}
+                      className="flex-1 flex items-center justify-center gap-1 bg-[#54BB74] text-white px-3 py-2 rounded hover:bg-[#48a064] transition-colors"
+                    >
+                      <FaEye />
+                      <span className="text-sm">View</span>
+                    </button>
+                  )}
+                  
                   <button
                     id="open_id"
                     onClick={() => viewInConfigurator(config._id)}
                     className="flex-1 flex items-center justify-center gap-1 bg-[#292929] border border-[#54BB74] text-[#54BB74] px-3 py-2 rounded hover:bg-[#54BB74] hover:text-white transition-colors"
                   >
                     <FaEdit />
-
                     <span id={config._id} className="text-sm">
                       Open
                     </span>
                   </button>
 
-                  <button
-                    onClick={() => deleteConfiguration(config._id)}
-                    className="flex items-center justify-center gap-1 bg-[#292929] border border-gray-700 text-white px-3 py-2 rounded hover:bg-red-600 hover:border-red-600 transition-colors"
-                    disabled={isDeleting}
-                  >
-                    {isDeleting ? (
-                      <FaSpinner className="animate-spin" />
-                    ) : (
-                      <FaTrash />
-                    )}
-                  </button>
+                  {!isARView && (
+                    <button
+                      onClick={() => deleteConfiguration(config._id)}
+                      className="flex items-center justify-center gap-1 bg-[#292929] border border-gray-700 text-white px-3 py-2 rounded hover:bg-red-600 hover:border-red-600 transition-colors"
+                      disabled={isDeleting}
+                    >
+                      {isDeleting ? (
+                        <FaSpinner className="animate-spin" />
+                      ) : (
+                        <FaTrash />
+                      )}
+                    </button>
+                  )}
                 </div>
               </div>
             </motion.div>
@@ -445,9 +471,7 @@ export default function SavedConfigurations() {
                   <div className="bg-[#1a1a1a] rounded-xl p-4 border border-gray-800 shadow-lg">
                     <div className="relative w-full aspect-square mb-4 rounded-lg overflow-hidden bg-gradient-to-br from-gray-900 to-gray-800">
                       <Image
-                       src={
-                       `https://dev.api1.limitless-lighting.co.uk${selectedConfig.thumbnail?.url}`
-                      }
+                        src={`https://dev.api1.limitless-lighting.co.uk${selectedConfig.thumbnail?.url}`}
                         alt={selectedConfig.name || "Configuration"}
                         fill
                         aspectRatio="1/1"
@@ -479,31 +503,37 @@ export default function SavedConfigurations() {
                     </div>
 
                     <div className="flex flex-col space-y-3">
-                      <button
-                        onClick={() => viewInConfigurator(selectedConfig._id)}
-                        className="group flex items-center justify-center gap-2 bg-gradient-to-r from-[#54BB74] to-[#3e8e5a] text-white px-6 py-3 rounded-lg font-medium hover:opacity-90 transition-all duration-200 transform hover:-translate-y-0.5 shadow-lg hover:shadow-[#54BB74]/20"
-                      >
-                        <FaEdit className="h-4 w-4 transition-transform group-hover:scale-110" />
-                        <span>Open in Configurator</span>
-                      </button>
+                      {!isARView && (
+                        <button
+                          onClick={() => viewInConfigurator(selectedConfig._id)}
+                          className="group flex items-center justify-center gap-2 bg-gradient-to-r from-[#54BB74] to-[#3e8e5a] text-white px-6 py-3 rounded-lg font-medium hover:opacity-90 transition-all duration-200 transform hover:-translate-y-0.5 shadow-lg hover:shadow-[#54BB74]/20"
+                        >
+                          <FaEdit className="h-4 w-4 transition-transform group-hover:scale-110" />
+                          <span>Open in Configurator</span>
+                        </button>
+                      )}
 
-                      <button
-                        onClick={() => deleteConfiguration(selectedConfig._id)}
-                        disabled={isDeleting}
-                        className="group flex items-center justify-center gap-2 bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-3 rounded-lg font-medium hover:opacity-90 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
-                      >
-                        {isDeleting ? (
-                          <>
-                            <FaSpinner className="h-4 w-4 animate-spin" />
-                            <span>Deleting...</span>
-                          </>
-                        ) : (
-                          <>
-                            <FaTrash className="h-4 w-4 transition-transform group-hover:scale-110" />
-                            <span>Delete Configuration</span>
-                          </>
-                        )}
-                      </button>
+                      {!isARView && (
+                        <button
+                          onClick={() =>
+                            deleteConfiguration(selectedConfig._id)
+                          }
+                          disabled={isDeleting}
+                          className="group flex items-center justify-center gap-2 bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-3 rounded-lg font-medium hover:opacity-90 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
+                        >
+                          {isDeleting ? (
+                            <>
+                              <FaSpinner className="h-4 w-4 animate-spin" />
+                              <span>Deleting...</span>
+                            </>
+                          ) : (
+                            <>
+                              <FaTrash className="h-4 w-4 transition-transform group-hover:scale-110" />
+                              <span>Delete Configuration</span>
+                            </>
+                          )}
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -589,19 +619,41 @@ export default function SavedConfigurations() {
                                     }, {});
 
                                   const cableNumber = parseInt(key) + 1;
-                                  const designName = cableData.design_name || `Cable ${cableNumber}`;
+                                  const designName =
+                                    cableData.design_name ||
+                                    `Cable ${cableNumber}`;
                                   const cableType = cableData.type;
-                                  let cableSize = selectedConfig.config?.cableConfig[cableNumber - 1]?.size;
-                                  if (typeof cableSize === "string" && cableSize.trim().toLowerCase().endsWith("mm")) {
-                                    cableSize = cableSize.replace(/mm$/i, "").trim();
+                                  let cableSize =
+                                    selectedConfig.config?.cableConfig[
+                                      cableNumber - 1
+                                    ]?.size;
+                                  if (
+                                    typeof cableSize === "string" &&
+                                    cableSize
+                                      .trim()
+                                      .toLowerCase()
+                                      .endsWith("mm")
+                                  ) {
+                                    cableSize = cableSize
+                                      .replace(/mm$/i, "")
+                                      .trim();
                                   }
 
-                                  const additionalDetails = Object.entries(cableData)
-                                    .filter(([k]) => !["design_name", "type", "size"].includes(k))
+                                  const additionalDetails = Object.entries(
+                                    cableData
+                                  )
+                                    .filter(
+                                      ([k]) =>
+                                        ![
+                                          "design_name",
+                                          "type",
+                                          "size",
+                                        ].includes(k)
+                                    )
                                     .map(([k, v]) => ({ key: k, value: v }));
 
                                   return (
-                                    <CableItem 
+                                    <CableItem
                                       key={key}
                                       designName={designName}
                                       cableType={cableType}
@@ -626,19 +678,41 @@ export default function SavedConfigurations() {
                                     }, {});
 
                                   const cableNumber = parseInt(key) + 1;
-                                  const designName = cableData.design_name || `Cable ${cableNumber}`;
+                                  const designName =
+                                    cableData.design_name ||
+                                    `Cable ${cableNumber}`;
                                   const cableType = cableData.type;
-                                  let cableSize = selectedConfig.config?.cableConfig[cableNumber - 1]?.size;
-                                  if (typeof cableSize === "string" && cableSize.trim().toLowerCase().endsWith("mm")) {
-                                    cableSize = cableSize.replace(/mm$/i, "").trim();
+                                  let cableSize =
+                                    selectedConfig.config?.cableConfig[
+                                      cableNumber - 1
+                                    ]?.size;
+                                  if (
+                                    typeof cableSize === "string" &&
+                                    cableSize
+                                      .trim()
+                                      .toLowerCase()
+                                      .endsWith("mm")
+                                  ) {
+                                    cableSize = cableSize
+                                      .replace(/mm$/i, "")
+                                      .trim();
                                   }
 
-                                  const additionalDetails = Object.entries(cableData)
-                                    .filter(([k]) => !["design_name", "type", "size"].includes(k))
+                                  const additionalDetails = Object.entries(
+                                    cableData
+                                  )
+                                    .filter(
+                                      ([k]) =>
+                                        ![
+                                          "design_name",
+                                          "type",
+                                          "size",
+                                        ].includes(k)
+                                    )
                                     .map(([k, v]) => ({ key: k, value: v }));
 
                                   return (
-                                    <CableItem 
+                                    <CableItem
                                       key={key}
                                       designName={designName}
                                       cableType={cableType}

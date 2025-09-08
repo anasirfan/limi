@@ -9,11 +9,24 @@ const BaseColorPanel = ({
   currentBaseColor,
   currentConnectorColor,
   setActiveTab,
-  activeTab
+  activeTab,
+  tourActive,
+  onTourSelection
 }) => {
 
   const [selectedBaseColor, setSelectedBaseColor] = useState(currentBaseColor || 'black');
   const [selectedConnectorColor, setSelectedConnectorColor] = useState(currentConnectorColor || 'black');
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
     useEffect(() => {
       const cleanup = listenForConnectorColorMessages((data, event) => {
@@ -37,6 +50,13 @@ const BaseColorPanel = ({
   }, [currentConnectorColor]);
 
   const handleBaseColorSelect = (color) => {
+    console.log(`🖱️ User clicked on base color: ${color}`);
+    
+    // If tour is active, call tour selection handler
+    if (tourActive && onTourSelection) {
+      onTourSelection('baseColor', color);
+    }
+    
     setSelectedBaseColor(color);
     onBaseColorChange && onBaseColorChange(color);
   };
@@ -136,7 +156,7 @@ const BaseColorPanel = ({
       </div> */}
       {activeTab === 'base' && (
         <>
-          <h3 style={styles.title}>Base Color</h3>
+          {!isMobile && <h3 style={styles.title}>Base Color</h3>}
           <div style={styles.colorPalette}>
             {colorOptions.map((color) => (
               <motion.div
@@ -167,7 +187,7 @@ const BaseColorPanel = ({
       )}
       {activeTab === 'connector' && (
         <>
-          <h3 style={styles.title}>Connector Color</h3>
+          {!isMobile && <h3 style={styles.title}>Connector Color</h3>}
           <div style={styles.colorPalette}>
             {colorOptions.map((color) => (
               <motion.div

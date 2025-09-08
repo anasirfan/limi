@@ -86,7 +86,8 @@ const nextConfig = {
       'media.istockphoto.com', // in case any fallback stock sources
       'media.pexels.com',
       'mixkit.imgix.net',
-      'dev.api.limitless-lighting.co.uk'
+      'dev.api1.limitless-lighting.co.uk',
+      'dev.api.limitless-lighting.co.uk',
     ],
     remotePatterns: [
       {

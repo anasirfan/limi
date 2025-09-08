@@ -38,12 +38,14 @@ const PlayCanvasViewer = ({
   useEffect(() => {
     const handleMessage = (event) => {
       // Check if the message is from our iframe
-      if (event.data === 'app:ready1') {
-        setAppReady(true);
+      if (event.data === 'loadingOff') {
+        setAppReady(true);     
         setIsLoading(false);
-        
         // Send default selections after app is ready
         // sendDefaultSelections();
+      }
+      if(event.data === 'load') {
+ 
       }
     };
     
@@ -78,7 +80,6 @@ const PlayCanvasViewer = ({
   // Send default selections when app is ready
   const sendDefaultSelections = () => {
     if(localSavedConfig){
-    console.log("localSavedConfig",localSavedConfig);
       sendConfigToPlayCanvas(localSavedConfig.config);
       localSavedCables?.forEach((cable, index) => {
         if(cable.systemType){

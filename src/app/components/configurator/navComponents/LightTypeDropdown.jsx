@@ -1,14 +1,27 @@
 import { motion } from 'framer-motion';
 import Image from 'next/image';
+import { useState, useEffect } from 'react';
 
-export const LightTypeDropdown = ({ config, onLightTypeChange, setActiveStep, setOpenDropdown }) => {
+export const LightTypeDropdown = ({ config, onLightTypeChange, setActiveStep, setOpenDropdown, tourActive, onTourSelection }) => {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   return (
     <div 
       className=" max-sm:left-0 max-sm:w-full p-4"
       onClick={(e) => e.stopPropagation()}
       onTouchStart={(e) => e.stopPropagation()}
     >
-      <h3 className="text-base font-bold text-white mb-3 font-['Amenti']">Light Type</h3>
+      {!isMobile && <h3 className="text-base font-bold text-white mb-3 font-['Amenti']">Light Type</h3>}
       <div className="flex space-x-3">
         {['wall', 'ceiling', 'floor'].map((type) => {
           // Calculate aspect ratio: original is 1726x1296
@@ -22,6 +35,13 @@ export const LightTypeDropdown = ({ config, onLightTypeChange, setActiveStep, se
               key={type}
               className={`rounded-lg overflow-hidden ${config.lightType === type ? 'ring-2 ring-emerald-500 ring-offset-1 ring-offset-gray-800' : 'hover:ring-1 hover:ring-gray-400'}`}
               onClick={() => {
+                console.log(`🖱️ User clicked on light type: ${type}`);
+                
+                // If tour is active, call tour selection handler
+                if (tourActive && onTourSelection) {
+                  onTourSelection('lightType', type);
+                }
+                
                 onLightTypeChange(type);
                 // Don't automatically switch to next tab
                 setOpenDropdown(null);

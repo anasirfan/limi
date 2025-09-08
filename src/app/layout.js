@@ -6,7 +6,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { ReduxProvider } from './redux/provider';
 import StoreInitializer from './redux/StoreInitializer';
 import { ModalProvider } from './components/context/ModalContext';
-
+import { HideNavFooterProvider } from './components/context/HideNavFooterContext';
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -90,10 +90,12 @@ export default function RootLayout({ children }) {
         <ReduxProvider>
           <StoreInitializer />
           <ModalProvider>
-            {/* <SmoothScroll> */}
-              <ToastContainer />
-              {children}
-            {/* </SmoothScroll> */}
+            <HideNavFooterProvider>
+              {/* <SmoothScroll> */}
+                <ToastContainer />
+                {children}
+              {/* </SmoothScroll> */}
+            </HideNavFooterProvider>
           </ModalProvider>
         </ReduxProvider>     
       </body>

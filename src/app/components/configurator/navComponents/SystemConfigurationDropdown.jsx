@@ -154,7 +154,7 @@ export const SystemConfigurationDropdown = ({ config, onSystemBaseDesignChange, 
             exit={{ opacity: 0, y: 50 }}
             transition={{ type: 'spring', damping: 25 }}
           >
-            <div className="p-4 rounded-xl bg-black/90 backdrop-blur-md shadow-lg border border-gray-800">
+            <div className="p-4 rounded-xl bg-black/90 sm:backdrop-blur-md shadow-lg border border-gray-800">
               <div className="flex justify-between items-center mb-3">
                 <h4 className="text-sm font-bold text-white">
                   Select Design for System {selectedSystems.map(id => id + 1).join(', ')}
