@@ -13,8 +13,11 @@ const MobilePendantConfig = ({
   selectedPendants,
   setSelectedPendants,
   cables,
+  getImageSrc,
   onPendantDesignChange,
   onSystemBaseDesignChange,
+  selectAllPendants,
+  clearSelections,
   setShowConfigurationTypeSelector,
   setActiveStep,
   sendMessageToPlayCanvas,
@@ -130,14 +133,7 @@ const MobilePendantConfig = ({
     }
   };
 
-  // Helper function to get design image from systemPendants
-  const getDesignImage = (cableDesign) => {
-    if (!cableDesign) return null;
-    
-    // Search for the design in pendantAssignments
-    const design = pendantAssignments.find(pendant => pendant.design === cableDesign);
-    return design?.media?.image?.url || null;
-  };
+
 
   // Render pendant numbers for selection
   const renderPendantSelection = () => {
@@ -157,7 +153,7 @@ const MobilePendantConfig = ({
             // Get cable size and design for this pendant
             const cableSize = cables && cables[index] ? cables[index].size : 1;
             const cableDesign = cables && cables[index] ? cables[index].design : null;
-            const designImageUrl = getDesignImage(cableDesign);
+            const designImageUrl = getImageSrc(cableDesign);
             
             return (
               <button
@@ -203,15 +199,14 @@ const MobilePendantConfig = ({
         <div className="flex gap-2 mt-4">
           <button
             onClick={() => {
-              const allPendantIds = pendants.map((_, index) => index);
-              setSelectedPendants(allPendantIds);
+             selectAllPendants();
             }}
             className="flex-1 py-2 px-4 bg-emerald-600 text-white rounded-lg text-sm font-medium hover:bg-emerald-700 transition-colors"
           >
             Select All
           </button>
           <button
-            onClick={() => setSelectedPendants([])}
+            onClick={() => clearSelections()}
             className="flex-1 py-2 px-4 bg-gray-600 text-white rounded-lg text-sm font-medium hover:bg-gray-700 transition-colors"
           >
             Clear All

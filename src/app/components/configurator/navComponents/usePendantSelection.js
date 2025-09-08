@@ -17,6 +17,7 @@ export const usePendantSelection = (
 
   // Helper function to map system design names/types to their image path
   const getImageSrc = (designName) => {
+    console.log("designNameee", designName);
     if (!designName || typeof designName !== "string") return "";
 
     // Search systemAssignments for a matching design and return its image

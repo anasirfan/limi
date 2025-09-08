@@ -125,6 +125,9 @@ const MobileBottomMenu = ({
         return (
           <MobilePendantConfig
             pendants={pendants}
+            getImageSrc={getImageSrc}
+            selectAllPendants={selectAllPendants}
+            clearSelections={clearSelections}
             selectedPendants={selectedPendants}
             setSelectedPendants={setSelectedPendants}
             cables={cables}

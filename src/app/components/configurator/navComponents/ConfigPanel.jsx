@@ -32,7 +32,7 @@ export const ConfigPanel = ({
   showConfigurationTypeSelector,
   onBreadcrumbNavigation,
   onSystemTypeSelection,
-  setShowPendantLoadingScreen,
+   antLoadingScreen,
   selectedLocation,
   selectedPendants,
   cables, // Add cables prop
