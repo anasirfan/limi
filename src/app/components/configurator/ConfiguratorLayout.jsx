@@ -753,20 +753,21 @@ const ConfiguratorLayout = () => {
 
   const handleConnectorColorChange = useCallback((connectorColor) => {
     // Send messages for each selected pendant
-    config.selectedPendants.forEach((idx) => {
-      sendMessageToPlayCanvas('cable_' + idx + ':connector_color_' + connectorColor);
-    });
+    // config.selectedPendants.forEach((idx) => {
+    //   sendMessageToPlayCanvas('cable_' + idx + ':connector_color_' + connectorColor);
+    // });
+    sendMessageToPlayCanvas('connector_color:' + connectorColor);
     // Update cables state
-    setCables((prevCables) => {
-      let updatedCables = [...prevCables];
-      config.selectedPendants.forEach((idx) => {
-        updatedCables[idx] = {
-          ...updatedCables[idx],
-          connectorColor: connectorColor
-        };
-      });
-      return updatedCables;
-    });
+    // setCables((prevCables) => {
+    //   let updatedCables = [...prevCables];
+    //   config.selectedPendants.forEach((idx) => {
+    //     updatedCables[idx] = {
+    //       ...updatedCables[idx],
+    //       connectorColor: connectorColor
+    //     };
+    //   });
+    //   return updatedCables;
+    // });
   }, [config.selectedPendants]);
 
   // Handle pendant selection
@@ -792,7 +793,6 @@ const ConfiguratorLayout = () => {
           config.selectedPendants && config.selectedPendants.length > 0
             ? config.selectedPendants
             : [0]; // Default to cable 0 if none selected
-
         // Update all cables in a single state update
         setCables((prev) => {
           const updatedCables = [...prev];
