@@ -752,18 +752,22 @@ const ConfiguratorLayout = () => {
   }, []);
 
   const handleConnectorColorChange = useCallback((connectorColor) => {
-    // setCables((prev) =>
-    //   prev.map((cable, idx) =>
-    //     selectedPendants.includes(idx)
-    //       ? { ...cable, connectorColor }
-    //       : cable
-    //   )
-    // );
-    // Send message for each selected cable
-    sendMessageToPlayCanvas(`connector_color:${connectorColor}`);
-    // Move to next step if needed
-    setActiveStep("systemType");
-  }, []);
+    // Send messages for each selected pendant
+    config.selectedPendants.forEach((idx) => {
+      sendMessageToPlayCanvas('cable_' + idx + ':connector_color_' + connectorColor);
+    });
+    // Update cables state
+    setCables((prevCables) => {
+      let updatedCables = [...prevCables];
+      config.selectedPendants.forEach((idx) => {
+        updatedCables[idx] = {
+          ...updatedCables[idx],
+          connectorColor: connectorColor
+        };
+      });
+      return updatedCables;
+    });
+  }, [config.selectedPendants]);
 
   // Handle pendant selection
   const handlePendantSelection = useCallback((pendantIds) => {

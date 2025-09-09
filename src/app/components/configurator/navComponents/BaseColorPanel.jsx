@@ -140,7 +140,7 @@ const BaseColorPanel = ({
 
   return (
     <div style={styles.container}>
-      {/* <div style={styles.tabs}>
+      <div style={styles.tabs}>
         <button
           style={{ ...styles.tab, ...(activeTab === 'base' ? styles.tabActive : {}) }}
           onClick={() => setActiveTab('base')}
@@ -153,7 +153,7 @@ const BaseColorPanel = ({
         >
           Connector 
         </button>
-      </div> */}
+      </div>
       {activeTab === 'base' && (
         <>
           {!isMobile && <h3 style={styles.title}>Base Color</h3>}
