@@ -781,15 +781,30 @@ export const PreviewControls = ({
                         const assignment = systemAssignments.find(
                           (item) => pendant.id == item.design
                         );
+
                         return (
                           <div
                             key={pendant.id}
                             className="group relative p-2 "
                             onClick={() => {
+                             
                               // Build a mapping of design to indices
                               const designToIds = {};
                               selectedPendants.forEach((idx) => {
-                                const design = assignment.design; // Use the assignment's design
+                                const design = assignment.design;
+                           
+                                             const hasBarSystem = assignment.systemType === "bar";
+                                 
+                                             if (hasBarSystem) {
+                                               sendMessageToPlayCanvas(`cable_${idx}`);
+                                               sendMessageToPlayCanvas("bars");
+                                               sendMessageToPlayCanvas("glass_none");
+                                               sendMessageToPlayCanvas("color_gold");
+                                               sendMessageToPlayCanvas("silver_none");
+                                               sendMessageToPlayCanvas(
+                                                 "product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/Bar_1756732230450.glb"
+                                               );
+                                             }
                                 if (!designToIds[design])
                                   designToIds[design] = [];
                                 designToIds[design].push(idx);

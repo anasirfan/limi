@@ -160,7 +160,7 @@ const MobilePendantConfig = ({
                 key={index}
                 onClick={() => handlePendantLocationClick(index)}
                 className={`
-                  w-12 h-12 rounded-full flex items-center justify-center text-xs font-medium
+                  w-14 h-14 rounded-full flex items-center justify-center text-xs font-medium
                   transition-all duration-200 border-2 relative overflow-hidden
                   ${
                     selectedPendants.includes(index)
@@ -182,15 +182,15 @@ const MobilePendantConfig = ({
 
                 {/* Content */}
                 <div className="relative z-10 flex items-center justify-center text-white">
-                  <div className="text-base font-bold">{index + 1}</div>
+                  <div className="text-sm font-bold">{index + 1}</div>
                 </div>
 
                 {/* Selection indicator */}
-                {selectedPendants.includes(index) && (
-                  <div className="absolute top-1 right-1 w-4 h-4 bg-emerald-500 rounded-full flex items-center justify-center">
+                {/* {selectedPendants.includes(index) && (
+                  <div className="absolute top-5 right-5 w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center">
                     <FaCheck className="text-white text-xs" />
                   </div>
-                )}
+                )} */}
               </button>
             );
           })}
@@ -222,36 +222,33 @@ const MobilePendantConfig = ({
     // If no configuration type selected
     if (!localConfiguringType) {
       return (
-        <div className="space-y-4">
-          {" "}
+        <div className="space-y-3">
           <div className="flex items-center justify-between">
-          {" "}
-            <div className="text-white text-sm">Configuration Type</div>{" "}
-        
+            <div className="text-white text-sm">Configuration Type</div>
           </div>
-          <div className="flex justify-center gap-8">
+          <div className="flex justify-center gap-6">
             <button
               onClick={() => handleConfigTypeSelection("pendant")}
-              className="flex flex-col w-24 transition-all duration-200 justify-center items-center text-gray-300 hover:text-white"
+              className="flex flex-col w-16 transition-all duration-200 justify-center items-center text-gray-300 hover:text-white"
             >
               <img
                 src="./images/configOptions/pendant.png"
                 alt="Pendant"
-                className="w-20 h-20"
+                className="w-14 h-14"
               />
-              <div className="text-white text-sm font-medium">Pendant</div>
+              <div className="text-white text-xs font-medium mt-1">Pendant</div>
             </button>
 
             <button
               onClick={() => handleConfigTypeSelection("system")}
-              className="flex flex-col w-24 transition-all duration-200 justify-center items-center text-gray-300 hover:text-white"
+              className="flex flex-col w-16 transition-all duration-200 justify-center items-center text-gray-300 hover:text-white"
             >
               <img
                 src="./images/configOptions/system.png"
                 alt="System"
-                className="w-20 h-20"
+                className="w-14 h-14"
               />
-              <div className="text-white text-sm font-medium">System</div>
+              <div className="text-white text-xs font-medium mt-1">System</div>
             </button>
           </div>
         </div>
@@ -293,34 +290,34 @@ const MobilePendantConfig = ({
             {/* Horizontal scrollable carousel */}
             <div
               ref={carouselRef}
-              className="flex gap-1 overflow-x-auto scrollbar-hide px-8"
+              className="flex gap-3 overflow-x-auto scrollbar-hide px-8"
               style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
             >
               {pendantAssignments.map((pendant) => (
                 <button
                   key={pendant.design}
                   onClick={() => handlePendantDesignSelection(pendant.design)}
-                  className="flex-shrink-0 w-24 transition-all duration-200 text-center text-gray-300 hover:text-white"
+                  className="flex-shrink-0 w-18 transition-all duration-200 text-center text-gray-300 hover:text-white"
                 >
                   <div className="relative">
                     {pendant.media?.image?.url && (
                       <img
                         src={pendant.media.image.url}
                         alt={pendant.name}
-                        className={`w-20 h-20 object-cover rounded-full mb-2 transition-all duration-200 mx-auto ${
+                        className={`w-14 h-14 object-cover rounded-full mb-1 transition-all duration-200 mx-auto ${
                           currentDesign === pendant.design
-                            ? "border-4 border-emerald-400"
+                            ? "border-2 border-emerald-400"
                             : ""
                         }`}
                       />
                     )}
                     {currentDesign === pendant.design && (
-                      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-emerald-500 bg-opacity-90 rounded-full flex items-center justify-center">
-                        <FaCheck className="text-white text-sm" />
+                      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-6 h-6 bg-emerald-500 bg-opacity-90 rounded-full flex items-center justify-center">
+                        <FaCheck className="text-white text-xs" />
                       </div>
                     )}
                   </div>
-                  <div className="text-sm font-medium">{pendant.name}</div>
+                  <div className="text-xs font-medium">{pendant.name}</div>
                 </button>
               ))}
             </div>
@@ -345,44 +342,41 @@ const MobilePendantConfig = ({
               </button>
             </div>
 
-            <div className="flex justify-center gap-6">
+            <div className="flex justify-center gap-3">
               <button
                 onClick={() => handleSystemTypeSelection("bar")}
-                className="flex flex-col w-24 transition-all duration-200 justify-center items-center text-gray-300 hover:text-white
-"
+                className="flex flex-col w-16 transition-all duration-200 justify-center items-center text-gray-300 hover:text-white"
               >
                 <img
                   src="./images/configOptions/bar.png"
                   alt="Bar"
-                  className="w-20 h-20"
+                  className="w-14 h-14"
                 />
-                <div className="text-white text-sm font-medium">Bar</div>
+                <div className="text-white text-xs font-medium mt-1">Bar</div>
               </button>
 
               <button
                 onClick={() => handleSystemTypeSelection("ball")}
-                className="flex flex-col w-24 transition-all duration-200 justify-center items-center text-gray-300 hover:text-white
-"
+                className="flex flex-col w-16 transition-all duration-200 justify-center items-center text-gray-300 hover:text-white"
               >
                 <img
                   src="./images/configOptions/ball.png"
                   alt="Ball"
-                  className="w-20 h-20"
+                  className="w-14 h-14"
                 />
-                <div className="text-white text-sm font-medium">Ball</div>
+                <div className="text-white text-xs font-medium mt-1">Ball</div>
               </button>
 
               <button
                 onClick={() => handleSystemTypeSelection("universal")}
-                className="flex flex-col w-24 transition-all duration-200 justify-center items-center text-gray-300 hover:text-white
-"
+                className="flex flex-col w-16 transition-all duration-200 justify-center items-center text-gray-300 hover:text-white"
               >
                 <img
                   src="./images/configOptions/universal.png"
                   alt="Universal"
-                  className="w-20 h-20"
+                  className="w-14 h-14"
                 />
-                <div className="text-white text-sm font-medium">Universal</div>
+                <div className="text-white text-xs font-medium mt-1">Universal</div>
               </button>
             </div>
           </div>
@@ -435,7 +429,7 @@ const MobilePendantConfig = ({
               {/* Horizontal scrollable carousel */}
               <div
                 ref={carouselRef}
-                className="flex gap-1 overflow-x-auto scrollbar-hide px-8"
+                className="flex gap-3 overflow-x-auto scrollbar-hide px-8"
                 style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
               >
                 {currentAssignments.map((design) => (
@@ -444,27 +438,27 @@ const MobilePendantConfig = ({
                     onClick={() =>
                       handleSystemBaseDesignSelection(design.design)
                     }
-                    className="flex-shrink-0 w-20 transition-all duration-200 text-center text-gray-300 hover:text-white"
+                    className="flex-shrink-0 w-18 transition-all duration-200 text-center text-gray-300 hover:text-white"
                   >
                     <div className="relative">
                       {design.media?.image?.url && (
                         <img
                           src={design.media.image.url}
                           alt={design.name}
-                          className={`w-20 h-20 object-cover rounded-full mb-2 transition-all duration-200 mx-auto ${
+                          className={`w-14 h-14 object-cover rounded-full mb-1 transition-all duration-200 mx-auto ${
                             currentDesign === design.design
-                              ? "border-4 border-emerald-400"
+                              ? "border-2 border-emerald-400"
                               : ""
                           }`}
                         />
                       )}
                       {currentDesign === design.design && (
-                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-emerald-500 bg-opacity-90 rounded-full flex items-center justify-center">
-                          <FaCheck className="text-white text-sm" />
+                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-6 h-6 bg-emerald-500 bg-opacity-90 rounded-full flex items-center justify-center">
+                          <FaCheck className="text-white text-xs" />
                         </div>
                       )}
                     </div>
-                    <div className="text-sm font-medium">{design.name}</div>
+                    <div className="text-xs font-medium">{design.name}</div>
                   </button>
                 ))}
               </div>
