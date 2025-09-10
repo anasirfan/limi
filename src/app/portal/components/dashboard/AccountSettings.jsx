@@ -92,7 +92,22 @@ export default function AccountSettings({ user, onUserUpdate }) {
         }
       );
 
-      if (!response.ok) throw new Error("Failed to fetch user data");
+      if (!response.ok) {
+        // Check if it's an invalid/expired token error
+        try {
+          const errorData = await response.json();
+          if (errorData.message === "Invalid or expired token.") {
+            // Clear token from localStorage and redirect to login
+            localStorage.removeItem('limiToken');
+            localStorage.removeItem('limiUser');
+            window.location.href = '/login';
+            return null;
+          }
+        } catch (parseError) {
+          // If we can't parse the error response, fall back to generic error
+        }
+        throw new Error("Failed to fetch user data");
+      }
 
       const userData = await response.json();
       localStorage.setItem("limiUser", JSON.stringify(userData));

@@ -689,8 +689,8 @@ export const PreviewControls = ({
           <FaRoute size={16} />
         </motion.button>
 
-        {/* Wishlist Button */}
-        <div className="relative" ref={wishlistRef}>
+        {/* Wishlist Button - Desktop Only */}
+        <div className="relative hidden sm:block" ref={wishlistRef}>
           <button
             className={`p-2 rounded-full ${
               showWishlistModal
