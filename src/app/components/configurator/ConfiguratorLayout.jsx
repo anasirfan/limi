@@ -174,7 +174,7 @@ const ConfiguratorLayout = () => {
     );
   };
 
-  // Handle chandelier type change
+  // Handle chandelier
   const handleChandelierTypeChange = (designName) => {
     const assignment = chandelierAssignments.find((a) => a.design === designName);
     sendMessageToPlayCanvas(`cable_0`);
