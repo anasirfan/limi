@@ -439,6 +439,20 @@ export default function PendantSystemManager({
                   />
                 )}
 
+                {/* Show Chandeliers */}
+                {activeTab === 'chandelier' && processedProducts.length > 0 && (
+                  <ProductTable
+                    products={processedProducts}
+                    type="chandelier"
+                    onEdit={handleEditItem}
+                    onDelete={handleDeleteItem}
+                    deletingItemId={deletingItemId}
+                    viewMode={viewMode}
+                    selectedItems={selectedItems}
+                    setSelectedItems={setSelectedItems}
+                  />
+                )}
+
                 {/* Show Products with Models */}
                 {activeTab === 'model' && processedProducts.length > 0 && (
                   <>

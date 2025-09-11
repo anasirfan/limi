@@ -56,7 +56,7 @@ const AddModal = ({
           />
 
           {/* System Type Selection */}
-          {newPendantData.systemType !== "" && (
+          {newPendantData.systemType !== "" && newPendantData.systemType !== "chandelier" && (
             <SystemTypeSelection
               newPendantData={newPendantData}
               handlePendantInputChange={handlePendantInputChange}
@@ -66,22 +66,26 @@ const AddModal = ({
           )}
 
           {/* Product Details */}
-          <ProductDetailsForm
-            newPendantData={newPendantData}
-            handlePendantInputChange={handlePendantInputChange}
-          />
+          {(newPendantData.systemType === "chandelier" || newPendantData.systemType === "" || newPendantData.systemType !== "") && (
+            <ProductDetailsForm
+              newPendantData={newPendantData}
+              handlePendantInputChange={handlePendantInputChange}
+            />
+          )}
 
           {/* Media Uploads */}
-          <MediaUploadSection
-            imagePreview={imagePreview}
-            modelPreview={modelPreview}
-            handleIconImageChange={handleIconImageChange}
-            handle3DModelChange={handle3DModelChange}
-            setImageFile={setImageFile}
-            setImagePreview={setImagePreview}
-            setModelFile={setModelFile}
-            setModelPreview={setModelPreview}
-          />
+          {(newPendantData.systemType === "chandelier" || newPendantData.systemType === "" || newPendantData.systemType !== "") && (
+            <MediaUploadSection
+              imagePreview={imagePreview}
+              modelPreview={modelPreview}
+              handleIconImageChange={handleIconImageChange}
+              handle3DModelChange={handle3DModelChange}
+              setImageFile={setImageFile}
+              setImagePreview={setImagePreview}
+              setModelFile={setModelFile}
+              setModelPreview={setModelPreview}
+            />
+          )}
         </div>
 
         {/* Action Buttons */}

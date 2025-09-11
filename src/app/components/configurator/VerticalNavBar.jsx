@@ -45,6 +45,7 @@ const VerticalNavBar = ({
   setActiveStep,
   showConfigurationTypeSelector,
   setShowConfigurationTypeSelector,
+  handleChandelierTypeChange,
   config,
   cables, // Add cables prop
   onCableSizeChange, // Add cable size change handler
@@ -1181,6 +1182,7 @@ const VerticalNavBar = ({
               selectedPendants={selectedPendants}
               cables={cables}
               onCableSizeChange={onCableSizeChange}
+              handleChandelierTypeChange={handleChandelierTypeChange}
               onPendantDesignChange={onPendantDesignChange}
               onSystemBaseDesignChange={onSystemBaseDesignChange}
               onShadeSelect={onShadeSelect}

@@ -25,12 +25,15 @@ const ProductTable = ({
   const [selectedModel, setSelectedModel] = useState(null);
   const [isModelViewerOpen, setIsModelViewerOpen] = useState(false);
   const [hoveredItem, setHoveredItem] = useState(null);
+  const isChandelier = type === "chandelier";
   const isSystem = type === "system";
-  const primaryColor = isSystem ? "#87CEAB" : "#50C878";
-  const Icon = isSystem ? FaLayerGroup : FaLightbulb;
+  const primaryColor = isChandelier ? "#FFD700" : isSystem ? "#87CEAB" : "#50C878";
+  const Icon = isChandelier ? FaLightbulb : isSystem ? FaLayerGroup : FaLightbulb;
 
-  // Use products directly since filtering/sorting is now handled in parent
-  const processedProducts = products;
+  // Filter to only chandeliers if type === 'chandelier'
+  const processedProducts = type === 'chandelier'
+    ? products.filter(item => item.systemType === 'chandelier')
+    : products;
 
   // Handler functions
 
@@ -72,21 +75,25 @@ const ProductTable = ({
       <div className="flex items-center space-x-4">
         <div
           className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
-            isSystem 
-              ? 'bg-gradient-to-br from-[#87CEAB]/20 to-[#87CEAB]/10' 
-              : 'bg-gradient-to-br from-[#50C878]/20 to-[#50C878]/10'
+            isChandelier
+              ? 'bg-gradient-to-br from-[#FFD700]/20 to-[#FFFACD]/10'
+              : isSystem 
+                ? 'bg-gradient-to-br from-[#87CEAB]/20 to-[#87CEAB]/10' 
+                : 'bg-gradient-to-br from-[#50C878]/20 to-[#50C878]/10'
           }`}
         >
-          <Icon className={`text-2xl ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`} />
+          <Icon className={`text-2xl ${isChandelier ? 'text-[#FFD700]' : isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'} `} />
         </div>
         <div>
           <h3 className="text-2xl font-bold text-white">
-            {isSystem ? "System Configurations" : "Individual Pendants"}
+            {isChandelier ? "Chandeliers" : isSystem ? "System Configurations" : "Individual Pendants"}
           </h3>
           <p className="text-gray-400">
-            {isSystem
-              ? "Multi-fixture lighting systems"
-              : "Single lighting fixtures"}
+            {isChandelier
+              ? "Decorative multi-arm lighting"
+              : isSystem
+                ? "Multi-fixture lighting systems"
+                : "Single lighting fixtures"}
           </p>
         </div>
       </div>
@@ -151,7 +158,7 @@ const ProductTable = ({
                 Name
               </div>
               
-              <div className={`col-span-1 ml-2 font-semibold text-sm ${isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}>
+              <div className={`col-span-1 ml-2 font-semibold text-sm ${isChandelier ? 'text-[#FFD700]' : isSystem ? 'text-[#87CEAB]' : 'text-[#50C878]'}`}>
                 Type
               </div>
               
@@ -238,7 +245,11 @@ const ProductTable = ({
 
                   {/* Type */}
                   <div className="col-span-1">
-                    {isSystem ? (
+                    {isChandelier ? (
+                      <span className="px-3 py-1 rounded-full text-xs font-medium capitalize bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">
+                        Chandelier
+                      </span>
+                    ) : item.isSystem ? (
                       <span
                         className={`px-3 py-1 rounded-full text-xs font-medium capitalize ${
                           item.systemType === "bar"

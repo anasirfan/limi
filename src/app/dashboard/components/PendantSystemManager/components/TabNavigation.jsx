@@ -33,6 +33,12 @@ const TabNavigation = ({
 }) => {
   const tabCounts = getTabCounts(products);
 
+  // Filter products for display based on active tab
+  let displayedProducts = products;
+  if (activeTab === "chandelier") {
+    displayedProducts = products.filter((p) => p.systemType === "chandelier");
+  }
+
   // Handler functions
   const handleSort = (field) => {
     if (sortField === field) {
@@ -71,6 +77,7 @@ const TabNavigation = ({
     { key: "bar", label: "Bar Systems", icon: FaLayerGroup },
     { key: "ball", label: "Ball Systems", icon: FaLayerGroup },
     { key: "universal", label: "Universal Systems", icon: FaLayerGroup },
+    { key: "chandelier", label: "Chandeliers", icon: FaLightbulb },
     { key: "model", label: "With Models", icon: FaCube },
   ];
 

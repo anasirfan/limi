@@ -17,7 +17,7 @@ import { saveConfiguration } from "../../../app/redux/slices/userSlice.js";
 import { useRouter, useSearchParams } from "next/navigation";
 import ConfigurationSummary from "../lightConfigurator/ConfigurationSummary";
 import { fetchUserByToken } from "../../../app/redux/slices/userSlice.js";
-import { systemAssignments } from "./pendantSystemData";
+import { systemAssignments, chandelierAssignments } from "./pendantSystemData";
 import {
   listenForCableMessages,
   listenForSelectedCableMessages,
@@ -163,7 +163,30 @@ const ConfiguratorLayout = () => {
 
   // Handler for shade selection
   const handleShadeSelectLocal = (designId, shadeId, systemType, shadeIndex) => {
-    handleShadeSelect(designId, shadeId, systemType, shadeIndex, config.selectedPendants, setCables);
+    handleShadeSelect(
+      designId,
+      shadeId,
+      systemType,
+      shadeIndex,
+      config,
+      setConfig,
+      sendMessageToPlayCanvas
+    );
+  };
+
+  // Handle chandelier type change
+  const handleChandelierTypeChange = (designName) => {
+    const assignment = chandelierAssignments.find((a) => a.design === designName);
+    sendMessageToPlayCanvas(`cable_0`);
+    sendMessageToPlayCanvas(
+      `glass_${assignment.hasGlass ? "attached" : "none"}`
+    );
+    sendMessageToPlayCanvas(`color_${assignment.hasGold ? "gold" : "none"}`);
+    sendMessageToPlayCanvas(
+      `silver_${assignment.hasSilver ? "attached" : "none"}`
+    );
+    sendMessageToPlayCanvas(`product_${assignment.media?.model?.url}`);
+    sendMessageToPlayCanvas(`${assignment.message}`);
   };
 
   // Preview mode state
@@ -1080,6 +1103,7 @@ const ConfiguratorLayout = () => {
           {!isLoading && (
             <VerticalNavBar
               containerDimensions={containerDimensions}
+              handleChandelierTypeChange={handleChandelierTypeChange}
               activeStep={activeStep}
               setActiveStep={setActiveStep}
               config={config}
@@ -1121,6 +1145,7 @@ const ConfiguratorLayout = () => {
           )}
 
           {/* Configuration panel for individual configuration */}
+       
           {/* {configuringType && (
             <ConfigPanel
               configuringType={configuringType}

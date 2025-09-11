@@ -85,5 +85,6 @@ export function getTabCounts(products) {
       const modelUrl = item.media?.model?.url;
       return modelUrl && modelUrl.trim() !== '';
     }).length,
+    chandelier: products.filter(item => item.systemType === "chandelier").length,
   };
 }

@@ -7,6 +7,7 @@ import {
   barAssignments,
   ballAssignments,
   universalAssignments,
+  chandelierAssignments,
 } from "../pendantSystemData";
 import {
   FaHeart,
@@ -16,9 +17,9 @@ import {
   FaCheck,
   FaCubes,
 } from "react-icons/fa";
+import { FaArrow } from "react-icons/fa";
 import { Breadcrumb } from "./Breadcrumb";
 import BaseColorPanel from "./BaseColorPanel";
-import { FaArrow } from "react-icons/fa";
 import {
   addToFavorites,
   removeFromFavorites,
@@ -30,9 +31,10 @@ export const ConfigPanel = ({
   configuringSystemType,
   breadcrumbPath,
   showConfigurationTypeSelector,
+  handleChandelierTypeChange,
   onBreadcrumbNavigation,
   onSystemTypeSelection,
-   antLoadingScreen,
+  antLoadingScreen,
   selectedLocation,
   selectedPendants,
   cables, // Add cables prop
@@ -43,6 +45,7 @@ export const ConfigPanel = ({
   onShadeSelect,
   currentShade,
   onCableSizeChange, // NEW PROP
+  onChandelierTypeChange, // NEW PROP for chandelier
   onClose,
   className = "", // Add className prop with default empty string
   sendMessageToPlayCanvas, // Add sendMessageToPlayCanvas prop
@@ -420,20 +423,7 @@ export const ConfigPanel = ({
         // },
         // {
         //   id: "supernova",
-        //   name: "Supernova",
-        //   baseNumber: "34",
-        //   image: "/images/configOptions/universal/34.png",
-        // },
-      ],
-    };
-    // Always use the canonical design id from baseOptions
-    let designId = currentDesign;
-    if (configuringSystemType && currentDesign) {
-      const baseList = baseOptions[configuringSystemType] || [];
-      const selectedBase = baseList.find((base) => base.id === currentDesign);
-      if (selectedBase) {
-        designId = selectedBase.baseNumber; // or selectedBase.baseNumber if PlayCanvas expects a number
-      }
+      ]
     }
     if (typeof onShadeSelect === "function") {
       onShadeSelect(designId, shade.id, configuringSystemType, shadeIndex);
@@ -452,7 +442,6 @@ export const ConfigPanel = ({
     if (configuringSystemType !== "bar") {
       setBarNavState({ showBarEngines: false, showBarOptions: false });
     }
-    
     // Reset all state when configuringType becomes null (panel closed)
     if (!configuringType) {
       setCurrentDesign(null);
@@ -626,6 +615,19 @@ export const ConfigPanel = ({
         //   image: "/images/configOptions/cable.png",
         // },
       ];
+      // Add Chandelier option when baseType is round and lightAmount is 3
+      // We need to access the parent config to check these conditions
+      // This will be passed as a prop or accessed through a parent component
+      const parentConfig = typeof window !== 'undefined' ? 
+        JSON.parse(localStorage.getItem('lightConfig') || '{}') : {};
+      
+      if (parentConfig.baseType === 'round' && parentConfig.lightAmount === 3) {
+        config.items.push({
+          id: "chandelier",
+          name: "Chandelier",
+          image: "/images/configOptions/chandelier.png",
+        });
+      }
       config.onItemSelect = (itemId) => {
         // Fire messages for configuration type selection
         if (sendMessageToPlayCanvas) {
@@ -633,9 +635,10 @@ export const ConfigPanel = ({
             sendMessageToPlayCanvas("Nobars");
           } else if (itemId === "system") {
             sendMessageToPlayCanvas("Nobars");
+          } else if (itemId === "chandelier") {
+            sendMessageToPlayCanvas("Nobars");
           }
         }
-        
         // Reset system type state when selecting system
         if (itemId === "system") {
           setCurrentDesign(null);
@@ -649,13 +652,48 @@ export const ConfigPanel = ({
             ids: { system: true },
           });
         }
-        
+        // Handle chandelier selection
+        if (itemId === "chandelier") {
+          setCurrentDesign(null);
+          setAvailableShades([]);
+          setLocalSelectedShade(null);
+          setBarNavState({ showBarEngines: false, showBarOptions: false });
+          // Set navigation state for chandelier
+          setNavState({
+            level: 1,
+            path: ["chandelier"],
+            ids: { chandelier: true },
+          });
+        }
         onSelectConfigurationType(itemId);
       };
       config.selectedItem = null;
       config.useIcon = true;
       config.showCloseButton = true;
       config.showLocationLabel = true;
+    }
+    // Chandelier Type Selection
+    else if (configuringType === "chandelier") {
+      config.title = "Chandelier Selection";
+      config.showBreadcrumb = true;
+      config.items = chandelierAssignments.map((chand) => ({
+        id: chand.design,
+        name: chand.name,
+        image: chand.media && chand.media.image && chand.media.image.url ? chand.media.image.url : "/images/configOptions/chandelier.png",
+      }));
+      config.onItemSelect = (itemId) => {
+        // Fire messages for chandelier selection
+        
+        // Call the chandelier type change handler
+        if (handleChandelierTypeChange) {
+          handleChandelierTypeChange(itemId);
+        }
+      };
+      config.selectedItem = currentDesign;
+      config.breadcrumbItems = [
+        { id: "home", name: "icon-home" },
+        { id: "chandelier", name: "Chandelier" },
+      ];
     }
     // Cable Size selection panel
     else if (configuringType === "cableSize") {
@@ -738,7 +776,7 @@ export const ConfigPanel = ({
         config.onItemSelect = (systemType) => {
          
           // Fire specific messages for each system type
-        
+            
             if (systemType === "universal") {
               sendMessageToPlayCanvas("Nobars");
             } else if (systemType === "ball") {
@@ -997,7 +1035,13 @@ export const ConfigPanel = ({
       setLocalSelectedShade(null);
       setBarNavState({ showBarEngines: false, showBarOptions: false });
       onSelectConfigurationType(null);
-      // Do NOT call onClose() as we want to keep the panel open
+      // Call the parent breadcrumb handler instead of recursively calling itself
+      onBreadcrumbNavigation("home");
+    } else if (id === "chandelier") {
+      // If we click on Chandelier breadcrumb, ensure we're at that level
+      if (configuringType !== "chandelier") {
+        onSelectConfigurationType("chandelier");
+      }
     } else if (id === "system" && navState.level === 2) {
       // If we're in system base design and click on System Type breadcrumb,
       // go back to system type selection
