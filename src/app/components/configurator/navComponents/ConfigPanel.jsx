@@ -625,7 +625,7 @@ export const ConfigPanel = ({
         config.items.push({
           id: "chandelier",
           name: "Chandelier",
-          image: "/images/configOptions/chandelier.png",
+          image: "/images/configOptions/system.png",
         });
       }
       config.onItemSelect = (itemId) => {
@@ -1243,6 +1243,7 @@ export const ConfigPanel = ({
                       {/* Wishlist Icon Overlay */}
                       {item.id !== "pendant" &&
                         item.id !== "system" &&
+                        item.id !== "chandelier" &&
                         item.id !== "bar" &&
                         item.id !== "ball" &&
                         item.id !== "universal" && (
