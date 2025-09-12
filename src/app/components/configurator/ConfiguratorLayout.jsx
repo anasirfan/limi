@@ -53,6 +53,58 @@ const ConfiguratorLayout = () => {
   const { isLoggedIn, user } = useSelector((state) => state.user);
   const searchParams = useSearchParams();
 
+  // Version constant to track localStorage schema changes
+  const STORAGE_VERSION = "1.0.0";
+
+  // Clear old localStorage data if version doesn't match
+  useEffect(() => {
+    const currentVersion = localStorage.getItem("limiConfigVersion");
+    
+    if (currentVersion !== STORAGE_VERSION) {
+      // Clear old localStorage data
+      localStorage.removeItem("lightConfig");
+      localStorage.removeItem("lightCables");
+      
+      // Save default configuration values
+      const defaultConfig = {
+        lightType: "ceiling",
+        baseType: "round",
+        configurationType: "pendant",
+        lightAmount: 1,
+        baseColor: "black",
+        selectedPendants: [],
+        hotspot: "off",
+        shades: {},
+        lighting: true,
+        colorTemperature: 50,
+        brightness: 50,
+      };
+      
+      const defaultCables = [
+        {
+          design: "ico",
+          connectorColor: "black",
+          cableSize: "2mm",
+          cableColor: "black",
+        },
+      ];
+      
+      localStorage.setItem("lightConfig", JSON.stringify(defaultConfig));
+      localStorage.setItem("lightCables", JSON.stringify(defaultCables));
+      
+      // Update state with default values
+      setConfig(defaultConfig);
+      setCables(defaultCables);
+      setBrightness(50);
+      setColorTemperature(50);
+      
+      // Set new version
+      localStorage.setItem("limiConfigVersion", STORAGE_VERSION);
+      
+      console.log("Cleared old localStorage data and reset to default configuration");
+    }
+  }, []);
+
   // State for loading configuration from URL
   const [isLoadingFromUrl, setIsLoadingFromUrl] = useState(false);
   const [configFromUrl, setConfigFromUrl] = useState(null);

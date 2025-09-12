@@ -621,7 +621,7 @@ export const ConfigPanel = ({
       const parentConfig = typeof window !== 'undefined' ? 
         JSON.parse(localStorage.getItem('lightConfig') || '{}') : {};
       
-      if (parentConfig.baseType === 'round' && parentConfig.lightAmount === 3) {
+      if (parentConfig.baseType === 'rectangular' && parentConfig.lightAmount === 3) {
         config.items.push({
           id: "chandelier",
           name: "Chandelier",
