@@ -625,7 +625,7 @@ export const ConfigPanel = ({
         config.items.push({
           id: "chandelier",
           name: "Chandelier",
-          image: "/images/configOptions/system.png",
+          image: "/images/configOptions/chandelier.png",
         });
       }
       config.onItemSelect = (itemId) => {
