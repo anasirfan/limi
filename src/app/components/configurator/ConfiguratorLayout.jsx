@@ -180,8 +180,6 @@ const ConfiguratorLayout = () => {
     // Set up cable message listener
     const cleanup = listenForCableMessages((message, event) => {
       // Do something with the message, e.g. open UI, update state, etc.
-      console.log("[ConfigPanel] Received cable message:", message, event.data);
-   
       setCableMessage(message);
     });
     return cleanup;
@@ -230,6 +228,8 @@ const ConfiguratorLayout = () => {
   const handleChandelierTypeChange = (designName) => {
     const assignment = chandelierAssignments.find((a) => a.design === designName);
     sendMessageToPlayCanvas(`cable_0`);
+
+
     sendMessageToPlayCanvas(
       `glass_${assignment.hasGlass ? "attached" : "none"}`
     );
@@ -239,6 +239,8 @@ const ConfiguratorLayout = () => {
     );
     sendMessageToPlayCanvas(`product_${assignment.media?.model?.url}`);
     sendMessageToPlayCanvas(`${assignment.message}`);
+    sendMessageToPlayCanvas(`chandelier_clearance`);
+    sendMessageToPlayCanvas(`height_set`);    
     sendMessageToPlayCanvas("allmodelsloaded");
   };
 
@@ -750,12 +752,8 @@ const ConfiguratorLayout = () => {
     [config.lightAmount]
   );
   useEffect(() => {
-    console.log("State:", showPendantLoadingScreen);  // Will show current state
     setShowPendantLoadingScreen(true);
-    console.log("State after setState - won't show new value yet:", showPendantLoadingScreen);
-    
     const timer = setTimeout(() => {
-      console.log("State after timeout - will show true:", showPendantLoadingScreen);
       setShowPendantLoadingScreen(false);
     }, 500);
     
@@ -763,7 +761,6 @@ const ConfiguratorLayout = () => {
   }, [handlePendantDesignChange]);
 
   useEffect(() => {
-    console.log("State changed to:", showPendantLoadingScreen);
   }, [showPendantLoadingScreen]);
   // Handle base type change
   const handleBaseTypeChange = useCallback((baseType) => {
@@ -856,7 +853,6 @@ const ConfiguratorLayout = () => {
   }, []);
 
   const handleSystemBaseDesignChange = useCallback((design) => {
-    console.log("designssss",design);
     // Update the system base design in the config
     setConfig((prev) => ({ ...prev, systemBaseDesign: design }));
     setCurrentShade(null);
@@ -891,7 +887,6 @@ const ConfiguratorLayout = () => {
         const designToIds = {};
         selectedCables.forEach((id) => {
           const system = systemAssignments.find((a) => a.design === design);
-          console.log("system",system);
           if (!designToIds[system.design]) designToIds[system.design] = [];
           designToIds[system.design].push(id);
         });
@@ -933,7 +928,6 @@ const ConfiguratorLayout = () => {
 
   // Handle final save after user enters configuration name
   const handleFinalSave = async (configName, thumbnail, modelId) => {
-    console.log("modelId", modelId);
     if (!configToSave) {
       console.error("configToSave is null or undefined");
       return;

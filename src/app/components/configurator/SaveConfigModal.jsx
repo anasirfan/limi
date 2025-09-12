@@ -36,8 +36,6 @@ export const SaveConfigModal = ({
     const cleanup = listenForModelIdMessages((data, event) => {
       // Example: model_id:12345
       if (typeof data === "string" && data.startsWith("model_id")) {
-        console.log("[SaveConfigModal] Received model_id:", data);
-        // console.log("modelId splitted",data.split(' ')[1])
         setModelId(data.split(" ")[1]);
         setFetchingModelId(false);
         setLoading(false);
@@ -47,7 +45,6 @@ export const SaveConfigModal = ({
       if (cleanup) cleanup();
     };
   }, [fetchingModelId]);
-console.log("configSummary",configSummary)
   // Clean up on modal close (remove any lingering handler)
   useEffect(() => {
     if (isOpen) {
@@ -86,7 +83,6 @@ console.log("configSummary",configSummary)
   const formatConfigSummary = () => {
     const { light_type, base_type, light_amount, cables, base_color } =
       configSummary;
-    console.log("configSummaryy", configSummary);
     let summaryText = `Light Type: ${light_type}\n`;
     if (light_type === "ceiling") {
       summaryText += `Base Type: ${base_type}\n`;
