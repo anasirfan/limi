@@ -239,6 +239,7 @@ const ConfiguratorLayout = () => {
     );
     sendMessageToPlayCanvas(`product_${assignment.media?.model?.url}`);
     sendMessageToPlayCanvas(`${assignment.message}`);
+    sendMessageToPlayCanvas("allmodelsloaded");
   };
 
   // Preview mode state
