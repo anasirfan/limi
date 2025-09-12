@@ -144,6 +144,10 @@ export const sendMessagesForDesign = (designName, idOrIds) => {
     );
     sendMessageToPlayCanvas(`product_${assignment.media?.model?.url}`);
     sendMessageToPlayCanvas(`${assignment.message}`);
+    if(assignment.systemType === "chandelier") {
+      sendMessageToPlayCanvas(`chandelier_clearance`);
+      sendMessageToPlayCanvas(`height_set`);
+    }
   };
 
   if (Array.isArray(idOrIds)) {
@@ -183,6 +187,10 @@ export const sendMessagesForDesignOnReload = (designName, id) => {
     );
     sendMessageToPlayCanvas(`product_${assignment.media?.model?.url}`);
     sendMessageToPlayCanvas(`${assignment.message}`);
+    if(assignment.systemType === "chandelier") {
+      sendMessageToPlayCanvas(`chandelier_clearance`);
+      sendMessageToPlayCanvas(`height_set`);
+    }
   };
   sendAllMessages(id);
 };

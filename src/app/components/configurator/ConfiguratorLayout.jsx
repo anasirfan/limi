@@ -226,22 +226,12 @@ const ConfiguratorLayout = () => {
 
   // Handle chandelier
   const handleChandelierTypeChange = (designName) => {
-    const assignment = chandelierAssignments.find((a) => a.design === designName);
-    sendMessageToPlayCanvas(`cable_0`);
-
-
-    sendMessageToPlayCanvas(
-      `glass_${assignment.hasGlass ? "attached" : "none"}`
-    );
-    sendMessageToPlayCanvas(`color_${assignment.hasGold ? "gold" : "none"}`);
-    sendMessageToPlayCanvas(
-      `silver_${assignment.hasSilver ? "attached" : "none"}`
-    );
-    sendMessageToPlayCanvas(`product_${assignment.media?.model?.url}`);
-    sendMessageToPlayCanvas(`${assignment.message}`);
-    sendMessageToPlayCanvas(`chandelier_clearance`);
-    sendMessageToPlayCanvas(`height_set`);    
-    sendMessageToPlayCanvas("allmodelsloaded");
+    setCables([
+      {
+        design: designName,
+        }, 
+    ]);
+    sendMessagesForDesign(designName, 0);
   };
 
   // Preview mode state
@@ -463,6 +453,7 @@ const ConfiguratorLayout = () => {
 
           savedCables.forEach((cable, index) => {
             sendMessagesForDesignOnReload(cable.design, index);
+          
           });
           sendMessageToPlayCanvas("allmodelsloaded");
           // sendMessagesForDesign("fina", 0);
