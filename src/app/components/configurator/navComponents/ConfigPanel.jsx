@@ -621,7 +621,7 @@ export const ConfigPanel = ({
       const parentConfig = typeof window !== 'undefined' ? 
         JSON.parse(localStorage.getItem('lightConfig') || '{}') : {};
       
-      if (parentConfig.baseType === 'rectangular' && parentConfig.lightAmount === 3) {
+      if (parentConfig.baseType === 'rectangular') {
         config.items.push({
           id: "chandelier",
           name: "Chandelier",
@@ -682,8 +682,6 @@ export const ConfigPanel = ({
         image: chand.media && chand.media.image && chand.media.image.url ? chand.media.image.url : "/images/configOptions/chandelier.png",
       }));
       config.onItemSelect = (itemId) => {
-        // Fire messages for chandelier selection
-        
         // Call the chandelier type change handler
         if (handleChandelierTypeChange) {
           handleChandelierTypeChange(itemId);
