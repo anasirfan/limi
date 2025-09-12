@@ -35,6 +35,7 @@ import {
   listenForConnectorColorMessages,
   listenForWallbaseColorMessages,
   listenForOffconfigMessages,
+  listenForCableMessages
 } from "../../util/iframeCableMessageHandler";
 
  // Pendant selection functionality
@@ -44,6 +45,7 @@ const VerticalNavBar = ({
   setActiveStep,
   showConfigurationTypeSelector,
   setShowConfigurationTypeSelector,
+  handleChandelierTypeChange,
   config,
   cables, // Add cables prop
   onCableSizeChange, // Add cable size change handler
@@ -165,6 +167,21 @@ const VerticalNavBar = ({
     return cleanup;
   }, []);
 
+  useEffect(() => {
+    const cleanup = listenForCableMessages((data, event) => {
+      // handle wallbaseColor message here
+      console.log(
+        "[ConfigPanel] Received connectorColor message:",
+        data,
+        event.data
+      );
+      // Example: open a modal, update config, etc.
+      setMobileBottomMenuOpen(true)
+    setMobileActiveStep('pendantSelection')
+    });
+    return cleanup;
+  }, []);
+  
   useEffect(() => {
     if (activeStep === "pendantSelection") {
       setOpenBase(false);
@@ -1165,6 +1182,7 @@ const VerticalNavBar = ({
               selectedPendants={selectedPendants}
               cables={cables}
               onCableSizeChange={onCableSizeChange}
+              handleChandelierTypeChange={handleChandelierTypeChange}
               onPendantDesignChange={onPendantDesignChange}
               onSystemBaseDesignChange={onSystemBaseDesignChange}
               onShadeSelect={onShadeSelect}

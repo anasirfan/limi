@@ -1,12 +1,13 @@
-import React, { useState, useRef } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useRef, useEffect } from "react";
+import { motion } from "framer-motion";
 import {
   pendantAssignments,
   barAssignments,
   ballAssignments,
   universalAssignments,
 } from "../pendantSystemData";
-import { FaChevronLeft, FaChevronRight, FaCheck } from 'react-icons/fa';
+import { FaChevronLeft, FaChevronRight, FaCheck } from "react-icons/fa";
+import { listenForCableMessages } from "../../../util/iframeCableMessageHandler";
 
 const MobilePendantConfig = ({
   pendants,
@@ -27,7 +28,7 @@ const MobilePendantConfig = ({
   onSystemTypeSelection,
   onClose,
 }) => {
-  const [activeTab, setActiveTab] = useState('selection');
+  const [activeTab, setActiveTab] = useState("design");
   const [configuringSystemType, setConfiguringSystemType] = useState(null);
   const [currentDesign, setCurrentDesign] = useState(null);
   const [showSystemOptions, setShowSystemOptions] = useState(false);
@@ -50,7 +51,7 @@ const MobilePendantConfig = ({
   // Handle configuration type selection (pendant or system)
   const handleConfigTypeSelection = (type) => {
     setLocalConfiguringType(type);
-    
+
     if (type === "pendant") {
       setActiveStep("pendantSelection");
       setShowSystemOptions(false);
@@ -75,7 +76,7 @@ const MobilePendantConfig = ({
   // Handle system type selection (bar, ball, universal)
   const handleSystemTypeSelection = (systemType) => {
     setConfiguringSystemType(systemType);
-    
+
     // Fire specific messages for each system type (same logic as ConfigPanel)
     if (systemType === "universal") {
       sendMessageToPlayCanvas("Nobars");
@@ -95,7 +96,7 @@ const MobilePendantConfig = ({
       });
       sendMessageToPlayCanvas("allmodelsloaded");
     }
-    
+
     // Call the parent handler
     if (onSystemTypeSelection) {
       onSystemTypeSelection(systemType);
@@ -105,19 +106,18 @@ const MobilePendantConfig = ({
   // Handle pendant design selection
   const handlePendantDesignSelection = (design) => {
     setCurrentDesign(design);
-    
+
     // Use all selected pendants if available, otherwise fall back to just the first one
     const pendantsToUpdate =
       selectedPendants && selectedPendants.length > 0
         ? selectedPendants
         : [selectedPendants[0]];
-    
+
     onPendantDesignChange(pendantsToUpdate, design);
   };
 
   // Handle system base design selection
   const handleSystemBaseDesignSelection = (design) => {
-    console.log("designnn",design);
     setCurrentDesign(design);
     onSystemBaseDesignChange(design);
   };
@@ -127,8 +127,8 @@ const MobilePendantConfig = ({
     if (carouselRef.current) {
       const scrollAmount = 200;
       carouselRef.current.scrollBy({
-        left: direction === 'left' ? -scrollAmount : scrollAmount,
-        behavior: 'smooth'
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
       });
     }
   };
@@ -146,50 +146,52 @@ const MobilePendantConfig = ({
     }
 
     return (
-      <div className="space-y-4">    
+      <div className="space-y-4">
         {/* Pendant grid with cable info */}
         <div className="flex gap-3">
           {cables.map((pendant, index) => {
             // Get cable size and design for this pendant
             const cableSize = cables && cables[index] ? cables[index].size : 1;
-            const cableDesign = cables && cables[index] ? cables[index].design : null;
+            const cableDesign =
+              cables && cables[index] ? cables[index].design : null;
             const designImageUrl = getImageSrc(cableDesign);
-            
+
             return (
               <button
                 key={index}
                 onClick={() => handlePendantLocationClick(index)}
                 className={`
-                  w-12 h-12 rounded-full flex items-center justify-center text-xs font-medium
+                  w-14 h-14 rounded-full flex items-center justify-center text-xs font-medium
                   transition-all duration-200 border-2 relative overflow-hidden
-                  ${selectedPendants.includes(index)
-                    ? 'border-emerald-400 shadow-lg shadow-emerald-400/30'
-                    : 'border-gray-600 hover:border-gray-500'
+                  ${
+                    selectedPendants.includes(index)
+                      ? "border-emerald-400 shadow-lg shadow-emerald-400/30"
+                      : "border-gray-600 hover:border-gray-500"
                   }
                 `}
               >
                 {/* Background image if available */}
                 {designImageUrl && (
-                  <div 
+                  <div
                     className="absolute inset-0 bg-cover bg-center opacity-70"
                     style={{ backgroundImage: `url(${designImageUrl})` }}
                   />
                 )}
-                
+
                 {/* Dark overlay for better text visibility */}
                 <div className="absolute inset-0 bg-black bg-opacity-40" />
-                
+
                 {/* Content */}
                 <div className="relative z-10 flex items-center justify-center text-white">
-                  <div className="text-base font-bold">{index + 1}</div>
+                  <div className="text-sm font-bold">{index + 1}</div>
                 </div>
 
                 {/* Selection indicator */}
-                {selectedPendants.includes(index) && (
-                  <div className="absolute top-1 right-1 w-4 h-4 bg-emerald-500 rounded-full flex items-center justify-center">
+                {/* {selectedPendants.includes(index) && (
+                  <div className="absolute top-5 right-5 w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center">
                     <FaCheck className="text-white text-xs" />
                   </div>
-                )}
+                )} */}
               </button>
             );
           })}
@@ -199,7 +201,7 @@ const MobilePendantConfig = ({
         <div className="flex gap-2 mt-4">
           <button
             onClick={() => {
-             selectAllPendants();
+              selectAllPendants();
             }}
             className="flex-1 py-2 px-4 bg-emerald-600 text-white rounded-lg text-sm font-medium hover:bg-emerald-700 transition-colors"
           >
@@ -221,33 +223,41 @@ const MobilePendantConfig = ({
     // If no configuration type selected
     if (!localConfiguringType) {
       return (
-      
-      
-
-          <div className="flex justify-center gap-8">
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="text-white text-sm">Configuration Type</div>
+          </div>
+          <div className="flex justify-center gap-6">
             <button
-              onClick={() => handleConfigTypeSelection('pendant')}
-              className="flex flex-col w-24 transition-all duration-200 justify-center items-center text-gray-300 hover:text-white"
+              onClick={() => handleConfigTypeSelection("pendant")}
+              className="flex flex-col w-16 transition-all duration-200 justify-center items-center text-gray-300 hover:text-white"
             >
-              <img src="./images/configOptions/pendant.png" alt="Pendant" className="w-20 h-20" />
-              <div className="text-white text-sm font-medium">Pendant</div>
+              <img
+                src="./images/configOptions/pendant.png"
+                alt="Pendant"
+                className="w-14 h-14"
+              />
+              <div className="text-white text-xs font-medium mt-1">Pendant</div>
             </button>
 
             <button
-              onClick={() => handleConfigTypeSelection('system')}
-              className="flex flex-col w-24 transition-all duration-200 justify-center items-center text-gray-300 hover:text-white"
+              onClick={() => handleConfigTypeSelection("system")}
+              className="flex flex-col w-16 transition-all duration-200 justify-center items-center text-gray-300 hover:text-white"
             >
-              <img src="./images/configOptions/system.png" alt="System" className="w-20 h-20" />
-              <div className="text-white text-sm font-medium">System</div>
+              <img
+                src="./images/configOptions/system.png"
+                alt="System"
+                className="w-14 h-14"
+              />
+              <div className="text-white text-xs font-medium mt-1">System</div>
             </button>
           </div>
-
-     
+        </div>
       );
     }
 
     // If pendant configuration selected, show pendant designs
-    if (localConfiguringType === 'pendant') {
+    if (localConfiguringType === "pendant") {
       return (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
@@ -264,7 +274,7 @@ const MobilePendantConfig = ({
           <div className="relative">
             {/* Left scroll button */}
             <button
-              onClick={() => scrollCarousel('left')}
+              onClick={() => scrollCarousel("left")}
               className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-gray-800 hover:bg-gray-700 text-white p-2 rounded-full shadow-lg transition-colors"
             >
               <FaChevronLeft size={16} />
@@ -272,7 +282,7 @@ const MobilePendantConfig = ({
 
             {/* Right scroll button */}
             <button
-              onClick={() => scrollCarousel('right')}
+              onClick={() => scrollCarousel("right")}
               className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-gray-800 hover:bg-gray-700 text-white p-2 rounded-full shadow-lg transition-colors"
             >
               <FaChevronRight size={16} />
@@ -281,34 +291,34 @@ const MobilePendantConfig = ({
             {/* Horizontal scrollable carousel */}
             <div
               ref={carouselRef}
-              className="flex gap-1 overflow-x-auto scrollbar-hide px-8"
-              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+              className="flex gap-3 overflow-x-auto scrollbar-hide px-8"
+              style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
             >
               {pendantAssignments.map((pendant) => (
                 <button
                   key={pendant.design}
                   onClick={() => handlePendantDesignSelection(pendant.design)}
-                  className="flex-shrink-0 w-24 transition-all duration-200 text-center text-gray-300 hover:text-white"
+                  className="flex-shrink-0 w-18 transition-all duration-200 text-center text-gray-300 hover:text-white"
                 >
                   <div className="relative">
                     {pendant.media?.image?.url && (
                       <img
                         src={pendant.media.image.url}
                         alt={pendant.name}
-                        className={`w-20 h-20 object-cover rounded-full mb-2 transition-all duration-200 mx-auto ${
+                        className={`w-14 h-14 object-cover rounded-full mb-1 transition-all duration-200 mx-auto ${
                           currentDesign === pendant.design
-                            ? 'border-4 border-emerald-400'
-                            : ''
+                            ? "border-2 border-emerald-400"
+                            : ""
                         }`}
                       />
                     )}
                     {currentDesign === pendant.design && (
-                      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-emerald-500 bg-opacity-90 rounded-full flex items-center justify-center">
-                        <FaCheck className="text-white text-sm" />
+                      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-6 h-6 bg-emerald-500 bg-opacity-90 rounded-full flex items-center justify-center">
+                        <FaCheck className="text-white text-xs" />
                       </div>
                     )}
                   </div>
-                  <div className="text-sm font-medium">{pendant.name}</div>
+                  <div className="text-xs font-medium">{pendant.name}</div>
                 </button>
               ))}
             </div>
@@ -318,7 +328,7 @@ const MobilePendantConfig = ({
     }
 
     // If system configuration selected, show system types or system designs
-    if (localConfiguringType === 'system') {
+    if (localConfiguringType === "system") {
       if (!configuringSystemType) {
         // Show system type selection (bar, ball, universal)
         return (
@@ -333,29 +343,41 @@ const MobilePendantConfig = ({
               </button>
             </div>
 
-            <div className="flex justify-center gap-6">
+            <div className="flex justify-center gap-3">
               <button
-                onClick={() => handleSystemTypeSelection('bar')}
-                className="flex flex-col items-center  transition-all duration-200 hover:opacity-80"
+                onClick={() => handleSystemTypeSelection("bar")}
+                className="flex flex-col w-16 transition-all duration-200 justify-center items-center text-gray-300 hover:text-white"
               >
-                <img src="./images/configOptions/bar.png" alt="Bar" className="w-16 h-16" />
-                <div className="text-white text-sm font-medium">Bar</div>
+                <img
+                  src="./images/configOptions/bar.png"
+                  alt="Bar"
+                  className="w-14 h-14"
+                />
+                <div className="text-white text-xs font-medium mt-1">Bar</div>
               </button>
 
               <button
-                onClick={() => handleSystemTypeSelection('ball')}
-                className="flex flex-col items-center transition-all duration-200 hover:opacity-80"
+                onClick={() => handleSystemTypeSelection("ball")}
+                className="flex flex-col w-16 transition-all duration-200 justify-center items-center text-gray-300 hover:text-white"
               >
-                <img src="./images/configOptions/ball.png" alt="Ball" className="w-16 h-16" />
-                <div className="text-white text-sm font-medium">Ball</div>
+                <img
+                  src="./images/configOptions/ball.png"
+                  alt="Ball"
+                  className="w-14 h-14"
+                />
+                <div className="text-white text-xs font-medium mt-1">Ball</div>
               </button>
 
               <button
-                onClick={() => handleSystemTypeSelection('universal')}
-                className="flex flex-col items-center  transition-all duration-200 hover:opacity-80"
+                onClick={() => handleSystemTypeSelection("universal")}
+                className="flex flex-col w-16 transition-all duration-200 justify-center items-center text-gray-300 hover:text-white"
               >
-                <img src="./images/configOptions/universal.png" alt="Universal" className="w-16 h-16" />
-                <div className="text-white text-sm font-medium">Universal</div>
+                <img
+                  src="./images/configOptions/universal.png"
+                  alt="Universal"
+                  className="w-14 h-14"
+                />
+                <div className="text-white text-xs font-medium mt-1">Universal</div>
               </button>
             </div>
           </div>
@@ -368,13 +390,16 @@ const MobilePendantConfig = ({
           universal: universalAssignments,
         };
 
-        const currentAssignments = systemAssignments[configuringSystemType] || [];
+        const currentAssignments =
+          systemAssignments[configuringSystemType] || [];
 
         return (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="text-white text-sm">
-                {configuringSystemType.charAt(0).toUpperCase() + configuringSystemType.slice(1)} Designs
+                {configuringSystemType.charAt(0).toUpperCase() +
+                  configuringSystemType.slice(1)}{" "}
+                Designs
               </div>
               <button
                 onClick={() => setConfiguringSystemType(null)}
@@ -388,7 +413,7 @@ const MobilePendantConfig = ({
             <div className="relative">
               {/* Left scroll button */}
               <button
-                onClick={() => scrollCarousel('left')}
+                onClick={() => scrollCarousel("left")}
                 className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-gray-800 hover:bg-gray-700 text-white p-2 rounded-full shadow-lg transition-colors"
               >
                 <FaChevronLeft size={16} />
@@ -396,7 +421,7 @@ const MobilePendantConfig = ({
 
               {/* Right scroll button */}
               <button
-                onClick={() => scrollCarousel('right')}
+                onClick={() => scrollCarousel("right")}
                 className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-gray-800 hover:bg-gray-700 text-white p-2 rounded-full shadow-lg transition-colors"
               >
                 <FaChevronRight size={16} />
@@ -405,34 +430,36 @@ const MobilePendantConfig = ({
               {/* Horizontal scrollable carousel */}
               <div
                 ref={carouselRef}
-                className="flex gap-1 overflow-x-auto scrollbar-hide px-8"
-                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                className="flex gap-3 overflow-x-auto scrollbar-hide px-8"
+                style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
               >
                 {currentAssignments.map((design) => (
                   <button
                     key={design.design}
-                    onClick={() => handleSystemBaseDesignSelection(design.design)}
-                    className="flex-shrink-0 w-20 transition-all duration-200 text-center text-gray-300 hover:text-white"
+                    onClick={() =>
+                      handleSystemBaseDesignSelection(design.design)
+                    }
+                    className="flex-shrink-0 w-18 transition-all duration-200 text-center text-gray-300 hover:text-white"
                   >
                     <div className="relative">
                       {design.media?.image?.url && (
                         <img
                           src={design.media.image.url}
                           alt={design.name}
-                          className={`w-20 h-20 object-cover rounded-full mb-2 transition-all duration-200 mx-auto ${
+                          className={`w-14 h-14 object-cover rounded-full mb-1 transition-all duration-200 mx-auto ${
                             currentDesign === design.design
-                              ? 'border-4 border-emerald-400'
-                              : ''
+                              ? "border-2 border-emerald-400"
+                              : ""
                           }`}
                         />
                       )}
                       {currentDesign === design.design && (
-                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-emerald-500 bg-opacity-90 rounded-full flex items-center justify-center">
-                          <FaCheck className="text-white text-sm" />
+                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-6 h-6 bg-emerald-500 bg-opacity-90 rounded-full flex items-center justify-center">
+                          <FaCheck className="text-white text-xs" />
                         </div>
                       )}
                     </div>
-                    <div className="text-sm font-medium">{design.name}</div>
+                    <div className="text-xs font-medium">{design.name}</div>
                   </button>
                 ))}
               </div>
@@ -456,28 +483,30 @@ const MobilePendantConfig = ({
         >
           ✕
         </button>
-        
+
         {/* Tab buttons */}
         <div className="flex flex-1">
           <button
-            onClick={() => setActiveTab('selection')}
+            onClick={() => setActiveTab("selection")}
             className={`
               flex-1 py-3 px-4 text-sm font-medium transition-colors
-              ${activeTab === 'selection'
-                ? 'text-emerald-400 border-b-2 border-emerald-400'
-                : 'text-gray-400 hover:text-white'
+              ${
+                activeTab === "selection"
+                  ? "text-emerald-400 border-b-2 border-emerald-400"
+                  : "text-gray-400 hover:text-white"
               }
             `}
           >
             Selection
           </button>
           <button
-            onClick={() => setActiveTab('design')}
+            onClick={() => setActiveTab("design")}
             className={`
               flex-1 py-3 px-4 text-sm font-medium transition-colors
-              ${activeTab === 'design'
-                ? 'text-emerald-400 border-b-2 border-emerald-400'
-                : 'text-gray-400 hover:text-white'
+              ${
+                activeTab === "design"
+                  ? "text-emerald-400 border-b-2 border-emerald-400"
+                  : "text-gray-400 hover:text-white"
               }
             `}
           >
@@ -494,7 +523,9 @@ const MobilePendantConfig = ({
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.2 }}
         >
-          {activeTab === 'selection' ? renderPendantSelection() : renderDesignOptions()}
+          {activeTab === "selection"
+            ? renderPendantSelection()
+            : renderDesignOptions()}
         </motion.div>
       </div>
     </div>

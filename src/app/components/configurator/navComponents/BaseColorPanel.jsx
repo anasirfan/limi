@@ -153,7 +153,7 @@ const BaseColorPanel = ({
         >
           Connector 
         </button>
-      </div> */}
+      </div> */} 
       {activeTab === 'base' && (
         <>
           {!isMobile && <h3 style={styles.title}>Base Color</h3>}

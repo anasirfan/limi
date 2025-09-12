@@ -64,17 +64,24 @@ export const getUniversalAssignments = async () => {
   return assignments.filter(a => a.isSystem && a.systemType === "universal");
 };
 
+export const getChandelierAssignments = async () => {
+  const assignments = await getSystemAssignments();
+  return assignments.filter(a => a.isSystem && a.systemType === "chandelier");
+};
+
 // Legacy synchronous exports (using cached data or fallback)
 export const pendantAssignments = systemAssignments.filter(a => !a.isSystem);
 export const ballAssignments = systemAssignments.filter(a => a.isSystem && a.systemType === "ball");
 export const barAssignments = systemAssignments.filter(a => a.isSystem && a.systemType === "bar");
 export const universalAssignments = systemAssignments.filter(a => a.isSystem && a.systemType === "universal");
+export const chandelierAssignments = systemAssignments.filter(a => a.isSystem && a.systemType === "chandelier");
 
 // Extract base IDs dynamically
 export const barBaseIds = barAssignments.map(a => a.design);
 export const universalBaseIds = universalAssignments.map(a => a.design);
 export const ballBaseIds = ballAssignments.map(a => a.design);
 export const pendantTypes = pendantAssignments.map(a => a.design);
+export const chandelierBaseIds = chandelierAssignments.map(a => a.design);
 
 // Refresh cache function (can be called manually to update data)
 export const refreshSystemAssignments = async () => {
