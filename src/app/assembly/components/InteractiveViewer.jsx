@@ -9,6 +9,7 @@ import SectionHeader from "./SectionHeader";
 import FeatureCards from "./FeatureCards";
 import ViewerContainer from "./ViewerContainer";
 import SensorOptionsPanel from "./SensorOptionsPanel";
+import { systemAssignments } from "../../components/configurator/pendantSystemData";
 
 const InteractiveViewer = () => {
   const containerRef = useRef(null);
@@ -164,6 +165,44 @@ const InteractiveViewer = () => {
     }
   };
 
+  const sendMessagesForDesign = (designName, idOrIds) => {
+    const assignment = systemAssignments.find((a) => a.design === designName);
+    if (!assignment) return;
+  
+    // Helper to send all messages for a single id
+    const sendAllMessages = (id) => {
+      if (assignment.systemType === "bar") {
+        sendMessageToPlayCanvas("barextra");
+      }
+      sendMessageToPlayCanvas(`cable_${id}`);
+      sendMessageToPlayCanvas(
+        `glass_${assignment.hasGlass ? "attached" : "none"}`
+      );
+      sendMessageToPlayCanvas(`color_${assignment.hasGold ? "gold" : "none"}`);
+      sendMessageToPlayCanvas(
+        `silver_${assignment.hasSilver ? "attached" : "none"}`
+      );
+      sendMessageToPlayCanvas(`product_${assignment.media?.model?.url}`);
+      sendMessageToPlayCanvas(`${assignment.message}`);
+      if(assignment.systemType === "chandelier") {
+        sendMessageToPlayCanvas(`chandelier_clearance`);
+        sendMessageToPlayCanvas(`height_set`);
+      }
+    };
+  
+    if (Array.isArray(idOrIds)) {
+      idOrIds.forEach((id) => {
+        sendAllMessages(id);
+      });
+      // Fire allmodelsloaded ONCE at the end
+      sendMessageToPlayCanvas("allmodelsloaded");
+    } else {
+      sendAllMessages(idOrIds);
+      // Fire allmodelsloaded after the single id
+      sendMessageToPlayCanvas("allmodelsloaded");
+    }
+  };
+
   const handleHotspotClick = (hotspotId) => {
     trackAssemblyEvent("Hotspot Clicked", hotspotId);
   };
@@ -202,6 +241,7 @@ const InteractiveViewer = () => {
           <SensorOptionsPanel
             showSensorOptions={showSensorOptions}
             sendMessageToPlayCanvas={sendMessageToPlayCanvas}
+            sendMessagesForDesign={sendMessagesForDesign}
             trackAssemblyEvent={trackAssemblyEvent}
             selectedSensor={selectedSensor}
             setSelectedSensor={setSelectedSensor}
