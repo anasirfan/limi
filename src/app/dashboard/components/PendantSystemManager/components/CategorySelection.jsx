@@ -19,7 +19,7 @@ const CategorySelection = ({
         <div className="w-2 h-2 bg-[#54bb74] rounded-full mr-2"></div>
         Product Category
       </label>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         {/* Individual Pendant Card */}
         <div
           className={`relative p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${
@@ -94,7 +94,7 @@ const CategorySelection = ({
         {/* System Configuration Card */}
         <div
           className={`relative p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${
-            newPendantData.systemType !== ""
+            newPendantData.systemType !== "" && newPendantData.systemType !== "chandelier"
               ? "border-[#87CEAB] bg-gradient-to-br from-[#87CEAB]/10 to-[#54bb74]/10"
               : "border-[#3a3a3a] bg-gradient-to-br from-[#1e1e1e] to-[#252525] hover:border-[#87CEAB]/50"
           }`}
@@ -107,14 +107,14 @@ const CategorySelection = ({
           <div className="flex items-center space-x-3">
             <div
               className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                newPendantData.systemType !== ""
+                newPendantData.systemType !== "" && newPendantData.systemType !== "chandelier"
                   ? "bg-[#87CEAB]/20"
                   : "bg-[#333333]"
               }`}
             >
               <svg
                 className={`w-5 h-5 ${
-                  newPendantData.systemType !== ""
+                  newPendantData.systemType !== "" && newPendantData.systemType !== "chandelier"
                     ? "text-[#87CEAB]"
                     : "text-gray-400"
                 }`}
@@ -126,14 +126,14 @@ const CategorySelection = ({
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
-                  d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                  d="M9 17v-6a2 2 0 012-2h2a2 2 0 012 2v6m-6 4h6"
                 />
               </svg>
             </div>
             <div>
               <h4
                 className={`font-bold text-base ${
-                  newPendantData.systemType !== ""
+                  newPendantData.systemType !== "" && newPendantData.systemType !== "chandelier"
                     ? "text-[#87CEAB]"
                     : "text-white"
                 }`}
@@ -141,13 +141,84 @@ const CategorySelection = ({
                 System Configuration
               </h4>
               <p className="text-gray-400 text-xs">
-                Multiple connected fixtures
+                Multi-light bar, ball, or universal
               </p>
             </div>
           </div>
-          {newPendantData.systemType !== "" && (
+          {newPendantData.systemType !== "" && newPendantData.systemType !== "chandelier" && (
             <div className="absolute top-2 right-2">
               <div className="w-5 h-5 bg-[#87CEAB] rounded-full flex items-center justify-center">
+                <svg
+                  className="w-3 h-3 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Chandelier Card */}
+        <div
+          className={`relative p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${
+            newPendantData.systemType === "chandelier"
+              ? "border-[#FFD700] bg-gradient-to-br from-[#FFD700]/10 to-[#FFFACD]/10"
+              : "border-[#3a3a3a] bg-gradient-to-br from-[#1e1e1e] to-[#252525] hover:border-[#FFD700]/50"
+          }`}
+          onClick={() => handleCategorySelect("chandelier")}
+        >
+          <div className="flex items-center space-x-3">
+            <div
+              className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                newPendantData.systemType === "chandelier"
+                  ? "bg-[#FFD700]/20"
+                  : "bg-[#333333]"
+              }`}
+            >
+              <svg
+                className={`w-5 h-5 ${
+                  newPendantData.systemType === "chandelier"
+                    ? "text-[#FFD700]"
+                    : "text-gray-400"
+                }`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 3v2m0 0c-3.866 0-7 3.134-7 7h2a5 5 0 015-5V5zm0 0c3.866 0 7 3.134 7 7h-2a5 5 0 00-5-5V5zm0 14v2m-4-2a4 4 0 008 0"
+                />
+              </svg>
+            </div>
+            <div>
+              <h4
+                className={`font-bold text-base ${
+                  newPendantData.systemType === "chandelier"
+                    ? "text-[#FFD700]"
+                    : "text-white"
+                }`}
+              >
+                Chandeliers
+              </h4>
+              <p className="text-gray-400 text-xs">
+                Decorative multi-arm lighting
+              </p>
+            </div>
+          </div>
+          {newPendantData.systemType === "chandelier" && (
+            <div className="absolute top-2 right-2">
+              <div className="w-5 h-5 bg-[#FFD700] rounded-full flex items-center justify-center">
                 <svg
                   className="w-3 h-3 text-white"
                   fill="none"

@@ -17,7 +17,7 @@ import { saveConfiguration } from "../../../app/redux/slices/userSlice.js";
 import { useRouter, useSearchParams } from "next/navigation";
 import ConfigurationSummary from "../lightConfigurator/ConfigurationSummary";
 import { fetchUserByToken } from "../../../app/redux/slices/userSlice.js";
-import { systemAssignments } from "./pendantSystemData";
+import { systemAssignments, chandelierAssignments } from "./pendantSystemData";
 import {
   listenForCableMessages,
   listenForSelectedCableMessages,
@@ -52,6 +52,58 @@ const ConfiguratorLayout = () => {
   const dispatch = useDispatch();
   const { isLoggedIn, user } = useSelector((state) => state.user);
   const searchParams = useSearchParams();
+
+  // Version constant to track localStorage schema changes
+  const STORAGE_VERSION = "1.0.0";
+
+  // Clear old localStorage data if version doesn't match
+  useEffect(() => {
+    const currentVersion = localStorage.getItem("limiConfigVersion");
+    
+    if (currentVersion !== STORAGE_VERSION) {
+      // Clear old localStorage data
+      localStorage.removeItem("lightConfig");
+      localStorage.removeItem("lightCables");
+      
+      // Save default configuration values
+      const defaultConfig = {
+        lightType: "ceiling",
+        baseType: "round",
+        configurationType: "pendant",
+        lightAmount: 1,
+        baseColor: "black",
+        selectedPendants: [],
+        hotspot: "off",
+        shades: {},
+        lighting: true,
+        colorTemperature: 50,
+        brightness: 50,
+      };
+      
+      const defaultCables = [
+        {
+          design: "ico",
+          connectorColor: "black",
+          cableSize: "2mm",
+          cableColor: "black",
+        },
+      ];
+      
+      localStorage.setItem("lightConfig", JSON.stringify(defaultConfig));
+      localStorage.setItem("lightCables", JSON.stringify(defaultCables));
+      
+      // Update state with default values
+      setConfig(defaultConfig);
+      setCables(defaultCables);
+      setBrightness(50);
+      setColorTemperature(50);
+      
+      // Set new version
+      localStorage.setItem("limiConfigVersion", STORAGE_VERSION);
+      
+      console.log("Cleared old localStorage data and reset to default configuration");
+    }
+  }, []);
 
   // State for loading configuration from URL
   const [isLoadingFromUrl, setIsLoadingFromUrl] = useState(false);
@@ -128,8 +180,6 @@ const ConfiguratorLayout = () => {
     // Set up cable message listener
     const cleanup = listenForCableMessages((message, event) => {
       // Do something with the message, e.g. open UI, update state, etc.
-      console.log("[ConfigPanel] Received cable message:", message, event.data);
-   
       setCableMessage(message);
     });
     return cleanup;
@@ -163,7 +213,25 @@ const ConfiguratorLayout = () => {
 
   // Handler for shade selection
   const handleShadeSelectLocal = (designId, shadeId, systemType, shadeIndex) => {
-    handleShadeSelect(designId, shadeId, systemType, shadeIndex, config.selectedPendants, setCables);
+    handleShadeSelect(
+      designId,
+      shadeId,
+      systemType,
+      shadeIndex,
+      config,
+      setConfig,
+      sendMessageToPlayCanvas
+    );
+  };
+
+  // Handle chandelier
+  const handleChandelierTypeChange = (designName) => {
+    setCables([
+      { design: designName },
+      { design: designName },
+      { design: designName },
+    ]);
+    sendMessagesForDesign(designName, 0);
   };
 
   // Preview mode state
@@ -382,10 +450,21 @@ const ConfiguratorLayout = () => {
               );
             }
           });
-
-          savedCables.forEach((cable, index) => {
-            sendMessagesForDesignOnReload(cable.design, index);
-          });
+      
+             
+            savedCables.forEach((cable, index) => {
+              const design = systemAssignments.find(
+                (a) => a.design === cable.design
+              );
+             if(design.systemType === "chandelier"){
+              sendMessagesForDesignOnReload(cable.design, 0);
+             }else{
+              sendMessagesForDesignOnReload(cable.design, index);
+             }
+            });
+          
+          
+          
           sendMessageToPlayCanvas("allmodelsloaded");
           // sendMessagesForDesign("fina", 0);
           // Send lighting messages with delays
@@ -674,12 +753,8 @@ const ConfiguratorLayout = () => {
     [config.lightAmount]
   );
   useEffect(() => {
-    console.log("State:", showPendantLoadingScreen);  // Will show current state
     setShowPendantLoadingScreen(true);
-    console.log("State after setState - won't show new value yet:", showPendantLoadingScreen);
-    
     const timer = setTimeout(() => {
-      console.log("State after timeout - will show true:", showPendantLoadingScreen);
       setShowPendantLoadingScreen(false);
     }, 500);
     
@@ -687,7 +762,6 @@ const ConfiguratorLayout = () => {
   }, [handlePendantDesignChange]);
 
   useEffect(() => {
-    console.log("State changed to:", showPendantLoadingScreen);
   }, [showPendantLoadingScreen]);
   // Handle base type change
   const handleBaseTypeChange = useCallback((baseType) => {
@@ -780,7 +854,6 @@ const ConfiguratorLayout = () => {
   }, []);
 
   const handleSystemBaseDesignChange = useCallback((design) => {
-    console.log("designssss",design);
     // Update the system base design in the config
     setConfig((prev) => ({ ...prev, systemBaseDesign: design }));
     setCurrentShade(null);
@@ -815,7 +888,6 @@ const ConfiguratorLayout = () => {
         const designToIds = {};
         selectedCables.forEach((id) => {
           const system = systemAssignments.find((a) => a.design === design);
-          console.log("system",system);
           if (!designToIds[system.design]) designToIds[system.design] = [];
           designToIds[system.design].push(id);
         });
@@ -857,7 +929,6 @@ const ConfiguratorLayout = () => {
 
   // Handle final save after user enters configuration name
   const handleFinalSave = async (configName, thumbnail, modelId) => {
-    console.log("modelId", modelId);
     if (!configToSave) {
       console.error("configToSave is null or undefined");
       return;
@@ -1080,6 +1151,7 @@ const ConfiguratorLayout = () => {
           {!isLoading && (
             <VerticalNavBar
               containerDimensions={containerDimensions}
+              handleChandelierTypeChange={handleChandelierTypeChange}
               activeStep={activeStep}
               setActiveStep={setActiveStep}
               config={config}
@@ -1121,6 +1193,7 @@ const ConfiguratorLayout = () => {
           )}
 
           {/* Configuration panel for individual configuration */}
+       
           {/* {configuringType && (
             <ConfigPanel
               configuringType={configuringType}
