@@ -134,6 +134,8 @@ export const sendMessagesForDesign = (designName, idOrIds) => {
   const sendAllMessages = (id) => {
     if (assignment.systemType === "bar") {
       sendMessageToPlayCanvas("barextra");
+    }else{
+      sendMessageToPlayCanvas("nobars");
     }
     sendMessageToPlayCanvas(`cable_${id}`);
     sendMessageToPlayCanvas(
@@ -176,6 +178,8 @@ export const sendMessagesForDesignOnReload = (designName, id) => {
   const sendAllMessages = (id) => {
     if (assignment.systemType === "bar") {
       sendMessageToPlayCanvas("barextra");
+    }else{
+      sendMessageToPlayCanvas("nobars");
     }
     sendMessageToPlayCanvas(`cable_${id}`);
     sendMessageToPlayCanvas(
