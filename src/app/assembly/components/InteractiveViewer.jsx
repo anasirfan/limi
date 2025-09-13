@@ -39,28 +39,27 @@ const InteractiveViewer = () => {
     let appReady = false;
     let sent = false;
     const messages = [
-      "LimiAi_ZoomEnabled:true",
       "light_type:ceiling",
       "light_amount:3",
       "base_color:gold",
       "cable_0",
+      "bars",
       "glass_none",
       "color_gold",
       "silver_none",
-      "product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756464038799.glb",
-      "system_base_1",
+      "product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/Bar_1756732230450.glb",
       "cable_1",
+      "bars",
       "glass_none",
       "color_gold",
       "silver_none",
-       "product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756464038799.glb",
-      "system_base_1",
+      "product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/Bar_1756732230450.glb",
       "cable_2",
+      "bars",
       "glass_none",
       "color_gold",
       "silver_none",
-      "product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756464038799.glb",
-      "system_base_1",
+      "product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/Bar_1756732230450.glb",
       "allmodelsloaded"
     ];
     function handleAppReady(event) {

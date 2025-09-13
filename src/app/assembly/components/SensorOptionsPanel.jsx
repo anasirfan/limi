@@ -14,7 +14,7 @@ const SensorOptionsPanel = ({ showSensorOptions, sendMessagesForDesign, trackAss
     } else {
       // Select the clicked bar
       setSelectedDesign(bar.design);
-      sendMessagesForDesign(bar.design, 0);
+      sendMessagesForDesign(bar.design, [0,1,2]);
       trackAssemblyEvent('Bar Selected', bar.design);
     }
   };
@@ -77,7 +77,7 @@ const SensorOptionsPanel = ({ showSensorOptions, sendMessagesForDesign, trackAss
             className="flex space-x-4 overflow-x-auto scrollbar-hide px-10 py-2"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
-            {barAssignments.filter(bar => bar.design !== 'luga').map((bar, index) => (
+            {barAssignments.filter(bar => bar.design === 'bar cam' || bar.design === 'motion sens'|| bar.design === 'speaker'|| bar.design === 'temperature').map((bar, index) => (
               <motion.button
                 key={bar.design}
                 initial={{ opacity: 0, scale: 0 }}
