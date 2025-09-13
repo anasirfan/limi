@@ -41,13 +41,26 @@ const InteractiveViewer = () => {
       "LimiAi_ZoomEnabled:true",
       "light_type:ceiling",
       "light_amount:3",
-      "base_type:round",
-      "system:ball",
-      "cable_0:system_base_1",
-      "system:bar",
-      "cable_1:system_base_2",
-      "system:ball",
-      "cable_2:system_base_2",
+      "base_color:gold",
+      "cable_0",
+      "glass_none",
+      "color_gold",
+      "silver_none",
+      "product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756464038799.glb",
+      "system_base_1",
+      "cable_1",
+      "glass_none",
+      "color_gold",
+      "silver_none",
+       "product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756464038799.glb",
+      "system_base_1",
+      "cable_2",
+      "glass_none",
+      "color_gold",
+      "silver_none",
+      "product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756464038799.glb",
+      "system_base_1",
+      "allmodelsloaded"
     ];
     function handleAppReady(event) {
       if (
@@ -55,10 +68,10 @@ const InteractiveViewer = () => {
         event.data.startsWith("app:ready1")
       ) {
         setAppReady(true);
-        messages.forEach((message, index) => {
+        messages.forEach((message) => {
           setTimeout(() => {
             sendMessageToPlayCanvas(message);
-          }, index * 100);
+          },);
         });
       }
     }

@@ -124,6 +124,57 @@ const Hero = ({ startCarousel = true }) => {
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+  const sendMessageToPlayCanvas = (message) => {
+    const iframe = document.getElementById("playcanvas-app");
+    if (iframe && iframe.contentWindow) {
+      iframe.contentWindow.postMessage(message, "*");
+      console.log("Message sent to PlayCanvas: " + message);
+    }
+  };
+  useEffect(() => {
+    const messages = [
+      "LimiAi_ZoomEnabled:true",
+      "light_type:ceiling",
+      "light_amount:3",
+      "base_color:gold",
+      "cable_0",
+      "glass_none",
+      "color_gold",
+      "silver_none",
+      "product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756464038799.glb",
+      "system_base_1",
+      "cable_1",
+      "glass_none",
+      "color_gold",
+      "silver_none",
+       "product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756464038799.glb",
+      "system_base_1",
+      "cable_2",
+      "glass_none",
+      "color_gold",
+      "silver_none",
+      "product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756464038799.glb",
+      "system_base_1",
+      "allmodelsloaded"
+    ];
+
+    function handleAppReady(event) {
+      if (
+        typeof event.data === "string" &&
+        event.data.startsWith("app:ready1")
+      ) {
+        messages.forEach((message, index) => {
+          setTimeout(() => {
+            sendMessageToPlayCanvas(message);
+          });
+        });
+      }
+    }
+    window.addEventListener("message", handleAppReady);
+    return () => {
+      window.removeEventListener("message", handleAppReady);
+    };
+  }, []);
 
   const handleStartJourneySubmit = async (e) => {
     e.preventDefault();
@@ -463,7 +514,7 @@ const Hero = ({ startCarousel = true }) => {
                 <div className="aspect-[16/10] sm:aspect-[16/9] border-none w-full">
                   <iframe
                     id="playcanvas-app"
-                    src="https://playcanv.as/e/p/LBV4KIS5/"
+                    src="https://playcanv.as/e/p/7c2273a2/"
                     className="w-full h-full"
                     title="LIMI 3D Interactive Viewer"
                     allowFullScreen
