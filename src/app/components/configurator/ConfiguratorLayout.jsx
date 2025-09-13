@@ -227,9 +227,9 @@ const ConfiguratorLayout = () => {
   // Handle chandelier
   const handleChandelierTypeChange = (designName) => {
     setCables([
-      {
-        design: designName,
-        }, 
+      { design: designName },
+      { design: designName },
+      { design: designName },
     ]);
     sendMessagesForDesign(designName, 0);
   };
@@ -450,11 +450,21 @@ const ConfiguratorLayout = () => {
               );
             }
           });
-
-          savedCables.forEach((cable, index) => {
-            sendMessagesForDesignOnReload(cable.design, index);
+      
+             
+            savedCables.forEach((cable, index) => {
+              const design = systemAssignments.find(
+                (a) => a.design === cable.design
+              );
+             if(design.systemType === "chandelier"){
+              sendMessagesForDesignOnReload(cable.design, 0);
+             }else{
+              sendMessagesForDesignOnReload(cable.design, index);
+             }
+            });
           
-          });
+          
+          
           sendMessageToPlayCanvas("allmodelsloaded");
           // sendMessagesForDesign("fina", 0);
           // Send lighting messages with delays

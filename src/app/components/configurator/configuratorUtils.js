@@ -53,7 +53,8 @@ export const getDefaultPendantAssignments = (amount) => {
     hasGlass: false,
     hasSilver: false,
     hasGold: true,
-    modelUrl: "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756460850615.glb",
+    modelUrl:
+      "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/model_1756460850615.glb",
   };
 
   switch (amount) {
@@ -133,6 +134,8 @@ export const sendMessagesForDesign = (designName, idOrIds) => {
   const sendAllMessages = (id) => {
     if (assignment.systemType === "bar") {
       sendMessageToPlayCanvas("barextra");
+    }else{
+      sendMessageToPlayCanvas("nobars");
     }
     sendMessageToPlayCanvas(`cable_${id}`);
     sendMessageToPlayCanvas(
@@ -144,7 +147,7 @@ export const sendMessagesForDesign = (designName, idOrIds) => {
     );
     sendMessageToPlayCanvas(`product_${assignment.media?.model?.url}`);
     sendMessageToPlayCanvas(`${assignment.message}`);
-    if(assignment.systemType === "chandelier") {
+    if (assignment.systemType === "chandelier") {
       sendMessageToPlayCanvas(`chandelier_clearance`);
       sendMessageToPlayCanvas(`height_set`);
     }
@@ -171,11 +174,12 @@ export const sendMessagesForDesign = (designName, idOrIds) => {
 export const sendMessagesForDesignOnReload = (designName, id) => {
   const assignment = systemAssignments.find((a) => a.design === designName);
   if (!assignment) return;
-
   // Helper to send all messages for a single id
   const sendAllMessages = (id) => {
     if (assignment.systemType === "bar") {
       sendMessageToPlayCanvas("barextra");
+    }else{
+      sendMessageToPlayCanvas("nobars");
     }
     sendMessageToPlayCanvas(`cable_${id}`);
     sendMessageToPlayCanvas(
@@ -187,7 +191,7 @@ export const sendMessagesForDesignOnReload = (designName, id) => {
     );
     sendMessageToPlayCanvas(`product_${assignment.media?.model?.url}`);
     sendMessageToPlayCanvas(`${assignment.message}`);
-    if(assignment.systemType === "chandelier") {
+    if (assignment.systemType === "chandelier") {
       sendMessageToPlayCanvas(`chandelier_clearance`);
       sendMessageToPlayCanvas(`height_set`);
     }
@@ -273,7 +277,8 @@ export const createIframeMessagesArray = (config, configToSave) => {
  */
 export const createUIConfig = (config, cables, configToSave) => {
   const uiConfig = {
-    light_type: config.lightType.charAt(0).toUpperCase() + config.lightType.slice(1),
+    light_type:
+      config.lightType.charAt(0).toUpperCase() + config.lightType.slice(1),
     light_amount: config.lightAmount,
     cable_color: config.baseColor,
     connector_color: config.connectorColor,
@@ -282,7 +287,8 @@ export const createUIConfig = (config, cables, configToSave) => {
   };
 
   if (config.baseType) {
-    uiConfig.base_type = config.baseType.charAt(0).toUpperCase() + config.baseType.slice(1);
+    uiConfig.base_type =
+      config.baseType.charAt(0).toUpperCase() + config.baseType.slice(1);
   }
 
   // Format cable information for UI display
@@ -297,7 +303,9 @@ export const createUIConfig = (config, cables, configToSave) => {
         const design = cable.design
           ? cable.design.charAt(0).toUpperCase() + cable.design.slice(1)
           : "Unknown";
-        uiConfig.cables[index] = `Cable ${cableNumber}: {\n  System Type: ${systemType}\n  Base Design: ${design}\n}`;
+        uiConfig.cables[
+          index
+        ] = `Cable ${cableNumber}: {\n  System Type: ${systemType}\n  Base Design: ${design}\n}`;
       } else {
         // Pendant cable
         const design = cable.design
@@ -321,7 +329,14 @@ export const createUIConfig = (config, cables, configToSave) => {
  * @param {Array} iframeMessagesArray - Array of iframe messages
  * @returns {Object} API payload object
  */
-export const createAPIPayload = (configName, thumbnail, modelId, uiConfig, userId, iframeMessagesArray) => {
+export const createAPIPayload = (
+  configName,
+  thumbnail,
+  modelId,
+  uiConfig,
+  userId,
+  iframeMessagesArray
+) => {
   return {
     name: configName,
     thumbnail: {
@@ -348,7 +363,12 @@ export const createAPIPayload = (configName, thumbnail, modelId, uiConfig, userI
  * @param {Array} cables - Current cables array
  * @param {Function} setCables - State setter for cables
  */
-export const handleCableSizeChange = (size, selectedCables, cables, setCables) => {
+export const handleCableSizeChange = (
+  size,
+  selectedCables,
+  cables,
+  setCables
+) => {
   setCables((prev) => {
     const updated = [...prev];
     (selectedCables || []).forEach((idx) => {
@@ -356,7 +376,7 @@ export const handleCableSizeChange = (size, selectedCables, cables, setCables) =
     });
     return updated;
   });
-  
+
   // Send a message for each selected cable
   (selectedCables || []).forEach((idx) => {
     sendMessageToPlayCanvas(`cable_${idx}:size_${size}`);
@@ -396,7 +416,14 @@ export const processSelectedCableMessage = (message) => {
  * @param {Array} selectedPendants - Selected pendant indices
  * @param {Function} setCables - State setter for cables
  */
-export const handleShadeSelect = (designId, shadeId, systemType, shadeIndex, selectedPendants, setCables) => {
+export const handleShadeSelect = (
+  designId,
+  shadeId,
+  systemType,
+  shadeIndex,
+  selectedPendants,
+  setCables
+) => {
   setCables((prev) => {
     const updated = [...prev];
     (selectedPendants || []).forEach((idx) => {
@@ -410,9 +437,11 @@ export const handleShadeSelect = (designId, shadeId, systemType, shadeIndex, sel
     });
     return updated;
   });
-  
+
   (selectedPendants || []).forEach((idx) => {
-    sendMessageToPlayCanvas(`cable_${idx}:system_base_${designId}_${shadeIndex + 1}`);
+    sendMessageToPlayCanvas(
+      `cable_${idx}:system_base_${designId}_${shadeIndex + 1}`
+    );
   });
 };
 
@@ -427,7 +456,11 @@ export const handleShadeSelect = (designId, shadeId, systemType, shadeIndex, sel
  * @param {number} lastCeilingLightAmount - Last ceiling light amount
  * @returns {Object} Object with newAmount and newPendants
  */
-export const getLightTypeChangeData = (type, config, lastCeilingLightAmount) => {
+export const getLightTypeChangeData = (
+  type,
+  config,
+  lastCeilingLightAmount
+) => {
   let newAmount = config.lightAmount;
   let newPendants = [];
 
@@ -457,7 +490,9 @@ export const getLightTypeChangeData = (type, config, lastCeilingLightAmount) => 
  * @returns {Array} Filtered selected pendants
  */
 export const filterSelectedPendants = (selectedPendants, amount) => {
-  return selectedPendants ? selectedPendants.filter((index) => index < amount) : [];
+  return selectedPendants
+    ? selectedPendants.filter((index) => index < amount)
+    : [];
 };
 
 // ============================================================================
