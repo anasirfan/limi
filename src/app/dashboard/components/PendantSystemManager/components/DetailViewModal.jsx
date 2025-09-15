@@ -1,5 +1,5 @@
 import React from "react";
-import { FaTimes,FaLightbulb ,FaEye, FaCheck, FaTimes as FaTimesIcon } from "react-icons/fa";
+import { FaTimes,FaLayerGroup ,FaLightbulb ,FaEye, FaCheck, FaTimes as FaTimesIcon } from "react-icons/fa";
 
 const DetailViewModal = ({ showModal, onClose, item, onViewModel }) => {
   if (!showModal || !item) return null;

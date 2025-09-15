@@ -37,23 +37,11 @@ const CategorySelection = ({
                   : "bg-[#333333]"
               }`}
             >
-              <svg
-                className={`w-5 h-5 ${
-                  newPendantData.systemType === ""
-                    ? "text-[#54bb74]"
-                    : "text-gray-400"
-                }`}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 14l-7 7m0 0l-7-7m7 7V3"
-                />
-              </svg>
+              <img 
+                src="/images/configOptions/pendant.png" 
+                alt="Individual Pendant"
+                className="w-5 h-5 object-contain"
+              />
             </div>
             <div>
               <h4
@@ -112,23 +100,11 @@ const CategorySelection = ({
                   : "bg-[#333333]"
               }`}
             >
-              <svg
-                className={`w-5 h-5 ${
-                  newPendantData.systemType !== "" && newPendantData.systemType !== "chandelier"
-                    ? "text-[#87CEAB]"
-                    : "text-gray-400"
-                }`}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 17v-6a2 2 0 012-2h2a2 2 0 012 2v6m-6 4h6"
-                />
-              </svg>
+              <img 
+                src="/images/configOptions/system.png" 
+                alt="System Configuration"
+                className="w-5 h-5 object-contain"
+              />
             </div>
             <div>
               <h4
@@ -183,23 +159,11 @@ const CategorySelection = ({
                   : "bg-[#333333]"
               }`}
             >
-              <svg
-                className={`w-5 h-5 ${
-                  newPendantData.systemType === "chandelier"
-                    ? "text-[#FFD700]"
-                    : "text-gray-400"
-                }`}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 3v2m0 0c-3.866 0-7 3.134-7 7h2a5 5 0 015-5V5zm0 0c3.866 0 7 3.134 7 7h-2a5 5 0 00-5-5V5zm0 14v2m-4-2a4 4 0 008 0"
-                />
-              </svg>
+              <img 
+                src="/images/configOptions/chandelier.png" 
+                alt="Chandelier"
+                className="w-5 h-5 object-contain"
+              />
             </div>
             <div>
               <h4
