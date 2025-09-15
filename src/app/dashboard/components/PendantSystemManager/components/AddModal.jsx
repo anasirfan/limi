@@ -2,6 +2,7 @@ import React from "react";
 import { FaTimes, FaBox, FaSpinner } from "react-icons/fa";
 import CategorySelection from "./CategorySelection";
 import SystemTypeSelection from "./SystemTypeSelection";
+import BaseTypeSelection from "./BaseTypeSelection";
 import ProductDetailsForm from "./ProductDetailsForm";
 import MediaUploadSection from "./MediaUploadSection";
 
@@ -62,6 +63,14 @@ const AddModal = ({
               handlePendantInputChange={handlePendantInputChange}
               setNewPendantData={setNewPendantData}
               pendantSystemData={pendantSystemData}
+            />
+          )}
+
+          {/* Base Type Selection - Only for Chandelier */}
+          {newPendantData.systemType === "chandelier" && (
+            <BaseTypeSelection
+              newPendantData={newPendantData}
+              handlePendantInputChange={handlePendantInputChange}
             />
           )}
 

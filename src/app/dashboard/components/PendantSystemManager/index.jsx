@@ -80,7 +80,8 @@ export default function PendantSystemManager({
       image: item.image || "",
       hasGlass: item.hasGlass !== undefined ? item.hasGlass : false,  // Default: No Glass
       hasGold: item.hasGold !== undefined ? item.hasGold : false,     // Default: No Gold
-      hasSilver: item.hasSilver !== undefined ? item.hasSilver : false // Default: No Silver
+      hasSilver: item.hasSilver !== undefined ? item.hasSilver : false, // Default: No Silver
+      baseType: item.baseType || "round" // Default: Round for chandelier
     });
 
     // Set existing images if available
@@ -118,7 +119,8 @@ export default function PendantSystemManager({
       image: "",
       hasGlass: false,  // Default: No Glass
       hasGold: false,   // Default: No Gold
-      hasSilver: false  // Default: No Silver
+      hasSilver: false, // Default: No Silver
+      baseType: "round" // Default: Round for chandelier
     });
   };
 
@@ -157,6 +159,9 @@ export default function PendantSystemManager({
       }
       if (newPendantData.hasSilver !== editingItem.hasSilver) {
         changedFields.hasSilver = newPendantData.hasSilver;
+      }
+      if (newPendantData.baseType !== editingItem.baseType) {
+        changedFields.baseType = newPendantData.baseType;
       }
 
       // Check if image was changed

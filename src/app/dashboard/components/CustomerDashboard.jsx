@@ -307,6 +307,11 @@ export default function CustomerDashboard({ token }) {
       formData.append("hasGlass", newPendantData.hasGlass ? "true" : "false");
       formData.append("hasGold", newPendantData.hasGold ? "true" : "false");
       formData.append("hasSilver", newPendantData.hasSilver ? "true" : "false");
+      
+      // Add baseType for chandelier configurations
+      if (newPendantData.systemType === "chandelier" && newPendantData.baseType) {
+        formData.append("baseType", newPendantData.baseType);
+      }
 
       const response = await fetch(
         "https://dev.api1.limitless-lighting.co.uk/admin/configurator/system",
@@ -332,7 +337,8 @@ export default function CustomerDashboard({ token }) {
         isSystem: false,
         image: "",
         hasGlass: false,
-        hasColor: false
+        hasColor: false,
+        baseType: "round" // Default: Round for chandelier
       });
       setImageFile(null);
       setImagePreview("");

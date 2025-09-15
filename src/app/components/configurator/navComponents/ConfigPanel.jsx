@@ -624,7 +624,8 @@ export const ConfigPanel = ({
           ? JSON.parse(localStorage.getItem("lightConfig") || "{}")
           : {};
 
-      if (parentConfig.baseType === "rectangular") {
+      // Add chandelier for both round and rectangular base types when lightAmount is 3
+      if (parentConfig.lightAmount === 3 && (parentConfig.lightType === "ceiling" || parentConfig.lightType === "rectangular")) {
         config.items.push({
           id: "chandelier",
           name: "Chandelier",
@@ -681,7 +682,19 @@ export const ConfigPanel = ({
     else if (configuringType === "chandelier") {
       config.title = "Chandelier Selection";
       config.showBreadcrumb = true;
-      config.items = chandelierAssignments.map((chand) => ({
+      
+      // Get parent config to check baseType
+      const parentConfig =
+        typeof window !== "undefined"
+          ? JSON.parse(localStorage.getItem("lightConfig") || "{}")
+          : {};
+      
+      // Filter chandelierAssignments based on baseType
+      const filteredChandeliers = chandelierAssignments.filter((chand) => 
+        chand.baseType === parentConfig.baseType
+      );
+      
+      config.items = filteredChandeliers.map((chand) => ({
         id: chand.design,
         name: chand.name,
         image:
