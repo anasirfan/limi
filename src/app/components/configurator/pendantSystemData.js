@@ -31,14 +31,20 @@ const fetchSystemAssignments = async () => {
   }
 };
 
-// Get system assignments with caching
+// Get system assignments with caching and filter by isShow: true
 export const getSystemAssignments = async () => {
+  let assignments;
+  
   // Check if we have cached data and it's still valid
   if (cachedSystemAssignments && cacheTimestamp && (Date.now() - cacheTimestamp < CACHE_DURATION)) {
-    return cachedSystemAssignments;
+    assignments = cachedSystemAssignments;
+  } else {
+    // Fetch fresh data
+    assignments = await fetchSystemAssignments();
   }
-  // Fetch fresh data
-  return await fetchSystemAssignments();
+  
+  // Filter to only return products with isShow: true
+  return assignments.filter(assignment => assignment.isShow === true);
 };
 
 // Legacy export for backward compatibility (will use cached data or fetch if needed)

@@ -307,6 +307,7 @@ export default function CustomerDashboard({ token }) {
       formData.append("hasGlass", newPendantData.hasGlass ? "true" : "false");
       formData.append("hasGold", newPendantData.hasGold ? "true" : "false");
       formData.append("hasSilver", newPendantData.hasSilver ? "true" : "false");
+      formData.append("isShow", newPendantData.isShow ? "true" : "false");
       
       // Add baseType for chandelier configurations
       if (newPendantData.systemType === "chandelier" && newPendantData.baseType) {

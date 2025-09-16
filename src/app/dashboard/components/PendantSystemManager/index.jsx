@@ -96,6 +96,23 @@ export default function PendantSystemManager({
     }
   };
 
+  // Handle toggle show functionality
+  const handleToggleShow = async (itemId, isShow) => {
+    try {
+      // Only send the isShow field to the update API
+      const updatedData = {
+        isShow: isShow
+      };
+
+      // Call the update API with only isShow field
+      await updatePendantSystem(itemId, updatedData);
+      console.log(`Successfully updated item ${itemId} with isShow: ${isShow}`);
+    } catch (error) {
+      console.error("Error toggling show status:", error);
+      alert("Failed to update show status. Please try again.");
+    }
+  };
+
   const handleAddNew = () => {
     setShowAddModal(true);
     setShowAddForm(true);
@@ -423,6 +440,7 @@ export default function PendantSystemManager({
                     type="pendant"
                     onEdit={handleEditItem}
                     onDelete={handleDeleteItem}
+                    onToggleShow={handleToggleShow}
                     deletingItemId={deletingItemId}
                     viewMode={viewMode}
                     selectedItems={selectedItems}
@@ -437,6 +455,7 @@ export default function PendantSystemManager({
                     type="system"
                     onEdit={handleEditItem}
                     onDelete={handleDeleteItem}
+                    onToggleShow={handleToggleShow}
                     deletingItemId={deletingItemId}
                     viewMode={viewMode}
                     selectedItems={selectedItems}
@@ -451,6 +470,7 @@ export default function PendantSystemManager({
                     type="chandelier"
                     onEdit={handleEditItem}
                     onDelete={handleDeleteItem}
+                    onToggleShow={handleToggleShow}
                     deletingItemId={deletingItemId}
                     viewMode={viewMode}
                     selectedItems={selectedItems}
@@ -468,6 +488,7 @@ export default function PendantSystemManager({
                         type="pendant"
                         onEdit={handleEditItem}
                         onDelete={handleDeleteItem}
+                        onToggleShow={handleToggleShow}
                         deletingItemId={deletingItemId}
                         viewMode={viewMode}
                         selectedItems={selectedItems}
@@ -481,6 +502,7 @@ export default function PendantSystemManager({
                         type="system"
                         onEdit={handleEditItem}
                         onDelete={handleDeleteItem}
+                        onToggleShow={handleToggleShow}
                         deletingItemId={deletingItemId}
                         viewMode={viewMode}
                         selectedItems={selectedItems}
