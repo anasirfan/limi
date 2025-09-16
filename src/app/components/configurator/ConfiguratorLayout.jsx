@@ -858,23 +858,23 @@ const ConfiguratorLayout = () => {
     setConfig((prev) => ({ ...prev, systemBaseDesign: design }));
     setCurrentShade(null);
 
-    // Send message to PlayCanvas iframe
-    setTimeout(() => {
+    // Find the system for this design
+    const system = systemAssignments.find((a) => a.design === design);
+    
+    // Check if the system type is chandelier
+    let hasChandelier = false;
+    cables.forEach((cable) => {
+      const system = systemAssignments.find((a) => a.design === cable.design);
+      hasChandelier = system && system.systemType === 'chandelier';
+    })
+    if (hasChandelier) {
+      // For chandelier, only fire message for cable 0
       setTimeout(() => {
-        // Get the selected cable number(s)
-        const selectedCables =
-          config.selectedPendants && config.selectedPendants.length > 0
-            ? config.selectedPendants
-            : [0]; // Default to cable 0 if none selected
-        // Update all cables in a single state update
+        // Update cables design for chandelier
         setCables((prev) => {
           const updatedCables = [...prev];
-
-          // Process each selected cable
-          selectedCables.forEach((cableNo) => {
-            const system = systemAssignments.find((a) => a.design === design);
-
-            // Update this specific cable
+          // Update cables 0, 1, 2 for chandelier
+          [0, 1, 2].forEach((cableNo) => {
             if (cableNo >= 0) {
               updatedCables[cableNo] = {
                 design: system.design,
@@ -883,23 +883,53 @@ const ConfiguratorLayout = () => {
           });
           return updatedCables;
         });
-
-        // Send messages to iframe
-        const designToIds = {};
-        selectedCables.forEach((id) => {
-          const system = systemAssignments.find((a) => a.design === design);
-          if (!designToIds[system.design]) designToIds[system.design] = [];
-          designToIds[system.design].push(id);
-        });
-
-        Object.entries(designToIds).forEach(([design, ids]) => {
-          const system = systemAssignments.find((a) => a.design === design);
-          sendMessageToPlayCanvas(`system:${system.systemType}`);
-          sendMessagesForDesign(design, ids.length === 1 ? ids[0] : ids);
-        });
+        sendMessageToPlayCanvas(`system:${system.systemType}`);
+        sendMessagesForDesign(design, [0, 1, 2]);
       }, 10);
-    }, [config.selectedPendants, config.systemType, config.cableSystemTypes]);
-  });
+    } else {
+      // Send message to PlayCanvas iframe (original logic for non-chandelier systems)
+      setTimeout(() => {
+        setTimeout(() => {
+          // Get the selected cable number(s)
+          const selectedCables =
+            config.selectedPendants && config.selectedPendants.length > 0
+              ? config.selectedPendants
+              : [0]; // Default to cable 0 if none selected
+          // Update all cables in a single state update
+          setCables((prev) => {
+            const updatedCables = [...prev];
+
+            // Process each selected cable
+            selectedCables.forEach((cableNo) => {
+              const system = systemAssignments.find((a) => a.design === design);
+
+              // Update this specific cable
+              if (cableNo >= 0) {
+                updatedCables[cableNo] = {
+                  design: system.design,
+                };
+              }
+            });
+            return updatedCables;
+          });
+
+          // Send messages to iframe
+          const designToIds = {};
+          selectedCables.forEach((id) => {
+            const system = systemAssignments.find((a) => a.design === design);
+            if (!designToIds[system.design]) designToIds[system.design] = [];
+            designToIds[system.design].push(id);
+          });
+
+          Object.entries(designToIds).forEach(([design, ids]) => {
+            const system = systemAssignments.find((a) => a.design === design);
+            sendMessageToPlayCanvas(`system:${system.systemType}`);
+            sendMessagesForDesign(design, ids.length === 1 ? ids[0] : ids);
+          });
+        }, 10);
+      }, 10);
+    }
+  }, [config.selectedPendants, config.systemType, config.cableSystemTypes]);
 
   // Handle shade selection
 
