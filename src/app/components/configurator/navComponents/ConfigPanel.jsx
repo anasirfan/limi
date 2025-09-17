@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useSelector, useDispatch } from "react-redux";
 import {
   pendantAssignments,
+  systemAssignments,
   barAssignments,
   ballAssignments,
   universalAssignments,
@@ -423,8 +424,8 @@ export const ConfigPanel = ({
         // },
         // {
         //   id: "supernova",
-      ]
-    }
+      ],
+    };
     if (typeof onShadeSelect === "function") {
       onShadeSelect(designId, shade.id, configuringSystemType, shadeIndex);
     }
@@ -618,10 +619,13 @@ export const ConfigPanel = ({
       // Add Chandelier option when baseType is round and lightAmount is 3
       // We need to access the parent config to check these conditions
       // This will be passed as a prop or accessed through a parent component
-      const parentConfig = typeof window !== 'undefined' ? 
-        JSON.parse(localStorage.getItem('lightConfig') || '{}') : {};
-      
-      if (parentConfig.baseType === 'rectangular' && parentConfig.lightAmount === 3) {
+      const parentConfig =
+        typeof window !== "undefined"
+          ? JSON.parse(localStorage.getItem("lightConfig") || "{}")
+          : {};
+
+      // Add chandelier for both round and rectangular base types when lightAmount is 3
+      if (parentConfig.lightAmount === 3 && (parentConfig.lightType === "ceiling" || parentConfig.lightType === "rectangular")) {
         config.items.push({
           id: "chandelier",
           name: "Chandelier",
@@ -633,9 +637,11 @@ export const ConfigPanel = ({
         if (sendMessageToPlayCanvas) {
           if (itemId === "pendant") {
             sendMessageToPlayCanvas("Nobars");
-          } else if (itemId === "system") {
-            sendMessageToPlayCanvas("Nobars");
-          } else if (itemId === "chandelier") {
+          }
+          //  else if (itemId === "system") {
+          //   sendMessageToPlayCanvas("Nobars");
+          // } 
+          else if (itemId === "chandelier") {
             sendMessageToPlayCanvas("Nobars");
           }
         }
@@ -676,14 +682,27 @@ export const ConfigPanel = ({
     else if (configuringType === "chandelier") {
       config.title = "Chandelier Selection";
       config.showBreadcrumb = true;
-      config.items = chandelierAssignments.map((chand) => ({
+      
+      // Get parent config to check baseType
+      const parentConfig =
+        typeof window !== "undefined"
+          ? JSON.parse(localStorage.getItem("lightConfig") || "{}")
+          : {};
+      
+      // Filter chandelierAssignments based on baseType
+      const filteredChandeliers = chandelierAssignments.filter((chand) => 
+        chand.baseType === parentConfig.baseType
+      );
+      
+      config.items = filteredChandeliers.map((chand) => ({
         id: chand.design,
         name: chand.name,
-        image: chand.media && chand.media.image && chand.media.image.url ? chand.media.image.url : "/images/configOptions/chandelier.png",
+        image:
+          chand.media && chand.media.image && chand.media.image.url
+            ? chand.media.image.url
+            : "/images/configOptions/chandelier.png",
       }));
       config.onItemSelect = (itemId) => {
-        // Fire messages for chandelier selection
-        
         // Call the chandelier type change handler
         if (handleChandelierTypeChange) {
           handleChandelierTypeChange(itemId);
@@ -774,16 +793,50 @@ export const ConfigPanel = ({
           },
         ];
         config.onItemSelect = (systemType) => {
-         
           // Fire specific messages for each system type
-            
-            if (systemType === "universal") {
-              sendMessageToPlayCanvas("Nobars");
-            } else if (systemType === "ball") {
-              sendMessageToPlayCanvas("Nobars");
-            } else if (systemType === "bar") {
-              console.log("Firing bar messages for selectedPendants:", selectedPendants);
-              // Fire the PlayCanvas messages when bar is selected
+
+          if (systemType === "universal") {
+            sendMessageToPlayCanvas("Nobars");
+          } else if (systemType === "ball") {
+            sendMessageToPlayCanvas("Nobars");
+          } 
+          
+          else if (systemType === "bar") {
+            console.log(
+              "Firing bar messages for selectedPendants:",
+              selectedPendants
+            );
+
+            // Check each cable individually and fire messages conditionally
+            if (cables && cables.length > 0) {
+              cables.forEach((cable, index) => {
+                if (cable && cable.design) {
+                  // Find the design in systemAssignments
+                  const barOption = systemAssignments.find(
+                    (assignment) => assignment.design === cable.design
+                  );
+                  
+                  // Only fire messages if this cable's design is NOT a bar system
+                  if (!barOption || barOption.systemType !== "bar") {
+                    // Fire messages for this specific cable ID
+                    if (selectedPendants.includes(index)) {
+                      sendMessageToPlayCanvas(`cable_${index}`);
+                      sendMessageToPlayCanvas("bars");
+                      sendMessageToPlayCanvas("glass_none");
+                      sendMessageToPlayCanvas("color_gold");
+                      sendMessageToPlayCanvas("silver_none");
+                      sendMessageToPlayCanvas(
+                        "product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/Bar_1756732230450.glb"
+                      );
+                    }
+                  } else {
+                    console.log(`Skipping messages for cable ${index} - already has bar system design: ${cable.design}`);
+                  }
+                }
+              });
+              sendMessageToPlayCanvas("allmodelsloaded");
+            } else {
+              // Fallback: if no cables, fire for all selectedPendants
               selectedPendants.forEach((id) => {
                 sendMessageToPlayCanvas(`cable_${id}`);
                 sendMessageToPlayCanvas("bars");
@@ -795,8 +848,8 @@ export const ConfigPanel = ({
                 );
               });
               sendMessageToPlayCanvas("allmodelsloaded");
-        
             }
+          }
           // Call the parent handler to update state and send message to iframe
           onSystemTypeSelection(systemType);
         };
@@ -836,8 +889,7 @@ export const ConfigPanel = ({
           });
 
           config.onItemSelect = (itemId) => {
-           
-             setCurrentDesign(itemId);
+            setCurrentDesign(itemId);
             const selectedBase = config.items.find(
               (item) => item.id === itemId
             );

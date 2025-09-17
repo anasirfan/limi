@@ -80,7 +80,8 @@ export default function PendantSystemManager({
       image: item.image || "",
       hasGlass: item.hasGlass !== undefined ? item.hasGlass : false,  // Default: No Glass
       hasGold: item.hasGold !== undefined ? item.hasGold : false,     // Default: No Gold
-      hasSilver: item.hasSilver !== undefined ? item.hasSilver : false // Default: No Silver
+      hasSilver: item.hasSilver !== undefined ? item.hasSilver : false, // Default: No Silver
+      baseType: item.baseType || "round" // Default: Round for chandelier
     });
 
     // Set existing images if available
@@ -92,6 +93,23 @@ export default function PendantSystemManager({
     }
     if (item.model) {
       setModelPreview(item.model);
+    }
+  };
+
+  // Handle toggle show functionality
+  const handleToggleShow = async (itemId, isShow) => {
+    try {
+      // Only send the isShow field to the update API
+      const updatedData = {
+        isShow: isShow
+      };
+
+      // Call the update API with only isShow field
+      await updatePendantSystem(itemId, updatedData);
+      console.log(`Successfully updated item ${itemId} with isShow: ${isShow}`);
+    } catch (error) {
+      console.error("Error toggling show status:", error);
+      alert("Failed to update show status. Please try again.");
     }
   };
 
@@ -118,7 +136,8 @@ export default function PendantSystemManager({
       image: "",
       hasGlass: false,  // Default: No Glass
       hasGold: false,   // Default: No Gold
-      hasSilver: false  // Default: No Silver
+      hasSilver: false, // Default: No Silver
+      baseType: "round" // Default: Round for chandelier
     });
   };
 
@@ -157,6 +176,9 @@ export default function PendantSystemManager({
       }
       if (newPendantData.hasSilver !== editingItem.hasSilver) {
         changedFields.hasSilver = newPendantData.hasSilver;
+      }
+      if (newPendantData.baseType !== editingItem.baseType) {
+        changedFields.baseType = newPendantData.baseType;
       }
 
       // Check if image was changed
@@ -418,6 +440,7 @@ export default function PendantSystemManager({
                     type="pendant"
                     onEdit={handleEditItem}
                     onDelete={handleDeleteItem}
+                    onToggleShow={handleToggleShow}
                     deletingItemId={deletingItemId}
                     viewMode={viewMode}
                     selectedItems={selectedItems}
@@ -432,6 +455,7 @@ export default function PendantSystemManager({
                     type="system"
                     onEdit={handleEditItem}
                     onDelete={handleDeleteItem}
+                    onToggleShow={handleToggleShow}
                     deletingItemId={deletingItemId}
                     viewMode={viewMode}
                     selectedItems={selectedItems}
@@ -446,6 +470,7 @@ export default function PendantSystemManager({
                     type="chandelier"
                     onEdit={handleEditItem}
                     onDelete={handleDeleteItem}
+                    onToggleShow={handleToggleShow}
                     deletingItemId={deletingItemId}
                     viewMode={viewMode}
                     selectedItems={selectedItems}
@@ -463,6 +488,7 @@ export default function PendantSystemManager({
                         type="pendant"
                         onEdit={handleEditItem}
                         onDelete={handleDeleteItem}
+                        onToggleShow={handleToggleShow}
                         deletingItemId={deletingItemId}
                         viewMode={viewMode}
                         selectedItems={selectedItems}
@@ -476,6 +502,7 @@ export default function PendantSystemManager({
                         type="system"
                         onEdit={handleEditItem}
                         onDelete={handleDeleteItem}
+                        onToggleShow={handleToggleShow}
                         deletingItemId={deletingItemId}
                         viewMode={viewMode}
                         selectedItems={selectedItems}

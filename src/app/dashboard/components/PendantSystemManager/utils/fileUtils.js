@@ -22,6 +22,7 @@ export const filterProductsByTab = (products, activeTab) => {
     case "bar":
     case "ball":
     case "universal":
+    case "chandelier":
       return products.filter(item => item.isSystem && item.systemType === activeTab);
     case "model":
       return products.filter(item => {

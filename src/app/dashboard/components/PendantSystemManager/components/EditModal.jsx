@@ -1,6 +1,7 @@
 import React from "react";
 import { FaTimes, FaSpinner, FaImage, FaCube, FaUpload } from "react-icons/fa";
 import { base64ToUint8Array } from "../utils/fileUtils";
+import BaseTypeSelection from "./BaseTypeSelection";
 
 const EditModal = ({
   showModal,
@@ -71,6 +72,14 @@ const EditModal = ({
                   />
                 </div>
               </div>
+
+              {/* Base Type Selection - Only for Chandelier */}
+              {newPendantData.systemType === "chandelier" && (
+                <BaseTypeSelection
+                  newPendantData={newPendantData}
+                  handlePendantInputChange={handlePendantInputChange}
+                />
+              )}
 
               {/* Glass, Gold, and Silver Options */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
