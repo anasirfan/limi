@@ -1123,6 +1123,7 @@ const VerticalNavBar = ({
       <MobileBottomMenu
         isOpen={mobileBottomMenuOpen && isMobile}
         activeStep={mobileActiveStep}
+        handleChandelierTypeChange={handleChandelierTypeChange}
         setLocalConfiguringType={setLocalConfiguringType}
         onClose={() => setMobileBottomMenuOpen(false)}
         config={config}

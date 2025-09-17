@@ -5,6 +5,7 @@ import {
   barAssignments,
   ballAssignments,
   universalAssignments,
+  chandelierAssignments,
 } from "../pendantSystemData";
 import { FaChevronLeft, FaChevronRight, FaCheck } from "react-icons/fa";
 import { listenForCableMessages } from "../../../util/iframeCableMessageHandler";
@@ -12,6 +13,7 @@ import { listenForCableMessages } from "../../../util/iframeCableMessageHandler"
 const MobilePendantConfig = ({
   pendants,
   selectedPendants,
+  handleChandelierTypeChange,
   setSelectedPendants,
   cables,
   getImageSrc,
@@ -26,6 +28,7 @@ const MobilePendantConfig = ({
   localConfiguringType,
   setLocalConfiguringType,
   onSystemTypeSelection,
+  onChandelierTypeChange,
   onClose,
 }) => {
   const [activeTab, setActiveTab] = useState("design");
@@ -48,7 +51,7 @@ const MobilePendantConfig = ({
     }
   };
 
-  // Handle configuration type selection (pendant or system)
+  // Handle configuration type selection (pendant, system, or chandelier)
   const handleConfigTypeSelection = (type) => {
     setLocalConfiguringType(type);
 
@@ -60,6 +63,14 @@ const MobilePendantConfig = ({
       setActiveStep("systemType");
       setShowSystemOptions(true);
       setConfiguringSystemType(null);
+    } else if (type === "chandelier") {
+      setActiveStep("chandelierSelection");
+      setShowSystemOptions(false);
+      setConfiguringSystemType(null);
+      // Send Nobars message for chandelier like in ConfigPanel
+      if (sendMessageToPlayCanvas) {
+        sendMessageToPlayCanvas("Nobars");
+      }
     }
 
     // Call the parent component's handler if it exists
@@ -121,6 +132,8 @@ const MobilePendantConfig = ({
     setCurrentDesign(design);
     onSystemBaseDesignChange(design);
   };
+
+ 
 
   // Carousel scroll functions
   const scrollCarousel = (direction) => {
@@ -216,16 +229,25 @@ const MobilePendantConfig = ({
     );
   };
 
-  // Render design options (pendant/system)
+  // Render design options (pendant/system/chandelier)
   const renderDesignOptions = () => {
     // If no configuration type selected
     if (!localConfiguringType) {
+      // Check chandelier conditions from localStorage like ConfigPanel
+      const parentConfig = typeof window !== "undefined"
+        ? JSON.parse(localStorage.getItem("lightConfig") || "{}")
+        : {};
+      
+      // Show chandelier option when lightAmount is 3 and lightType is ceiling
+      const showChandelier = parentConfig.lightAmount === 3 && 
+        (parentConfig.lightType === "ceiling" || parentConfig.lightType === "rectangular");
+
       return (
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <div className="text-white text-sm">Configuration Type</div>
           </div>
-          <div className="flex justify-center gap-6">
+          <div className={`flex justify-center ${showChandelier ? 'gap-4' : 'gap-6'}`}>
             <button
               onClick={() => handleConfigTypeSelection("pendant")}
               className="flex flex-col w-16 transition-all duration-200 justify-center items-center text-gray-300 hover:text-white"
@@ -249,6 +271,20 @@ const MobilePendantConfig = ({
               />
               <div className="text-white text-xs font-medium mt-1">System</div>
             </button>
+
+            {showChandelier && (
+              <button
+                onClick={() => handleConfigTypeSelection("chandelier")}
+                className="flex flex-col w-16 transition-all duration-200 justify-center items-center text-gray-300 hover:text-white"
+              >
+                <img
+                  src="./images/configOptions/chandelier.png"
+                  alt="Chandelier"
+                  className="w-14 h-14"
+                />
+                <div className="text-white text-xs font-medium mt-1">Chandelier</div>
+              </button>
+            )}
           </div>
         </div>
       );
@@ -465,6 +501,89 @@ const MobilePendantConfig = ({
           </div>
         );
       }
+    }
+
+    // If chandelier configuration selected, show chandelier designs
+    if (localConfiguringType === "chandelier") {
+      // Get parent config to check baseType like in ConfigPanel
+      const parentConfig = typeof window !== "undefined"
+        ? JSON.parse(localStorage.getItem("lightConfig") || "{}")
+        : {};
+      
+      // Filter chandelierAssignments based on baseType
+      const filteredChandeliers = chandelierAssignments.filter((chand) => 
+        chand.baseType === parentConfig.baseType
+      );
+
+      return (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="text-white text-sm">Chandelier Designs</div>
+            <button
+              onClick={() => setLocalConfiguringType(null)}
+              className="text-emerald-400 text-sm hover:text-emerald-300"
+            >
+              ← Back
+            </button>
+          </div>
+
+          {/* Carousel container for chandelier designs */}
+          <div className="relative">
+            {/* Left scroll button */}
+            <button
+              onClick={() => scrollCarousel("left")}
+              className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-gray-800 hover:bg-gray-700 text-white p-2 rounded-full shadow-lg transition-colors"
+            >
+              <FaChevronLeft size={16} />
+            </button>
+
+            {/* Right scroll button */}
+            <button
+              onClick={() => scrollCarousel("right")}
+              className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-gray-800 hover:bg-gray-700 text-white p-2 rounded-full shadow-lg transition-colors"
+            >
+              <FaChevronRight size={16} />
+            </button>
+
+            {/* Horizontal scrollable carousel */}
+            <div
+              ref={carouselRef}
+              className="flex gap-3 overflow-x-auto scrollbar-hide px-8"
+              style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+            >
+              {filteredChandeliers.map((design) => (
+                <button
+                  key={design.design}
+                  onClick={() =>
+                    handleChandelierTypeChange(design.design)
+                  }
+                  className="flex-shrink-0 w-18 transition-all duration-200 text-center text-gray-300 hover:text-white"
+                >
+                  <div className="relative">
+                    {design.media?.image?.url && (
+                      <img
+                        src={design.media.image.url}
+                        alt={design.name}
+                        className={`w-14 h-14 object-cover rounded-full mb-1 transition-all duration-200 mx-auto ${
+                          currentDesign === design.design
+                            ? "border-2 border-emerald-400"
+                            : ""
+                        }`}
+                      />
+                    )}
+                    {currentDesign === design.design && (
+                      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-6 h-6 bg-emerald-500 bg-opacity-90 rounded-full flex items-center justify-center">
+                        <FaCheck className="text-white text-xs" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="text-xs font-medium">{design.name}</div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
     }
 
     return null;

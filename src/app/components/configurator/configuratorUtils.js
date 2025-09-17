@@ -144,10 +144,13 @@ export const sendMessagesForDesign = (designName, idOrIds) => {
       `silver_${assignment.hasSilver ? "attached" : "none"}`
     );
     sendMessageToPlayCanvas(`product_${assignment.media?.model?.url}`);
+    
     sendMessageToPlayCanvas(`${assignment.message}`);
     if (assignment.systemType === "chandelier") {
       sendMessageToPlayCanvas(`chandelier_clearance`);
       sendMessageToPlayCanvas(`height_set`);
+    }else{
+      sendMessageToPlayCanvas('unequal_cable');
     }
   };
 
@@ -191,6 +194,8 @@ export const sendMessagesForDesignOnReload = (designName, id) => {
     if (assignment.systemType === "chandelier") {
       sendMessageToPlayCanvas(`chandelier_clearance`);
       sendMessageToPlayCanvas(`height_set`);
+    }else{
+      sendMessageToPlayCanvas('unequal_cable');
     }
   };
   sendAllMessages(id);
