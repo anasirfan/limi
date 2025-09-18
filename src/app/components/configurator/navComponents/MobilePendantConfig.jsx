@@ -6,6 +6,7 @@ import {
   ballAssignments,
   universalAssignments,
   chandelierAssignments,
+  onDataRefresh,
 } from "../pendantSystemData";
 import { FaChevronLeft, FaChevronRight, FaCheck } from "react-icons/fa";
 import { listenForCableMessages } from "../../../util/iframeCableMessageHandler";
@@ -36,6 +37,8 @@ const MobilePendantConfig = ({
   const [currentDesign, setCurrentDesign] = useState(null);
   const [showSystemOptions, setShowSystemOptions] = useState(false);
   const carouselRef = useRef(null);
+  // Force re-render when data changes
+  const [dataRefreshTrigger, setDataRefreshTrigger] = useState(0);
 
   // Handle pendant location selection
   const handlePendantLocationClick = (locationIndex) => {
@@ -133,7 +136,15 @@ const MobilePendantConfig = ({
     onSystemBaseDesignChange(design);
   };
 
- 
+  // Subscribe to data refresh events to force re-render
+  useEffect(() => {
+    const unsubscribe = onDataRefresh((newData) => {
+      console.log(' MobilePendantConfig: Data refreshed, forcing re-render');
+      setDataRefreshTrigger(prev => prev + 1);
+    });
+
+    return unsubscribe;
+  }, []);
 
   // Carousel scroll functions
   const scrollCarousel = (direction) => {

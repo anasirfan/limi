@@ -9,6 +9,7 @@ import {
   ballAssignments,
   universalAssignments,
   chandelierAssignments,
+  onDataRefresh,
 } from "../pendantSystemData";
 import {
   FaHeart,
@@ -81,6 +82,8 @@ export const ConfigPanel = ({
   const [currentDesign, setCurrentDesign] = useState(null);
   // Internal state for selected cable size (for immediate UI feedback)
   const [localSelectedCableSize, setLocalSelectedCableSize] = useState(1);
+  // Force re-render when data changes
+  const [dataRefreshTrigger, setDataRefreshTrigger] = useState(0);
 
   const syncWishlistWithAPI = async (wishlistArray) => {
     const token = localStorage.getItem("limiToken");
@@ -122,6 +125,16 @@ export const ConfigPanel = ({
       setLocalSelectedCableSize(selectedCableSize);
     }
   }, [configuringType, selectedPendants, selectedLocation, cables]);
+
+  // Subscribe to data refresh events to force re-render
+  useEffect(() => {
+    const unsubscribe = onDataRefresh((newData) => {
+      console.log('🔄 ConfigPanel: Data refreshed, forcing re-render');
+      setDataRefreshTrigger(prev => prev + 1);
+    });
+
+    return unsubscribe;
+  }, []);
 
   // Track navigation state for breadcrumb
   const [navState, setNavState] = useState({
