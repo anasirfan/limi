@@ -92,14 +92,10 @@ export const ConfigPanel = ({
   const [ballAssignments, setBallAssignments] = useState([]);
   const [universalAssignments, setUniversalAssignments] = useState([]);
   const [chandelierAssignments, setChandelierAssignments] = useState([]);
-  const [isLoadingData, setIsLoadingData] = useState(true);
-
   // Function to load all configurator data (only visible items)
   const loadConfiguratorData = async () => {
     try {
       console.log('🔄 ConfigPanel: Loading configurator data (visible items only)');
-      setIsLoadingData(true);
-      
       const [
         systemData,
         pendantData,
@@ -132,10 +128,8 @@ export const ConfigPanel = ({
         chandelierItems: chandelierData.length
       });
       
-      setIsLoadingData(false);
     } catch (error) {
       console.error('Error loading configurator data:', error);
-      setIsLoadingData(false);
     }
   };
 
@@ -1250,25 +1244,6 @@ export const ConfigPanel = ({
 
   // Determine if we're in mobile view based on the className prop
   const isMobileView = className.includes("max-sm:static");
-
-  // Show loading state while data is being fetched
-  if (isLoadingData) {
-    return (
-      <div className="flex justify-center items-center w-full">
-        <motion.div
-          className={`fixed h-[150px] sm:absolute bottom-0 sm:bottom-1 -translate-x-1/2 bg-black/95 sm:backdrop-blur-sm border border-gray-700 rounded-t-lg sm:rounded-lg z-40 w-full sm:max-w-[320px] md:max-w-[400px] lg:max-w-[480px] xl:max-w-[540px] sm:w-[80vw] md:w-[55vw] lg:w-[40vw] xl:w-[24vw] max-h-[60vh] sm:max-h-[30vh] shadow-lg overflow-hidden ${className}`}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 20 }}
-          transition={{ duration: 0.3 }}
-        >
-          <div className="flex items-center justify-center h-full">
-            <div className="text-white text-sm">Loading configurator...</div>
-          </div>
-        </motion.div>
-      </div>
-    );
-  }
 
   return (
     <div className="flex justify-center items-center w-full">
