@@ -3,12 +3,12 @@ import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { useSelector, useDispatch } from "react-redux";
 import {
-  pendantAssignments,
-  systemAssignments,
-  barAssignments,
-  ballAssignments,
-  universalAssignments,
-  chandelierAssignments,
+  getSystemAssignments,
+  getPendantAssignments,
+  getBarAssignments,
+  getBallAssignments,
+  getUniversalAssignments,
+  getChandelierAssignments,
   onDataRefresh,
 } from "../pendantSystemData";
 import {
@@ -84,6 +84,65 @@ export const ConfigPanel = ({
   const [localSelectedCableSize, setLocalSelectedCableSize] = useState(1);
   // Force re-render when data changes
   const [dataRefreshTrigger, setDataRefreshTrigger] = useState(0);
+  
+  // State for async data - only visible items (isShow: true)
+  const [pendantAssignments, setPendantAssignments] = useState([]);
+  const [systemAssignments, setSystemAssignments] = useState([]);
+  const [barAssignments, setBarAssignments] = useState([]);
+  const [ballAssignments, setBallAssignments] = useState([]);
+  const [universalAssignments, setUniversalAssignments] = useState([]);
+  const [chandelierAssignments, setChandelierAssignments] = useState([]);
+  const [isLoadingData, setIsLoadingData] = useState(true);
+
+  // Function to load all configurator data (only visible items)
+  const loadConfiguratorData = async () => {
+    try {
+      console.log('🔄 ConfigPanel: Loading configurator data (visible items only)');
+      setIsLoadingData(true);
+      
+      const [
+        systemData,
+        pendantData,
+        barData,
+        ballData,
+        universalData,
+        chandelierData
+      ] = await Promise.all([
+        getSystemAssignments(),
+        getPendantAssignments(),
+        getBarAssignments(),
+        getBallAssignments(),
+        getUniversalAssignments(),
+        getChandelierAssignments()
+      ]);
+      
+      setSystemAssignments(systemData);
+      setPendantAssignments(pendantData);
+      setBarAssignments(barData);
+      setBallAssignments(ballData);
+      setUniversalAssignments(universalData);
+      setChandelierAssignments(chandelierData);
+      
+      console.log('🔄 ConfigPanel: Data loaded successfully', {
+        systemItems: systemData.length,
+        pendantItems: pendantData.length,
+        barItems: barData.length,
+        ballItems: ballData.length,
+        universalItems: universalData.length,
+        chandelierItems: chandelierData.length
+      });
+      
+      setIsLoadingData(false);
+    } catch (error) {
+      console.error('Error loading configurator data:', error);
+      setIsLoadingData(false);
+    }
+  };
+
+  // Load data on component mount
+  useEffect(() => {
+    loadConfiguratorData();
+  }, []);
 
   const syncWishlistWithAPI = async (wishlistArray) => {
     const token = localStorage.getItem("limiToken");
@@ -126,11 +185,13 @@ export const ConfigPanel = ({
     }
   }, [configuringType, selectedPendants, selectedLocation, cables]);
 
-  // Subscribe to data refresh events to force re-render
+  // Subscribe to data refresh events to reload configurator data
   useEffect(() => {
     const unsubscribe = onDataRefresh((newData) => {
-      console.log('🔄 ConfigPanel: Data refreshed, forcing re-render');
+      console.log('🔄 ConfigPanel: Data refreshed, reloading configurator data');
       setDataRefreshTrigger(prev => prev + 1);
+      // Reload all configurator data to get only visible items
+      loadConfiguratorData();
     });
 
     return unsubscribe;
@@ -1186,6 +1247,25 @@ export const ConfigPanel = ({
 
   // Determine if we're in mobile view based on the className prop
   const isMobileView = className.includes("max-sm:static");
+
+  // Show loading state while data is being fetched
+  if (isLoadingData) {
+    return (
+      <div className="flex justify-center items-center w-full">
+        <motion.div
+          className={`fixed h-[150px] sm:absolute bottom-0 sm:bottom-1 -translate-x-1/2 bg-black/95 sm:backdrop-blur-sm border border-gray-700 rounded-t-lg sm:rounded-lg z-40 w-full sm:max-w-[320px] md:max-w-[400px] lg:max-w-[480px] xl:max-w-[540px] sm:w-[80vw] md:w-[55vw] lg:w-[40vw] xl:w-[24vw] max-h-[60vh] sm:max-h-[30vh] shadow-lg overflow-hidden ${className}`}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 20 }}
+          transition={{ duration: 0.3 }}
+        >
+          <div className="flex items-center justify-center h-full">
+            <div className="text-white text-sm">Loading configurator...</div>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex justify-center items-center w-full">

@@ -131,25 +131,43 @@ if (typeof document !== 'undefined') {
   startPolling();
 }
 
-// Get system assignments with caching and filter by isShow: true
+// Get system assignments with caching and filter by isShow: true (FOR CONFIGURATOR)
 export const getSystemAssignments = async () => {
   let assignments;
   
   // Check if we have cached data and it's still valid
   if (cachedSystemAssignments && cacheTimestamp && (Date.now() - cacheTimestamp < CACHE_DURATION)) {
     assignments = cachedSystemAssignments;
+    console.log('🔄 Using cached system assignments (configurator - visible only)');
   } else {
     // Fetch fresh data
     assignments = await fetchSystemAssignments();
   }
   
-  // Filter to only return products with isShow: true
-  return assignments.filter(assignment => assignment.isShow === true);
+  // Filter to only show visible items for configurator
+  return assignments.filter(item => item.isShow === true);
+};
+
+// Get ALL system assignments with caching (FOR DASHBOARD)
+export const getAllSystemAssignments = async () => {
+  let assignments;
+  
+  // Check if we have cached data and it's still valid
+  if (cachedSystemAssignments && cacheTimestamp && (Date.now() - cacheTimestamp < CACHE_DURATION)) {
+    assignments = cachedSystemAssignments;
+    console.log('🔄 Using cached system assignments (dashboard - all items)');
+  } else {
+    // Fetch fresh data
+    assignments = await fetchSystemAssignments();
+  }
+  
+  // Return ALL items for dashboard management
+  return assignments;
 };
 
 // Legacy export for backward compatibility (will use cached data or fetch if needed)
 export const systemAssignments = await getSystemAssignments(); // Only use API data
-// Dynamic filtered arrays that update based on API data
+// Dynamic filtered arrays that update based on API data (FOR CONFIGURATOR - VISIBLE ONLY)
 export const getPendantAssignments = async () => {
   const assignments = await getSystemAssignments();
   return assignments.filter(a => !a.isSystem);
@@ -172,6 +190,32 @@ export const getUniversalAssignments = async () => {
 
 export const getChandelierAssignments = async () => {
   const assignments = await getSystemAssignments();
+  return assignments.filter(a => a.isSystem && a.systemType === "chandelier");
+};
+
+// Dynamic filtered arrays for DASHBOARD (ALL ITEMS - INCLUDING HIDDEN)
+export const getAllPendantAssignments = async () => {
+  const assignments = await getAllSystemAssignments();
+  return assignments.filter(a => !a.isSystem);
+};
+
+export const getAllBallAssignments = async () => {
+  const assignments = await getAllSystemAssignments();
+  return assignments.filter(a => a.isSystem && a.systemType === "ball");
+};
+
+export const getAllBarAssignments = async () => {
+  const assignments = await getAllSystemAssignments();
+  return assignments.filter(a => a.isSystem && a.systemType === "bar");
+};
+
+export const getAllUniversalAssignments = async () => {
+  const assignments = await getAllSystemAssignments();
+  return assignments.filter(a => a.isSystem && a.systemType === "universal");
+};
+
+export const getAllChandelierAssignments = async () => {
+  const assignments = await getAllSystemAssignments();
   return assignments.filter(a => a.isSystem && a.systemType === "chandelier");
 };
 
