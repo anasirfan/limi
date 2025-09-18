@@ -835,12 +835,15 @@ export const ConfigPanel = ({
       }));
       config.onItemSelect = (itemId) => {
         setCurrentDesign(itemId);
+    
         // Use all selected pendants if available, otherwise fall back to just the first one
         const pendantsToUpdate =
           selectedPendants && selectedPendants.length > 0
             ? selectedPendants
             : [selectedLocation];
         onPendantDesignChange(pendantsToUpdate, itemId);
+        console.log("pendantsToUpdate",pendantsToUpdate);
+        console.log("itemId",itemId);
         // Always hide and clear shade panel for pendants
         setShowShades(false);
         setAvailableShades([]);
