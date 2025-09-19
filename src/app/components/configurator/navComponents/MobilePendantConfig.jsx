@@ -191,13 +191,13 @@ const MobilePendantConfig = ({
 
   // Render pendant numbers for selection
   const renderPendantSelection = () => {
-    if (!pendants || pendants.length === 0) {
-      return (
-        <div className="text-center text-gray-400 py-8">
-          No pendants available
-        </div>
-      );
-    }
+    // if (!pendants || pendants.length === 0) {
+    //   return (
+    //     <div className="text-center text-gray-400 py-8">
+    //       No pendants available
+    //     </div>
+    //   );
+    // }
 
     return (
       <div className="space-y-4">
