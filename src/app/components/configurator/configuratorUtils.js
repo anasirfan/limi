@@ -1,4 +1,53 @@
-import { getSystemAssignments } from "./pendantSystemData";
+import { getSystemAssignments, getSystemAssignmentsSync, findSystemAssignmentByDesign, onDataRefresh } from "./pendantSystemData";
+import { useState, useEffect } from "react";
+
+// ============================================================================
+// REACT HOOKS FOR SYSTEM ASSIGNMENTS
+// ============================================================================
+
+/**
+ * React hook to manage system assignments with automatic updates
+ * @returns {Object} { systemAssignments, isLoading, findByDesign }
+ */
+export const useSystemAssignments = () => {
+  const [systemAssignments, setSystemAssignments] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Initial load
+    const loadInitialData = async () => {
+      try {
+        const assignments = await getSystemAssignments();
+        setSystemAssignments(assignments);
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Error loading system assignments:', error);
+        setIsLoading(false);
+      }
+    };
+
+    // Subscribe to data refresh events
+    const unsubscribe = onDataRefresh((newData) => {
+      const visibleAssignments = newData.filter(item => item.isShow === true);
+      setSystemAssignments(visibleAssignments);
+    });
+
+    loadInitialData();
+
+    return unsubscribe;
+  }, []);
+
+  // Helper function to find assignment by design name
+  const findByDesign = (designName) => {
+    return systemAssignments.find((a) => a.design === designName);
+  };
+
+  return {
+    systemAssignments,
+    isLoading,
+    findByDesign
+  };
+};
 
 // ============================================================================
 // LOCAL STORAGE UTILITIES
@@ -126,9 +175,8 @@ export const sendMessageToPlayCanvas = (message) => {
  * @param {string} designName - The design name
  * @param {number|Array} idOrIds - Single ID or array of IDs
  */
-export const sendMessagesForDesign = async (designName, idOrIds) => {
-  const systemAssignments = await getSystemAssignments();
-  const assignment = systemAssignments.find((a) => a.design === designName);
+export const sendMessagesForDesign = (designName, idOrIds) => {
+  const assignment = findSystemAssignmentByDesign(designName);
   if (!assignment) return;
 
   // Helper to send all messages for a single id
@@ -173,9 +221,8 @@ export const sendMessagesForDesign = async (designName, idOrIds) => {
  * @param {string} designName - The design name
  * @param {number} id - The cable ID
  */
-export const sendMessagesForDesignOnReload = async (designName, id) => {
-  const systemAssignments = await getSystemAssignments();
-  const assignment = systemAssignments.find((a) => a.design === designName);
+export const sendMessagesForDesignOnReload = (designName, id) => {
+  const assignment = findSystemAssignmentByDesign(designName);
   if (!assignment) return;
   // Helper to send all messages for a single id
   const sendAllMessages = (id) => {

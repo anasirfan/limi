@@ -6,6 +6,9 @@ const POLL_INTERVAL = 10 * 1000; // 10 seconds polling
 let pollTimer = null;
 let lastDataHash = null;
 
+// Global system assignments store for immediate access
+let globalSystemAssignments = [];
+
 // Event listeners for data refresh
 const refreshCallbacks = new Set();
 
@@ -62,8 +65,9 @@ const fetchSystemAssignments = async () => {
     const newDataHash = generateDataHash(formattedData);
     const dataChanged = lastDataHash && lastDataHash !== newDataHash;
     
-    // Cache the data
+    // Cache the data and update global store
     cachedSystemAssignments = formattedData;
+    globalSystemAssignments = formattedData; // Update global store for immediate access
     cacheTimestamp = Date.now();
     lastDataHash = newDataHash;
     
@@ -129,7 +133,23 @@ if (typeof document !== 'undefined') {
 
   // Start polling when module loads
   startPolling();
+  
+  // Initialize global store with initial fetch
+  fetchSystemAssignments().catch(error => {
+    console.error('Error initializing system assignments:', error);
+  });
 }
+
+// Get system assignments synchronously from global store (FOR IMMEDIATE ACCESS)
+export const getSystemAssignmentsSync = () => {
+  return globalSystemAssignments.filter(item => item.isShow === true);
+};
+
+// Find a specific system assignment by design name (SYNCHRONOUS)
+export const findSystemAssignmentByDesign = (designName) => {
+  const assignments = getSystemAssignmentsSync();
+  return assignments.find((a) => a.design === designName);
+};
 
 // Get system assignments with caching and filter by isShow: true (FOR CONFIGURATOR)
 export const getSystemAssignments = async () => {
@@ -143,7 +163,6 @@ export const getSystemAssignments = async () => {
     // Fetch fresh data
     assignments = await fetchSystemAssignments();
   }
-  
   // Filter to only show visible items for configurator
   return assignments.filter(item => item.isShow === true);
 };

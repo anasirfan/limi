@@ -63,7 +63,6 @@ const LoadingScreen = ({ isVisible, onHide }) => {
         repeat: -1,
       });
     } else {
-      console.log("❌ Hiding loading screen");
       // Hide loading screen
       if (animationRefs.current.diamondAnimation) {
         animationRefs.current.diamondAnimation.kill();

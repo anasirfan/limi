@@ -18,9 +18,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 import ConfigurationSummary from "../lightConfigurator/ConfigurationSummary";
 import { fetchUserByToken } from "../../../app/redux/slices/userSlice.js";
 import {
-  systemAssignments,
   chandelierAssignments,
   getSystemAssignments,
+  getSystemAssignmentsSync,
+  findSystemAssignmentByDesign,
 } from "./pendantSystemData";
 import {
   listenForCableMessages,
@@ -49,6 +50,7 @@ import {
   getLightTypeChangeData,
   filterSelectedPendants,
   updateContainerDimensions,
+  useSystemAssignments,
 } from "./configuratorUtils";
 
 const ConfiguratorLayout = () => {
@@ -125,6 +127,9 @@ const ConfiguratorLayout = () => {
 
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
+
+  // Use system assignments hook for optimized data access
+  const { systemAssignments: hookSystemAssignments, isLoading: systemAssignmentsLoading, findByDesign } = useSystemAssignments();
 
   const handleOpenSaveModal = () => {
     setConfiguringType("save");
@@ -434,7 +439,7 @@ const ConfiguratorLayout = () => {
   }, []);
   // Listen for app:ready1 message from PlayCanvas iframe
   useEffect(() => {
-    const handleMessage = async (event) => {
+    const handleMessage = (event) => {
       if (event.data === "app:ready1") {
         playCanvasReadyRef.current = true;
 
@@ -443,8 +448,8 @@ const ConfiguratorLayout = () => {
 
         const savedCables = loadFromLocalStorage("lightCables", null);
         if (savedConfig && savedCables) {
-          // Get system assignments with only visible items
-          const systemAssignments = await getSystemAssignments();
+          // Use synchronous system assignments access
+          const systemAssignments = getSystemAssignmentsSync();
 
           // Send messages with incremental delays
           // sendMessageToPlayCanvas(`light_type:ceiling`),
@@ -473,14 +478,14 @@ const ConfiguratorLayout = () => {
             }
           });
 
-          savedCables.forEach(async (cable, index) => {
+          savedCables.forEach((cable, index) => {
             const design = systemAssignments.find(
               (a) => a.design === cable.design
             );
             if (design?.systemType === "chandelier") {
-              await sendMessagesForDesignOnReload(cable.design, 0);
+              sendMessagesForDesignOnReload(cable.design, 0);
             } else {
-              await sendMessagesForDesignOnReload(cable.design, index);
+              sendMessagesForDesignOnReload(cable.design, index);
             }
           });
 
@@ -773,7 +778,7 @@ const ConfiguratorLayout = () => {
       baseType: baseType,
     }));
     const design = "piko";
-    const system = systemAssignments.find((a) => a.design === design);
+    const system = findSystemAssignmentByDesign(design);
 
     // Send message to PlayCanvas iframe
     if (baseType === "rectangular") {
@@ -858,21 +863,21 @@ const ConfiguratorLayout = () => {
   }, []);
 
   const handleSystemBaseDesignChange = useCallback(
-    async (design) => {
+    (design) => {
       // Update the system base design in the config
       setConfig((prev) => ({ ...prev, systemBaseDesign: design }));
       setCurrentShade(null);
 
-      // Get system assignments with only visible items
-      const systemAssignments = await getSystemAssignments();
+      // Use synchronous system assignments access
+      const systemAssignments = getSystemAssignmentsSync();
 
       // Find the system for this design
-      const system = systemAssignments.find((a) => a.design === design);
+      const system = findSystemAssignmentByDesign(design);
 
       // Check if the system type is chandelier
       let hasChandelier = false;
       cables.forEach((cable) => {
-        const system = systemAssignments.find((a) => a.design === cable.design);
+        const system = findSystemAssignmentByDesign(cable.design);
         hasChandelier = system && system.systemType === "chandelier";
       });
       if (hasChandelier) {
@@ -890,7 +895,7 @@ const ConfiguratorLayout = () => {
           });
           return updatedCables;
         });
-        await sendMessagesForDesign(design, [0, 1, 2]);
+        sendMessagesForDesign(design, [0, 1, 2]);
       } else {
         // Send message to PlayCanvas iframe (original logic for non-chandelier systems)
 
@@ -922,8 +927,8 @@ const ConfiguratorLayout = () => {
           designToIds[design].push(id);
         });
 
-        Object.entries(designToIds).forEach(async ([design, ids]) => {
-          await sendMessagesForDesign(design, ids.length === 1 ? ids[0] : ids);
+        Object.entries(designToIds).forEach(([design, ids]) => {
+          sendMessagesForDesign(design, ids.length === 1 ? ids[0] : ids);
         });
       }
     },
