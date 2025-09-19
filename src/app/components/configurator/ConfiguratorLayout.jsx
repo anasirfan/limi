@@ -17,7 +17,11 @@ import { saveConfiguration } from "../../../app/redux/slices/userSlice.js";
 import { useRouter, useSearchParams } from "next/navigation";
 import ConfigurationSummary from "../lightConfigurator/ConfigurationSummary";
 import { fetchUserByToken } from "../../../app/redux/slices/userSlice.js";
-import { systemAssignments, chandelierAssignments, getSystemAssignments } from "./pendantSystemData";
+import {
+  systemAssignments,
+  chandelierAssignments,
+  getSystemAssignments,
+} from "./pendantSystemData";
 import {
   listenForCableMessages,
   listenForSelectedCableMessages,
@@ -59,12 +63,12 @@ const ConfiguratorLayout = () => {
   // Clear old localStorage data if version doesn't match
   useEffect(() => {
     const currentVersion = localStorage.getItem("limiConfigVersion");
-    
+
     if (currentVersion !== STORAGE_VERSION) {
       // Clear old localStorage data
       localStorage.removeItem("lightConfig");
       localStorage.removeItem("lightCables");
-      
+
       // Save default configuration values
       const defaultConfig = {
         lightType: "ceiling",
@@ -79,7 +83,7 @@ const ConfiguratorLayout = () => {
         colorTemperature: 50,
         brightness: 50,
       };
-      
+
       const defaultCables = [
         {
           design: "ico",
@@ -88,20 +92,22 @@ const ConfiguratorLayout = () => {
           cableColor: "black",
         },
       ];
-      
+
       localStorage.setItem("lightConfig", JSON.stringify(defaultConfig));
       localStorage.setItem("lightCables", JSON.stringify(defaultCables));
-      
+
       // Update state with default values
       setConfig(defaultConfig);
       setCables(defaultCables);
       setBrightness(50);
       setColorTemperature(50);
-      
+
       // Set new version
       localStorage.setItem("limiConfigVersion", STORAGE_VERSION);
-      
-      console.log("Cleared old localStorage data and reset to default configuration");
+
+      console.log(
+        "Cleared old localStorage data and reset to default configuration"
+      );
     }
   }, []);
 
@@ -114,7 +120,8 @@ const ConfiguratorLayout = () => {
   const [selectedCableIndices, setSelectedCableIndices] = useState([]);
   const [cableMessage, setCableMessage] = useState("");
   const [isLightingPanelOpen, setIsLightingPanelOpen] = useState(false);
-  const [showPendantLoadingScreen, setShowPendantLoadingScreen] = useState(false);
+  const [showPendantLoadingScreen, setShowPendantLoadingScreen] =
+    useState(false);
 
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
@@ -212,7 +219,12 @@ const ConfiguratorLayout = () => {
   }, []);
 
   // Handler for shade selection
-  const handleShadeSelectLocal = (designId, shadeId, systemType, shadeIndex) => {
+  const handleShadeSelectLocal = (
+    designId,
+    shadeId,
+    systemType,
+    shadeIndex
+  ) => {
     handleShadeSelect(
       designId,
       shadeId,
@@ -354,8 +366,12 @@ const ConfiguratorLayout = () => {
     //   toast.success("Configuration loaded successfully");
     // };
 
-    sendMessageToPlayCanvas(`light_type:${configData.config.light_type.toLowerCase()}`);
-    sendMessageToPlayCanvas(`base_type:${configData.config.base_type.toLowerCase()}`);
+    sendMessageToPlayCanvas(
+      `light_type:${configData.config.light_type.toLowerCase()}`
+    );
+    sendMessageToPlayCanvas(
+      `base_type:${configData.config.base_type.toLowerCase()}`
+    );
     sendMessageToPlayCanvas(`light_amount:${configData.config.light_amount}`);
     // sendMessageToPlayCanvas(`base_color:${configData.config.base_color}`);
     if (
@@ -366,13 +382,17 @@ const ConfiguratorLayout = () => {
       const designToIndices = {};
       configData.config.cableConfig.forEach((cable, index) => {
         if (cable.design) {
-          if (!designToIndices[cable.design]) designToIndices[cable.design] = [];
+          if (!designToIndices[cable.design])
+            designToIndices[cable.design] = [];
           designToIndices[cable.design].push(index);
         }
       });
       // Call sendMessagesForDesign for each unique design with all indices
       Object.entries(designToIndices).forEach(([design, indices]) => {
-        sendMessagesForDesign(design, indices.length === 1 ? indices[0] : indices);
+        sendMessagesForDesign(
+          design,
+          indices.length === 1 ? indices[0] : indices
+        );
       });
     }
 
@@ -403,15 +423,15 @@ const ConfiguratorLayout = () => {
     }));
     setCables(configData.config.cableConfig);
   };
- useEffect(() => {
-  const handleMessageLoad = (event) => {
-    if (event.data === "loadingOff") {
-      setIsLoading(false);
-    }
-  };
-  window.addEventListener("message", handleMessageLoad);
-  return () => window.removeEventListener("message", handleMessageLoad);
-}, []);
+  useEffect(() => {
+    const handleMessageLoad = (event) => {
+      if (event.data === "loadingOff") {
+        setIsLoading(false);
+      }
+    };
+    window.addEventListener("message", handleMessageLoad);
+    return () => window.removeEventListener("message", handleMessageLoad);
+  }, []);
   // Listen for app:ready1 message from PlayCanvas iframe
   useEffect(() => {
     const handleMessage = async (event) => {
@@ -452,49 +472,34 @@ const ConfiguratorLayout = () => {
               );
             }
           });
-      
-             
-            savedCables.forEach(async (cable, index) => {
-              const design = systemAssignments.find(
-                (a) => a.design === cable.design
-              );
-             if(design?.systemType === "chandelier"){
+
+          savedCables.forEach(async (cable, index) => {
+            const design = systemAssignments.find(
+              (a) => a.design === cable.design
+            );
+            if (design?.systemType === "chandelier") {
               await sendMessagesForDesignOnReload(cable.design, 0);
-             }else{
+            } else {
               await sendMessagesForDesignOnReload(cable.design, index);
-             }
-            });
-          
-          
-          
+            }
+          });
+
           sendMessageToPlayCanvas("allmodelsloaded");
           // sendMessagesForDesign("fina", 0);
           // Send lighting messages with delays
-          setTimeout(
-            () =>
-              sendMessageToPlayCanvas(
-                `lighting:${savedConfig.lighting ? "on" : "off"}`
-              ),
-            700 + savedCables.length * 100 + 100
+
+          sendMessageToPlayCanvas(
+            `lighting:${savedConfig.lighting ? "on" : "off"}`
           );
 
           if (savedConfig.lighting == "on") {
-            setTimeout(
-              () =>
-                sendMessageToPlayCanvas(`brightness:${savedConfig.brightness}`),
-              700 + savedCables.length * 100 + 200
-            );
-            setTimeout(
-              () =>
-                sendMessageToPlayCanvas(
-                  "colorTemperature:" +
-                    Math.round(
-                      2700 +
-                        (savedConfig.colorTemperature / 100) * (6500 - 2700)
-                    )
-                ),
-              700 + savedCables.length * 100 + 300
-            );
+            sendMessageToPlayCanvas(`brightness:${savedConfig.brightness}`),
+              sendMessageToPlayCanvas(
+                "colorTemperature:" +
+                  Math.round(
+                    2700 + (savedConfig.colorTemperature / 100) * (6500 - 2700)
+                  )
+              );
           }
         }
 
@@ -518,7 +523,11 @@ const ConfiguratorLayout = () => {
     }
 
     // Get new amount and pendants using utility function
-    const { newAmount, newPendants } = getLightTypeChangeData(type, config, lastCeilingLightAmount);
+    const { newAmount, newPendants } = getLightTypeChangeData(
+      type,
+      config,
+      lastCeilingLightAmount
+    );
 
     setConfig((prev) => ({
       ...prev,
@@ -544,19 +553,18 @@ const ConfiguratorLayout = () => {
     });
 
     // Send messages to iframe
-    setTimeout(() => {
-      // Send light type message
-      sendMessageToPlayCanvas(`light_type:${type}`);
 
-      // Send light amount message
-      sendMessageToPlayCanvas(`light_amount:${newAmount}`);
-      //hotspot off
-      sendMessageToPlayCanvas(`hotspot:'off'`);
+    // Send light type message
+    sendMessageToPlayCanvas(`light_type:${type}`);
 
-      newPendants.forEach((pendant, index) => {
-        sendMessagesForDesign(pendant.design, index);
-      });
-    }, 0);
+    // Send light amount message
+    sendMessageToPlayCanvas(`light_amount:${newAmount}`);
+    //hotspot off
+    sendMessageToPlayCanvas(`hotspot:'off'`);
+
+    newPendants.forEach((pendant, index) => {
+      sendMessagesForDesign(pendant.design, index);
+    });
   };
 
   // Handle configuration type change
@@ -581,7 +589,10 @@ const ConfiguratorLayout = () => {
     const newSystems = getDefaultDesigns(amount);
 
     // Filter selectedPendants to only include valid indices for the new amount
-    const filteredSelectedPendants = filterSelectedPendants(config.selectedPendants, amount);
+    const filteredSelectedPendants = filterSelectedPendants(
+      config.selectedPendants,
+      amount
+    );
 
     setConfig((prev) => ({
       ...prev,
@@ -595,17 +606,16 @@ const ConfiguratorLayout = () => {
     );
 
     // Send messages to iframe
-    setTimeout(() => {
-      sendMessageToPlayCanvas(`light_amount:${amount}`);
-      const designToIds = {};
-      newSystems.forEach((system, idx) => {
-        if (!designToIds[system.design]) designToIds[system.design] = [];
-        designToIds[system.design].push(idx);
-      });
-      Object.entries(designToIds).forEach(([design, ids]) => {
-        sendMessagesForDesign(design, ids);
-      });
-    }, 0);
+
+    sendMessageToPlayCanvas(`light_amount:${amount}`);
+    const designToIds = {};
+    newSystems.forEach((system, idx) => {
+      if (!designToIds[system.design]) designToIds[system.design] = [];
+      designToIds[system.design].push(idx);
+    });
+    Object.entries(designToIds).forEach(([design, ids]) => {
+      sendMessagesForDesign(design, ids);
+    });
   };
 
   // Handle system type change
@@ -659,7 +669,7 @@ const ConfiguratorLayout = () => {
   const handleConfigTypeSelection = (type) => {
     setConfiguringType(type);
     setShowTypeSelector(false);
-    
+
     // Reset system type when selecting configuration type
     if (type === "system" || type === null) {
       setConfiguringSystemType(null);
@@ -699,7 +709,7 @@ const ConfiguratorLayout = () => {
       setBreadcrumbPath([]);
       return;
     }
-    
+
     setConfiguringSystemType(type);
     setBreadcrumbPath([
       { id: "system", label: "System" },
@@ -712,38 +722,35 @@ const ConfiguratorLayout = () => {
     }
   };
 
-
-
   // Handle pendant design change
   const handlePendantDesignChange = useCallback(
     (pendantIds, design) => {
       // Update cables state in a single operation
       setCables((prev) => {
         const updatedCables = [...prev];
-      
 
         pendantIds.forEach((id) => {
           if (id >= 0) {
             updatedCables[id] = {
-              design:design,
+              design: design,
             };
           }
         });
         return updatedCables;
       });
- 
+
       // This ensures we don't have race conditions between state updates and messaging
-      setTimeout(() => {
-        // Group pendants by design and send system type + messages per design
-        const designToIds = {};
-        pendantIds.forEach((id) => {
-          if (!designToIds[design]) designToIds[design] = [];
-          designToIds[design].push(id);
-        });
-        Object.entries(designToIds).forEach(([design, ids]) => {
-          sendMessagesForDesign(design, ids.length === 1 ? ids[0] : ids);
-        });
-      }, 10); // Slight delay to ensure state is updated first
+
+      // Group pendants by design and send system type + messages per design
+      const designToIds = {};
+      pendantIds.forEach((id) => {
+        if (!designToIds[design]) designToIds[design] = [];
+        designToIds[design].push(id);
+      });
+      Object.entries(designToIds).forEach(([design, ids]) => {
+        sendMessagesForDesign(design, ids.length === 1 ? ids[0] : ids);
+      });
+      // Slight delay to ensure state is updated first
     },
     [config.lightAmount]
   );
@@ -752,12 +759,11 @@ const ConfiguratorLayout = () => {
     const timer = setTimeout(() => {
       setShowPendantLoadingScreen(false);
     }, 500);
-    
+
     return () => clearTimeout(timer);
   }, [handlePendantDesignChange]);
 
-  useEffect(() => {
-  }, [showPendantLoadingScreen]);
+  useEffect(() => {}, [showPendantLoadingScreen]);
   // Handle base type change
   const handleBaseTypeChange = useCallback((baseType) => {
     // Update config state
@@ -820,24 +826,27 @@ const ConfiguratorLayout = () => {
     setActiveStep("systemType");
   }, []);
 
-  const handleConnectorColorChange = useCallback((connectorColor) => {
-    // Send messages for each selected pendant
-    // config.selectedPendants.forEach((idx) => {
-    //   sendMessageToPlayCanvas('cable_' + idx + ':connector_color_' + connectorColor);
-    // });
-    sendMessageToPlayCanvas('connector_color:' + connectorColor);
-    // Update cables state
-    // setCables((prevCables) => {
-    //   let updatedCables = [...prevCables];
-    //   config.selectedPendants.forEach((idx) => {
-    //     updatedCables[idx] = {
-    //       ...updatedCables[idx],
-    //       connectorColor: connectorColor
-    //     };
-    //   });
-    //   return updatedCables;
-    // });
-  }, [config.selectedPendants]);
+  const handleConnectorColorChange = useCallback(
+    (connectorColor) => {
+      // Send messages for each selected pendant
+      // config.selectedPendants.forEach((idx) => {
+      //   sendMessageToPlayCanvas('cable_' + idx + ':connector_color_' + connectorColor);
+      // });
+      sendMessageToPlayCanvas("connector_color:" + connectorColor);
+      // Update cables state
+      // setCables((prevCables) => {
+      //   let updatedCables = [...prevCables];
+      //   config.selectedPendants.forEach((idx) => {
+      //     updatedCables[idx] = {
+      //       ...updatedCables[idx],
+      //       connectorColor: connectorColor
+      //     };
+      //   });
+      //   return updatedCables;
+      // });
+    },
+    [config.selectedPendants]
+  );
 
   // Handle pendant selection
   const handlePendantSelection = useCallback((pendantIds) => {
@@ -848,26 +857,26 @@ const ConfiguratorLayout = () => {
     }));
   }, []);
 
-  const handleSystemBaseDesignChange = useCallback(async (design) => {
-    // Update the system base design in the config
-    setConfig((prev) => ({ ...prev, systemBaseDesign: design }));
-    setCurrentShade(null);
+  const handleSystemBaseDesignChange = useCallback(
+    async (design) => {
+      // Update the system base design in the config
+      setConfig((prev) => ({ ...prev, systemBaseDesign: design }));
+      setCurrentShade(null);
 
-    // Get system assignments with only visible items
-    const systemAssignments = await getSystemAssignments();
-    
-    // Find the system for this design
-    const system = systemAssignments.find((a) => a.design === design);
-    
-    // Check if the system type is chandelier
-    let hasChandelier = false;
-    cables.forEach((cable) => {
-      const system = systemAssignments.find((a) => a.design === cable.design);
-      hasChandelier = system && system.systemType === 'chandelier';
-    })
-    if (hasChandelier) {
-      // For chandelier, only fire message for cable 0
-      setTimeout(async () => {
+      // Get system assignments with only visible items
+      const systemAssignments = await getSystemAssignments();
+
+      // Find the system for this design
+      const system = systemAssignments.find((a) => a.design === design);
+
+      // Check if the system type is chandelier
+      let hasChandelier = false;
+      cables.forEach((cable) => {
+        const system = systemAssignments.find((a) => a.design === cable.design);
+        hasChandelier = system && system.systemType === "chandelier";
+      });
+      if (hasChandelier) {
+        // For chandelier, only fire message for cable 0
         // Update cables design for chandelier
         setCables((prev) => {
           const updatedCables = [...prev];
@@ -882,43 +891,49 @@ const ConfiguratorLayout = () => {
           return updatedCables;
         });
         await sendMessagesForDesign(design, [0, 1, 2]);
-      }, 10);
-    } else {
-      // Send message to PlayCanvas iframe (original logic for non-chandelier systems)
-    
-          // Get the selected cable number(s)
-          const selectedCables =
-            config.selectedPendants && config.selectedPendants.length > 0
-              ? config.selectedPendants
-              : [0]; // Default to cable 0 if none selected
-          // Update all cables in a single state update
-          setCables((prev) => {
-            const updatedCables = [...prev];
+      } else {
+        // Send message to PlayCanvas iframe (original logic for non-chandelier systems)
 
-            // Process each selected cable
-            selectedCables.forEach((cableNo) => {
-              // Update this specific cable
-              if (cableNo >= 0) {
-                updatedCables[cableNo] = {
-                  design: design,
-                };
-              }
-            });
-            return updatedCables;
-          });
+        // Get the selected cable number(s)
+        const selectedCables =
+          config.selectedPendants && config.selectedPendants.length > 0
+            ? config.selectedPendants
+            : [0]; // Default to cable 0 if none selected
+        // Update all cables in a single state update
+        setCables((prev) => {
+          const updatedCables = [...prev];
 
-          // Send messages to iframe
-          const designToIds = {};
-          selectedCables.forEach((id) => {
-            if (!designToIds[design]) designToIds[design] = [];
-            designToIds[design].push(id);
+          // Process each selected cable
+          selectedCables.forEach((cableNo) => {
+            // Update this specific cable
+            if (cableNo >= 0) {
+              updatedCables[cableNo] = {
+                design: design,
+              };
+            }
           });
+          return updatedCables;
+        });
 
-          Object.entries(designToIds).forEach(async ([design, ids]) => {
-           await sendMessagesForDesign(design, ids.length === 1 ? ids[0] : ids);
-          });
-    }
-  }, [config.selectedPendants, config.systemType, config.cableSystemTypes, cables]);
+        // Send messages to iframe
+        const designToIds = {};
+        selectedCables.forEach((id) => {
+          if (!designToIds[design]) designToIds[design] = [];
+          designToIds[design].push(id);
+        });
+
+        Object.entries(designToIds).forEach(async ([design, ids]) => {
+          await sendMessagesForDesign(design, ids.length === 1 ? ids[0] : ids);
+        });
+      }
+    },
+    [
+      config.selectedPendants,
+      config.systemType,
+      config.cableSystemTypes,
+      cables,
+    ]
+  );
 
   // Handle shade selection
 
@@ -963,7 +978,7 @@ const ConfiguratorLayout = () => {
     // Create iframe messages array and UI config using utility functions
     const iframeMessagesArray = createIframeMessagesArray(config, configToSave);
     const uiConfig = createUIConfig(config, cables, configToSave);
-    
+
     // Prepare data for API
     const apiPayload = createAPIPayload(
       configName,
@@ -1154,7 +1169,6 @@ const ConfiguratorLayout = () => {
           cableMessage={cableMessage}
           showPendantLoadingScreen={showPendantLoadingScreen}
           setShowPendantLoadingScreen={setShowPendantLoadingScreen}
-
           onStartTour={() => {
             if (typeof window !== "undefined" && window.startConfiguratorTour) {
               window.startConfiguratorTour();
@@ -1207,12 +1221,11 @@ const ConfiguratorLayout = () => {
               setCableMessage={setCableMessage}
               sendMessageToPlayCanvas={sendMessageToPlayCanvas}
               setShowPendantLoadingScreen={setShowPendantLoadingScreen}
-
             />
           )}
 
           {/* Configuration panel for individual configuration */}
-       
+
           {/* {configuringType && (
             <ConfigPanel
               configuringType={configuringType}

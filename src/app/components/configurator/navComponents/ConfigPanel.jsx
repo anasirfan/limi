@@ -92,6 +92,43 @@ export const ConfigPanel = ({
   const [ballAssignments, setBallAssignments] = useState([]);
   const [universalAssignments, setUniversalAssignments] = useState([]);
   const [chandelierAssignments, setChandelierAssignments] = useState([]);
+  // Loading state for pendant selection
+  const [pendantLoading, setPendantLoading] = useState(false);
+  // Ref to store the timeout ID for cleanup
+  const loadingTimeoutRef = useRef(null);
+  
+  // Function to turn off pendant loading
+  const turnOffPendantLoading = () => {
+    setPendantLoading(false);
+    // Clear the timeout if it exists
+    if (loadingTimeoutRef.current) {
+      clearTimeout(loadingTimeoutRef.current);
+      loadingTimeoutRef.current = null;
+    }
+  };
+
+  // Listen for messages from iframe to turn off loading
+  useEffect(() => {
+    const handleMessage = (event) => {
+      // Check if the message is from the expected iframe origin
+      if (event.data === "loadingOff") {
+        console.log("Received loadingOff message from iframe");
+        turnOffPendantLoading();
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+    
+    // Cleanup event listener on component unmount
+    return () => {
+      window.removeEventListener("message", handleMessage);
+      // Also clear any pending timeout
+      if (loadingTimeoutRef.current) {
+        clearTimeout(loadingTimeoutRef.current);
+      }
+    };
+  }, []);
+
   // Function to load all configurator data (only visible items)
   const loadConfiguratorData = async () => {
     try {
@@ -771,6 +808,11 @@ export const ConfigPanel = ({
             : "/images/configOptions/chandelier.png",
       }));
       config.onItemSelect = (itemId) => {
+        // Show loading overlay
+        setPendantLoading(true);
+        
+        // Loading will only be turned off when "loadingOff" message is received from iframe
+        
         // Call the chandelier type change handler
         if (handleChandelierTypeChange) {
           handleChandelierTypeChange(itemId);
@@ -828,6 +870,11 @@ export const ConfigPanel = ({
         baseNumber: pendant.baseNumber,
       }));
       config.onItemSelect = (itemId) => {
+        // Show loading overlay
+        setPendantLoading(true);
+        
+        // Loading will only be turned off when "loadingOff" message is received from iframe
+        
         setCurrentDesign(itemId);
     
         // Use all selected pendants if available, otherwise fall back to just the first one
@@ -960,6 +1007,11 @@ export const ConfigPanel = ({
           });
 
           config.onItemSelect = (itemId) => {
+            // Show loading overlay
+            setPendantLoading(true);
+            
+            // Loading will only be turned off when "loadingOff" message is received from iframe
+            
             setCurrentDesign(itemId);
             const selectedBase = config.items.find(
               (item) => item.id === itemId
@@ -1063,6 +1115,11 @@ export const ConfigPanel = ({
             } else {
               // Show base options
               config.onItemSelect = (itemId) => {
+                // Show loading overlay
+                setPendantLoading(true);
+                
+                // Loading will only be turned off when "loadingOff" message is received from iframe
+                
                 setCurrentDesign(itemId);
                 const selectedBase = config.items.find(
                   (item) => item.id === itemId
@@ -1105,6 +1162,11 @@ export const ConfigPanel = ({
           } else {
             // Show base options
             config.onItemSelect = (itemId) => {
+              // Show loading overlay
+              setPendantLoading(true);
+              
+              // Loading will only be turned off when "loadingOff" message is received from iframe
+              
               setCurrentDesign(itemId);
               const selectedBase = config.items.find(
                 (item) => item.id === itemId
@@ -1246,8 +1308,26 @@ export const ConfigPanel = ({
   const isMobileView = className.includes("max-sm:static");
 
   return (
-    <div className="flex justify-center items-center w-full">
-      <motion.div
+    <>
+      {/* Full-Screen Loading Overlay for Pendant Selection */}
+      {pendantLoading && (
+        <motion.div
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[9999] flex flex-col items-center justify-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <div className="flex flex-col items-center space-y-4">
+            {/* Spinning loader */}
+            <div className="w-12 h-12 border-3 border-gray-600 border-t-emerald-500 rounded-full animate-spin"></div>
+            <p className="text-white text-lg font-medium font-['Amenti']">Loading pendant...</p>
+          </div>
+        </motion.div>
+      )}
+      
+      <div className="flex justify-center items-center w-full">
+        <motion.div
         className={`fixed h-[150px] sm:absolute bottom-0 sm:bottom-1 -translate-x-1/2 bg-black/95 sm:backdrop-blur-sm border border-gray-700 rounded-t-lg sm:rounded-lg z-40 w-full sm:max-w-[320px] md:max-w-[400px] lg:max-w-[480px] xl:max-w-[540px] sm:w-[80vw] md:w-[55vw] lg:w-[40vw] xl:w-[24vw] max-h-[60vh] sm:max-h-[30vh] shadow-lg overflow-hidden ${className}`}
         initial={
           isMobileView ? { y: "100%", opacity: 0 } : { y: 30, opacity: 0 }
@@ -1461,5 +1541,6 @@ export const ConfigPanel = ({
         </div>
       </motion.div>
     </div>
+    </>
   );
 };

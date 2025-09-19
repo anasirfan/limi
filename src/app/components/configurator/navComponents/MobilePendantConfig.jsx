@@ -31,6 +31,9 @@ const MobilePendantConfig = ({
   onSystemTypeSelection,
   onChandelierTypeChange,
   onClose,
+  // Loading functionality
+  setPendantLoading,
+  turnOffPendantLoading,
 }) => {
   const [activeTab, setActiveTab] = useState("design");
   const [configuringSystemType, setConfiguringSystemType] = useState(null);
@@ -119,6 +122,13 @@ const MobilePendantConfig = ({
 
   // Handle pendant design selection
   const handlePendantDesignSelection = (design) => {
+    // Show loading overlay
+    if (setPendantLoading) {
+      setPendantLoading(true);
+    }
+    
+    // Loading will only be turned off when "loadingOff" message is received from iframe
+    
     setCurrentDesign(design);
 
     // Use all selected pendants if available, otherwise fall back to just the first one
@@ -132,8 +142,30 @@ const MobilePendantConfig = ({
 
   // Handle system base design selection
   const handleSystemBaseDesignSelection = (design) => {
+    // Show loading overlay
+    if (setPendantLoading) {
+      setPendantLoading(true);
+    }
+    
+    // Loading will only be turned off when "loadingOff" message is received from iframe
+    
     setCurrentDesign(design);
     onSystemBaseDesignChange(design);
+  };
+
+  // Handle chandelier design selection with loading
+  const handleChandelierDesignSelection = (design) => {
+    // Show loading overlay
+    if (setPendantLoading) {
+      setPendantLoading(true);
+    }
+    
+    // Loading will only be turned off when "loadingOff" message is received from iframe
+    
+    setCurrentDesign(design);
+    if (handleChandelierTypeChange) {
+      handleChandelierTypeChange(design);
+    }
   };
 
   // Subscribe to data refresh events to force re-render
@@ -566,7 +598,7 @@ const MobilePendantConfig = ({
                 <button
                   key={design.design}
                   onClick={() =>
-                    handleChandelierTypeChange(design.design)
+                    handleChandelierDesignSelection(design.design)
                   }
                   className="flex-shrink-0 w-18 transition-all duration-200 text-center text-gray-300 hover:text-white"
                 >
