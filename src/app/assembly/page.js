@@ -56,7 +56,7 @@ const AssemblyPage = () => {
     function handleMessage(event) {
       if (
         typeof event.data === "string" &&
-        event.data.startsWith("app:ready2")
+        event.data.startsWith("loadingOff")
       ) {
         callback(event.data, event);
       }

@@ -58,7 +58,6 @@ export default function Home() {
   const [showSplash, setShowSplash] = useState(true);
   const [showUserSelection, setShowUserSelection] = useState(false);
   const { hideNavFooter, setHideNavFooter } = useHideNavFooter();
-  console.log("hideNavFooterHeader", hideNavFooter);
 
   useEffect(() => {
     // Initialize dynamic hourly theme switcher

@@ -9,6 +9,7 @@ import SectionHeader from "./SectionHeader";
 import FeatureCards from "./FeatureCards";
 import ViewerContainer from "./ViewerContainer";
 import SensorOptionsPanel from "./SensorOptionsPanel";
+import { systemAssignments } from "../../components/configurator/pendantSystemData";
 
 const InteractiveViewer = () => {
   const containerRef = useRef(null);
@@ -38,16 +39,28 @@ const InteractiveViewer = () => {
     let appReady = false;
     let sent = false;
     const messages = [
-      "LimiAi_ZoomEnabled:true",
       "light_type:ceiling",
       "light_amount:3",
-      "base_type:round",
-      "system:ball",
-      "cable_0:system_base_1",
-      "system:bar",
-      "cable_1:system_base_2",
-      "system:ball",
-      "cable_2:system_base_2",
+      "base_color:gold",
+      "cable_0",
+      "bars",
+      "glass_none",
+      "color_gold",
+      "silver_none",
+      "product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/Bar_1756732230450.glb",
+      "cable_1",
+      "bars",
+      "glass_none",
+      "color_gold",
+      "silver_none",
+      "product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/Bar_1756732230450.glb",
+      "cable_2",
+      "bars",
+      "glass_none",
+      "color_gold",
+      "silver_none",
+      "product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/Bar_1756732230450.glb",
+      "allmodelsloaded"
     ];
     function handleAppReady(event) {
       if (
@@ -55,10 +68,10 @@ const InteractiveViewer = () => {
         event.data.startsWith("app:ready1")
       ) {
         setAppReady(true);
-        messages.forEach((message, index) => {
+        messages.forEach((message) => {
           setTimeout(() => {
             sendMessageToPlayCanvas(message);
-          }, index * 100);
+          },);
         });
       }
     }
@@ -151,6 +164,44 @@ const InteractiveViewer = () => {
     }
   };
 
+  const sendMessagesForDesign = (designName, idOrIds) => {
+    const assignment = systemAssignments.find((a) => a.design === designName);
+    if (!assignment) return;
+  
+    // Helper to send all messages for a single id
+    const sendAllMessages = (id) => {
+      if (assignment.systemType === "bar") {
+        sendMessageToPlayCanvas("barextra");
+      }
+      sendMessageToPlayCanvas(`cable_${id}`);
+      sendMessageToPlayCanvas(
+        `glass_${assignment.hasGlass ? "attached" : "none"}`
+      );
+      sendMessageToPlayCanvas(`color_${assignment.hasGold ? "gold" : "none"}`);
+      sendMessageToPlayCanvas(
+        `silver_${assignment.hasSilver ? "attached" : "none"}`
+      );
+      sendMessageToPlayCanvas(`product_${assignment.media?.model?.url}`);
+      sendMessageToPlayCanvas(`${assignment.message}`);
+      if(assignment.systemType === "chandelier") {
+        sendMessageToPlayCanvas(`chandelier_clearance`);
+        sendMessageToPlayCanvas(`height_set`);
+      }
+    };
+  
+    if (Array.isArray(idOrIds)) {
+      idOrIds.forEach((id) => {
+        sendAllMessages(id);
+      });
+      // Fire allmodelsloaded ONCE at the end
+      sendMessageToPlayCanvas("allmodelsloaded");
+    } else {
+      sendAllMessages(idOrIds);
+      // Fire allmodelsloaded after the single id
+      sendMessageToPlayCanvas("allmodelsloaded");
+    }
+  };
+
   const handleHotspotClick = (hotspotId) => {
     trackAssemblyEvent("Hotspot Clicked", hotspotId);
   };
@@ -189,6 +240,7 @@ const InteractiveViewer = () => {
           <SensorOptionsPanel
             showSensorOptions={showSensorOptions}
             sendMessageToPlayCanvas={sendMessageToPlayCanvas}
+            sendMessagesForDesign={sendMessagesForDesign}
             trackAssemblyEvent={trackAssemblyEvent}
             selectedSensor={selectedSensor}
             setSelectedSensor={setSelectedSensor}
