@@ -1,11 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
-  pendantAssignments,
-  barAssignments,
-  ballAssignments,
-  universalAssignments,
-  chandelierAssignments,
+  getPendantAssignments,
+  getBarAssignments,
+  getBallAssignments,
+  getUniversalAssignments,
+  getChandelierAssignments,
   onDataRefresh,
 } from "../pendantSystemData";
 import { FaChevronLeft, FaChevronRight, FaCheck } from "react-icons/fa";
@@ -36,6 +36,28 @@ const MobilePendantConfig = ({
   turnOffPendantLoading,
 }) => {
   const [activeTab, setActiveTab] = useState("design");
+
+  // Assignment state (fetch from API)
+  const [pendantAssignments, setPendantAssignments] = useState([]);
+  const [barAssignments, setBarAssignments] = useState([]);
+  const [ballAssignments, setBallAssignments] = useState([]);
+  const [universalAssignments, setUniversalAssignments] = useState([]);
+  const [chandelierAssignments, setChandelierAssignments] = useState([]);
+
+  // Fetch assignments (same pattern as ConfigPanel)
+  useEffect(() => {
+    const fetchAssignments = async () => {
+      setPendantAssignments(await getPendantAssignments());
+      setBarAssignments(await getBarAssignments());
+      setBallAssignments(await getBallAssignments());
+      setUniversalAssignments(await getUniversalAssignments());
+      setChandelierAssignments(await getChandelierAssignments());
+    };
+    fetchAssignments();
+    // Listen for data refreshes
+    const unsubscribe = onDataRefresh(() => fetchAssignments());
+    return unsubscribe;
+  }, []);
 
   // Visibility checks for assignment arrays
   const hasVisiblePendants = pendantAssignments.some(item => item.isShow === true);
