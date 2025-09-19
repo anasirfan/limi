@@ -6,7 +6,7 @@ const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 // Fetch pendant/system data from API
 const fetchSystemAssignments = async () => {
   try {
-    const response = await fetch("https://dev.api1.limitless-lighting.co.uk/admin/configurator/system", {
+    const response = await fetch("https://api1.limitless-lighting.co.uk/admin/configurator/system", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

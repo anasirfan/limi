@@ -168,7 +168,7 @@ export default function CustomerDashboard({ token }) {
     setPendantLoading(true);
     try {
       const response = await fetch(
-        "https://dev.api1.limitless-lighting.co.uk/admin/configurator/system",
+        "https://api1.limitless-lighting.co.uk/admin/configurator/system",
         {
           method: "GET",
           headers: {
@@ -232,7 +232,7 @@ export default function CustomerDashboard({ token }) {
         console.log(pair[0], pair[1]);
       }
       const response = await fetch(
-        `https://dev.api1.limitless-lighting.co.uk/admin/configurator/system/${id}`,
+        `https://api1.limitless-lighting.co.uk/admin/configurator/system/${id}`,
         {
           method: "PATCH",
           headers: {
@@ -260,7 +260,7 @@ export default function CustomerDashboard({ token }) {
     setPendantSaving(true);
     try {
       const response = await fetch(
-        `https://dev.api1.limitless-lighting.co.uk/admin/configurator/system/${id}`,
+        `https://api1.limitless-lighting.co.uk/admin/configurator/system/${id}`,
         {
           method: "DELETE",
           headers: {
@@ -314,7 +314,7 @@ export default function CustomerDashboard({ token }) {
       }
 
       const response = await fetch(
-        "https://dev.api1.limitless-lighting.co.uk/admin/configurator/system",
+        "https://api1.limitless-lighting.co.uk/admin/configurator/system",
         {
           method: "POST",
           headers: {
