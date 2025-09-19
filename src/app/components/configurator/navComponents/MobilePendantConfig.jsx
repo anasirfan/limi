@@ -36,6 +36,21 @@ const MobilePendantConfig = ({
   turnOffPendantLoading,
 }) => {
   const [activeTab, setActiveTab] = useState("design");
+
+  // Visibility checks for assignment arrays
+  const hasVisiblePendants = pendantAssignments.some(item => item.isShow === true);
+  const hasVisibleBars = barAssignments.some(item => item.isShow === true);
+  const hasVisibleBalls = ballAssignments.some(item => item.isShow === true);
+  const hasVisibleUniversals = universalAssignments.some(item => item.isShow === true);
+  const hasVisibleChandeliers = chandelierAssignments.some(item => item.isShow === true);
+  const anyVisibleAssignments = [
+    ...pendantAssignments,
+    ...barAssignments,
+    ...ballAssignments,
+    ...universalAssignments,
+    ...chandelierAssignments
+  ].some(item => item.isShow === true);
+
   const [configuringSystemType, setConfiguringSystemType] = useState(null);
   const [currentDesign, setCurrentDesign] = useState(null);
   const [showSystemOptions, setShowSystemOptions] = useState(false);
