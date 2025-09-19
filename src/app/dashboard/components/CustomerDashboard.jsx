@@ -48,6 +48,7 @@ import { getSessionDataFromLocalStorage } from "../../utils/slideAnalytics";
 import InvestorDetails from "./InvestorDetails";
 import DashboardNavButton from "./DashboardNavButton";
 import PendantSystemManager from "./PendantSystemManager";
+import { onDataRefresh } from "../../components/configurator/pendantSystemData";
 import DistributorApplications from "./DistributorApplications";
 import ContactFormSubmissions from "./ContactFormSubmissions";
 import CommunitySubscriptions from "./CommunitySubscriptions";
@@ -608,6 +609,17 @@ export default function CustomerDashboard({ token }) {
       fetchPendantSystemData();
     }
   }, [activeTab]);
+
+  // Subscribe to data refresh events for pendant system data
+  useEffect(() => {
+    const unsubscribe = onDataRefresh(async (newData) => {
+      console.log('🔄 CustomerDashboard: Pendant system data refreshed, updating dashboard');
+      // Update the local pendantSystemData state with ALL data - dashboard shows everything
+      setPendantSystemData(newData);
+    });
+
+    return unsubscribe;
+  }, []);
 
   // Filter queries based on search term
   const filteredQueries = queries.filter((query) => {

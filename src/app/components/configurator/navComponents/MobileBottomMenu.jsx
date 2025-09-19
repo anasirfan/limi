@@ -12,6 +12,7 @@ import MobilePendantConfig from './MobilePendantConfig';
 const MobileBottomMenu = ({
   isOpen,
   activeStep,
+  handleChandelierTypeChange,
   onClose,
   // Props for different components
   config,
@@ -126,6 +127,7 @@ const MobileBottomMenu = ({
           <MobilePendantConfig
             pendants={pendants}
             getImageSrc={getImageSrc}
+            handleChandelierTypeChange={handleChandelierTypeChange}
             selectAllPendants={selectAllPendants}
             clearSelections={clearSelections}
             selectedPendants={selectedPendants}

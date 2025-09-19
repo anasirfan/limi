@@ -1,4 +1,4 @@
-import { systemAssignments } from "./pendantSystemData";
+import { getSystemAssignments } from "./pendantSystemData";
 
 // ============================================================================
 // LOCAL STORAGE UTILITIES
@@ -126,7 +126,8 @@ export const sendMessageToPlayCanvas = (message) => {
  * @param {string} designName - The design name
  * @param {number|Array} idOrIds - Single ID or array of IDs
  */
-export const sendMessagesForDesign = (designName, idOrIds) => {
+export const sendMessagesForDesign = async (designName, idOrIds) => {
+  const systemAssignments = await getSystemAssignments();
   const assignment = systemAssignments.find((a) => a.design === designName);
   if (!assignment) return;
 
@@ -144,10 +145,13 @@ export const sendMessagesForDesign = (designName, idOrIds) => {
       `silver_${assignment.hasSilver ? "attached" : "none"}`
     );
     sendMessageToPlayCanvas(`product_${assignment.media?.model?.url}`);
+    
     sendMessageToPlayCanvas(`${assignment.message}`);
     if (assignment.systemType === "chandelier") {
       sendMessageToPlayCanvas(`chandelier_clearance`);
       sendMessageToPlayCanvas(`height_set`);
+    }else{
+      sendMessageToPlayCanvas('unequal_cable');
     }
   };
 
@@ -169,7 +173,8 @@ export const sendMessagesForDesign = (designName, idOrIds) => {
  * @param {string} designName - The design name
  * @param {number} id - The cable ID
  */
-export const sendMessagesForDesignOnReload = (designName, id) => {
+export const sendMessagesForDesignOnReload = async (designName, id) => {
+  const systemAssignments = await getSystemAssignments();
   const assignment = systemAssignments.find((a) => a.design === designName);
   if (!assignment) return;
   // Helper to send all messages for a single id
@@ -191,7 +196,11 @@ export const sendMessagesForDesignOnReload = (designName, id) => {
     if (assignment.systemType === "chandelier") {
       sendMessageToPlayCanvas(`chandelier_clearance`);
       sendMessageToPlayCanvas(`height_set`);
+    }else{
+      sendMessageToPlayCanvas('unequal_cable');
     }
+
+    sendMessageToPlayCanvas(`allmodelsloaded`);
   };
   sendAllMessages(id);
 };

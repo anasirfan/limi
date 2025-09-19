@@ -3,12 +3,13 @@ import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { useSelector, useDispatch } from "react-redux";
 import {
-  pendantAssignments,
-  systemAssignments,
-  barAssignments,
-  ballAssignments,
-  universalAssignments,
-  chandelierAssignments,
+  getSystemAssignments,
+  getPendantAssignments,
+  getBarAssignments,
+  getBallAssignments,
+  getUniversalAssignments,
+  getChandelierAssignments,
+  onDataRefresh,
 } from "../pendantSystemData";
 import {
   FaHeart,
@@ -81,6 +82,61 @@ export const ConfigPanel = ({
   const [currentDesign, setCurrentDesign] = useState(null);
   // Internal state for selected cable size (for immediate UI feedback)
   const [localSelectedCableSize, setLocalSelectedCableSize] = useState(1);
+  // Force re-render when data changes
+  const [dataRefreshTrigger, setDataRefreshTrigger] = useState(0);
+  
+  // State for async data - only visible items (isShow: true)
+  const [pendantAssignments, setPendantAssignments] = useState([]);
+  const [systemAssignments, setSystemAssignments] = useState([]);
+  const [barAssignments, setBarAssignments] = useState([]);
+  const [ballAssignments, setBallAssignments] = useState([]);
+  const [universalAssignments, setUniversalAssignments] = useState([]);
+  const [chandelierAssignments, setChandelierAssignments] = useState([]);
+  // Function to load all configurator data (only visible items)
+  const loadConfiguratorData = async () => {
+    try {
+      console.log('🔄 ConfigPanel: Loading configurator data (visible items only)');
+      const [
+        systemData,
+        pendantData,
+        barData,
+        ballData,
+        universalData,
+        chandelierData
+      ] = await Promise.all([
+        getSystemAssignments(),
+        getPendantAssignments(),
+        getBarAssignments(),
+        getBallAssignments(),
+        getUniversalAssignments(),
+        getChandelierAssignments()
+      ]);
+      
+      setSystemAssignments(systemData);
+      setPendantAssignments(pendantData);
+      setBarAssignments(barData);
+      setBallAssignments(ballData);
+      setUniversalAssignments(universalData);
+      setChandelierAssignments(chandelierData);
+      
+      console.log('🔄 ConfigPanel: Data loaded successfully', {
+        systemItems: systemData.length,
+        pendantItems: pendantData.length,
+        barItems: barData.length,
+        ballItems: ballData.length,
+        universalItems: universalData.length,
+        chandelierItems: chandelierData.length
+      });
+      
+    } catch (error) {
+      console.error('Error loading configurator data:', error);
+    }
+  };
+
+  // Load data on component mount
+  useEffect(() => {
+    loadConfiguratorData();
+  }, []);
 
   const syncWishlistWithAPI = async (wishlistArray) => {
     const token = localStorage.getItem("limiToken");
@@ -122,6 +178,18 @@ export const ConfigPanel = ({
       setLocalSelectedCableSize(selectedCableSize);
     }
   }, [configuringType, selectedPendants, selectedLocation, cables]);
+
+  // Subscribe to data refresh events to reload configurator data
+  useEffect(() => {
+    const unsubscribe = onDataRefresh((newData) => {
+      console.log('🔄 ConfigPanel: Data refreshed, reloading configurator data');
+      setDataRefreshTrigger(prev => prev + 1);
+      // Reload all configurator data to get only visible items
+      loadConfiguratorData();
+    });
+
+    return unsubscribe;
+  }, []);
 
   // Track navigation state for breadcrumb
   const [navState, setNavState] = useState({
@@ -761,12 +829,15 @@ export const ConfigPanel = ({
       }));
       config.onItemSelect = (itemId) => {
         setCurrentDesign(itemId);
+    
         // Use all selected pendants if available, otherwise fall back to just the first one
         const pendantsToUpdate =
           selectedPendants && selectedPendants.length > 0
             ? selectedPendants
             : [selectedLocation];
         onPendantDesignChange(pendantsToUpdate, itemId);
+        console.log("pendantsToUpdate",pendantsToUpdate);
+        console.log("itemId",itemId);
         // Always hide and clear shade panel for pendants
         setShowShades(false);
         setAvailableShades([]);
