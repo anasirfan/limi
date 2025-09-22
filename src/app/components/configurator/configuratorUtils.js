@@ -175,9 +175,13 @@ export const sendMessageToPlayCanvas = (message) => {
  * @param {string} designName - The design name
  * @param {number|Array} idOrIds - Single ID or array of IDs
  */
+let wasChandelier = false;
 export const sendMessagesForDesign = (designName, idOrIds) => {
   const assignment = findSystemAssignmentByDesign(designName);
   if (!assignment) return;
+
+  // Track previous systemType to control message sending
+
 
   // Helper to send all messages for a single id
   const sendAllMessages = (id) => {
@@ -193,13 +197,21 @@ export const sendMessagesForDesign = (designName, idOrIds) => {
       `silver_${assignment.hasSilver ? "attached" : "none"}`
     );
     sendMessageToPlayCanvas(`product_${assignment.media?.model?.url}`);
-    
     sendMessageToPlayCanvas(`${assignment.message}`);
+
+    // Updated logic for chandelier/unequal_cable
     if (assignment.systemType === "chandelier") {
       sendMessageToPlayCanvas(`chandelier_clearance`);
       sendMessageToPlayCanvas(`height_set`);
+      wasChandelier = true;
+      console.log("wasChandelier", wasChandelier);
     }else{
-      sendMessageToPlayCanvas('unequal_cable');
+      console.log("wasChandelierrrr",wasChandelier);
+      if (wasChandelier) {
+        sendMessageToPlayCanvas('unequal_cable');
+        wasChandelier = false;
+      console.log("wasChandelier", wasChandelier);
+    }
     }
   };
 

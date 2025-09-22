@@ -731,9 +731,12 @@ const ConfiguratorLayout = () => {
   const handlePendantDesignChange = useCallback(
     (pendantIds, design) => {
       // Update cables state in a single operation
+      if (pendantIds.length == null) {
+        pendantIds = [0];
+      };
+    
       setCables((prev) => {
         const updatedCables = [...prev];
-
         pendantIds.forEach((id) => {
           if (id >= 0) {
             updatedCables[id] = {
