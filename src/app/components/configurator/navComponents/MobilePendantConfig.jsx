@@ -60,18 +60,24 @@ const MobilePendantConfig = ({
   }, []);
 
   // Visibility checks for assignment arrays
-  const hasVisiblePendants = pendantAssignments.some(item => item.isShow === true);
-  const hasVisibleBars = barAssignments.some(item => item.isShow === true);
-  const hasVisibleBalls = ballAssignments.some(item => item.isShow === true);
-  const hasVisibleUniversals = universalAssignments.some(item => item.isShow === true);
-  const hasVisibleChandeliers = chandelierAssignments.some(item => item.isShow === true);
+  const hasVisiblePendants = pendantAssignments.some(
+    (item) => item.isShow === true
+  );
+  const hasVisibleBars = barAssignments.some((item) => item.isShow === true);
+  const hasVisibleBalls = ballAssignments.some((item) => item.isShow === true);
+  const hasVisibleUniversals = universalAssignments.some(
+    (item) => item.isShow === true
+  );
+  const hasVisibleChandeliers = chandelierAssignments.some(
+    (item) => item.isShow === true
+  );
   const anyVisibleAssignments = [
     ...pendantAssignments,
     ...barAssignments,
     ...ballAssignments,
     ...universalAssignments,
-    ...chandelierAssignments
-  ].some(item => item.isShow === true);
+    ...chandelierAssignments,
+  ].some((item) => item.isShow === true);
 
   const [configuringSystemType, setConfiguringSystemType] = useState(null);
   const [currentDesign, setCurrentDesign] = useState(null);
@@ -112,7 +118,7 @@ const MobilePendantConfig = ({
       setConfiguringSystemType(null);
       // Send Nobars message for chandelier like in ConfigPanel
       if (sendMessageToPlayCanvas) {
-        sendMessageToPlayCanvas("Nobars");
+        // sendMessageToPlayCanvas("Nobars");
       }
     }
 
@@ -133,13 +139,26 @@ const MobilePendantConfig = ({
 
     // Fire specific messages for each system type (same logic as ConfigPanel)
     if (systemType === "universal") {
-      sendMessageToPlayCanvas("Nobars");
+      // sendMessageToPlayCanvas("Nobars");
     } else if (systemType === "ball") {
-      sendMessageToPlayCanvas("Nobars");
+      // sendMessageToPlayCanvas("Nobars");
     } else if (systemType === "bar") {
       // Fire the PlayCanvas messages when bar is selected
-      selectedPendants.forEach((id) => {
-        sendMessageToPlayCanvas(`cable_${id}`);
+
+      if (selectedPendants.length > 0) {
+        selectedPendants.forEach((id) => {
+          sendMessageToPlayCanvas(`cable_${id}`);
+          sendMessageToPlayCanvas("bars");
+          sendMessageToPlayCanvas("glass_none");
+          sendMessageToPlayCanvas("color_gold");
+          sendMessageToPlayCanvas("silver_none");
+          sendMessageToPlayCanvas(
+            "product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/Bar_1756732230450.glb"
+          );
+          sendMessageToPlayCanvas("allmodelsloaded");
+        });
+      } else {
+        sendMessageToPlayCanvas(`cable_0`);
         sendMessageToPlayCanvas("bars");
         sendMessageToPlayCanvas("glass_none");
         sendMessageToPlayCanvas("color_gold");
@@ -147,8 +166,8 @@ const MobilePendantConfig = ({
         sendMessageToPlayCanvas(
           "product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/Bar_1756732230450.glb"
         );
-      });
-      sendMessageToPlayCanvas("allmodelsloaded");
+        sendMessageToPlayCanvas("allmodelsloaded");
+      }
     }
 
     // Call the parent handler
@@ -163,9 +182,9 @@ const MobilePendantConfig = ({
     if (setPendantLoading) {
       setPendantLoading(true);
     }
-    
+
     // Loading will only be turned off when "loadingOff" message is received from iframe
-    
+
     setCurrentDesign(design);
 
     // Use all selected pendants if available, otherwise fall back to just the first one
@@ -183,9 +202,9 @@ const MobilePendantConfig = ({
     if (setPendantLoading) {
       setPendantLoading(true);
     }
-    
+
     // Loading will only be turned off when "loadingOff" message is received from iframe
-    
+
     setCurrentDesign(design);
     onSystemBaseDesignChange(design);
   };
@@ -196,9 +215,9 @@ const MobilePendantConfig = ({
     if (setPendantLoading) {
       setPendantLoading(true);
     }
-    
+
     // Loading will only be turned off when "loadingOff" message is received from iframe
-    
+
     setCurrentDesign(design);
     if (handleChandelierTypeChange) {
       handleChandelierTypeChange(design);
@@ -208,8 +227,8 @@ const MobilePendantConfig = ({
   // Subscribe to data refresh events to force re-render
   useEffect(() => {
     const unsubscribe = onDataRefresh((newData) => {
-      console.log(' MobilePendantConfig: Data refreshed, forcing re-render');
-      setDataRefreshTrigger(prev => prev + 1);
+      console.log(" MobilePendantConfig: Data refreshed, forcing re-render");
+      setDataRefreshTrigger((prev) => prev + 1);
     });
 
     return unsubscribe;
@@ -314,20 +333,27 @@ const MobilePendantConfig = ({
     // If no configuration type selected
     if (!localConfiguringType) {
       // Check chandelier conditions from localStorage like ConfigPanel
-      const parentConfig = typeof window !== "undefined"
-        ? JSON.parse(localStorage.getItem("lightConfig") || "{}")
-        : {};
-      
+      const parentConfig =
+        typeof window !== "undefined"
+          ? JSON.parse(localStorage.getItem("lightConfig") || "{}")
+          : {};
+
       // Show chandelier option when lightAmount is 3 and lightType is ceiling
-      const showChandelier = parentConfig.lightAmount === 3 && 
-        (parentConfig.lightType === "ceiling" || parentConfig.lightType === "rectangular");
+      const showChandelier =
+        parentConfig.lightAmount === 3 &&
+        (parentConfig.lightType === "ceiling" ||
+          parentConfig.lightType === "rectangular");
 
       return (
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <div className="text-white text-sm">Configuration Type</div>
           </div>
-          <div className={`flex justify-center ${showChandelier ? 'gap-4' : 'gap-6'}`}>
+          <div
+            className={`flex justify-center ${
+              showChandelier ? "gap-4" : "gap-6"
+            }`}
+          >
             <button
               onClick={() => handleConfigTypeSelection("pendant")}
               className="flex flex-col w-16 transition-all duration-200 justify-center items-center text-gray-300 hover:text-white"
@@ -362,7 +388,9 @@ const MobilePendantConfig = ({
                   alt="Chandelier"
                   className="w-14 h-14"
                 />
-                <div className="text-white text-xs font-medium mt-1">Chandelier</div>
+                <div className="text-white text-xs font-medium mt-1">
+                  Chandelier
+                </div>
               </button>
             )}
           </div>
@@ -491,7 +519,9 @@ const MobilePendantConfig = ({
                   alt="Universal"
                   className="w-14 h-14"
                 />
-                <div className="text-white text-xs font-medium mt-1">Universal</div>
+                <div className="text-white text-xs font-medium mt-1">
+                  Universal
+                </div>
               </button>
             </div>
           </div>
@@ -586,13 +616,14 @@ const MobilePendantConfig = ({
     // If chandelier configuration selected, show chandelier designs
     if (localConfiguringType === "chandelier") {
       // Get parent config to check baseType like in ConfigPanel
-      const parentConfig = typeof window !== "undefined"
-        ? JSON.parse(localStorage.getItem("lightConfig") || "{}")
-        : {};
-      
+      const parentConfig =
+        typeof window !== "undefined"
+          ? JSON.parse(localStorage.getItem("lightConfig") || "{}")
+          : {};
+
       // Filter chandelierAssignments based on baseType
-      const filteredChandeliers = chandelierAssignments.filter((chand) => 
-        chand.baseType === parentConfig.baseType
+      const filteredChandeliers = chandelierAssignments.filter(
+        (chand) => chand.baseType === parentConfig.baseType
       );
 
       return (
@@ -634,9 +665,7 @@ const MobilePendantConfig = ({
               {filteredChandeliers.map((design) => (
                 <button
                   key={design.design}
-                  onClick={() =>
-                    handleChandelierDesignSelection(design.design)
-                  }
+                  onClick={() => handleChandelierDesignSelection(design.design)}
                   className="flex-shrink-0 w-18 transition-all duration-200 text-center text-gray-300 hover:text-white"
                 >
                   <div className="relative">

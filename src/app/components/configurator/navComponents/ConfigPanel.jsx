@@ -741,13 +741,13 @@ export const ConfigPanel = ({
         // Fire messages for configuration type selection
         if (sendMessageToPlayCanvas) {
           if (itemId === "pendant") {
-            sendMessageToPlayCanvas("Nobars");
+            // sendMessageToPlayCanvas("Nobars");
           }
           //  else if (itemId === "system") {
           //   sendMessageToPlayCanvas("Nobars");
           // } 
           else if (itemId === "chandelier") {
-            sendMessageToPlayCanvas("Nobars");
+            // sendMessageToPlayCanvas("Nobars");
           }
         }
         // Reset system type state when selecting system
@@ -914,9 +914,9 @@ export const ConfigPanel = ({
           // Fire specific messages for each system type
 
           if (systemType === "universal") {
-            sendMessageToPlayCanvas("Nobars");
+            // sendMessageToPlayCanvas("Nobars");
           } else if (systemType === "ball") {
-            sendMessageToPlayCanvas("Nobars");
+            // sendMessageToPlayCanvas("Nobars");
           } 
           
           else if (systemType === "bar") {

@@ -187,6 +187,8 @@ export const sendMessagesForDesign = (designName, idOrIds) => {
   const sendAllMessages = (id) => {
     if (assignment.systemType === "bar") {
       sendMessageToPlayCanvas("barextra");
+    }else{
+      sendMessageToPlayCanvas("Nobars");
     }
     sendMessageToPlayCanvas(`cable_${id}`);
     sendMessageToPlayCanvas(
