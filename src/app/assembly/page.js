@@ -8,6 +8,9 @@ import Lenis from "@studio-freight/lenis";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import Script from "next/script";
+import { FaBars, FaTimes } from "react-icons/fa";
+import Link from "next/link";
+import Image from "next/image";
 
 // Import components
 import Hero from "./components/Hero";
@@ -32,8 +35,8 @@ if (typeof window !== "undefined") {
 
 const AssemblyPage = () => {
   const [mounted, setMounted] = useState(false);
-  const [loading, setLoading] = useState(true);
   const [currentTheme, setCurrentTheme] = useState("light");
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const containerRef = useRef(null);
   const { scrollYProgress } = useScroll();
 
@@ -66,21 +69,19 @@ const AssemblyPage = () => {
     return () => window.removeEventListener("message", handleMessage);
   };
 
-  const handleLoadingComplete = () => {
-    setLoading(false);
-  };
 
   useEffect(() => {
     setMounted(true);
 
+
     // Listen for app:ready message
     const cleanup = listenForAppReady((data, event) => {
       console.log("Received app:ready message:", data);
-      handleLoadingComplete();
       // sendMessageToPlayCanvas('view all');
     });
 
     return () => {
+      clearTimeout(timeout);
       cleanup();
     };
   }, []);
@@ -161,97 +162,162 @@ const AssemblyPage = () => {
         strategy="afterInteractive"
       />
 
+      {/* Floating Glassmorphism Header */}
+      <motion.header
+        className="fixed top-8 inset-x-0 max-w-5xl mx-auto z-[9999]"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.3 }}
+      >
+        <div className="bg-black/20 backdrop-blur-md border border-white/20 rounded-full px-6 py-3 shadow-2xl">
+          <div className="flex items-center justify-between">
+            {/* Logo */}
+            <div className="flex items-center">
+              <Image
+                src="/images/svgLogos/__Icon_Wordmark_Inverted.svg"
+                alt="LIMI Logo"
+                width={120}
+                height={40}
+                className="h-8 w-auto"
+              />
+            </div>
+
+            {/* Desktop Navigation */}
+            <nav className="hidden md:flex items-center space-x-8">
+  <Link href="#hero" className="text-white/90 hover:text-white transition-colors duration-200 font-medium">
+    Home
+  </Link>
+  <Link href="#assembly" className="text-white/90 hover:text-white transition-colors duration-200 font-medium">
+    Assembly
+  </Link>
+  <Link href="#sensors" className="text-white/90 hover:text-white transition-colors duration-200 font-medium">
+    Sensors
+  </Link>
+  <Link href="#configurator" className="text-white/90 hover:text-white transition-colors duration-200 font-medium">
+    Configurator
+  </Link>
+  <Link href="#benefits" className="text-white/90 hover:text-white transition-colors duration-200 font-medium">
+    Benefits
+  </Link>
+
+</nav>
+
+            {/* Desktop Auth Buttons */}
+            <div className="hidden md:flex items-center space-x-4">
+             
+              <Link href="/get-started">
+                <motion.button
+                  className="bg-white text-black px-6 py-2 rounded-full font-semibold hover:bg-gray-100 transition-all duration-200 shadow-lg"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Get Started
+                </motion.button>
+              </Link>
+            </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              className="md:hidden text-white p-2"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              {isMenuOpen ? <FaTimes size={20} /> : <FaBars size={20} />}
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Menu Overlay */}
+        {isMenuOpen && (
+          <motion.div
+            className="md:hidden absolute top-full right-0 mt-2 w-64 bg-black/30 backdrop-blur-md border border-white/20 rounded-2xl p-6 shadow-2xl"
+            initial={{ opacity: 0, x: 20, scale: 0.95 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: 20, scale: 0.95 }}
+            transition={{ duration: 0.2 }}
+          >
+            <nav className="flex flex-col space-y-4">
+  <Link 
+    href="#hero" 
+    className="text-white/90 hover:text-white transition-colors duration-200 font-medium py-2"
+    onClick={() => setIsMenuOpen(false)}
+  >
+    Home
+  </Link>
+  <Link 
+    href="#assembly" 
+    className="text-white/90 hover:text-white transition-colors duration-200 font-medium py-2"
+    onClick={() => setIsMenuOpen(false)}
+  >
+    Assembly
+  </Link>
+  <Link 
+    href="#sensors" 
+    className="text-white/90 hover:text-white transition-colors duration-200 font-medium py-2"
+    onClick={() => setIsMenuOpen(false)}
+  >
+    Sensors
+  </Link>
+  <Link 
+    href="#configurator" 
+    className="text-white/90 hover:text-white transition-colors duration-200 font-medium py-2"
+    onClick={() => setIsMenuOpen(false)}
+  >
+    Configurator
+  </Link>
+  <Link 
+    href="#benefits" 
+    className="text-white/90 hover:text-white transition-colors duration-200 font-medium py-2"
+    onClick={() => setIsMenuOpen(false)}
+  >
+    Benefits
+  </Link>
+  <Link 
+    href="#contact" 
+    className="text-white/90 hover:text-white transition-colors duration-200 font-medium py-2"
+    onClick={() => setIsMenuOpen(false)}
+  >
+    Contact
+  </Link>
+  
+  <hr className="border-white/20 my-4" />
+              
+              <Link 
+                href="/login" 
+                className="text-white/90 hover:text-white transition-colors duration-200 font-medium py-2"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Login
+              </Link>
+              <Link href="/get-started" onClick={() => setIsMenuOpen(false)}>
+                <button className="w-full bg-white text-black px-6 py-3 rounded-full font-semibold hover:bg-gray-100 transition-all duration-200 shadow-lg">
+                  Get Started
+                </button>
+              </Link>
+            </nav>
+          </motion.div>
+        )}
+      </motion.header>
+
       <motion.div
         ref={containerRef}
         className="relative overflow-hidden"
         style={{ backgroundColor }}
       >
-        {/* Loading Screen Overlay */}
-        {loading && (
-          <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#f3ebe2]">
-            <div className="relative mb-16">
-              {/* Animated circles */}
-              <div className="w-48 h-48">
-                <svg
-                  className="w-full h-full animate-spin"
-                  viewBox="0 0 200 200"
-                >
-                  <circle
-                    cx="100"
-                    cy="100"
-                    r="95"
-                    fill="none"
-                    stroke="#54bb74"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeDasharray="20 10"
-                    opacity="0.8"
-                  />
-                  <circle
-                    cx="100"
-                    cy="100"
-                    r="75"
-                    fill="none"
-                    stroke="#54bb74"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeDasharray="15 5"
-                    opacity="0.6"
-                  />
-                  <circle
-                    cx="100"
-                    cy="100"
-                    r="55"
-                    fill="none"
-                    stroke="#54bb74"
-                    strokeWidth="1"
-                    strokeLinecap="round"
-                    strokeDasharray="10 5"
-                    opacity="0.4"
-                  />
-                </svg>
-              </div>
-
-              {/* LIMI text in center */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <h1 className="text-6xl font-light tracking-wider text-[#54bb74] animate-pulse">
-                  LIMI
-                </h1>
-              </div>
-            </div>
-
-            {/* Loading text */}
-            <p className="text-lg font-light text-[#292929] animate-pulse">
-              Waiting for application to load...
-            </p>
-
-            {/* Pulsing dots */}
-            <div className="flex space-x-2 mt-8">
-              <div
-                className="w-3 h-3 bg-[#54bb74] rounded-full animate-bounce"
-                style={{ animationDelay: "0ms" }}
-              ></div>
-              <div
-                className="w-3 h-3 bg-[#54bb74] rounded-full animate-bounce"
-                style={{ animationDelay: "150ms" }}
-              ></div>
-              <div
-                className="w-3 h-3 bg-[#54bb74] rounded-full animate-bounce"
-                style={{ animationDelay: "300ms" }}
-              ></div>
-            </div>
-          </div>
-        )}
+    
         {/* Hero Section */}
-        <Hero onVisible={() => trackAssemblyEvent("Hero Section")} />
+        <section id="hero">
+  <Hero onVisible={() => trackAssemblyEvent("Hero Section")} />
+</section>
         
         {/* Assembly Scroll Storytelling */}
-        <AssemblyScroll
-          onVisible={() => trackAssemblyEvent("Assembly Scroll Storytelling")}
-        />
+        <section id="assembly">
+  <AssemblyScroll
+    onVisible={() => trackAssemblyEvent("Assembly Scroll Storytelling")}
+  />
+</section>
 
         {/* Sensor Modules Grid */}
-        <section className="relative bg-white py-20 px-4">
+        <section id="sensors" className="relative bg-white py-20 px-4">
           <div className="max-w-7xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 50 }}
@@ -295,30 +361,23 @@ const AssemblyPage = () => {
         </section>
 
         {/* Interactive 3D Viewer */}
-        <InteractiveViewer
-          onVisible={() => trackAssemblyEvent("Interactive 3D Viewer")}
-        />
+        <section id="configurator">
+  <InteractiveViewer
+    onVisible={() => trackAssemblyEvent("Configurator Interactive Viewer")}
+  />
+</section>
 
         {/* Benefits Timeline */}
-        <BenefitTimeline
-          onVisible={() => trackAssemblyEvent("Benefits Timeline")}
-        />
+        <section id="benefits">
+  <BenefitTimeline
+    onVisible={() => trackAssemblyEvent("Benefits Timeline")}
+  />
+</section>
 
         {/* CTA Section */}
         <CTA onVisible={() => trackAssemblyEvent("CTA Section")} />
 
-        {/* Floating Theme Indicator */}
-        <div className="fixed top-4 right-4 z-50">
-          <div
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-500 ${
-              currentTheme === "light"
-                ? "bg-white/20 text-[#292929] backdrop-blur-md"
-                : "bg-black/20 text-white backdrop-blur-md"
-            }`}
-          >
-            {/* {currentTheme === 'light' ? '☀️ Light Mode' : '🌙 Dark Mode'} */}
-          </div>
-        </div>
+  
       </motion.div>
     </>
   );

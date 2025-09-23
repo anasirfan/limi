@@ -891,6 +891,7 @@ const ConfiguratorLayout = () => {
             config.selectedPendants && config.selectedPendants.length > 0
               ? config.selectedPendants
               : [0]; // Default to cable 0 if none selected
+
           // Update all cables in a single state update
           setCables((prev) => {
             const updatedCables = [...prev];

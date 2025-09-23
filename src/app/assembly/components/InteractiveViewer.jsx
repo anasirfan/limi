@@ -60,7 +60,10 @@ const InteractiveViewer = () => {
       "color_gold",
       "silver_none",
       "product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/Bar_1756732230450.glb",
-      "allmodelsloaded"
+      "allmodelsloaded",
+      "lighting:on",
+      "brightness:100",
+      "colorTemperature:4600",
     ];
     function handleAppReady(event) {
       if (
@@ -71,7 +74,7 @@ const InteractiveViewer = () => {
         messages.forEach((message) => {
           setTimeout(() => {
             sendMessageToPlayCanvas(message);
-          },);
+          });
         });
       }
     }
@@ -167,7 +170,7 @@ const InteractiveViewer = () => {
   const sendMessagesForDesign = (designName, idOrIds) => {
     const assignment = systemAssignments.find((a) => a.design === designName);
     if (!assignment) return;
-  
+
     // Helper to send all messages for a single id
     const sendAllMessages = (id) => {
       if (assignment.systemType === "bar") {
@@ -183,12 +186,12 @@ const InteractiveViewer = () => {
       );
       sendMessageToPlayCanvas(`product_${assignment.media?.model?.url}`);
       sendMessageToPlayCanvas(`${assignment.message}`);
-      if(assignment.systemType === "chandelier") {
+      if (assignment.systemType === "chandelier") {
         sendMessageToPlayCanvas(`chandelier_clearance`);
         sendMessageToPlayCanvas(`height_set`);
       }
     };
-  
+
     if (Array.isArray(idOrIds)) {
       idOrIds.forEach((id) => {
         sendAllMessages(id);

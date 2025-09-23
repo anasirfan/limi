@@ -150,6 +150,10 @@
   --gray-100: #e9eaec;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   color: var(--foreground);
   background: var(--background);

@@ -5,75 +5,48 @@ import { PaperShader } from '@paper-design/shaders';
 
 const backgroundOptions = [
   {
-    id: 'aurora-fluid-glow',
-    name: 'Aurora Fluid Glow',
-    description: 'A full-screen fluid aurora effect, where glowing teal and emerald ribbons flow like liquid energy with Northern Lights vibes.',
+    id: 'metaballs-ultra-light',
+    name: 'Metaballs Ultra Light',
+    description: 'Ultra-lightweight single metaball with maximum performance for smooth experience.',
     config: {
-      type: 'auroraFluid',
-      colors: ['#0AB6BC', '#54bb74', '#93cfa2'],
-      animation: 'glow',
-      intensity: 0.9,
-      speed: 0.2
+      type: 'shader',
+      shaderType: 'Metaballs',
+      baseLayer: {
+        component: 'Metaballs',
+        props: {
+          color: '#8A2BE2',
+          speed: 0.05,
+          count: 2,
+          size: 0.5,
+          quality: 'low',
+          resolution: 0.25,
+          fps: 30
+        }
+      },
+      overlayLayer: null // Remove overlay for maximum performance
     }
   },
   {
-    id: 'aurora-crimson-glow',
-    name: 'Aurora Crimson Glow',
-    description: 'Fiery crimson and orange aurora ribbons dancing with deep red undertones, creating a warm sunset-like atmosphere.',
+    id: 'metaballs-static',
+    name: 'Metaballs Static',
+    description: 'Nearly static metaballs with minimal animation for best performance on low-end devices.',
     config: {
-      type: 'auroraCrimson',
-      colors: ['#DC2626', '#F97316', '#FEF3C7'],
-      animation: 'glow',
-      intensity: 0.8,
-      speed: 0.25
-    }
-  },
-  {
-    id: 'aurora-purple-storm',
-    name: 'Aurora Purple Storm',
-    description: 'Electric purple and violet streams with magenta highlights, creating an intense cosmic storm effect.',
-    config: {
-      type: 'auroraPurple',
-      colors: ['#7C3AED', '#C084FC', '#F3E8FF'],
-      animation: 'storm',
-      intensity: 1.0,
-      speed: 0.3
-    }
-  },
-  {
-    id: 'aurora-golden-waves',
-    name: 'Aurora Golden Waves',
-    description: 'Luxurious golden and amber waves flowing with warm yellow highlights, resembling liquid gold.',
-    config: {
-      type: 'auroraGolden',
-      colors: ['#F59E0B', '#FCD34D', '#FEF3C7'],
-      animation: 'waves',
-      intensity: 0.7,
-      speed: 0.15
-    }
-  },
-  {
-    id: 'aurora-ice-blue',
-    name: 'Aurora Ice Blue',
-    description: 'Cool ice blue and cyan ribbons with crystalline white highlights, creating a frozen arctic atmosphere.',
-    config: {
-      type: 'auroraIce',
-      colors: ['#0EA5E9', '#67E8F9', '#F0F9FF'],
-      animation: 'ice',
-      intensity: 0.6,
-      speed: 0.18
-    }
-  },
-  {
-    id: 'aurora-rainbow-spectrum',
-    name: 'Aurora Rainbow Spectrum',
-    description: 'Multi-colored aurora displaying the full spectrum from deep purples to vibrant greens and blues.',
-    config: {
-      type: 'auroraRainbow',
-      colors: ['#8B5CF6', '#10B981', '#3B82F6', '#F59E0B', '#EF4444'],
-      animation: 'spectrum',
-      intensity: 0.9,
-      speed: 0.22
+      type: 'shader',
+      shaderType: 'Metaballs',
+      baseLayer: {
+        component: 'Metaballs',
+        props: {
+          color: '#7B61FF',
+          speed: 0.02,
+          count: 1,
+          size: 0.4,
+          quality: 'low',
+          resolution: 0.2,
+          fps: 15,
+          paused: false
+        }
+      },
+      overlayLayer: null // No overlay layer
     }
   }
 ];

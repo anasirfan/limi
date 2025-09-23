@@ -88,6 +88,8 @@ const nextConfig = {
       'mixkit.imgix.net',
       'dev.api1.limitless-lighting.co.uk',
       'dev.api.limitless-lighting.co.uk',
+      'api1.limitless-lighting.co.uk',
+      'api.limitless-lighting.co.uk',
     ],
     remotePatterns: [
       {
