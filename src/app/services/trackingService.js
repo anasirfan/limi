@@ -148,7 +148,7 @@ const getIpInfo = async () => {
           return parsedCache;
         }
       } catch (e) {
-        console.warn('Error parsing cached IP info:', e);
+        // console.warn('Error parsing cached IP info:', e);
       }
     }
     
@@ -194,7 +194,7 @@ const getIpInfo = async () => {
           };
         }
       } catch (err) {
-        console.warn('ipinfo.io request failed:', err);
+        // console.warn('ipinfo.io request failed:', err);
       }
     }
     
@@ -224,7 +224,7 @@ const getIpInfo = async () => {
     
     return ipInfo;
   } catch (error) {
-    console.error('Error fetching IP info:', error);
+    // console.error('Error fetching IP info:', error);
     // Return fallback values
     return { 
       ip: '127.0.0.1', 
@@ -269,7 +269,7 @@ const tryRestoreSession = () => {
       localStorage.setItem('trackingDataSent', 'false');
     }
   } catch (error) {
-    console.error('❌ ERROR RESTORING SESSION:', error);
+    // console.error('❌ ERROR RESTORING SESSION:', error);
     // If there's an error, create a new session
     sessionId = generateSessionId();
     totalSessionDuration = 0;
@@ -296,7 +296,7 @@ const saveSessionData = () => {
     // Reset the start time for the next duration calculation
     startTime = Date.now();
   } catch (error) {
-    console.error('❌ ERROR SAVING SESSION DATA:', error);
+    // console.error('❌ ERROR SAVING SESSION DATA:', error);
   }
 };
 

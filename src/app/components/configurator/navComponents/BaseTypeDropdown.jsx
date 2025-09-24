@@ -24,7 +24,6 @@ export const BaseTypeDropdown = ({ config, onBaseTypeChange, setActiveStep, setO
             key={type}
             className={`flex flex-col items-center ${config.baseType === type ? 'text-emerald-500' : 'text-gray-300 hover:text-white'}`}
             onClick={() => {
-              console.log(`🖱️ User clicked on base type: ${type}`);
               
               // If tour is active, call tour selection handler
               if (tourActive && onTourSelection) {

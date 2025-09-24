@@ -30,9 +30,6 @@ const BaseColorPanel = ({
 
     useEffect(() => {
       const cleanup = listenForConnectorColorMessages((data, event) => {
-        // handle wallbaseColor message here
-        console.log('[ConfigPanel] Received connectorColor message:', data,event.data);
-        // Example: open a modal, update config, etc.
         setActiveTab('connector');
       });
       return cleanup;
@@ -50,7 +47,6 @@ const BaseColorPanel = ({
   }, [currentConnectorColor]);
 
   const handleBaseColorSelect = (color) => {
-    console.log(`🖱️ User clicked on base color: ${color}`);
     
     // If tour is active, call tour selection handler
     if (tourActive && onTourSelection) {

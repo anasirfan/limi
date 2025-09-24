@@ -26,7 +26,6 @@ const fetchSystemAssignments = async () => {
     
     return formattedData;
   } catch (error) {
-    console.error("Error fetching pendant/system data from API:", error);
     throw error; // Only use API data, do not fallback
   }
 };

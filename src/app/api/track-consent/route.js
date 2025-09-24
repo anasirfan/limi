@@ -53,12 +53,11 @@ async function handleTrackingData(request, method) {
       { status: 200 }
     );
   } catch (error) {
-    console.error('Error processing tracking data:', error);
     
     // Return error response
     return NextResponse.json(
       { success: false, message: 'Error processing tracking data' },
-      { status: 500 }
+      { status: 500}
     );
   }
 }

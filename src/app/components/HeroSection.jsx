@@ -184,8 +184,6 @@ function HeroSection() {
                   if (sectionRef.current) {
                     sectionRef.current.addEventListener('click', () => {
                       videoRef.current.play()
-                        .then(() => console.log('Video started after user interaction'))
-                        .catch(e => console.error('Still cannot play video:', e));
                     }, { once: true });
                   }
                 });

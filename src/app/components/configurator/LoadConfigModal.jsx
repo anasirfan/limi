@@ -54,7 +54,6 @@ export const LoadConfigModal = ({
       const data = await response.json();
       setConfigurations(data);
     } catch (err) {
-      console.error('Error fetching configurations:', err);
       setError('Failed to load configurations. Please try again.');
     } finally {
       setIsLoading(false);
@@ -75,7 +74,6 @@ export const LoadConfigModal = ({
       onLoad(configData);
       onClose();
     } catch (err) {
-      console.error('Error loading configuration:', err);
       setError('Failed to load the selected configuration. Please try again.');
     }
   };

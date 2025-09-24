@@ -74,7 +74,6 @@ export async function GET(request) {
         }
       }
     } catch (error) {
-      console.error('Secondary IP API failed:', error);
     }
     
     // Add a validation URL for manual checking
@@ -122,7 +121,6 @@ export async function GET(request) {
             return NextResponse.json(responseData, { status: 200 });
           }
         } catch (geoError) {
-          console.error('Geolocation API failed:', geoError);
         }
         
         // If geolocation fails, return just the IP
@@ -135,7 +133,6 @@ export async function GET(request) {
         return NextResponse.json(fallbackData, { status: 200 });
       }
     } catch (error) {
-      console.error('Fallback IP API failed:', error);
     }
     
     // If all APIs fail, return fallback data
@@ -148,7 +145,6 @@ export async function GET(request) {
     return NextResponse.json(ultimateFallbackData, { status: 200 });
     
   } catch (error) {
-    console.error('Error in IP info proxy:', error);
     
     // Return fallback data on error
     return NextResponse.json({

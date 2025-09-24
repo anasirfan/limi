@@ -98,7 +98,6 @@ export default function AccountSettings({ user, onUserUpdate }) {
       localStorage.setItem("limiUser", JSON.stringify(userData));
       return userData;
     } catch (error) {
-      console.error("Error fetching user data:", error);
       return null;
     }
   };
@@ -195,7 +194,6 @@ export default function AccountSettings({ user, onUserUpdate }) {
 
       setEditMode(false);
     } catch (error) {
-      console.error("Error updating profile:", error);
       setSaveError(
         error.message || "Failed to update profile. Please try again."
       );
@@ -318,7 +316,6 @@ export default function AccountSettings({ user, onUserUpdate }) {
       setUploadSuccess(true);
       setTimeout(() => setUploadSuccess(false), 3000);
     } catch (error) {
-      console.error("Error uploading profile picture:", error);
       setUploadError(
         error.message ||
           "Failed to upload profile picture. Please try again or contact support."
@@ -389,7 +386,6 @@ export default function AccountSettings({ user, onUserUpdate }) {
       setProfilePicChanged((prev) => !prev); // Trigger profile reload
       setTimeout(() => setUploadSuccess(false), 3000);
     } catch (error) {
-      console.error("Error removing profile picture:", error);
       setUploadError(error.message || "Failed to remove profile picture");
     }
   };
@@ -949,7 +945,6 @@ export default function AccountSettings({ user, onUserUpdate }) {
         setEditingAddressId(null);
         
       } catch (error) {
-        console.error("Error updating address:", error);
         setSaveError(error.message || "Failed to update address. Please try again.");
       }
     };

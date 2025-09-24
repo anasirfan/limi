@@ -45,12 +45,7 @@ const CubeAnimation = dynamic(() => import('./components/CubeAnimation'), {
  * @returns {JSX.Element} The main app component.
  */
 export default function Home() {
-  const [isMobile, setIsMobile] = useState(false);
-  const [userType, setUserType] = useState(null);
-  const [showSplash, setShowSplash] = useState(true);
-  const [showUserSelection, setShowUserSelection] = useState(false);
   const { hideNavFooter, setHideNavFooter } = useHideNavFooter();
-  console.log("hideNavFooterHeader", hideNavFooter);
 
   useEffect(() => {
     // Check if device is mobile

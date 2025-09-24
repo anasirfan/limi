@@ -448,9 +448,6 @@ export const PreviewControls = ({
                       const message = newState ? "lighting:on" : "lighting:off";
                       const iframe = document.getElementById("playcanvas-app");
                       if (iframe && iframe.contentWindow) {
-                        console.log(
-                          `Sending message to PlayCanvas: ${message}`
-                        );
                         iframe.contentWindow.postMessage(message, "*");
                         if (newState) {
                           // Also send brightness and color temperature when turning ON
@@ -511,7 +508,6 @@ export const PreviewControls = ({
                     const message = newState ? "lighting:on" : "lighting:off";
                     const iframe = document.getElementById("playcanvas-app");
                     if (iframe && iframe.contentWindow) {
-                      console.log(`Sending message to PlayCanvas: ${message}`);
                       iframe.contentWindow.postMessage(message, "*");
                       if (newState) {
                         // Also send brightness and color temperature when turning ON

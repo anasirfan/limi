@@ -148,7 +148,6 @@ export default function UploadModal({ onClose }) {
         }));
 
       } catch (error) {
-        console.error('Upload failed:', error);
       }
     }
 

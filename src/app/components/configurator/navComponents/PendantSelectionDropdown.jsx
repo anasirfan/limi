@@ -148,7 +148,6 @@ export const PendantSelectionDropdown = ({
           {cables && cables.length > 0
             ? cables.map(
                 (cable, index) => (
-                  console.log("cablesss", cable.design),
                   (
                     <motion.div
                       key={index}

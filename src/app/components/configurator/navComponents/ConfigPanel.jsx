@@ -60,11 +60,6 @@ export const ConfigPanel = ({
 
   useEffect(() => {
     if (showConfigurationTypeSelector) {
-      console.log(
-        "showConfigurationTypeSelector",
-        showConfigurationTypeSelector
-      );
-      // Reset all state when panel is opened
       setCurrentDesign(null);
       setAvailableShades([]);
       setLocalSelectedShade(null);
@@ -744,8 +739,6 @@ export const ConfigPanel = ({
             } else if (systemType === "ball") {
               sendMessageToPlayCanvas("Nobars");
             } else if (systemType === "bar") {
-              console.log("Firing bar messages for selectedPendants:", selectedPendants);
-              // Fire the PlayCanvas messages when bar is selected
               selectedPendants.forEach((id) => {
                 sendMessageToPlayCanvas(`cable_${id}`);
                 sendMessageToPlayCanvas("bars");
@@ -988,7 +981,6 @@ export const ConfigPanel = ({
   // Custom breadcrumb navigation handler
   const handleBreadcrumbNavigation = (id) => {
     // Use the navigation state to determine where to go
-    console.log("handleBreadcrumbNavigation", id);
     if (id === "home") {
       // Reset to configuration type selection (first level)
       // Clear all system-related state

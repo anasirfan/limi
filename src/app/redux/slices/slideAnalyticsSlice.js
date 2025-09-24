@@ -11,11 +11,6 @@ const slideAnalyticsSlice = createSlice({
   reducers: {
     saveSlideSession: (state, action) => {
       const { customerId, sessionId, startedAt, endedAt, slideTimes } = action.payload;
-      console.log("customerId",customerId);
-      console.log("sessionId",sessionId);
-      console.log("startedAt",startedAt);
-      console.log("endedAt",endedAt);
-      console.log("slidesssss",slideTimes);
       if (!customerId) return;
       if (!state[customerId]) state[customerId] = [];
       // If sessionId exists, update, else push
@@ -25,12 +20,9 @@ const slideAnalyticsSlice = createSlice({
       } else {
         state[customerId].push({ sessionId, startedAt, endedAt, slideTimes });
       }
-      console.log("eeee",state);
     },
   },
 });
-console.log("slideAnalyticsSlice",slideAnalyticsSlice);
 export const { saveSlideSession } = slideAnalyticsSlice.actions;
-console.log("saveSlideSession",saveSlideSession);
 
 export default slideAnalyticsSlice.reducer;

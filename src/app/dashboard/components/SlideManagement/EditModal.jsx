@@ -97,7 +97,6 @@ const EditModal = ({
       setUploadSuccess(true);
       setHasUnsavedChanges(true);
     } catch (error) {
-      console.error('Error uploading file:', error);
       setUploadError(error.message || 'Failed to upload file. Please try again or contact support.');
     } finally {
       setUploadingMedia(false);

@@ -274,7 +274,6 @@ const MediaLibraryModal = ({ isOpen, onClose, onSelect, mediaType = 'all' }) => 
       
       setMediaItems(processedItems);
     } catch (err) {
-      console.error('Error fetching media items:', err);
       setError('Failed to load media items. Please try again.');
     } finally {
       setIsLoading(false);

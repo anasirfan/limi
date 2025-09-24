@@ -184,11 +184,9 @@ export default function CustomerDashboard({ token }) {
       }
 
       const data = await response.json();
-      console.log("pendantData", data)
       const formattedData = Array.isArray(data) ? data : data?.data || [];
       setPendantSystemData(formattedData);
     } catch (error) {
-      console.error("Error fetching pendant/system data:", error);
       setPendantSystemData([]);
     } finally {
       setPendantLoading(false);
@@ -197,8 +195,6 @@ export default function CustomerDashboard({ token }) {
 
   // Update pendant/system data
   const updatePendantSystem = async (id, changedFields) => {
-    console.log("id", id);
-    console.log("changedFields", changedFields);
     setPendantSaving(true);
     try {
       const formData = new FormData();
@@ -228,10 +224,6 @@ export default function CustomerDashboard({ token }) {
           }
         }
       });
-      console.log("formData entries:");
-      for (let pair of formData.entries()) {
-        console.log(pair[0], pair[1]);
-      }
       const response = await fetch(
         `https://dev.api1.limitless-lighting.co.uk/admin/configurator/system/${id}`,
         {
@@ -257,7 +249,6 @@ export default function CustomerDashboard({ token }) {
   };
 
   const deletePendantSystem = async (id) => {
-    console.log("id",id)
     setPendantSaving(true);
     try {
       const response = await fetch(

@@ -37,7 +37,6 @@ export async function POST(request) {
       const result = await response.json();
       return NextResponse.json(result, { status: 200 });
     } catch (error) {
-      console.error('Error forwarding tracking update to backend:', error);
       
       // Return error response
       return NextResponse.json(
@@ -46,7 +45,6 @@ export async function POST(request) {
       );
     }
   } catch (error) {
-    console.error('Error processing tracking update:', error);
     
     // Return error response
     return NextResponse.json(

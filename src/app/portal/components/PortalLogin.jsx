@@ -38,7 +38,6 @@ export default function PortalLogin({ onLogin }) {
   const [forgotPassword, setForgotPassword] = useState(false);
   const [resetStep, setResetStep] = useState(1);
   const [resetEmail, setResetEmail] = useState("");
-  const [resetOtp, setResetOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showNewPassword, setShowNewPassword] = useState(false);
@@ -56,7 +55,6 @@ export default function PortalLogin({ onLogin }) {
     const urlToken = urlParams.get('token');
     if (urlToken) {
       setHideNavFooter(false);
-      console.log("hideNavFooterPortal", hideNavFooter);
       setIsFetchingByToken(true);
       dispatch(fetchUserByToken(urlToken)).finally(() => {
         setIsFetchingByToken(false);
@@ -144,7 +142,6 @@ export default function PortalLogin({ onLogin }) {
       setResetStep(2);
       setResetStatus({ type: "success", message: "OTP sent to your email" });
     } catch (error) {
-      console.log(error);
       setResetStatus({
         type: "error",
         message: error.message || "Failed to send OTP",
@@ -1167,7 +1164,7 @@ export default function PortalLogin({ onLogin }) {
                 target="_blank"
                 className="flex items-center gap-1 text-emerald hover:underline"
               >
-                <FaApple />
+                <FaApple   />
                 <span>App Store</span>
               </Link>
               <Link 

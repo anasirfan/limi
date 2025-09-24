@@ -130,7 +130,6 @@ const PlayCanvasViewer = ({
           // }
         }
       } catch (error) {
-        console.error("Error during iframe load:", error);
         setHasError(true);
         setIsLoading(false);
       }

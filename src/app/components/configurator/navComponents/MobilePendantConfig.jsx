@@ -115,7 +115,6 @@ const MobilePendantConfig = ({
 
   // Handle system base design selection
   const handleSystemBaseDesignSelection = (design) => {
-    console.log("designnn",design);
     setCurrentDesign(design);
     onSystemBaseDesignChange(design);
   };

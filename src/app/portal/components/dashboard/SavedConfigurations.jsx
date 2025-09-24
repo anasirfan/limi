@@ -138,15 +138,12 @@ export default function SavedConfigurations({ isARView = false }) {
 
       const data = await response.json();
       setConfigurations(data);
-      console.log("configurations", configurations);
     } catch (error) {
-      console.error("Error fetching configurations:", error);
       toast.error("Failed to load configurations");
     } finally {
       setIsLoading(false);
     }
   };
-  console.log("configurations", configurations);
 
   // Delete configuration
   const deleteConfiguration = async (configId) => {
@@ -176,7 +173,6 @@ export default function SavedConfigurations({ isARView = false }) {
 
         toast.success("Configuration deleted successfully");
       } catch (error) {
-        console.error("Error deleting configuration:", error);
         toast.error("Failed to delete configuration");
       } finally {
         setIsDeleting(false);
@@ -237,7 +233,6 @@ export default function SavedConfigurations({ isARView = false }) {
   // View configuration details
   const viewConfigDetails = (config) => {
     setSelectedConfig(config);
-    console.log("configthumb", config.thumbnail.url);
   };
 
   // Close configuration details

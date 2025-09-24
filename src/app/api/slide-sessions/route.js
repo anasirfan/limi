@@ -37,14 +37,7 @@ export async function POST(request) {
     });
     */
 
-    // For now, just log the data (remove in production)
-    console.log('Received slide session data:', {
-      sessionId: sessionData.sessionId,
-      customerId: sessionData.customerId,
-      duration: sessionData.durationSeconds,
-      slidesCount: sessionData.slides?.length || 0,
-      eventsCount: sessionData.engagementEvents?.length || 0
-    });
+  
 
     return NextResponse.json({
       success: true,
@@ -53,7 +46,6 @@ export async function POST(request) {
     });
 
   } catch (error) {
-    console.error('Error saving session data:', error);
     return NextResponse.json(
       { error: 'Failed to save session data' },
       { status: 500 }
@@ -96,7 +88,6 @@ export async function GET(request) {
     return NextResponse.json(sessions);
 
   } catch (error) {
-    console.error('Error fetching session data:', error);
     return NextResponse.json(
       { error: 'Failed to fetch session data' },
       { status: 500 }

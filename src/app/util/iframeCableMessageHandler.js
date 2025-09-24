@@ -104,11 +104,8 @@ export function listenForWallbaseColorMessages(callback) {
 }
 export function listenForConnectorColorMessages(callback) {
   function handleMessage(event) {
-    // console.log('[connectorColor] BEFORE FILTER:', event.data);
     if (typeof event.data === "string" && event.data === "connectorColor") {
-      // console.log('[connectorColor] MATCHED connectorColor:', event.data);
       callback(event.data, event);
-      // console.log('[connectorColor] AFTER CALLBACK:', event.data);
     }
   }
   window.addEventListener("message", handleMessage);

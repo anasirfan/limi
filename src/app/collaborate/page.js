@@ -112,7 +112,6 @@ export default function Collaborate() {
         privacyPolicy: false
       });
     } catch (error) {
-      console.error('Error submitting form:', error);
       setSubmitStatus({ 
         success: false, 
         message: error.message || 'An error occurred while submitting the form. Please try again.' 

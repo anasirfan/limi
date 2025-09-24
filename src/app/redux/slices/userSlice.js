@@ -8,7 +8,6 @@ const loadUserFromStorage = () => {
     const savedUser = localStorage.getItem('limiUser');
     return savedUser ? JSON.parse(savedUser) : null;
   } catch (error) {
-    console.error('Error loading user from localStorage:', error);
     return null;
   }
 };
@@ -20,7 +19,6 @@ const saveUserToStorage = (user) => {
   try {
     localStorage.setItem('limiUser', JSON.stringify(user));
   } catch (error) {
-    console.error('Error saving user to localStorage:', error);
   }
 };
 
@@ -396,7 +394,6 @@ export const userSlice = createSlice({
           // Save to localStorage
           saveUserToStorage(state.user);
         } catch (error) {
-          console.error('Error updating avatar in Redux:', error);
           // The error will be caught by the error boundary or can be handled by the component
           throw error; // Re-throw to allow error handling in components
         }

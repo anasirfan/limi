@@ -139,12 +139,6 @@ const VerticalNavBar = ({
   }, []);
   useEffect(() => {
     const cleanup = listenForConnectorColorMessages((data, event) => {
-      // handle wallbaseColor message here
-      console.log(
-        "[ConfigPanel] Received connectorColor message:",
-        data,
-        event.data
-      );
       // Example: open a modal, update config, etc.
       setOpenDropdown("baseColor");
       setActiveStep("baseColor");
@@ -323,15 +317,7 @@ const VerticalNavBar = ({
   };
 
   const executeTourStep = async (step) => {
-    console.log(`🎬 Executing interactive tour step: ${step.id}`);
-    console.log(`🎬 Current tour state before execution:`, tourState);
-
-    // Check if tour is still active before proceeding
-    if (!tourState.isActive) {
-      console.log("❌ Tour is not active, skipping step execution");
-      return;
-    }
-
+ 
     // Schedule step execution for next tick to avoid setState during render
     setTimeout(() => {
       performStepExecution(step);
@@ -339,18 +325,11 @@ const VerticalNavBar = ({
   };
 
   const performStepExecution = async (step) => {
-    console.log(`🎭 Performing step execution for: ${step.id}`);
-
-    // Skip PlayCanvas message firing - let user actions trigger them
-    // if (step.playCanvasMessages) {
-    //   firePlayCanvasMessages(step.playCanvasMessages);
-    // }
 
     // 1. Open the dropdown/section for user interaction
     await performInteractiveStepAction(step);
 
     // 2. Set state to wait for user interaction
-    console.log("⏳ Setting tour to wait for user interaction");
     setTourState((prev) => ({
       ...prev,
       waitingForUser: true,
@@ -359,49 +338,41 @@ const VerticalNavBar = ({
   };
 
   const performInteractiveStepAction = async (step) => {
-    console.log(`🎭 Performing interactive action for step: ${step.id}`);
 
     switch (step.id) {
       case "lightType":
-        console.log("🔧 Opening lightType dropdown");
         setActiveStep("lightType");
         setOpenDropdown("lightType");
         break;
 
       case "baseType":
-        console.log("🔧 Opening baseType dropdown");
         setActiveStep("baseType");
         setOpenDropdown("baseType");
         break;
 
       case "baseColor":
-        console.log("🔧 Opening baseColor dropdown");
         setActiveStep("baseColor");
         setOpenDropdown("baseColor");
         handleSetActiveTab("base");
         break;
 
       case "lightAmount":
-        console.log("🔧 Opening lightAmount dropdown");
         setActiveStep("lightAmount");
         setOpenDropdown("lightAmount");
         break;
 
       case "pendantSelection":
-        console.log("🔧 Opening pendantSelection dropdown");
         setActiveStep("pendantSelection");
         setOpenDropdown("pendantSelection");
         break;
 
       default:
-        console.log(`❓ Unknown step: ${step.id}`);
         break;
     }
   };
 
   // New function to handle user sub-option selections during tour
   const handleTourSubSelection = (stepId, selectedValue) => {
-    console.log(`🎯 Tour sub-selection: ${stepId} = ${selectedValue}`);
     setUserSelection({ stepId, selectedValue });
     
     // Check if this matches the expected value for current tour step
@@ -410,26 +381,19 @@ const VerticalNavBar = ({
       const expectedValue = currentStep.expectedValue;
       
       if (expectedValue === null || selectedValue === expectedValue) {
-        console.log(`✅ Correct selection made for ${stepId}: ${selectedValue}`);
-        
-        // Mark step as completed and advance to next step
         setTourState((current) => ({
           ...current,
           userCompletedStep: true,
           waitingForUser: false,
         }));
         
-        // Automatically advance to next step when correct selection is made
-        console.log(`🚀 Auto-advancing to next step after correct selection`);
         manualAdvanceToNextStep();
         
         return true;
       } else {
-        console.log(`❌ Incorrect selection for ${stepId}. Expected: ${expectedValue}, Got: ${selectedValue}`);
         
         // During tour, keep dropdown open if wrong selection is made
         if (tourState.isActive && tourState.waitingForUser) {
-          console.log(`🔄 Keeping dropdown open for tour - wrong selection made`);
           // Re-open the dropdown to allow user to try again
           setTimeout(() => {
             setActiveStep(stepId);
@@ -446,11 +410,8 @@ const VerticalNavBar = ({
     if (!tourState.isActive) return;
     
     const nextStep = tourState.currentStep + 1;
-    console.log(`📈 Manually advancing from step ${tourState.currentStep} to step ${nextStep}`);
     
     if (nextStep >= tourSteps.length) {
-      // Tour completed
-      console.log("🎉 Tour completed!");
       setTourState(prev => ({
         ...prev,
         isActive: false,
@@ -477,7 +438,6 @@ const VerticalNavBar = ({
     // Execute the next step properly through performInteractiveStepAction
     const nextTourStep = tourSteps[nextStep];
     if (nextTourStep) {
-      console.log(`🎯 Executing next tour step: ${nextTourStep.id}`);
       setTimeout(() => {
         performInteractiveStepAction(nextTourStep);
       }, 100);
@@ -488,18 +448,11 @@ const VerticalNavBar = ({
     setTourState((prev) => {
       // Don't advance if tour is not active
       if (!prev.isActive) {
-        console.log("❌ Cannot advance - tour is not active");
         return prev;
       }
 
       const nextStep = prev.currentStep + 1;
-      console.log(
-        `📈 Advancing from step ${prev.currentStep} to step ${nextStep}`
-      );
-
       if (nextStep >= tourSteps.length) {
-        // Tour completed
-        console.log("🎉 Interactive tour completed!");
         return {
           ...prev,
           isActive: false,
@@ -519,12 +472,7 @@ const VerticalNavBar = ({
 
       // Execute next step immediately when advancing
       if (tourSteps[nextStep]) {
-        console.log(
-          `🎯 Executing step ${nextStep}: ${tourSteps[nextStep].id}`
-        );
-        setTimeout(() => {
-          executeTourStep(tourSteps[nextStep]);
-        }, 9000);
+        executeTourStep(tourSteps[nextStep]);
       }
 
       return newState;
@@ -532,7 +480,6 @@ const VerticalNavBar = ({
   };
 
   const startInteractiveTour = () => {
-    console.log("🚀 Starting interactive tour...");
     sendMessageToPlayCanvas(`guidedtourstarted`);
     // First, set the tour state to active
     setTourState((prev) => {
@@ -544,7 +491,6 @@ const VerticalNavBar = ({
         waitingForUser: false,
         userCompletedStep: false,
       };
-      console.log("🔄 Setting tour state to:", newState);
       return newState;
     });
 
@@ -552,20 +498,8 @@ const VerticalNavBar = ({
     setTimeout(() => {
       const firstStep = tourSteps[0];
       if (firstStep) {
-        console.log("🎯 Executing first tour step:", firstStep.id);
-
-        // Skip PlayCanvas message firing - let user actions trigger them
-        // if (firstStep.playCanvasMessages) {
-        //   firePlayCanvasMessages(firstStep.playCanvasMessages);
-        // }
-
-        // 1. Open the dropdown
-        console.log("🔧 Opening lightType dropdown");
         setActiveStep("lightType");
         setOpenDropdown("lightType");
-
-        // 2. Set waiting state
-        console.log("⏳ Setting tour to wait for user interaction");
         setTourState((prev) => ({
           ...prev,
           waitingForUser: true,
@@ -590,21 +524,10 @@ const VerticalNavBar = ({
 
   // Add useEffect to monitor user actions during tour
   useEffect(() => {
-    console.log("🔍 Tour State Changed:", {
-      isActive: tourState.isActive,
-      currentStep: tourState.currentStep,
-      waitingForUser: tourState.waitingForUser,
-      userCompletedStep: tourState.userCompletedStep,
-      totalSteps: tourState.totalSteps,
-    });
-
     if (tourState.isActive && tourState.waitingForUser) {
       // Monitor for user selections and check if they match expected values
       const currentStep = tourSteps[tourState.currentStep];
-      if (currentStep) {
-        console.log(`⏳ Waiting for user to complete step: ${currentStep.id}`);
-        console.log(`📋 Step details:`, currentStep);
-      }
+    
     }
   }, [
     tourState.waitingForUser,
@@ -613,18 +536,6 @@ const VerticalNavBar = ({
     tourState.userCompletedStep,
   ]);
 
-  // Monitor configuration 
-  useEffect(() => {
-    if (tourState.isActive) {
-      console.log("🔍 Tour State:", {
-        currentStep: tourState.currentStep,
-        currentTourStep: currentTourStep,
-        userSelection: userSelection,
-        waitingForUser: tourState.waitingForUser,
-        userCompletedStep: tourState.userCompletedStep
-      });
-    }
-  }, [tourState, currentTourStep, userSelection]);
 
   // Effect to check screen size and update on resize
   useEffect(() => {
@@ -656,11 +567,8 @@ const VerticalNavBar = ({
 
   // Handle step click in vertical nav - with tour integration
   const handleStepClick = (stepId) => {
-    console.log("handleStepClick", stepId);
-    
     // If tour is active, just open the dropdown - let sub-selection handle validation
     if (tourState.isActive) {
-      console.log(`🎯 Tour active - Opening dropdown for step: ${stepId}`);
       setActiveStep(stepId);
       setOpenDropdown(stepId);
       return;
@@ -679,7 +587,6 @@ const VerticalNavBar = ({
       }
     }
 
-    console.log("openDropdown", openDropdown);
     // Handle hotspot - on for pendant selection, off for everything else
     if (stepId === "pendantSelection") {
       sendMessageToPlayCanvas(`hotspot:on`);
@@ -906,7 +813,6 @@ const VerticalNavBar = ({
             onClick={(e) => e.stopPropagation()}
             onTouchStart={(e) => e.stopPropagation()}
           >
-            {console.log("in steps", "step id ", steps, "config", config)}
             {/* Render NavButtons with data-tour-step for guided tour */}
             {steps
               .filter((step) => {
@@ -914,13 +820,9 @@ const VerticalNavBar = ({
                   (step.id === "baseType" || step.id === "baseColor") &&
                   config.lightType !== "ceiling"
                 ) {
-                  console.log("working if");
                   return false;
                 }
-                // if ((step.id === 'baseColor') && (config.baseType === 'rectangular')) {
-                //   console.log("working if")
-                //   return false;
-                // }
+             
                 return true;
               })
               .map((step, index) => (

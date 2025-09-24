@@ -75,8 +75,6 @@ export default function CustomerDashboard({ onLogout }) {
             dispatch(updateUser(userData));
           }
         }
-      } catch (error) {
-        console.error("Error loading user data:", error);
       } finally {
         setIsLoading(false);
       }

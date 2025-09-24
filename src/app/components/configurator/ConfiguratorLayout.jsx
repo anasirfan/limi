@@ -58,7 +58,6 @@ const ConfiguratorLayout = () => {
       const item = window.localStorage.getItem(key);
       return item ? JSON.parse(item) : defaultValue;
     } catch (error) {
-      console.error("Error reading from localStorage", error);
       return defaultValue;
     }
   };
@@ -69,7 +68,6 @@ const ConfiguratorLayout = () => {
     try {
       window.localStorage.setItem(key, JSON.stringify(value));
     } catch (error) {
-      console.error("Error writing to localStorage", error);
     }
   };
   // Main configuration state - load from localStorage or use defaults
@@ -127,9 +125,6 @@ const ConfiguratorLayout = () => {
   useEffect(() => {
     // Set up cable message listener
     const cleanup = listenForCableMessages((message, event) => {
-      // Do something with the message, e.g. open UI, update state, etc.
-      console.log("[ConfigPanel] Received cable message:", message, event.data);
-   
       setCableMessage(message);
     });
     return cleanup;
@@ -907,12 +902,8 @@ const ConfiguratorLayout = () => {
     [config.lightAmount]
   );
   useEffect(() => {
-    console.log("State:", showPendantLoadingScreen);  // Will show current state
     setShowPendantLoadingScreen(true);
-    console.log("State after setState - won't show new value yet:", showPendantLoadingScreen);
-    
     const timer = setTimeout(() => {
-      console.log("State after timeout - will show true:", showPendantLoadingScreen);
       setShowPendantLoadingScreen(false);
     }, 500);
     
@@ -920,7 +911,6 @@ const ConfiguratorLayout = () => {
   }, [handlePendantDesignChange]);
 
   useEffect(() => {
-    console.log("State changed to:", showPendantLoadingScreen);
   }, [showPendantLoadingScreen]);
   // Handle base type change
   const handleBaseTypeChange = useCallback((baseType) => {
@@ -1008,8 +998,6 @@ const ConfiguratorLayout = () => {
   }, []);
 
   const handleSystemBaseDesignChange = useCallback((design) => {
-    console.log("designssss",design);
-    // Update the system base design in the config
     setConfig((prev) => ({ ...prev, systemBaseDesign: design }));
     setCurrentShade(null);
 
@@ -1044,7 +1032,6 @@ const ConfiguratorLayout = () => {
         const designToIds = {};
         selectedCables.forEach((id) => {
           const system = systemAssignments.find((a) => a.design === design);
-          console.log("system",system);
           if (!designToIds[system.design]) designToIds[system.design] = [];
           designToIds[system.design].push(id);
         });
@@ -1062,7 +1049,7 @@ const ConfiguratorLayout = () => {
 
   // Helper function to send messages to PlayCanvas iframe
   const sendMessageToPlayCanvas = (message) => {
-    console.log("Sending message to PlayCanvas iframe:", message);
+    // console.log("Sending message to PlayCanvas iframe:", message);
     const iframe = document.getElementById("playcanvas-app");
     if (iframe && iframe.contentWindow) {
       iframe.contentWindow.postMessage(message, "*");
@@ -1167,9 +1154,7 @@ const ConfiguratorLayout = () => {
 
   // Handle final save after user enters configuration name
   const handleFinalSave = async (configName, thumbnail, modelId) => {
-    console.log("modelId", modelId);
     if (!configToSave) {
-      console.error("configToSave is null or undefined");
       return;
     }
 
@@ -1310,7 +1295,6 @@ const ConfiguratorLayout = () => {
       setIsSaveModalOpen(false);
       toast.success("Configuration saved successfully");
     } catch (error) {
-      console.error("Error saving configuration to API:", error);
       // toast.error('Failed to save configuration. Please try again.');
       setIsSaveModalOpen(false);
     }
@@ -1365,7 +1349,6 @@ const ConfiguratorLayout = () => {
           // Just keep the loading state active
         })
         .catch((error) => {
-          console.error("Error loading configuration from URL:", error);
           setIsLoadingFromUrl(false);
           toast.error("Failed to load configuration");
         });

@@ -9,14 +9,8 @@ const LoadingScreen = ({ isVisible, onHide }) => {
   const animationRefs = useRef({});
 
   useEffect(() => {
-    console.log("🔄 LoadingScreen useEffect triggered, isVisible:", isVisible);
     
     if (!loadingRef.current || !diamondRef.current || !bulbRef.current) {
-      console.log("❌ Missing refs:", {
-        loadingRef: !!loadingRef.current,
-        diamondRef: !!diamondRef.current,
-        bulbRef: !!bulbRef.current
-      });
       return;
     }
 
@@ -25,7 +19,6 @@ const LoadingScreen = ({ isVisible, onHide }) => {
     const container = loadingRef.current;
 
     if (isVisible) {
-      console.log("✅ Showing loading screen");
       // Show loading screen
       gsap.set(container, { display: "flex", opacity: 1 });
       
@@ -63,8 +56,6 @@ const LoadingScreen = ({ isVisible, onHide }) => {
         repeat: -1,
       });
     } else {
-      console.log("❌ Hiding loading screen");
-      // Hide loading screen
       if (animationRefs.current.diamondAnimation) {
         animationRefs.current.diamondAnimation.kill();
       }

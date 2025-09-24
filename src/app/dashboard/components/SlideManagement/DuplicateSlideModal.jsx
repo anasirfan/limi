@@ -111,7 +111,6 @@ const DuplicateSlideModal = ({ isOpen, onClose, onDuplicate }) => {
         setError('No slides found for this customer.');
       }
     } catch (err) {
-      console.error('Error fetching customer slides:', err);
       setError('Failed to load slides. Please try again.');
     } finally {
       setLoading(false);

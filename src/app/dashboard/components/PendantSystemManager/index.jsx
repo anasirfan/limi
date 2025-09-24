@@ -30,7 +30,6 @@ export default function PendantSystemManager({
   setNewPendantData,
   deletePendantSystem,
 }) {
-  console.log("pendantSystemData", pendantSystemData);
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -66,7 +65,6 @@ export default function PendantSystemManager({
 
   // Handle edit functionality
   const handleEditItem = (item) => {
-    console.log("Edit item:", item._id);
     setEditingItem(item);
     setShowEditModal(true);
 
