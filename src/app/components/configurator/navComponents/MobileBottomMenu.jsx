@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { LightTypeDropdown } from './LightTypeDropdown';
 import { BaseTypeDropdown } from './BaseTypeDropdown';
@@ -12,6 +12,7 @@ import MobilePendantConfig from './MobilePendantConfig';
 const MobileBottomMenu = ({
   isOpen,
   activeStep,
+  handleChandelierTypeChange,
   onClose,
   // Props for different components
   config,
@@ -29,7 +30,6 @@ const MobileBottomMenu = ({
   pendants,
   setShowConfigurationTypeSelector,
   setLocalConfiguringType,
-  setShowPendantLoadingScreen,
   selectedPendants,
   cables,
   currentDesign,
@@ -56,6 +56,41 @@ const MobileBottomMenu = ({
   sendMessageToPlayCanvas,
   onConfigurationTypeChange
 }) => {
+  // Loading state for pendant/system selection
+  const [pendantLoading, setPendantLoading] = useState(false);
+  // Ref to store the timeout ID for cleanup
+  const loadingTimeoutRef = useRef(null);
+  
+  // Function to turn off pendant loading
+  const turnOffPendantLoading = () => {
+    setPendantLoading(false);
+    // Clear the timeout if it exists
+    if (loadingTimeoutRef.current) {
+      clearTimeout(loadingTimeoutRef.current);
+      loadingTimeoutRef.current = null;
+    }
+  };
+
+  // Listen for messages from iframe to turn off loading
+  useEffect(() => {
+    const handleMessage = (event) => {
+      // Check if the message is from the expected iframe origin
+      if (event.data === "loadingOff") {
+        turnOffPendantLoading();
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+    
+    // Cleanup event listener on component unmount
+    return () => {
+      window.removeEventListener("message", handleMessage);
+      // Also clear any pending timeout
+      if (loadingTimeoutRef.current) {
+        clearTimeout(loadingTimeoutRef.current);
+      }
+    };
+  }, []);
   const getTitle = () => {
     switch (activeStep) {
       case 'lightType': return 'Light Type';
@@ -126,6 +161,10 @@ const MobileBottomMenu = ({
         return (
           <MobilePendantConfig
             pendants={pendants}
+            getImageSrc={getImageSrc}
+            handleChandelierTypeChange={handleChandelierTypeChange}
+            selectAllPendants={selectAllPendants}
+            clearSelections={clearSelections}
             selectedPendants={selectedPendants}
             setSelectedPendants={setSelectedPendants}
             cables={cables}
@@ -138,7 +177,10 @@ const MobileBottomMenu = ({
             localConfiguringType={localConfiguringType}
             setLocalConfiguringType={setLocalConfiguringType}
             onSystemTypeSelection={onSystemTypeSelection}
-            setShowPendantLoadingScreen={setShowPendantLoadingScreen}
+            onClose={onClose}
+            // Loading functionality
+            setPendantLoading={setPendantLoading}
+            turnOffPendantLoading={turnOffPendantLoading}
           />
         );
       
@@ -173,39 +215,54 @@ const MobileBottomMenu = ({
   if (!isOpen) return null;
 
   return (
-    <motion.div
-      initial={{ y: '100%' }}
-      animate={{ y: 0 }}
-      exit={{ y: '100%' }}
-      transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-      className="fixed bottom-0 left-0 right-0 bg-[#1a1a1a] z-[9999] h-30 rounded-t-2xl border-t border-gray-700"
-    >
-      {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-700">
-        <div className="flex-1">
-          <h3 className="text-white font-medium text-lg">
-            {getTitle()}
-          </h3>
-          {/* Selected pendants info */}
-          {/* {activeStep === 'pendantSelection' && selectedPendants && selectedPendants.length > 0 && (
-            <div className="text-emerald-400 text-sm mt-1">
-              Selected: {selectedPendants.map(id => id + 1).join(', ')}
-            </div>
-          )} */}
-        </div>
-        <button
-          onClick={onClose}
-          className="text-gray-400 hover:text-white transition-colors"
+    <>
+      {/* Full-Screen Loading Overlay for Pendant/System Selection */}
+      {pendantLoading && (
+        <motion.div
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[9999] flex flex-col items-center justify-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
         >
-          ✕
-        </button>
-      </div>
+          <div className="flex flex-col items-center space-y-4">
+            {/* Spinning loader */}
+            <div className="w-12 h-12 border-3 border-gray-600 border-t-emerald-500 rounded-full animate-spin"></div>
+            <p className="text-white text-lg font-medium font-['Amenti']">Loading configuration...</p>
+          </div>
+        </motion.div>
+      )}
+      
+      <motion.div
+        initial={{ y: '100%' }}
+        animate={{ y: 0 }}
+        exit={{ y: '100%' }}
+        transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+        className="fixed bottom-0 left-0 right-0 bg-[#1a1a1a] z-[9998] h-30 rounded-t-2xl border-t border-gray-700"
+      >
+      {/* Header - only show for non-pendant selection steps */}
+      {activeStep !== 'pendantSelection' && (
+        <div className="flex items-center justify-between p-4 border-b border-gray-700">
+          <div className="flex-1">
+            <h3 className="text-white font-medium text-lg">
+              {getTitle()}
+            </h3>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-white transition-colors"
+          >
+            ✕
+          </button>
+        </div>
+      )}
       
       {/* Content */}
-      <div className="flex-1 overflow-y-auto p-4">
+      <div className={`flex-1 overflow-y-auto ${activeStep === 'pendantSelection' ? 'p-0' : 'p-4'}`}>
         {renderContent()}
       </div>
-    </motion.div>
+      </motion.div>
+    </>
   );
 };
 

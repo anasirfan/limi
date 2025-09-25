@@ -53,6 +53,7 @@ import MarketingTab from "./MarketingTab";
 import InvestorDetails from "./InvestorDetails";
 import DashboardNavButton from "./DashboardNavButton";
 import PendantSystemManager from "./PendantSystemManager";
+import { onDataRefresh } from "../../components/configurator/pendantSystemData";
 import DistributorApplications from "./DistributorApplications";
 import ContactFormSubmissions from "./ContactFormSubmissions";
 import CommunitySubscriptions from "./CommunitySubscriptions";
@@ -298,6 +299,12 @@ export default function CustomerDashboard({ token }) {
       formData.append("hasGlass", newPendantData.hasGlass ? "true" : "false");
       formData.append("hasGold", newPendantData.hasGold ? "true" : "false");
       formData.append("hasSilver", newPendantData.hasSilver ? "true" : "false");
+      formData.append("isShow", newPendantData.isShow ? "true" : "false");
+      
+      // Add baseType for chandelier configurations
+      if (newPendantData.systemType === "chandelier" && newPendantData.baseType) {
+        formData.append("baseType", newPendantData.baseType);
+      }
 
       const response = await fetch(
         "https://dev.api1.limitless-lighting.co.uk/admin/configurator/system",
@@ -323,7 +330,8 @@ export default function CustomerDashboard({ token }) {
         isSystem: false,
         image: "",
         hasGlass: false,
-        hasColor: false
+        hasColor: false,
+        baseType: "round" // Default: Round for chandelier
       });
       setImageFile(null);
       setImagePreview("");
@@ -593,6 +601,16 @@ export default function CustomerDashboard({ token }) {
       fetchPendantSystemData();
     }
   }, [activeTab]);
+
+  // Subscribe to data refresh events for pendant system data
+  useEffect(() => {
+    const unsubscribe = onDataRefresh(async (newData) => {
+      // Update the local pendantSystemData state with ALL data - dashboard shows everything
+      setPendantSystemData(newData);
+    });
+
+    return unsubscribe;
+  }, []);
 
   // Filter queries based on search term
   const filteredQueries = queries.filter((query) => {

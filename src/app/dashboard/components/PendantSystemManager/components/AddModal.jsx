@@ -1,7 +1,8 @@
 import React from "react";
-import { FaTimes, FaBox, FaSpinner } from "react-icons/fa";
+import { FaTimes, FaBox, FaSpinner, FaToggleOn, FaToggleOff } from "react-icons/fa";
 import CategorySelection from "./CategorySelection";
 import SystemTypeSelection from "./SystemTypeSelection";
+import BaseTypeSelection from "./BaseTypeSelection";
 import ProductDetailsForm from "./ProductDetailsForm";
 import MediaUploadSection from "./MediaUploadSection";
 
@@ -56,7 +57,7 @@ const AddModal = ({
           />
 
           {/* System Type Selection */}
-          {newPendantData.systemType !== "" && (
+          {newPendantData.systemType !== "" && newPendantData.systemType !== "chandelier" && (
             <SystemTypeSelection
               newPendantData={newPendantData}
               handlePendantInputChange={handlePendantInputChange}
@@ -65,23 +66,78 @@ const AddModal = ({
             />
           )}
 
+          {/* Base Type Selection - Only for Chandelier */}
+          {newPendantData.systemType === "chandelier" && (
+            <BaseTypeSelection
+              newPendantData={newPendantData}
+              handlePendantInputChange={handlePendantInputChange}
+            />
+          )}
+
           {/* Product Details */}
-          <ProductDetailsForm
-            newPendantData={newPendantData}
-            handlePendantInputChange={handlePendantInputChange}
-          />
+          {(newPendantData.systemType === "chandelier" || newPendantData.systemType === "" || newPendantData.systemType !== "") && (
+            <ProductDetailsForm
+              newPendantData={newPendantData}
+              handlePendantInputChange={handlePendantInputChange}
+            />
+          )}
 
           {/* Media Uploads */}
-          <MediaUploadSection
-            imagePreview={imagePreview}
-            modelPreview={modelPreview}
-            handleIconImageChange={handleIconImageChange}
-            handle3DModelChange={handle3DModelChange}
-            setImageFile={setImageFile}
-            setImagePreview={setImagePreview}
-            setModelFile={setModelFile}
-            setModelPreview={setModelPreview}
-          />
+          {(newPendantData.systemType === "chandelier" || newPendantData.systemType === "" || newPendantData.systemType !== "") && (
+            <MediaUploadSection
+              imagePreview={imagePreview}
+              modelPreview={modelPreview}
+              handleIconImageChange={handleIconImageChange}
+              handle3DModelChange={handle3DModelChange}
+              setImageFile={setImageFile}
+              setImagePreview={setImagePreview}
+              setModelFile={setModelFile}
+              setModelPreview={setModelPreview}
+            />
+          )}
+
+          {/* Show Toggle */}
+          {(newPendantData.systemType === "chandelier" || newPendantData.systemType === "" || newPendantData.systemType !== "") && (
+            <div className="mb-6">
+              <div className="bg-gradient-to-r from-[#2a2a2a] to-[#333333] rounded-xl p-6 border border-[#3a3a3a]">
+                <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                  <FaToggleOn className="mr-2 text-[#50C878]" />
+                  Display Settings
+                </h3>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <label className="text-white font-medium mb-1 block">
+                      Show in Display
+                    </label>
+                    <p className="text-gray-400 text-sm">
+                      Control whether this item is visible to customers
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handlePendantInputChange({
+                      target: {
+                        name: 'isShow',
+                        value: !newPendantData.isShow
+                      }
+                    })}
+                    className={`p-2 rounded-lg transition-colors duration-200 ${
+                      newPendantData.isShow 
+                        ? 'text-[#50C878] hover:bg-[#50C878]/10' 
+                        : 'text-gray-500 hover:bg-gray-500/10'
+                    }`}
+                    title={newPendantData.isShow ? 'Hide from display' : 'Show in display'}
+                  >
+                    {newPendantData.isShow ? (
+                      <FaToggleOn className="text-3xl" />
+                    ) : (
+                      <FaToggleOff className="text-3xl" />
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Action Buttons */}

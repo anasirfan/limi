@@ -45,6 +45,7 @@ export const SaveConfigModal = ({
       if (cleanup) cleanup();
     };
   }, [fetchingModelId]);
+  // Clean up on modal close (remove any lingering handler)
   useEffect(() => {
     if (isOpen) {
       setFetchingModelId(true);

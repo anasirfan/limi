@@ -3,10 +3,13 @@ import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { useSelector, useDispatch } from "react-redux";
 import {
-  pendantAssignments,
-  barAssignments,
-  ballAssignments,
-  universalAssignments,
+  getSystemAssignments,
+  getPendantAssignments,
+  getBarAssignments,
+  getBallAssignments,
+  getUniversalAssignments,
+  getChandelierAssignments,
+  onDataRefresh,
 } from "../pendantSystemData";
 import {
   FaHeart,
@@ -16,9 +19,9 @@ import {
   FaCheck,
   FaCubes,
 } from "react-icons/fa";
+import { FaArrow } from "react-icons/fa";
 import { Breadcrumb } from "./Breadcrumb";
 import BaseColorPanel from "./BaseColorPanel";
-import { FaArrow } from "react-icons/fa";
 import {
   addToFavorites,
   removeFromFavorites,
@@ -30,9 +33,10 @@ export const ConfigPanel = ({
   configuringSystemType,
   breadcrumbPath,
   showConfigurationTypeSelector,
+  handleChandelierTypeChange,
   onBreadcrumbNavigation,
   onSystemTypeSelection,
-  setShowPendantLoadingScreen,
+  antLoadingScreen,
   selectedLocation,
   selectedPendants,
   cables, // Add cables prop
@@ -43,6 +47,7 @@ export const ConfigPanel = ({
   onShadeSelect,
   currentShade,
   onCableSizeChange, // NEW PROP
+  onChandelierTypeChange, // NEW PROP for chandelier
   onClose,
   className = "", // Add className prop with default empty string
   sendMessageToPlayCanvas, // Add sendMessageToPlayCanvas prop
@@ -72,6 +77,98 @@ export const ConfigPanel = ({
   const [currentDesign, setCurrentDesign] = useState(null);
   // Internal state for selected cable size (for immediate UI feedback)
   const [localSelectedCableSize, setLocalSelectedCableSize] = useState(1);
+  // Force re-render when data changes
+  const [dataRefreshTrigger, setDataRefreshTrigger] = useState(0);
+  
+  // State for async data - only visible items (isShow: true)
+  const [pendantAssignments, setPendantAssignments] = useState([]);
+  const [systemAssignments, setSystemAssignments] = useState([]);
+  const [barAssignments, setBarAssignments] = useState([]);
+  const [ballAssignments, setBallAssignments] = useState([]);
+  const [universalAssignments, setUniversalAssignments] = useState([]);
+  const [chandelierAssignments, setChandelierAssignments] = useState([]);
+  // Loading state for pendant selection
+  const [pendantLoading, setPendantLoading] = useState(false);
+  // Ref to store the timeout ID for cleanup
+  const loadingTimeoutRef = useRef(null);
+  
+  // Function to turn off pendant loading
+  const turnOffPendantLoading = () => {
+    setPendantLoading(false);
+    // Clear the timeout if it exists
+    if (loadingTimeoutRef.current) {
+      clearTimeout(loadingTimeoutRef.current);
+      loadingTimeoutRef.current = null;
+    }
+  };
+
+  // Listen for messages from iframe to turn off loading
+  useEffect(() => {
+    const handleMessage = (event) => {
+      // Check if the message is from the expected iframe origin
+      if (event.data === "loadingOff") {
+        console.log("Received loadingOff message from iframe");
+        turnOffPendantLoading();
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+    
+    // Cleanup event listener on component unmount
+    return () => {
+      window.removeEventListener("message", handleMessage);
+      // Also clear any pending timeout
+      if (loadingTimeoutRef.current) {
+        clearTimeout(loadingTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  // Function to load all configurator data (only visible items)
+  const loadConfiguratorData = async () => {
+    try {
+      console.log('🔄 ConfigPanel: Loading configurator data (visible items only)');
+      const [
+        systemData,
+        pendantData,
+        barData,
+        ballData,
+        universalData,
+        chandelierData
+      ] = await Promise.all([
+        getSystemAssignments(),
+        getPendantAssignments(),
+        getBarAssignments(),
+        getBallAssignments(),
+        getUniversalAssignments(),
+        getChandelierAssignments()
+      ]);
+      
+      setSystemAssignments(systemData);
+      setPendantAssignments(pendantData);
+      setBarAssignments(barData);
+      setBallAssignments(ballData);
+      setUniversalAssignments(universalData);
+      setChandelierAssignments(chandelierData);
+      
+      console.log('🔄 ConfigPanel: Data loaded successfully', {
+        systemItems: systemData.length,
+        pendantItems: pendantData.length,
+        barItems: barData.length,
+        ballItems: ballData.length,
+        universalItems: universalData.length,
+        chandelierItems: chandelierData.length
+      });
+      
+    } catch (error) {
+      console.error('Error loading configurator data:', error);
+    }
+  };
+
+  // Load data on component mount
+  useEffect(() => {
+    loadConfiguratorData();
+  }, []);
 
   const syncWishlistWithAPI = async (wishlistArray) => {
     const token = localStorage.getItem("limiToken");
@@ -113,6 +210,18 @@ export const ConfigPanel = ({
       setLocalSelectedCableSize(selectedCableSize);
     }
   }, [configuringType, selectedPendants, selectedLocation, cables]);
+
+  // Subscribe to data refresh events to reload configurator data
+  useEffect(() => {
+    const unsubscribe = onDataRefresh((newData) => {
+      console.log('🔄 ConfigPanel: Data refreshed, reloading configurator data');
+      setDataRefreshTrigger(prev => prev + 1);
+      // Reload all configurator data to get only visible items
+      loadConfiguratorData();
+    });
+
+    return unsubscribe;
+  }, []);
 
   // Track navigation state for breadcrumb
   const [navState, setNavState] = useState({
@@ -415,21 +524,8 @@ export const ConfigPanel = ({
         // },
         // {
         //   id: "supernova",
-        //   name: "Supernova",
-        //   baseNumber: "34",
-        //   image: "/images/configOptions/universal/34.png",
-        // },
       ],
     };
-    // Always use the canonical design id from baseOptions
-    let designId = currentDesign;
-    if (configuringSystemType && currentDesign) {
-      const baseList = baseOptions[configuringSystemType] || [];
-      const selectedBase = baseList.find((base) => base.id === currentDesign);
-      if (selectedBase) {
-        designId = selectedBase.baseNumber; // or selectedBase.baseNumber if PlayCanvas expects a number
-      }
-    }
     if (typeof onShadeSelect === "function") {
       onShadeSelect(designId, shade.id, configuringSystemType, shadeIndex);
     }
@@ -447,7 +543,6 @@ export const ConfigPanel = ({
     if (configuringSystemType !== "bar") {
       setBarNavState({ showBarEngines: false, showBarOptions: false });
     }
-    
     // Reset all state when configuringType becomes null (panel closed)
     if (!configuringType) {
       setCurrentDesign(null);
@@ -621,16 +716,35 @@ export const ConfigPanel = ({
         //   image: "/images/configOptions/cable.png",
         // },
       ];
+      // Add Chandelier option when baseType is round and lightAmount is 3
+      // We need to access the parent config to check these conditions
+      // This will be passed as a prop or accessed through a parent component
+      const parentConfig =
+        typeof window !== "undefined"
+          ? JSON.parse(localStorage.getItem("lightConfig") || "{}")
+          : {};
+
+      // Add chandelier for both round and rectangular base types when lightAmount is 3
+      if (parentConfig.lightAmount === 3 && (parentConfig.lightType === "ceiling" || parentConfig.lightType === "rectangular")) {
+        config.items.push({
+          id: "chandelier",
+          name: "Chandelier",
+          image: "/images/configOptions/chandelier.png",
+        });
+      }
       config.onItemSelect = (itemId) => {
         // Fire messages for configuration type selection
         if (sendMessageToPlayCanvas) {
           if (itemId === "pendant") {
-            sendMessageToPlayCanvas("Nobars");
-          } else if (itemId === "system") {
-            sendMessageToPlayCanvas("Nobars");
+            // sendMessageToPlayCanvas("Nobars");
+          }
+          //  else if (itemId === "system") {
+          //   sendMessageToPlayCanvas("Nobars");
+          // } 
+          else if (itemId === "chandelier") {
+            // sendMessageToPlayCanvas("Nobars");
           }
         }
-        
         // Reset system type state when selecting system
         if (itemId === "system") {
           setCurrentDesign(null);
@@ -644,13 +758,66 @@ export const ConfigPanel = ({
             ids: { system: true },
           });
         }
-        
+        // Handle chandelier selection
+        if (itemId === "chandelier") {
+          setCurrentDesign(null);
+          setAvailableShades([]);
+          setLocalSelectedShade(null);
+          setBarNavState({ showBarEngines: false, showBarOptions: false });
+          // Set navigation state for chandelier
+          setNavState({
+            level: 1,
+            path: ["chandelier"],
+            ids: { chandelier: true },
+          });
+        }
         onSelectConfigurationType(itemId);
       };
       config.selectedItem = null;
       config.useIcon = true;
       config.showCloseButton = true;
       config.showLocationLabel = true;
+    }
+    // Chandelier Type Selection
+    else if (configuringType === "chandelier") {
+      config.title = "Chandelier Selection";
+      config.showBreadcrumb = true;
+      
+      // Get parent config to check baseType
+      const parentConfig =
+        typeof window !== "undefined"
+          ? JSON.parse(localStorage.getItem("lightConfig") || "{}")
+          : {};
+      
+      // Filter chandelierAssignments based on baseType
+      const filteredChandeliers = chandelierAssignments.filter((chand) => 
+        chand.baseType === parentConfig.baseType
+      );
+      
+      config.items = filteredChandeliers.map((chand) => ({
+        id: chand.design,
+        name: chand.name,
+        image:
+          chand.media && chand.media.image && chand.media.image.url
+            ? chand.media.image.url
+            : "/images/configOptions/chandelier.png",
+      }));
+      config.onItemSelect = (itemId) => {
+        // Show loading overlay
+        setPendantLoading(true);
+        
+        // Loading will only be turned off when "loadingOff" message is received from iframe
+        
+        // Call the chandelier type change handler
+        if (handleChandelierTypeChange) {
+          handleChandelierTypeChange(itemId);
+        }
+      };
+      config.selectedItem = currentDesign;
+      config.breadcrumbItems = [
+        { id: "home", name: "icon-home" },
+        { id: "chandelier", name: "Chandelier" },
+      ];
     }
     // Cable Size selection panel
     else if (configuringType === "cableSize") {
@@ -698,7 +865,13 @@ export const ConfigPanel = ({
         baseNumber: pendant.baseNumber,
       }));
       config.onItemSelect = (itemId) => {
+        // Show loading overlay
+        setPendantLoading(true);
+        
+        // Loading will only be turned off when "loadingOff" message is received from iframe
+        
         setCurrentDesign(itemId);
+    
         // Use all selected pendants if available, otherwise fall back to just the first one
         const pendantsToUpdate =
           selectedPendants && selectedPendants.length > 0
@@ -731,14 +904,50 @@ export const ConfigPanel = ({
           },
         ];
         config.onItemSelect = (systemType) => {
-         
           // Fire specific messages for each system type
-        
-            if (systemType === "universal") {
-              sendMessageToPlayCanvas("Nobars");
-            } else if (systemType === "ball") {
-              sendMessageToPlayCanvas("Nobars");
-            } else if (systemType === "bar") {
+
+          if (systemType === "universal") {
+            // sendMessageToPlayCanvas("Nobars");
+          } else if (systemType === "ball") {
+            // sendMessageToPlayCanvas("Nobars");
+          } 
+          
+          else if (systemType === "bar") {
+            console.log(
+              "Firing bar messages for selectedPendants:",
+              selectedPendants
+            );
+
+            // Check each cable individually and fire messages conditionally
+            if (cables && cables.length > 0) {
+              cables.forEach((cable, index) => {
+                if (cable && cable.design) {
+                  // Find the design in systemAssignments
+                  const barOption = systemAssignments.find(
+                    (assignment) => assignment.design === cable.design
+                  );
+                  
+                  // Only fire messages if this cable's design is NOT a bar system
+                  if (!barOption || barOption.systemType !== "bar") {
+                    // Fire messages for this specific cable ID
+                    if (selectedPendants.includes(index)) {
+                      sendMessageToPlayCanvas(`cable_${index}`);
+                      sendMessageToPlayCanvas("bars");
+                      sendMessageToPlayCanvas("glass_none");
+                      sendMessageToPlayCanvas("color_gold");
+                      sendMessageToPlayCanvas("silver_none");
+                      sendMessageToPlayCanvas(
+                        "product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/Bar_1756732230450.glb"
+                      );
+                    }
+                  } else {
+                    console.log(`Skipping messages for cable ${index} - already has bar system design: ${cable.design}`);
+                  }
+                }
+              });
+              sendMessageToPlayCanvas("allmodelsloaded");
+            } else {
+              // Fallback: if no cables, fire for all selectedPendants
               selectedPendants.forEach((id) => {
                 sendMessageToPlayCanvas(`cable_${id}`);
                 sendMessageToPlayCanvas("bars");
@@ -750,8 +959,8 @@ export const ConfigPanel = ({
                 );
               });
               sendMessageToPlayCanvas("allmodelsloaded");
-        
             }
+          }
           // Call the parent handler to update state and send message to iframe
           onSystemTypeSelection(systemType);
         };
@@ -791,8 +1000,12 @@ export const ConfigPanel = ({
           });
 
           config.onItemSelect = (itemId) => {
-           
-             setCurrentDesign(itemId);
+            // Show loading overlay
+            setPendantLoading(true);
+            
+            // Loading will only be turned off when "loadingOff" message is received from iframe
+            
+            setCurrentDesign(itemId);
             const selectedBase = config.items.find(
               (item) => item.id === itemId
             );
@@ -895,6 +1108,11 @@ export const ConfigPanel = ({
             } else {
               // Show base options
               config.onItemSelect = (itemId) => {
+                // Show loading overlay
+                setPendantLoading(true);
+                
+                // Loading will only be turned off when "loadingOff" message is received from iframe
+                
                 setCurrentDesign(itemId);
                 const selectedBase = config.items.find(
                   (item) => item.id === itemId
@@ -937,6 +1155,11 @@ export const ConfigPanel = ({
           } else {
             // Show base options
             config.onItemSelect = (itemId) => {
+              // Show loading overlay
+              setPendantLoading(true);
+              
+              // Loading will only be turned off when "loadingOff" message is received from iframe
+              
               setCurrentDesign(itemId);
               const selectedBase = config.items.find(
                 (item) => item.id === itemId
@@ -989,7 +1212,13 @@ export const ConfigPanel = ({
       setLocalSelectedShade(null);
       setBarNavState({ showBarEngines: false, showBarOptions: false });
       onSelectConfigurationType(null);
-      // Do NOT call onClose() as we want to keep the panel open
+      // Call the parent breadcrumb handler instead of recursively calling itself
+      onBreadcrumbNavigation("home");
+    } else if (id === "chandelier") {
+      // If we click on Chandelier breadcrumb, ensure we're at that level
+      if (configuringType !== "chandelier") {
+        onSelectConfigurationType("chandelier");
+      }
     } else if (id === "system" && navState.level === 2) {
       // If we're in system base design and click on System Type breadcrumb,
       // go back to system type selection
@@ -1071,8 +1300,26 @@ export const ConfigPanel = ({
   const isMobileView = className.includes("max-sm:static");
 
   return (
-    <div className="flex justify-center items-center w-full">
-      <motion.div
+    <>
+      {/* Full-Screen Loading Overlay for Pendant Selection */}
+      {pendantLoading && (
+        <motion.div
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[9999] flex flex-col items-center justify-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <div className="flex flex-col items-center space-y-4">
+            {/* Spinning loader */}
+            <div className="w-12 h-12 border-3 border-gray-600 border-t-emerald-500 rounded-full animate-spin"></div>
+            <p className="text-white text-lg font-medium font-['Amenti']">Loading pendant...</p>
+          </div>
+        </motion.div>
+      )}
+      
+      <div className="flex justify-center items-center w-full">
+        <motion.div
         className={`fixed h-[150px] sm:absolute bottom-0 sm:bottom-1 -translate-x-1/2 bg-black/95 sm:backdrop-blur-sm border border-gray-700 rounded-t-lg sm:rounded-lg z-40 w-full sm:max-w-[320px] md:max-w-[400px] lg:max-w-[480px] xl:max-w-[540px] sm:w-[80vw] md:w-[55vw] lg:w-[40vw] xl:w-[24vw] max-h-[60vh] sm:max-h-[30vh] shadow-lg overflow-hidden ${className}`}
         initial={
           isMobileView ? { y: "100%", opacity: 0 } : { y: 30, opacity: 0 }
@@ -1191,6 +1438,7 @@ export const ConfigPanel = ({
                       {/* Wishlist Icon Overlay */}
                       {item.id !== "pendant" &&
                         item.id !== "system" &&
+                        item.id !== "chandelier" &&
                         item.id !== "bar" &&
                         item.id !== "ball" &&
                         item.id !== "universal" && (
@@ -1285,5 +1533,6 @@ export const ConfigPanel = ({
         </div>
       </motion.div>
     </div>
+    </>
   );
 };

@@ -56,6 +56,7 @@ const LoadingScreen = ({ isVisible, onHide }) => {
         repeat: -1,
       });
     } else {
+      // Hide loading screen
       if (animationRefs.current.diamondAnimation) {
         animationRefs.current.diamondAnimation.kill();
       }

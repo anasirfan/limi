@@ -28,19 +28,9 @@ ChartJS.register(
 export default function SlideInsights({ customerId, slideTimes = [], sessions = [] }) {
   const [analyticsData, setAnalyticsData] = useState(null);
   const [loading, setLoading] = useState(false);
-{{ ... }}
-      
-      const data = await response.json();
-      setAnalyticsData(data);
-    } catch (err) {
-      setError(err.message);
-      loadLocalStorageData();
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [error, setError] = useState(null);
 
-{{ ... }}
+
   // Load data from localStorage as fallback
   const loadLocalStorageData = () => {
     if (!customerId) return;
@@ -306,6 +296,11 @@ export default function SlideInsights({ customerId, slideTimes = [], sessions = 
 
   return (
     <div className="bg-[#1e1e1e] rounded-lg p-6 space-y-6">
+      {error && (
+        <div className="bg-red-800 text-red-200 px-4 py-2 rounded mb-4">
+          <strong>Error:</strong> {error}
+        </div>
+      )}
       <h2 className="text-2xl font-bold text-[#93cfa2] mb-6">Slide Analytics Dashboard</h2>
       
       {/* Session Statistics */}

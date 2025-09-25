@@ -29,17 +29,23 @@ import {ProgressIndicator} from './navComponents/ProgressIndicator';
 import SaveConfigurationModal from './navComponents/SaveConfigurationModal';
 import { useNavSteps } from './navComponents/useNavSteps';
 import { useNavDropdown } from './navComponents/useNavDropdown';
+import { usePendantSelection } from './navComponents/usePendantSelection';
+
 import {
   listenForConnectorColorMessages,
   listenForWallbaseColorMessages,
   listenForOffconfigMessages,
+  listenForCableMessages
 } from "../../util/iframeCableMessageHandler";
 
+ // Pendant selection functionality
+ 
 const VerticalNavBar = ({
   activeStep,
   setActiveStep,
   showConfigurationTypeSelector,
   setShowConfigurationTypeSelector,
+  handleChandelierTypeChange,
   config,
   cables, // Add cables prop
   onCableSizeChange, // Add cable size change handler
@@ -61,7 +67,6 @@ const VerticalNavBar = ({
   configuringType,
   configuringSystemType,
   breadcrumbPath,
-
   onBreadcrumbNavigation,
   cableMessage,
   setCableMessage,
@@ -124,7 +129,14 @@ const VerticalNavBar = ({
       message: "Finally, customize your pendant selection",
     },
   ];
-
+  const selectAllPendants = () => {
+    setSelectedPendants(cables.map((_, index) => index));
+  };
+  
+  // Clear all selections
+  const clearSelections = () => {
+    setSelectedPendants([]);
+  };
   useEffect(() => {
     const cleanup = listenForWallbaseColorMessages((data, event) => {
       // handle wallbaseColor message here
@@ -150,6 +162,16 @@ const VerticalNavBar = ({
   }, []);
 
   useEffect(() => {
+    const cleanup = listenForCableMessages((data, event) => {
+    
+      // Example: open a modal, update config, etc.
+      setMobileBottomMenuOpen(true)
+    setMobileActiveStep('pendantSelection')
+    });
+    return cleanup;
+  }, []);
+  
+  useEffect(() => {
     if (activeStep === "pendantSelection") {
       setOpenBase(false);
       setShowConfigurationTypeSelector(true);
@@ -159,7 +181,7 @@ const VerticalNavBar = ({
   useEffect(() => {
     const cleanup = listenForOffconfigMessages((data, event) => {
       // if (cableMessage && cableMessage.startsWith('offconfig')) {
-      sendMessageToPlayCanvas("Nobars");
+      // sendMessageToPlayCanvas("Nobars");
       setShowConfigurationTypeSelector(false);
       setOpenBase(false);
       setOpenDropdown(false);
@@ -628,58 +650,27 @@ const VerticalNavBar = ({
   const [localConfiguringType, setLocalConfiguringType] =
     useState(configuringType);
 
+
   // Update local state when prop changes
   useEffect(() => {
     setLocalConfiguringType(configuringType);
   }, [configuringType]);
 
-  // Pendant selection functionality - create local state and functions
-  const [currentDesign, setCurrentDesign] = useState(null);
-  const carouselRef = { current: null };
-  
-  const scrollCarousel = (direction) => {
-    // Implement carousel scrolling logic
-    if (carouselRef.current) {
-      const scrollAmount = 200;
-      carouselRef.current.scrollBy({
-        left: direction === 'left' ? -scrollAmount : scrollAmount,
-        behavior: 'smooth'
-      });
-    }
-  };
+   // Pendant selection functionality
+   const {
+    currentDesign,
+    setCurrentDesign,
+    carouselRef,
+    scrollCarousel,
+    togglePendantSelection,
+    applyDesignToSelected,
+    applyToAllPendants,
+    getImageSrc,
+    getPendantDesignImageNumber
+  } = usePendantSelection(pendants, selectedPendants, setSelectedPendants, onPendantDesignChange,setShowConfigurationTypeSelector,setOpenBase);
 
-  const togglePendantSelection = (locationIndex) => {
-    if (selectedPendants.includes(locationIndex)) {
-      setSelectedPendants(selectedPendants.filter(id => id !== locationIndex));
-    } else {
-      setSelectedPendants([...selectedPendants, locationIndex]);
-    }
-  };
 
-  const selectAllPendants = () => {
-    const allPendantIds = pendants.map((_, index) => index);
-    setSelectedPendants(allPendantIds);
-  };
 
-  const clearSelections = () => {
-    setSelectedPendants([]);
-  };
-
-  const applyDesignToSelected = (design) => {
-    selectedPendants.forEach(pendantId => {
-      onPendantDesignChange(pendantId, design);
-    });
-  };
-
-  const applyToAllPendants = (design) => {
-    pendants.forEach((_, index) => {
-      onPendantDesignChange(index, design);
-    });
-  };
-
-  const getImageSrc = (pendant) => {
-    return pendant?.image || '/default-pendant.png';
-  };
 
   // Handle pendant location selection to show configuration type selector
   const handlePendantLocationClick = (locationIndex) => {
@@ -908,6 +899,7 @@ const VerticalNavBar = ({
                           pendants={pendants}
                           setShowPendantLoadingScreen={setShowPendantLoadingScreen}
                           selectedPendants={selectedPendants}
+                          setSelectedPendants={setSelectedPendants}
                           cables={cables} // Pass cables prop to child component
                           currentDesign={currentDesign}
                           setOpenBase={setOpenBase}
@@ -1028,6 +1020,7 @@ const VerticalNavBar = ({
       <MobileBottomMenu
         isOpen={mobileBottomMenuOpen && isMobile}
         activeStep={mobileActiveStep}
+        handleChandelierTypeChange={handleChandelierTypeChange}
         setLocalConfiguringType={setLocalConfiguringType}
         onClose={() => setMobileBottomMenuOpen(false)}
         config={config}
@@ -1087,6 +1080,7 @@ const VerticalNavBar = ({
               selectedPendants={selectedPendants}
               cables={cables}
               onCableSizeChange={onCableSizeChange}
+              handleChandelierTypeChange={handleChandelierTypeChange}
               onPendantDesignChange={onPendantDesignChange}
               onSystemBaseDesignChange={onSystemBaseDesignChange}
               onShadeSelect={onShadeSelect}

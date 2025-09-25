@@ -1,10 +1,11 @@
-import React, { useState, useMemo } from "react";
-import { FaLightbulb, FaPlus, FaSpinner } from "react-icons/fa";
+import React, { useState, useMemo, useEffect } from "react";
+import { FaLightbulb, FaPlus, FaSpinner, FaSync } from "react-icons/fa";
 import TabNavigation from "./components/TabNavigation";
 import ProductTable from "./components/ProductTable";
 import AddModal from "./components/AddModal";
 import EditModal from "./components/EditModal";
 import { filterProductsByTab } from "./utils/fileUtils";
+import { onDataRefresh, refreshSystemAssignments, getAllSystemAssignments } from "../../../components/configurator/pendantSystemData";
 
 export default function PendantSystemManager({
   pendantSystemData,
@@ -43,6 +44,184 @@ export default function PendantSystemManager({
   const [viewMode, setViewMode] = useState("table");
   const [activeFilters, setActiveFilters] = useState(new Set());
   const [selectedItems, setSelectedItems] = useState(new Set());
+  
+  // Local state for pendant system data to enable instant updates
+  const [localPendantSystemData, setLocalPendantSystemData] = useState([]);
+  
+  // Force re-render when data changes
+  const [dataRefreshTrigger, setDataRefreshTrigger] = useState(0);
+  const [isManualRefreshing, setIsManualRefreshing] = useState(false);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [lastUpdateTimestamp, setLastUpdateTimestamp] = useState(Date.now());
+
+  // Initialize with direct API call instead of relying on props
+  useEffect(() => {
+    const initializeData = async () => {
+      console.log('🔄 PendantSystemManager: Initializing with direct API call');
+      setIsInitialLoading(true);
+      try {
+        await fetchAndUpdateLocalState();
+      } catch (error) {
+        console.error('Error initializing data:', error);
+        // Fallback to prop data if API fails - show ALL items
+        setLocalPendantSystemData(pendantSystemData);
+      }
+      setIsInitialLoading(false);
+    };
+
+    initializeData();
+  }, []); // Only run once on mount
+
+  // Update local state when prop changes (as fallback)
+  useEffect(() => {
+    if (!isInitialLoading && pendantSystemData.length > 0) {
+      console.log('🔄 PendantSystemManager: Prop data changed, updating local state as fallback');
+      setLocalPendantSystemData(pendantSystemData);
+    }
+  }, [pendantSystemData, isInitialLoading]);
+
+  // Function to directly fetch and update local state using the new getAllSystemAssignments
+  const fetchAndUpdateLocalState = async () => {
+    try {
+      console.log('🔄 PendantSystemManager: Using getAllSystemAssignments for dashboard');
+      const formattedData = await getAllSystemAssignments();
+      
+      console.log('🔄 PendantSystemManager: Direct fetch - updating local state', {
+        totalItems: formattedData.length,
+        showingAllItems: 'Dashboard shows ALL items regardless of isShow status'
+      });
+      
+      // Update local state directly - SHOW ALL ITEMS in dashboard
+      setLocalPendantSystemData(formattedData);
+      setDataRefreshTrigger(prev => prev + 1);
+      setLastUpdateTimestamp(Date.now());
+      
+      // Force a complete re-render by updating a timestamp
+      console.log('🔄 PendantSystemManager: Local state updated with ALL items:', formattedData.map(item => ({ id: item._id, name: item.name, isShow: item.isShow })));
+      
+      return formattedData;
+    } catch (error) {
+      console.error('Error in getAllSystemAssignments fetch:', error);
+      
+      // Fallback to direct API call if the new function fails
+      try {
+        const response = await fetch("https://dev.api1.limitless-lighting.co.uk/admin/configurator/system", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const formattedData = Array.isArray(data) ? data : data?.data || [];
+          
+          console.log('🔄 PendantSystemManager: Fallback direct API - updating local state', {
+            totalItems: formattedData.length
+          });
+          
+          setLocalPendantSystemData(formattedData);
+          setDataRefreshTrigger(prev => prev + 1);
+          setLastUpdateTimestamp(Date.now());
+          
+          return formattedData;
+        }
+      } catch (fallbackError) {
+        console.error('Error in fallback direct fetch:', fallbackError);
+      }
+    }
+    return null;
+  };
+
+  // Subscribe to data refresh events to update local state instantly
+  useEffect(() => {
+    const unsubscribe = onDataRefresh((newData) => {
+      console.log('🔄 PendantSystemManager: Data refreshed, updating local state instantly');
+      // Update local state with ALL data - dashboard shows everything
+      setLocalPendantSystemData(newData);
+      setDataRefreshTrigger(prev => prev + 1);
+      setLastUpdateTimestamp(Date.now());
+    });
+
+    return unsubscribe;
+  }, []);
+
+  // Add additional refresh triggers for better reliability
+  useEffect(() => {
+    // Refresh when window gains focus
+    const handleFocus = async () => {
+      console.log('🔄 PendantSystemManager: Window focused, triggering refresh');
+      try {
+        await refreshSystemAssignments();
+        // Also directly fetch to ensure local state updates
+        await fetchAndUpdateLocalState();
+      } catch (error) {
+        console.error('Error refreshing on focus:', error);
+      }
+    };
+
+    // Refresh when page becomes visible (tab switching)
+    const handleVisibilityChange = async () => {
+      if (!document.hidden) {
+        console.log('🔄 PendantSystemManager: Page visible, triggering refresh');
+        try {
+          await refreshSystemAssignments();
+          // Also directly fetch to ensure local state updates
+          await fetchAndUpdateLocalState();
+        } catch (error) {
+          console.error('Error refreshing on visibility change:', error);
+        }
+      }
+    };
+
+    // Add event listeners
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
+
+  // Periodic refresh fallback (every 2 minutes)
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      console.log('🔄 PendantSystemManager: Periodic refresh fallback');
+      try {
+        await refreshSystemAssignments();
+        // Also directly fetch to ensure local state updates
+        await fetchAndUpdateLocalState();
+      } catch (error) {
+        console.error('Error in periodic refresh:', error);
+      }
+    }, 2 * 60 * 1000); // 2 minutes
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Manual refresh function - completely independent
+  const handleManualRefresh = async () => {
+    setIsManualRefreshing(true);
+    console.log('🔄 PendantSystemManager: Manual refresh triggered - bypassing global system');
+    try {
+      // ONLY use direct fetch - bypass global system entirely
+      const freshData = await fetchAndUpdateLocalState();
+      
+      if (freshData) {
+        console.log('🔄 PendantSystemManager: Manual refresh successful - UI should update now');
+      } else {
+        console.log('🔄 PendantSystemManager: Manual refresh failed - no data returned');
+      }
+      
+      // Small delay to show the refresh animation
+      setTimeout(() => setIsManualRefreshing(false), 500);
+    } catch (error) {
+      console.error('Error in manual refresh:', error);
+      setIsManualRefreshing(false);
+    }
+  };
 
   // Handle delete functionality
   const handleDeleteItem = async (item) => {
@@ -78,7 +257,8 @@ export default function PendantSystemManager({
       image: item.image || "",
       hasGlass: item.hasGlass !== undefined ? item.hasGlass : false,  // Default: No Glass
       hasGold: item.hasGold !== undefined ? item.hasGold : false,     // Default: No Gold
-      hasSilver: item.hasSilver !== undefined ? item.hasSilver : false // Default: No Silver
+      hasSilver: item.hasSilver !== undefined ? item.hasSilver : false, // Default: No Silver
+      baseType: item.baseType || "round" // Default: Round for chandelier
     });
 
     // Set existing images if available
@@ -90,6 +270,23 @@ export default function PendantSystemManager({
     }
     if (item.model) {
       setModelPreview(item.model);
+    }
+  };
+
+  // Handle toggle show functionality
+  const handleToggleShow = async (itemId, isShow) => {
+    try {
+      // Only send the isShow field to the update API
+      const updatedData = {
+        isShow: isShow
+      };
+
+      // Call the update API with only isShow field
+      await updatePendantSystem(itemId, updatedData);
+      console.log(`Successfully updated item ${itemId} with isShow: ${isShow}`);
+    } catch (error) {
+      console.error("Error toggling show status:", error);
+      alert("Failed to update show status. Please try again.");
     }
   };
 
@@ -116,7 +313,8 @@ export default function PendantSystemManager({
       image: "",
       hasGlass: false,  // Default: No Glass
       hasGold: false,   // Default: No Gold
-      hasSilver: false  // Default: No Silver
+      hasSilver: false, // Default: No Silver
+      baseType: "round" // Default: Round for chandelier
     });
   };
 
@@ -155,6 +353,9 @@ export default function PendantSystemManager({
       }
       if (newPendantData.hasSilver !== editingItem.hasSilver) {
         changedFields.hasSilver = newPendantData.hasSilver;
+      }
+      if (newPendantData.baseType !== editingItem.baseType) {
+        changedFields.baseType = newPendantData.baseType;
       }
 
       // Check if image was changed
@@ -208,8 +409,15 @@ export default function PendantSystemManager({
 
   // Process products with search, filter, and sort
   const processedProducts = useMemo(() => {
-    // First filter by tab
-    let filtered = filterProductsByTab(pendantSystemData, activeTab);
+    console.log('🔄 PendantSystemManager: Processing products', {
+      localDataLength: localPendantSystemData.length,
+      activeTab,
+      dataRefreshTrigger,
+      localDataItems: localPendantSystemData.map(item => ({ id: item._id, name: item.name, isShow: item.isShow }))
+    });
+    
+    // First filter by tab - use local state instead of props
+    let filtered = filterProductsByTab(localPendantSystemData, activeTab);
     
     // Apply search filter
     if (searchQuery && searchQuery.trim() !== "") {
@@ -261,11 +469,22 @@ export default function PendantSystemManager({
       }
     });
 
+    console.log('🔄 PendantSystemManager: Processed products result', {
+      filteredLength: filtered.length,
+      filteredItems: filtered.map(item => ({ id: item._id, name: item.name, isShow: item.isShow }))
+    });
+    
     return filtered;
-  }, [pendantSystemData, activeTab, searchQuery, activeFilters, sortField, sortDirection]);
+  }, [localPendantSystemData, activeTab, searchQuery, activeFilters, sortField, sortDirection, dataRefreshTrigger, lastUpdateTimestamp]);
 
   const pendantProducts = processedProducts.filter((item) => !item.isSystem);
   const systemProducts = processedProducts.filter((item) => item.isSystem);
+  
+  console.log('🔄 PendantSystemManager: Final product counts', {
+    processedProducts: processedProducts.length,
+    pendantProducts: pendantProducts.length,
+    systemProducts: systemProducts.length
+  });
 
   return (
     <div className="min-h-screen bg-[#202020] rounded-xl p-6">
@@ -287,8 +506,20 @@ export default function PendantSystemManager({
                   </p>
                 </div>
               </div>
-              {/* Action Button */}
-              <div className="flex flex-col space-y-3">
+              {/* Action Buttons */}
+              <div className="flex gap-3">
+                <button
+                  onClick={handleManualRefresh}
+                  disabled={isManualRefreshing}
+                  className="group relative px-6 py-4 bg-gradient-to-r from-gray-600 to-gray-700 rounded-2xl font-semibold text-white transition-all duration-300 transform hover:scale-105 hover:shadow-2xl overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-gray-700 to-gray-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="relative flex items-center space-x-2">
+                    <FaSync className={`text-lg ${isManualRefreshing ? 'animate-spin' : ''}`} />
+                    <span className="text-sm">{isManualRefreshing ? 'Refreshing...' : 'Refresh'}</span>
+                  </div>
+                </button>
+                
                 <button
                   onClick={handleAddNew}
                   className="group relative px-8 py-4 bg-gradient-to-r from-[#54bb74] to-[#87CEAB] rounded-2xl font-semibold text-white transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-[#54bb74]/25 overflow-hidden"
@@ -322,7 +553,7 @@ export default function PendantSystemManager({
         pendantSaving={pendantSaving}
         onSave={handleSaveOrUpdate}
         setNewPendantData={setNewPendantData}
-        pendantSystemData={pendantSystemData}
+        pendantSystemData={localPendantSystemData}
       />
 
       {/* Edit Modal */}
@@ -344,7 +575,7 @@ export default function PendantSystemManager({
 
       {/* Main Content */}
       <div className="space-y-8">
-        {pendantLoading ? (
+        {(pendantLoading || isInitialLoading) ? (
           <div className="flex flex-col items-center justify-center min-h-[500px] bg-gradient-to-br from-[#1a1a1a] to-[#2a2a2a] rounded-3xl border border-[#54bb74]/20 backdrop-blur-sm">
             <div className="relative mb-8">
               <div className="w-24 h-24 border-4 border-[#54bb74]/20 rounded-full animate-spin"></div>
@@ -357,7 +588,7 @@ export default function PendantSystemManager({
               </p>
             </div>
           </div>
-        ) : pendantSystemData.length === 0 && !showAddForm ? (
+        ) : localPendantSystemData.length === 0 && !showAddForm ? (
           <div className="relative bg-gradient-to-br from-[#1a1a1a] to-[#2a2a2a] rounded-3xl p-16 text-center border border-[#54bb74]/20 backdrop-blur-sm overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-r from-[#54bb74]/5 via-transparent to-[#87CEAB]/5"></div>
             <div className="relative z-10 space-y-8">
@@ -374,26 +605,41 @@ export default function PendantSystemManager({
                   tools.
                 </p>
               </div>
-              <button
-                onClick={handleAddNew}
-                className="group relative px-12 py-6 bg-gradient-to-r from-[#54bb74] to-[#87CEAB] rounded-2xl font-bold text-white text-xl transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-[#54bb74]/25 overflow-hidden"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-[#87CEAB] to-[#54bb74] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <div className="relative flex items-center space-x-4">
-                  <FaPlus className="text-2xl" />
-                  <span>Create Your First Design</span>
-                </div>
-              </button>
+              <div className="flex gap-4">
+                <button
+                  onClick={handleManualRefresh}
+                  disabled={isManualRefreshing}
+                  className="group relative bg-gradient-to-r from-gray-600 to-gray-700 text-white px-6 py-4 rounded-2xl font-semibold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-gray-700 to-gray-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="relative flex items-center space-x-3">
+                    <FaSync className={`text-xl ${isManualRefreshing ? 'animate-spin' : ''}`} />
+                    <span>{isManualRefreshing ? 'Refreshing...' : 'Refresh'}</span>
+                  </div>
+                </button>
+                
+                <button
+                  onClick={handleAddNew}
+                  className="group relative bg-gradient-to-r from-[#54bb74] to-[#87CEAB] text-white px-8 py-4 rounded-2xl font-semibold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 overflow-hidden"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#87CEAB] to-[#54bb74] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="relative flex items-center space-x-4">
+                    <FaPlus className="text-2xl" />
+                    <span>Add New Design</span>
+                  </div>
+                </button>
+              </div>
             </div>
           </div>
         ) : (
-          pendantSystemData.length > 0 && (
+          localPendantSystemData.length > 0 && (
             <div className="space-y-8">
               {/* Tab Navigation with Search */}
               <TabNavigation
+                key={`tabnav-${dataRefreshTrigger}-${localPendantSystemData.length}-${lastUpdateTimestamp}`}
                 activeTab={activeTab}
                 setActiveTab={setActiveTab}
-                products={pendantSystemData}
+                products={localPendantSystemData}
                 searchQuery={searchQuery}
                 setSearchQuery={setSearchQuery}
                 sortField={sortField}
@@ -412,10 +658,12 @@ export default function PendantSystemManager({
                 {/* Show Pendant Products Section only for 'all' and 'pendant' tabs */}
                 {(activeTab === 'all' || activeTab === 'pendant') && pendantProducts.length > 0 && (
                   <ProductTable
+                    key={`pendant-${dataRefreshTrigger}-${pendantProducts.length}`}
                     products={pendantProducts}
                     type="pendant"
                     onEdit={handleEditItem}
                     onDelete={handleDeleteItem}
+                    onToggleShow={handleToggleShow}
                     deletingItemId={deletingItemId}
                     viewMode={viewMode}
                     selectedItems={selectedItems}
@@ -426,10 +674,28 @@ export default function PendantSystemManager({
                 {/* Show System Products Section only for 'all', 'system', and specific system types */}
                 {(activeTab === 'all' || activeTab === 'system' || ['bar', 'ball', 'universal'].includes(activeTab)) && systemProducts.length > 0 && (
                   <ProductTable
+                    key={`system-${dataRefreshTrigger}-${systemProducts.length}`}
                     products={systemProducts}
                     type="system"
                     onEdit={handleEditItem}
                     onDelete={handleDeleteItem}
+                    onToggleShow={handleToggleShow}
+                    deletingItemId={deletingItemId}
+                    viewMode={viewMode}
+                    selectedItems={selectedItems}
+                    setSelectedItems={setSelectedItems}
+                  />
+                )}
+
+                {/* Show Chandeliers */}
+                {activeTab === 'chandelier' && processedProducts.length > 0 && (
+                  <ProductTable
+                    key={`chandelier-${dataRefreshTrigger}-${processedProducts.length}`}
+                    products={processedProducts}
+                    type="chandelier"
+                    onEdit={handleEditItem}
+                    onDelete={handleDeleteItem}
+                    onToggleShow={handleToggleShow}
                     deletingItemId={deletingItemId}
                     viewMode={viewMode}
                     selectedItems={selectedItems}
@@ -443,10 +709,12 @@ export default function PendantSystemManager({
                     {/* Show pendant products with models */}
                     {processedProducts.filter(item => !item.isSystem).length > 0 && (
                       <ProductTable
+                        key={`model-pendant-${dataRefreshTrigger}-${processedProducts.filter(item => !item.isSystem).length}`}
                         products={processedProducts.filter(item => !item.isSystem)}
                         type="pendant"
                         onEdit={handleEditItem}
                         onDelete={handleDeleteItem}
+                        onToggleShow={handleToggleShow}
                         deletingItemId={deletingItemId}
                         viewMode={viewMode}
                         selectedItems={selectedItems}
@@ -456,10 +724,12 @@ export default function PendantSystemManager({
                     {/* Show system products with models */}
                     {processedProducts.filter(item => item.isSystem).length > 0 && (
                       <ProductTable
+                        key={`model-system-${dataRefreshTrigger}-${processedProducts.filter(item => item.isSystem).length}`}
                         products={processedProducts.filter(item => item.isSystem)}
                         type="system"
                         onEdit={handleEditItem}
                         onDelete={handleDeleteItem}
+                        onToggleShow={handleToggleShow}
                         deletingItemId={deletingItemId}
                         viewMode={viewMode}
                         selectedItems={selectedItems}

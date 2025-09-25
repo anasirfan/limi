@@ -14,20 +14,20 @@ import { MobilePendantSelector } from "./MobilePendantSelector";
 export const PendantSelectionDropdown = ({
   pendants,
   selectedPendants,
+  setSelectedPendants,
   currentDesign,
   setCurrentDesign,
   onCableSizeChange,
   carouselRef,
   scrollCarousel,
-  togglePendantSelection,
-  setOpenBase,
   selectAllPendants,
   clearSelections,
+  togglePendantSelection,
+  setOpenBase,
   applyDesignToSelected,
   applyToAllPendants,
   getImageSrc,
   handleSaveConfig,
-  setShowPendantLoadingScreen,
   configuringType,
   configuringSystemType,
   breadcrumbPath,
@@ -44,6 +44,7 @@ export const PendantSelectionDropdown = ({
   // State to track active tab on mobile
   const [activeTab, setActiveTab] = useState("configure"); // 'configure' or 'design'
   const [isMobile, setIsMobile] = useState(false);
+ // Select all pendants
 
   // Listen for selectedcable messages and update selectedPendants
 
@@ -83,7 +84,7 @@ export const PendantSelectionDropdown = ({
         onPendantDesignChange={onPendantDesignChange}
         onClose={onClose}
         isOpen={true} // Always open when this component is rendered
-        getImageSrc={getImageSrc}
+        getImageSrc={getImageSrc()}
         togglePendantSelection={togglePendantSelection}
         selectAllPendants={selectAllPendants}
         clearSelections={clearSelections}

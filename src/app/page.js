@@ -46,6 +46,7 @@ const CubeAnimation = dynamic(() => import('./components/CubeAnimation'), {
  */
 export default function Home() {
   const { hideNavFooter, setHideNavFooter } = useHideNavFooter();
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     // Check if device is mobile

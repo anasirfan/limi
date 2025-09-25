@@ -22,6 +22,7 @@ export const filterProductsByTab = (products, activeTab) => {
     case "bar":
     case "ball":
     case "universal":
+    case "chandelier":
       return products.filter(item => item.isSystem && item.systemType === activeTab);
     case "model":
       return products.filter(item => {
@@ -85,5 +86,6 @@ export function getTabCounts(products) {
       const modelUrl = item.media?.model?.url;
       return modelUrl && modelUrl.trim() !== '';
     }).length,
+    chandelier: products.filter(item => item.systemType === "chandelier").length,
   };
 }
