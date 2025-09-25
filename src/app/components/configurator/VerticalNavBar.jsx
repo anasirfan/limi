@@ -180,9 +180,7 @@ const VerticalNavBar = ({
 
   useEffect(() => {
     const cleanup = listenForOffconfigMessages((data, event) => {
-      // if (cableMessage && cableMessage.startsWith('offconfig')) {
-      // sendMessageToPlayCanvas("Nobars");
-      setShowConfigurationTypeSelector(false);
+     setShowConfigurationTypeSelector(false);
       setOpenBase(false);
       setOpenDropdown(false);
       setActiveStep(null);

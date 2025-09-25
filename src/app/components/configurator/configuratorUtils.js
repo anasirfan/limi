@@ -257,8 +257,6 @@ export const sendMessagesForDesignOnReload = (designName, id) => {
     }else{
       sendMessageToPlayCanvas('unequal_cable');
     }
-
-    sendMessageToPlayCanvas(`allmodelsloaded`);
   };
   sendAllMessages(id);
 };

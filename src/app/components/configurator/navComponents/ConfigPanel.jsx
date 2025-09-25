@@ -733,18 +733,6 @@ export const ConfigPanel = ({
         });
       }
       config.onItemSelect = (itemId) => {
-        // Fire messages for configuration type selection
-        if (sendMessageToPlayCanvas) {
-          if (itemId === "pendant") {
-            // sendMessageToPlayCanvas("Nobars");
-          }
-          //  else if (itemId === "system") {
-          //   sendMessageToPlayCanvas("Nobars");
-          // } 
-          else if (itemId === "chandelier") {
-            // sendMessageToPlayCanvas("Nobars");
-          }
-        }
         // Reset system type state when selecting system
         if (itemId === "system") {
           setCurrentDesign(null);
@@ -906,13 +894,8 @@ export const ConfigPanel = ({
         config.onItemSelect = (systemType) => {
           // Fire specific messages for each system type
 
-          if (systemType === "universal") {
-            // sendMessageToPlayCanvas("Nobars");
-          } else if (systemType === "ball") {
-            // sendMessageToPlayCanvas("Nobars");
-          } 
-          
-          else if (systemType === "bar") {
+         
+          if (systemType === "bar") {
             console.log(
               "Firing bar messages for selectedPendants:",
               selectedPendants

@@ -116,10 +116,7 @@ const MobilePendantConfig = ({
       setActiveStep("chandelierSelection");
       setShowSystemOptions(false);
       setConfiguringSystemType(null);
-      // Send Nobars message for chandelier like in ConfigPanel
-      if (sendMessageToPlayCanvas) {
-        // sendMessageToPlayCanvas("Nobars");
-      }
+    
     }
 
     // Call the parent component's handler if it exists
@@ -138,11 +135,8 @@ const MobilePendantConfig = ({
     setConfiguringSystemType(systemType);
 
     // Fire specific messages for each system type (same logic as ConfigPanel)
-    if (systemType === "universal") {
-      // sendMessageToPlayCanvas("Nobars");
-    } else if (systemType === "ball") {
-      // sendMessageToPlayCanvas("Nobars");
-    } else if (systemType === "bar") {
+    
+    if (systemType === "bar") {
       // Fire the PlayCanvas messages when bar is selected
 
       if (selectedPendants.length > 0) {
