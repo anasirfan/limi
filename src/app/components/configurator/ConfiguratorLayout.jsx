@@ -726,38 +726,45 @@ const ConfiguratorLayout = () => {
   // Handle pendant design change
   const handlePendantDesignChange = useCallback(
     (pendantIds, design) => {
-      // Update cables state in a single operation
-      if (pendantIds.length == null) {
+      if (!Array.isArray(pendantIds) || pendantIds.length == null) {
         pendantIds = [0];
-      };
-    
+      }
+
+      // Check if any cable is assigned to a chandelier system
+      const hasChandelier = cables.some((cable) => {
+        const sys = findSystemAssignmentByDesign(cable.design);
+        return sys && sys.systemType === "chandelier";
+      });
+
+      if (hasChandelier) {
+        // For chandelier, set all three cables to the same design
+        setCables([
+          { design },
+          { design },
+          { design }
+        ]);
+        sendMessagesForDesign(design, [0, 1, 2]);
+        return;
+      }
+
+      // Otherwise, update only the selected cables
       setCables((prev) => {
         const updatedCables = [...prev];
         pendantIds.forEach((id) => {
           if (id >= 0) {
-            updatedCables[id] = {
-              design: design,
-            };
+            updatedCables[id] = { design };
           }
         });
         return updatedCables;
       });
 
-      // This ensures we don't have race conditions between state updates and messaging
-
-      // Group pendants by design and send system type + messages per design
-      const designToIds = {};
-      pendantIds.forEach((id) => {
-        if (!designToIds[design]) designToIds[design] = [];
-        designToIds[design].push(id);
-      });
-      Object.entries(designToIds).forEach(([design, ids]) => {
-        sendMessagesForDesign(design, ids.length === 1 ? ids[0] : ids);
-      });
-      // Slight delay to ensure state is updated first
+      // Send messages for just the updated cables
+      sendMessagesForDesign(design, pendantIds.length === 1 ? pendantIds[0] : pendantIds);
     },
-    [config.lightAmount]
+    [cables, config.lightAmount]
   );
+
+  
   useEffect(() => {
     setShowPendantLoadingScreen(true);
     const timer = setTimeout(() => {
