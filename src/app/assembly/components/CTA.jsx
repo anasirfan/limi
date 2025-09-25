@@ -44,33 +44,33 @@ const CTA = () => {
   const accordionData = [
     {
       id: "01",
-      title: "Instant Setup",
-      heading: "Instant Setup",
-      description: "Get your modular lighting system up and running in minutes with our plug-and-play technology. No complex wiring or technical expertise required.",
+      title: "Instant Deployment",
+      heading: "Instant Deployment",
+      description: "Revolutionary AI infrastructure that activates immediately. Transform any environment into an intelligent ecosystem without technical expertise or complex installation procedures.",
       image: "/limiai/benefit1.mp4",
       isVideo: true
     },
     {
       id: "02", 
-      title: "Smart Control",
-      heading: "AI-Powered Intelligence",
-      description: "Experience intelligent automation that learns your preferences and optimizes lighting conditions automatically throughout the day.",
+      title: "Autonomous Intelligence",
+      heading: "Autonomous Intelligence",
+      description: "Self-learning AI that continuously adapts to your lifestyle, work patterns, and preferences. Experience truly personalized automation that gets smarter over time.",
       image: "/limiai/benefit2.mp4",
       isVideo: true
     },
     {
       id: "03",
-      title: "Secure System", 
-      heading: "Enterprise Security",
-      description: "Bank-level security protocols ensure your lighting data and controls remain protected with end-to-end encryption.",
+      title: "Fortress-Level Security", 
+      heading: "Fortress-Level Security",
+      description: "Military-grade encryption and privacy protection ensure your intelligent environment remains completely secure. Your data stays private while AI enhances your life.",
       image: "/limiai/benefit3.mp4",
       isVideo: true
     },
     {
       id: "04",
-      title: "Endless Options",
-      heading: "Endless Customization", 
-      description: "Create unique lighting experiences with infinite configuration possibilities, custom color palettes, and dynamic scene presets.",
+      title: "Infinite Possibilities",
+      heading: "Infinite Possibilities", 
+      description: "Limitless customization and expansion capabilities. From simple room automation to complex multi-building intelligence networks—scale without limits.",
       image: "/limiai/benefit4.mp4",
       isVideo: true
     }
@@ -225,9 +225,8 @@ const CTA = () => {
           </div>
 
           <p className="text-2xl text-white max-w-4xl mx-auto mb-4 leading-relaxed font-medium">
-            Join the lighting revolution. Experience the future of modular,
-            intelligent illumination that adapts to your needs and grows with
-            your space.
+            Join the intelligence revolution. Experience the future of autonomous
+            environments that understand, adapt, and evolve with your lifestyle.
           </p>
         </motion.div>
 

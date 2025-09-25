@@ -10,23 +10,23 @@ const BenefitTimeline = () => {
 
   const options = [
     {
-      title: "Instant Setup",
-      description: "Our plug-and-play system eliminates complex installation procedures. Simply connect and activate. Zero configuration required - get up and running in minutes.",
+      title: "Instant Intelligence",
+      description: "Deploy a complete AI ecosystem in minutes. No complex setup, no learning curve—just immediate intelligent automation that transforms any space into a responsive environment.",
       video: "/limiai/benefit1.mp4",
     },
     {
-      title: "Modular Design",
-      description: "Mix and match components to create your perfect lighting solution. Expand anytime with our scalable system that grows with your needs.",
+      title: "Adaptive Architecture",
+      description: "Modular AI components that scale with your needs. Build comprehensive smart environments from single rooms to entire buildings with seamless integration.",
       video: "/limiai/benefit2.mp4",
     },
     {
-      title: "Smart Integration",
-      description: "Advanced sensors and AI processing create an intelligent lighting ecosystem with real-time adaptation and predictive behavior.",
+      title: "Predictive Automation",
+      description: "Machine learning algorithms that study your patterns, anticipate needs, and create personalized experiences. Your space evolves to serve you better every day.",
       video: "/limiai/benefit3.mp4",
     },
     {
-      title: "Premium Quality",
-      description: "Enterprise-grade components with rigorous testing ensure long-lasting performance. Built to last with premium materials and reliable engineering.",
+      title: "Enterprise-Grade Intelligence",
+      description: "Military-grade security, 99.9% uptime reliability, and professional-level performance. Built for mission-critical environments that demand perfection.",
       video: "/limiai/benefit4.mp4",
     },
   ];
@@ -66,11 +66,11 @@ const BenefitTimeline = () => {
         >
           <h2 className="text-5xl md:text-7xl font-black mb-6 leading-tight">
             <span className="text-white">WHY CHOOSE </span>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#54bb74] to-[#93cfa2]">MODULAR</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#54bb74] to-[#93cfa2]">INTELLIGENCE</span>
           </h2>
           <p className="text-xl text-white/70 max-w-4xl mx-auto leading-relaxed">
-            Discover the revolutionary advantages that make our modular lighting system 
-            the future of intelligent illumination.
+            Discover the revolutionary advantages that make our AI ecosystem 
+            the future of autonomous environments.
           </p>
         </motion.div>
 

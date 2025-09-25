@@ -22,10 +22,10 @@ export function HeroScrollDemo() {
         titleComponent={
           <>
             <h1 className="text-4xl font-medium text-white mb-4">
-            Connected by Sensors, Powered by <br />
+            Every Surface. Every Corner. Every Moment. <br />
               <span className="text-4xl md:text-[5rem] mt-3 leading-none">
-                <span className="text-white">LIMI</span>{" "}
-                <span className="text-[#54bb74]">AI</span>
+                Powered by <span className="text-white">Adaptive</span>{" "}
+                <span className="text-[#54bb74]">Intelligence</span>
               </span>
             </h1>
           

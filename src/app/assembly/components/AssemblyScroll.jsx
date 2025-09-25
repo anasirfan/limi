@@ -12,8 +12,8 @@ const AssemblyScroll = () => {
   const steps = [
     {
       id: 1,
-      title: 'Install the Base',
-      description: 'Mount the intelligent base unit to your ceiling with zero-config installation.',
+      title: 'Deploy Neural Hub',
+      description: 'Install the AI processing center that becomes the brain of your intelligent space.',
       icon: HiCube,
       color: '#19b576',
       video: '/limiai/step1.mp4',
@@ -21,8 +21,8 @@ const AssemblyScroll = () => {
     },
     {
       id: 2,
-      title: 'Connect Cable',
-      description: 'Smart cable system with automatic detection.',
+      title: 'Connect Data Network',
+      description: 'Establish secure communication channels for real-time environmental analysis.',
       icon: HiOutlineWifi,
       color: '#19b576',
       video: '/limiai/step2.mp4',
@@ -30,8 +30,8 @@ const AssemblyScroll = () => {
     },
     {
       id: 3,
-      title: 'Attach Pendant',
-      description: 'Magnetic connection for perfect alignment.',
+      title: 'Activate Control Node',
+      description: 'Seamlessly integrate the primary interface for autonomous space management.',
       icon: HiLightningBolt,
       color: '#19b576',
       video: '/limiai/step3.m4v',
@@ -39,8 +39,8 @@ const AssemblyScroll = () => {
     },
     {
       id: 4,
-      title: 'Add Modules',
-      description: 'Insert sensor modules for advanced AI functionality and expandable ecosystem.',
+      title: 'Install Sensor Array',
+      description: 'Deploy advanced sensing modules for comprehensive environmental intelligence.',
       icon: HiCog,
       color: '#19b576',
       video: '/limiai/step4.m4v',
@@ -63,11 +63,11 @@ const AssemblyScroll = () => {
         {/* Section Header */}
         <div className="text-center mb-6">
           <h2 className="text-4xl md:text-6xl font-bold text-white mb-4">
-            Assembly
-            <span className="text-[#19b576]"> Process</span>
+            Intelligence
+            <span className="text-[#19b576]"> Assembly</span>
           </h2>
           <p className="text-lg text-white max-w-2xl mx-auto">
-            Watch how our modular system comes together in four simple steps.
+            Deploy a complete AI ecosystem in four simple steps.
           </p>
         </div>
 

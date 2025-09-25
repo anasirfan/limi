@@ -286,7 +286,7 @@ const AssemblyPage = () => {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  Get Started
+                  Try Configurator
                 </motion.button>
            
             </div>

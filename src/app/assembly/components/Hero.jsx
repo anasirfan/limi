@@ -143,7 +143,7 @@ const Hero = ({ variant = "glassmorphism" }) => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1.4 }}
           >
-            Revolutionary smart room control powered <br/> by AI. Transform spaces into intelligent<br/> environments.
+            Transform any space into an intelligent environment.<br/> AI that understands, adapts, and anticipates<br/> your every need.
           </motion.p>
           
           <motion.div
