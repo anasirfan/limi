@@ -74,6 +74,7 @@ const ConfiguratorLayout = () => {
       // Save default configuration values
       const defaultConfig = {
         lightType: "ceiling",
+        environment: "noScene",
         baseType: "round",
         configurationType: "pendant",
         lightAmount: 1,
@@ -136,6 +137,7 @@ const ConfiguratorLayout = () => {
   const [config, setConfig] = useState(() => {
     const savedConfig = loadFromLocalStorage("lightConfig", {
       lightType: "ceiling",
+      environment: "noScene",
       baseType: "round",
       configurationType: "pendant",
       lightAmount: 1,
@@ -837,6 +839,17 @@ const ConfiguratorLayout = () => {
     setActiveStep("systemType");
   }, []);
 
+  // Handle environment change
+  const handleEnvironmentChange = useCallback((environment) => {
+    // Update config state
+    setConfig((prev) => ({
+      ...prev,
+      environment,
+    }));
+
+    // Note: PlayCanvas message is sent directly from EnvironmentDropdown component
+  }, []);
+
   const handleConnectorColorChange = useCallback(
     (connectorColor) => {
       // Send messages for each selected pendant
@@ -1202,6 +1215,7 @@ const ConfiguratorLayout = () => {
                 setShowConfigurationTypeSelector
               }
               onLightTypeChange={handleLightTypeChange}
+              onEnvironmentChange={handleEnvironmentChange}
               onBaseTypeChange={handleBaseTypeChange}
               onBaseColorChange={handleBaseColorChange}
               onConnectorColorChange={handleConnectorColorChange}

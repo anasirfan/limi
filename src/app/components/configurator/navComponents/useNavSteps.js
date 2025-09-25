@@ -5,7 +5,8 @@ import {
   FaObjectGroup, 
   FaList, 
   FaCubes,
-  FaPalette 
+  FaPalette,
+  FaGlobe
 } from "react-icons/fa";
 
 export const useNavSteps = (config) => {
@@ -41,6 +42,14 @@ export const useNavSteps = (config) => {
       tooltip: 'Select light type (wall, ceiling, floor)',
       isActive: true, // Always active
       isCompleted: Boolean(config.lightType)
+    },
+    { 
+      id: 'environment', 
+      icon: <FaGlobe />, 
+      label: 'Environment',
+      tooltip: 'Select environment scene (no scene, interior)',
+      isActive: true, // Always active
+      isCompleted: Boolean(config.environment)
     },
     { 
       id: 'baseType', 

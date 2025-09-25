@@ -12,11 +12,13 @@ import {
   FaObjectGroup, 
   FaList, 
   FaCubes,
-  FaPalette 
+  FaPalette,
+  FaGlobe
 } from 'react-icons/fa';
 import { FiX, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import { NavButton } from './navComponents/NavButton';
 import { LightTypeDropdown } from './navComponents/LightTypeDropdown';
+import { EnvironmentDropdown } from './navComponents/EnvironmentDropdown';
 import { BaseTypeDropdown } from './navComponents/BaseTypeDropdown';
 import { LightAmountDropdown } from './navComponents/LightAmountDropdown';
 import { PendantSelectionDropdown } from './navComponents/PendantSelectionDropdown';
@@ -50,6 +52,7 @@ const VerticalNavBar = ({
   cables, // Add cables prop
   onCableSizeChange, // Add cable size change handler
   onLightTypeChange,
+  onEnvironmentChange, // Add environment change handler
   onBaseTypeChange,
   onBaseColorChange,
   onConnectorColorChange,
@@ -730,6 +733,7 @@ const VerticalNavBar = ({
   const getNavIcon = (stepId) => {
     const iconMap = {
       lightType: <FaLightbulb />,
+      environment: <FaGlobe />,
       baseType: <FaLayerGroup />, 
       baseColor: <FaPalette />,
       lightAmount: <FaList />,
@@ -841,6 +845,18 @@ const VerticalNavBar = ({
                         setOpenDropdown={setOpenDropdown}
                         tourActive={tourState.isActive}
                         onTourSelection={handleTourSubSelection}
+                      />
+                    )}
+
+                    {step?.id === "environment" && openDropdown === step?.id && (
+                      <EnvironmentDropdown
+                        config={config}
+                        onEnvironmentChange={onEnvironmentChange}
+                        setActiveStep={setActiveStep}
+                        setOpenDropdown={setOpenDropdown}
+                        tourActive={tourState.isActive}
+                        onTourSelection={handleTourSubSelection}
+                        sendMessageToPlayCanvas={sendMessageToPlayCanvas}
                       />
                     )}
 
@@ -1023,6 +1039,7 @@ const VerticalNavBar = ({
         onClose={() => setMobileBottomMenuOpen(false)}
         config={config}
         onLightTypeChange={onLightTypeChange}
+        onEnvironmentChange={onEnvironmentChange}
         onBaseTypeChange={onBaseTypeChange}
         onBaseColorChange={onBaseColorChange}
         onConnectorColorChange={onConnectorColorChange}

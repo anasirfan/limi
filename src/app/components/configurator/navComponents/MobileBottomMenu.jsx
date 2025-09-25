@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { LightTypeDropdown } from './LightTypeDropdown';
+import { EnvironmentDropdown } from './EnvironmentDropdown';
 import { BaseTypeDropdown } from './BaseTypeDropdown';
 import  BaseColorPanel  from './BaseColorPanel';
 import { LightAmountDropdown } from './LightAmountDropdown';
@@ -17,6 +18,7 @@ const MobileBottomMenu = ({
   // Props for different components
   config,
   onLightTypeChange,
+  onEnvironmentChange,
   onBaseTypeChange,
   onBaseColorChange,
   onConnectorColorChange,
@@ -94,6 +96,7 @@ const MobileBottomMenu = ({
   const getTitle = () => {
     switch (activeStep) {
       case 'lightType': return 'Light Type';
+      case 'environment': return 'Environment';
       case 'baseType': return 'Base Type';
       case 'baseColor': return 'Base Color';
       case 'lightAmount': return 'Light Amount';
@@ -115,6 +118,19 @@ const MobileBottomMenu = ({
             setOpenDropdown={setOpenDropdown}
             tourActive={tourState.isActive}
             onTourSelection={handleTourSubSelection}
+          />
+        );
+      
+      case 'environment':
+        return (
+          <EnvironmentDropdown
+            config={config}
+            onEnvironmentChange={onEnvironmentChange}
+            setActiveStep={setActiveStep}
+            setOpenDropdown={setOpenDropdown}
+            tourActive={tourState.isActive}
+            onTourSelection={handleTourSubSelection}
+            sendMessageToPlayCanvas={sendMessageToPlayCanvas}
           />
         );
       
