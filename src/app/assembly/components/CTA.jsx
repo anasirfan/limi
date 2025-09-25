@@ -10,6 +10,7 @@ import {
   FaEnvelope,
   FaTwitter,
   FaLinkedin,
+  FaInstagram,
   FaGithub,
   FaTimes,
 } from "react-icons/fa";
@@ -32,11 +33,48 @@ const CTA = () => {
   const [showStartModal, setShowStartModal] = useState(false);
   const [showDemoModal, setShowDemoModal] = useState(false);
   const [showBrochureModal, setShowBrochureModal] = useState(false);
+  const [activeAccordion, setActiveAccordion] = useState(0);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     company: "",
   });
+
+  // Accordion data
+  const accordionData = [
+    {
+      id: "01",
+      title: "Instant Setup",
+      heading: "Instant Setup",
+      description: "Get your modular lighting system up and running in minutes with our plug-and-play technology. No complex wiring or technical expertise required.",
+      image: "/limiai/benefit1.mp4",
+      isVideo: true
+    },
+    {
+      id: "02", 
+      title: "Smart Control",
+      heading: "AI-Powered Intelligence",
+      description: "Experience intelligent automation that learns your preferences and optimizes lighting conditions automatically throughout the day.",
+      image: "/limiai/benefit2.mp4",
+      isVideo: true
+    },
+    {
+      id: "03",
+      title: "Secure System", 
+      heading: "Enterprise Security",
+      description: "Bank-level security protocols ensure your lighting data and controls remain protected with end-to-end encryption.",
+      image: "/limiai/benefit3.mp4",
+      isVideo: true
+    },
+    {
+      id: "04",
+      title: "Endless Options",
+      heading: "Endless Customization", 
+      description: "Create unique lighting experiences with infinite configuration possibilities, custom color palettes, and dynamic scene presets.",
+      image: "/limiai/benefit4.mp4",
+      isVideo: true
+    }
+  ];
 
   useEffect(() => {
     setMounted(true);
@@ -163,9 +201,9 @@ const CTA = () => {
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-20"
+          className="text-center mb-6"
         >
-          <div className="relative  inline-block mb-8">
+          <div className="relative  inline-block">
             <h2 className="text-5xl md:text-7xl font-black text-white mb-6 leading-tight">
               READY TO{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#54bb74] to-[#93cfa2]">
@@ -186,87 +224,256 @@ const CTA = () => {
             />
           </div>
 
-          <p className="text-2xl text-white max-w-4xl mx-auto mb-12 leading-relaxed font-medium">
+          <p className="text-2xl text-white max-w-4xl mx-auto mb-4 leading-relaxed font-medium">
             Join the lighting revolution. Experience the future of modular,
             intelligent illumination that adapts to your needs and grows with
             your space.
           </p>
         </motion.div>
 
-        {/* Aceternity UI Glowing Grid */}
+        {/* Modern Accordion Section */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.3 }}
           className="mb-20"
         >
-          <ul className="grid grid-cols-1 grid-rows-none gap-4 md:grid-cols-12 md:grid-rows-3 lg:gap-4 xl:max-h-[34rem] xl:grid-rows-2">
-            <GridItem
-              area="md:[grid-area:1/1/2/7] xl:[grid-area:1/1/2/5]"
-              icon={
-                <HiCube className="h-4 w-4 text-black dark:text-neutral-400" />
-              }
-              title="Modular Assembly System"
-              description="Experience the revolutionary modular lighting system that adapts to any space configuration."
-              video="/limiai/benefit1.mp4"
-              onClick={() => {
-                setShowDemoModal(true);
-                trackModalInteraction("demo", "open");
-              }}
-            />
-            <GridItem
-              area="md:[grid-area:1/7/2/13] xl:[grid-area:2/1/3/5]"
-              icon={
-                <HiCog className="h-4 w-4 text-black dark:text-neutral-400" />
-              }
-              title="AI-Powered Intelligence"
-              description="Smart automation that learns your preferences and optimizes lighting conditions automatically."
-              video="/limiai/benefit2.mp4"
-              onClick={() => {
-                setShowStartModal(true);
-                trackModalInteraction("start_journey", "open");
-              }}
-            />
-            <GridItem
-              area="md:[grid-area:2/1/3/7] xl:[grid-area:1/5/3/8]"
-              icon={
-                <HiLockClosed className="h-4 w-4 text-black dark:text-neutral-400" />
-              }
-              title="Enterprise Security"
-              description="Bank-level security protocols ensure your lighting data and controls remain protected."
-              video="/limiai/benefit3.mp4"
-              onClick={() => {
-                setShowBrochureModal(true);
-                trackModalInteraction("brochure", "open");
-              }}
-            />
-            <GridItem
-              area="md:[grid-area:2/7/3/13] xl:[grid-area:1/8/2/13]"
-              icon={
-                <HiSparkles className="h-4 w-4 text-black dark:text-neutral-400" />
-              }
-              title="Endless Customization"
-              description="Create unique lighting experiences with infinite configuration possibilities and color options."
-              video="/limiai/benefit4.mp4"
-              onClick={() => {
-                setShowDemoModal(true);
-                trackModalInteraction("demo", "open");
-              }}
-            />
-            <GridItem
-              area="md:[grid-area:3/1/4/13] xl:[grid-area:2/8/3/13]"
-              icon={
-                <HiLightBulb className="h-4 w-4 text-black dark:text-neutral-400" />
-              }
-              title="Future-Ready Technology"
-              description="Built for tomorrow with continuous updates and expanding ecosystem of smart features."
-              video="/limiai/main_vid.mp4"
-              onClick={() => {
-                setShowStartModal(true);
-                trackModalInteraction("start_journey", "open");
-              }}
-            />
-          </ul>
+          {/* Desktop Layout */}
+          <div className="hidden lg:flex flex-row gap-4 h-[550px]">
+            {accordionData.map((item, index) => (
+              <motion.div
+                key={item.id}
+                className={`relative transition-all duration-500 ease-in-out cursor-pointer ${
+                  activeAccordion === index 
+                    ? 'flex-[2]' 
+                    : 'flex-[0.3]'
+                }`}
+                onClick={() => setActiveAccordion(index)}
+                whileHover={{ scale: activeAccordion !== index ? 1.02 : 1 }}
+              >
+                {/* Unified Container */}
+                <div className={`
+                  h-full flex flex-row rounded-2xl overflow-hidden
+                  transition-all duration-500
+                  ${activeAccordion === index 
+                    ? 'bg-[#004D3F]' 
+                    : 'bg-[#0F1511] hover:bg-[#54bb74]/10'
+                  }
+                `}>
+                  {/* Vertical Bar - Always Visible */}
+                  <div className={`
+                    ${activeAccordion === index ? 'w-20' : 'w-full'} 
+                    h-full transition-all duration-500 relative
+                  `}>
+                    {/* Collapsed State Content */}
+                    <div className="absolute inset-0 flex flex-col justify-between p-6 transition-opacity duration-300">
+                      {/* Number at top */}
+                      <div className={`text-2xl font-bold text-center transition-colors duration-300 ${
+                        activeAccordion === index ? 'text-white' : 'text-[#8ECA9F]'
+                      }`}>
+                        {item.id}
+                      </div>
+                      
+                      {/* Vertical Title at bottom */}
+                      <div className="flex justify-center items-end h-full pb-4">
+                        <div 
+                          className={`text-xl font-medium tracking-wider transition-colors duration-300 ${
+                            activeAccordion === index ? 'text-white' : 'text-[#8ECA9F]'
+                          }`}
+                          style={{
+                            writingMode: 'vertical-rl',
+                            textOrientation: 'mixed',
+                            transform: 'rotate(180deg)'
+                          }}
+                        >
+                          {item.title}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Expanded Content Panel - Desktop */}
+                  <motion.div
+                    initial={false}
+                    animate={{
+                      width: activeAccordion === index ? 'auto' : 0,
+                      opacity: activeAccordion === index ? 1 : 0
+                    }}
+                    transition={{ duration: 0.5, ease: "easeInOut" }}
+                    className={`
+                      overflow-hidden
+                      ${activeAccordion === index ? 'flex-1' : 'w-0'}
+                    `}
+                  >
+                    <div className="h-full flex flex-row min-w-[500px]">
+                      {/* Content Section */}
+                      <div className="flex-1 p-8 flex flex-col justify-between">
+                        <div>
+                          <h3 className="text-3xl font-bold text-white mb-4">
+                            {item.heading}
+                          </h3>
+                          <p className="text-white/90 text-lg leading-relaxed mb-8">
+                            {item.description}
+                          </p>
+                        </div>
+                        
+                        {/* Next Button */}
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setShowStartModal(true);
+                            trackModalInteraction("start_journey", "open");
+                          }}
+                          className="self-start px-8 py-3 bg-gradient-to-r from-[#54bb74] to-[#93cfa2] 
+                                   text-white rounded-xl font-semibold flex items-center gap-2 
+                                   hover:shadow-lg transition-all duration-300"
+                        >
+                          Next
+                          <FaArrowRight className="text-sm" />
+                        </motion.button>
+                      </div>
+
+                      {/* Image/Video Section */}
+                      <div className="flex-1 relative p-8">
+                        <div className="w-full h-full rounded-xl overflow-hidden">
+                          {item.isVideo ? (
+                            <video
+                              src={item.image}
+                              className="w-full h-full object-cover"
+                              autoPlay
+                              loop
+                              muted
+                              playsInline
+                            />
+                          ) : (
+                            <Image
+                              src={item.image}
+                              alt={item.heading}
+                              fill
+                              className="object-cover"
+                            />
+                          )}
+                          {/* Gradient overlay for better integration */}
+                          <div className="absolute inset-0 bg-gradient-to-l from-transparent to-[#004D3F]/30" />
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Mobile & Tablet Layout */}
+          <div className="lg:hidden space-y-4">
+            {accordionData.map((item, index) => (
+              <motion.div
+                key={item.id}
+                className="relative cursor-pointer"
+                onClick={() => setActiveAccordion(activeAccordion === index ? -1 : index)}
+                whileHover={{ scale: 1.01 }}
+              >
+                {/* Mobile Accordion Item */}
+                <div className={`
+                  rounded-2xl overflow-hidden transition-all duration-500
+                  ${activeAccordion === index 
+                    ? 'bg-[#004D3F]' 
+                    : 'bg-[#0F1511] hover:bg-[#54bb74]/10'
+                  }
+                `}>
+                  {/* Header Bar */}
+                  <div className="flex items-center justify-between p-6">
+                    <div className="flex items-center gap-4">
+                      <div className={`text-2xl font-bold transition-colors duration-300 ${
+                        activeAccordion === index ? 'text-white' : 'text-[#8ECA9F]'
+                      }`}>
+                        {item.id}
+                      </div>
+                      <div className={`text-xl font-medium transition-colors duration-300 ${
+                        activeAccordion === index ? 'text-white' : 'text-[#8ECA9F]'
+                      }`}>
+                        {item.title}
+                      </div>
+                    </div>
+                    <motion.div
+                      animate={{ rotate: activeAccordion === index ? 180 : 0 }}
+                      transition={{ duration: 0.3 }}
+                      className={`transition-colors duration-300 ${
+                        activeAccordion === index ? 'text-white' : 'text-[#8ECA9F]'
+                      }`}
+                    >
+                      <FaArrowRight className="text-lg rotate-90" />
+                    </motion.div>
+                  </div>
+
+                  {/* Expanded Content - Mobile */}
+                  <motion.div
+                    initial={false}
+                    animate={{
+                      height: activeAccordion === index ? 'auto' : 0,
+                      opacity: activeAccordion === index ? 1 : 0
+                    }}
+                    transition={{ duration: 0.5, ease: "easeInOut" }}
+                    className="overflow-hidden"
+                  >
+                    <div className="p-6 pt-0 space-y-6">
+                      {/* Content Section */}
+                      <div>
+                        <h3 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                          {item.heading}
+                        </h3>
+                        <p className="text-white/90 text-base md:text-lg leading-relaxed mb-6">
+                          {item.description}
+                        </p>
+                      </div>
+
+                      {/* Video Section */}
+                      <div className="relative aspect-video rounded-xl overflow-hidden">
+                        {item.isVideo ? (
+                          <video
+                            src={item.image}
+                            className="w-full h-full object-cover"
+                            autoPlay
+                            loop
+                            muted
+                            playsInline
+                          />
+                        ) : (
+                          <Image
+                            src={item.image}
+                            alt={item.heading}
+                            fill
+                            className="object-cover"
+                          />
+                        )}
+                        {/* Gradient overlay for better integration */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#004D3F]/30 to-transparent" />
+                      </div>
+
+                      {/* Next Button */}
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowStartModal(true);
+                          trackModalInteraction("start_journey", "open");
+                        }}
+                        className="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-[#54bb74] to-[#93cfa2] 
+                                 text-white rounded-xl font-semibold flex items-center justify-center gap-2 
+                                 hover:shadow-lg transition-all duration-300"
+                      >
+                        Next
+                        <FaArrowRight className="text-sm" />
+                      </motion.button>
+                    </div>
+                  </motion.div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </motion.div>
 
         {/* Footer */}
@@ -310,7 +517,7 @@ const CTA = () => {
                 <h4 className="text-xl font-semibold text-white mb-4">
                   Follow Us
                 </h4>
-                <div className="flex justify-center">
+                <div className="flex justify-center gap-4">
                   <motion.a
                     href="https://www.linkedin.com/company/limi-ai/"
                     target="_blank"
@@ -321,6 +528,17 @@ const CTA = () => {
                     title="LinkedIn"
                   >
                     <FaLinkedin className="text-xl" />
+                  </motion.a>
+                  <motion.a
+                    href="https://www.instagram.com/limi_uk/?igsh=N2t5ODNsbWFxcm8y#"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    whileHover={{ scale: 1.2, y: -3 }}
+                    whileTap={{ scale: 0.9 }}
+                    className="w-14 h-14 bg-[#54bb74] rounded-full flex items-center justify-center text-white hover:bg-[#93cfa2] transition-colors duration-300 shadow-lg"
+                    title="Instagram"
+                  >
+                    <FaInstagram className="text-xl" />
                   </motion.a>
                 </div>
               </div>
@@ -612,52 +830,5 @@ const CTA = () => {
   );
 };
 
-const GridItem = ({ area, icon, title, description, video, onClick }) => {
-  return (
-    <li
-      className={`min-h-[14rem] list-none cursor-pointer ${area}`}
-      onClick={onClick}
-    >
-      <div className="relative h-full rounded-2xl border p-2 md:rounded-3xl md:p-3">
-        <GlowingEffect
-          blur={0}
-          borderWidth={3}
-          spread={80}
-          glow={true}
-          disabled={false}
-          proximity={64}
-          inactiveZone={0.01}
-        />
-        <div className="border-0.75 relative flex h-full flex-col justify-between gap-6 overflow-hidden rounded-xl p-6 md:p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-[#54bb74]/20">
-          {/* Background Video */}
-          {video && (
-            <div className="absolute inset-0 rounded-xl overflow-hidden">
-              <video
-                src={video}
-                className="w-full h-full object-cover opacity-40"
-                autoPlay
-                loop
-                muted
-                playsInline
-              />
-              {/* Enhanced gradient overlay for better text readability */}
-            </div>
-          )}
-
-          <div className="relative flex flex-1 flex-col justify-end gap-3 z-10">
-            <div className="space-y-3">
-              <h3 className="-tracking-4 pt-0.5 font-sans text-xl/[1.375rem] font-bold text-balance text-white md:text-2xl/[1.875rem] drop-shadow-lg">
-                {title}
-              </h3>
-              <h2 className="font-sans text-sm/[1.125rem] text-white/90 md:text-base/[1.375rem] [&_b]:md:font-semibold [&_strong]:md:font-semibold drop-shadow-md">
-                {description}
-              </h2>
-            </div>
-          </div>
-        </div>
-      </div>
-    </li>
-  );
-};
 
 export default CTA;
