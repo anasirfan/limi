@@ -57,7 +57,7 @@ const AssemblyScroll = () => {
   return (
     <section 
       ref={containerRef}
-      className="relative py-20 bg-[#0E0E0D] overflow-hidden"
+      className="relative pb-20 pt-24 bg-[#0E0E0D] overflow-hidden"
     >
       <div className="max-w-7xl mx-auto px-4">
         {/* Section Header */}
@@ -270,25 +270,6 @@ const AssemblyScroll = () => {
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Process Flow Indicator */}
-        <div className="flex justify-center items-center mt-12 space-x-4">
-          {steps.map((_, index) => (
-            <div key={index} className="flex items-center">
-              <div className="w-3 h-3 rounded-full bg-[#19b576]" />
-              {index < steps.length - 1 && (
-                <div className="w-12 h-0.5 bg-[#19b576]/30 ml-4" />
-              )}
-            </div>
-          ))}
-        </div>
-
-        {/* Bottom CTA */}
-        <div className="text-center mt-16">
-          <button className="px-8 py-4 bg-[#19b576] text-white rounded-full font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300">
-            Start Your Installation
-          </button>
         </div>
       </div>
     </section>

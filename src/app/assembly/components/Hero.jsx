@@ -119,12 +119,12 @@ const Hero = ({ variant = "glassmorphism" }) => {
 
       {/* Hero Content - Left Bottom */}
       <motion.div
-        className="absolute bottom-32 left-8 z-20 max-w-sm"
+        className="absolute bottom-32 left-0 px-4 sm:px-0 sm:left-8 z-20 max-w-sm"
         initial={{ opacity: 0, x: -50 }}
         animate={{ opacity: videoLoaded ? 1 : 0, x: videoLoaded ? 0 : -50 }}
         transition={{ duration: 1, delay: 1 }}
       >
-        <div className=" p-6 ">
+        <div className="p-0 sm:p-6 ">
           <motion.h1
             className="text-3xl md:text-6xl font-bold text-white mb-6"
             initial={{ opacity: 0, y: 20 }}
@@ -183,14 +183,15 @@ const Hero = ({ variant = "glassmorphism" }) => {
           animate={{ opacity: videoLoaded ? 1 : 0, y: videoLoaded ? 0 : 20 }}
           transition={{ duration: 0.8, delay: 2 }}
         >
-          <div className="flex space-x-3">
+          {/* Desktop View - 3 images side by side */}
+          <div className="hidden sm:flex">
             {[0, 1, 2].map((position) => {
               const imageIndex = (currentImageIndex + position) % assemblyImages.length;
               const currentImage = assemblyImages[imageIndex];
               return (
                 <motion.div
                   key={position}
-                  className="flex flex-col items-center"
+                  className="flex flex-col items-center mr-4"
                   initial={{ x: position * 140 }}
                   animate={{ 
                     x: 0,
@@ -225,12 +226,74 @@ const Hero = ({ variant = "glassmorphism" }) => {
               );
             })}
           </div>
+
+          {/* Mobile View - Three images with center focus */}
+          <div className="sm:hidden flex flex-col items-center">
+            <div className="flex items-center justify-center space-x-2 mb-4">
+              {[0, 1, 2].map((position) => {
+                const imageIndex = (currentImageIndex + position) % assemblyImages.length;
+                const currentImage = assemblyImages[imageIndex];
+                const isCenter = position === 1;
+                
+                return (
+                  <motion.div
+                    key={position}
+                    className="flex flex-col items-center"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ 
+                      opacity: isCenter ? 1 : 0.6,
+                      scale: isCenter ? 1 : 0.7,
+                      y: isCenter ? 0 : 10
+                    }}
+                    transition={{ duration: 0.5, ease: "easeInOut" }}
+                  >
+                    <div className={`relative rounded-lg overflow-hidden shadow-lg mb-2 ${
+                      isCenter ? 'w-32 h-20' : 'w-20 h-12'
+                    }`}>
+                      <Image
+                        src={currentImage.src}
+                        alt={currentImage.label}
+                        fill
+                        className="object-cover"
+                      />
+                      {/* Image overlay with subtle gradient */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+                    </div>
+                    
+                    {/* Image Label - only show for center image */}
+                    {isCenter && (
+                      <span className="text-xs text-white font-medium text-center">
+                        {currentImage.label}
+                      </span>
+                    )}
+                  </motion.div>
+                );
+              })}
+            </div>
+
+            {/* Dots Indicator */}
+            <div className="flex space-x-2">
+              {assemblyImages.map((_, index) => (
+                <motion.div
+                  key={index}
+                  className={`w-2 h-2 rounded-full cursor-pointer transition-all duration-300 ${
+                    index === currentImageIndex 
+                      ? 'bg-[#54bb74] scale-125' 
+                      : 'bg-white/40 hover:bg-white/60'
+                  }`}
+                  whileHover={{ scale: 1.2 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => setCurrentImageIndex(index)}
+                />
+              ))}
+            </div>
+          </div>
         </motion.div>
       </motion.div>
 
       {/* Scroll Indicator */}
       <motion.div
-        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white/70"
+        className="hidden sm:block absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white/70"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, delay: 2 }}

@@ -170,7 +170,7 @@ const InteractiveViewer = () => {
   const sendMessagesForDesign = (designName, idOrIds) => {
     const assignment = systemAssignments.find((a) => a.design === designName);
     if (!assignment) return;
-
+console.log("assignmentss", assignment)
     // Helper to send all messages for a single id
     const sendAllMessages = (id) => {
       if (assignment.systemType === "bar") {
@@ -216,7 +216,7 @@ const InteractiveViewer = () => {
   return (
     <section
       ref={containerRef}
-      className="relative py-20 bg-gradient-to-b from-[#1a1a1a] to-[#f3ebe2] overflow-hidden"
+      className="relative pt-24 pb-8 bg-gradient-to-b from-[#1a1a1a] to-[#f3ebe2] overflow-hidden"
     >
       <div className="max-w-7xl mx-auto px-4">
         {/* Section Header */}
@@ -224,9 +224,6 @@ const InteractiveViewer = () => {
 
         {/* 3D Viewer Container */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={isInView ? { opacity: 1, scale: 1 } : {}}
-          transition={{ duration: 1, delay: 0.3 }}
           className="relative"
         >
           <ViewerContainer
@@ -239,6 +236,7 @@ const InteractiveViewer = () => {
             sendMessageToPlayCanvas={sendMessageToPlayCanvas}
             trackAssemblyEvent={trackAssemblyEvent}
             appReady={appReady}
+            sendMessagesForDesign={sendMessagesForDesign}
           />
           <SensorOptionsPanel
             showSensorOptions={showSensorOptions}
@@ -250,7 +248,7 @@ const InteractiveViewer = () => {
           />
         </motion.div>
         {/* Feature Cards */}
-        <FeatureCards isInView={isInView} />
+        {/* <FeatureCards isInView={isInView} /> */}
       </div>
     </section>
   );

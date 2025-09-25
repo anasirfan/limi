@@ -77,7 +77,7 @@ const SensorModuleCard = ({ title, description, icon, delay = 0 }) => {
   if (!mounted) return null;
 
   return (
-    <div className="relative">
+    <div className="relative ">
       <motion.div
         ref={cardRef}
         className="relative group cursor-pointer"

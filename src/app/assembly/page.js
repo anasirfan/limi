@@ -16,6 +16,7 @@ import Image from "next/image";
 import Hero from "./components/Hero";
 import AssemblyScroll from "./components/AssemblyScroll";
 import SensorModuleCard from "./components/SensorModuleCard";
+import { HeroScrollDemo } from "./components/HeroScrollDemo";
 import InteractiveViewer from "./components/InteractiveViewer";
 import BenefitTimeline from "./components/BenefitTimeline";
 import CTA from "./components/CTA";
@@ -37,6 +38,7 @@ const AssemblyPage = () => {
   const [mounted, setMounted] = useState(false);
   const [currentTheme, setCurrentTheme] = useState("light");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showLoadingOverlay, setShowLoadingOverlay] = useState(true);
   const containerRef = useRef(null);
   const { scrollYProgress } = useScroll();
 
@@ -69,10 +71,13 @@ const AssemblyPage = () => {
     return () => window.removeEventListener("message", handleMessage);
   };
 
-
   useEffect(() => {
     setMounted(true);
 
+    // Hide loading overlay after 3 seconds
+    const loadingTimer = setTimeout(() => {
+      setShowLoadingOverlay(false);
+    }, 3000);
 
     // Listen for app:ready message
     const cleanup = listenForAppReady((data, event) => {
@@ -81,7 +86,7 @@ const AssemblyPage = () => {
     });
 
     return () => {
-      clearTimeout(timeout);
+      clearTimeout(loadingTimer);
       cleanup();
     };
   }, []);
@@ -145,20 +150,78 @@ const AssemblyPage = () => {
     };
   }, [mounted]);
 
-  if (!mounted) {
-    return (
-      <div className="min-h-screen bg-[#f3ebe2] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#54bb74]"></div>
-      </div>
-    );
-  }
-
   return (
     <>
+      {/* Loading Overlay */}
+      {showLoadingOverlay && (
+        <motion.div
+          initial={{ opacity: 1 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-[#292929] to-[#1a1a1a]"
+        >
+          <div className="text-center">
+            {/* Logo */}
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="mb-8"
+            >
+              <Image
+                src="/images/svgLogos/__Icon_Wordmark_Inverted.svg"
+                alt="LIMI Logo"
+                width={200}
+                height={60}
+                className="h-12 w-auto mx-auto"
+              />
+            </motion.div>
+
+            {/* Loading Spinner */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.5 }}
+              className="mb-6"
+            >
+              <div className="w-16 h-16 border-4 border-[#54bb74]/30 border-t-[#54bb74] rounded-full animate-spin mx-auto"></div>
+            </motion.div>
+
+            {/* Loading Text */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.8 }}
+              className="text-center"
+            >
+              <p className="text-white text-xl font-semibold mb-2">
+                Loading Assembly Experience
+              </p>
+              <p className="text-gray-400 text-sm">
+                Preparing your modular lighting interface...
+              </p>
+            </motion.div>
+
+            {/* Progress Bar */}
+            <div className="mt-8 mx-auto">
+              <div className="w-64 h-1 bg-gray-700 rounded-full mx-auto overflow-hidden relative">
+                <motion.div
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: 1 }}
+                  transition={{ duration: 3, ease: "easeInOut" }}
+                  className="h-full bg-gradient-to-r from-[#54bb74] to-[#93cfa2] rounded-full origin-center"
+                />
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
       {/* Umami Analytics Script for limiai.co */}
       <Script
         src="https://cloud.umami.is/script.js"
-        data-website-id="c2dbae41-29a3-457e-bcb6-5a6b68a53fe3"
+        data-website-id="3b5b8e7b-2c5a-4b1e-9f8d-1a2b3c4d5e6f"
         strategy="afterInteractive"
       />
 
@@ -184,28 +247,40 @@ const AssemblyPage = () => {
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center space-x-8">
-  <Link href="#hero" className="text-white/90 hover:text-white transition-colors duration-200 font-medium">
-    Home
-  </Link>
-  <Link href="#assembly" className="text-white/90 hover:text-white transition-colors duration-200 font-medium">
-    Assembly
-  </Link>
-  <Link href="#sensors" className="text-white/90 hover:text-white transition-colors duration-200 font-medium">
-    Sensors
-  </Link>
-  <Link href="#configurator" className="text-white/90 hover:text-white transition-colors duration-200 font-medium">
-    Configurator
-  </Link>
-  <Link href="#benefits" className="text-white/90 hover:text-white transition-colors duration-200 font-medium">
-    Benefits
-  </Link>
-
-</nav>
+              <Link
+                href="#home"
+                className="text-white/90 hover:text-white transition-colors duration-200 font-medium"
+              >
+                Home
+              </Link>
+              <Link
+                href="#assembly"
+                className="text-white/90 hover:text-white transition-colors duration-200 font-medium"
+              >
+                Assembly
+              </Link>
+              <Link
+                href="#sensors"
+                className="text-white/90 hover:text-white transition-colors duration-200 font-medium"
+              >
+                Sensors
+              </Link>
+              <Link
+                href="#configurator"
+                className="text-white/90 hover:text-white transition-colors duration-200 font-medium"
+              >
+                Configurator
+              </Link>
+              <Link
+                href="#benefits"
+                className="text-white/90 hover:text-white transition-colors duration-200 font-medium"
+              >
+                Benefits
+              </Link>
+            </nav>
 
             {/* Desktop Auth Buttons */}
             <div className="hidden md:flex items-center space-x-4">
-             
-              <Link href="/get-started">
                 <motion.button
                   className="bg-white text-black px-6 py-2 rounded-full font-semibold hover:bg-gray-100 transition-all duration-200 shadow-lg"
                   whileHover={{ scale: 1.05 }}
@@ -213,7 +288,7 @@ const AssemblyPage = () => {
                 >
                   Get Started
                 </motion.button>
-              </Link>
+           
             </div>
 
             {/* Mobile Menu Button */}
@@ -236,53 +311,53 @@ const AssemblyPage = () => {
             transition={{ duration: 0.2 }}
           >
             <nav className="flex flex-col space-y-4">
-  <Link 
-    href="#hero" 
-    className="text-white/90 hover:text-white transition-colors duration-200 font-medium py-2"
-    onClick={() => setIsMenuOpen(false)}
-  >
-    Home
-  </Link>
-  <Link 
-    href="#assembly" 
-    className="text-white/90 hover:text-white transition-colors duration-200 font-medium py-2"
-    onClick={() => setIsMenuOpen(false)}
-  >
-    Assembly
-  </Link>
-  <Link 
-    href="#sensors" 
-    className="text-white/90 hover:text-white transition-colors duration-200 font-medium py-2"
-    onClick={() => setIsMenuOpen(false)}
-  >
-    Sensors
-  </Link>
-  <Link 
-    href="#configurator" 
-    className="text-white/90 hover:text-white transition-colors duration-200 font-medium py-2"
-    onClick={() => setIsMenuOpen(false)}
-  >
-    Configurator
-  </Link>
-  <Link 
-    href="#benefits" 
-    className="text-white/90 hover:text-white transition-colors duration-200 font-medium py-2"
-    onClick={() => setIsMenuOpen(false)}
-  >
-    Benefits
-  </Link>
-  <Link 
-    href="#contact" 
-    className="text-white/90 hover:text-white transition-colors duration-200 font-medium py-2"
-    onClick={() => setIsMenuOpen(false)}
-  >
-    Contact
-  </Link>
-  
-  <hr className="border-white/20 my-4" />
-              
-              <Link 
-                href="/login" 
+              <Link
+                href="#hero"
+                className="text-white/90 hover:text-white transition-colors duration-200 font-medium py-2"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Home
+              </Link>
+              <Link
+                href="#assembly"
+                className="text-white/90 hover:text-white transition-colors duration-200 font-medium py-2"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Assembly
+              </Link>
+              <Link
+                href="#sensors"
+                className="text-white/90 hover:text-white transition-colors duration-200 font-medium py-2"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Sensors
+              </Link>
+              <Link
+                href="#configurator"
+                className="text-white/90 hover:text-white transition-colors duration-200 font-medium py-2"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Configurator
+              </Link>
+              <Link
+                href="#benefits"
+                className="text-white/90 hover:text-white transition-colors duration-200 font-medium py-2"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Benefits
+              </Link>
+              <Link
+                href="#contact"
+                className="text-white/90 hover:text-white transition-colors duration-200 font-medium py-2"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Contact
+              </Link>
+
+              <hr className="border-white/20 my-4" />
+
+              <Link
+                href="/login"
                 className="text-white/90 hover:text-white transition-colors duration-200 font-medium py-2"
                 onClick={() => setIsMenuOpen(false)}
               >
@@ -303,21 +378,20 @@ const AssemblyPage = () => {
         className="relative overflow-hidden"
         style={{ backgroundColor }}
       >
-    
         {/* Hero Section */}
         <section id="hero">
-  <Hero onVisible={() => trackAssemblyEvent("Hero Section")} />
-</section>
-        
+          <Hero onVisible={() => trackAssemblyEvent("Hero Section")} />
+        </section>
+
         {/* Assembly Scroll Storytelling */}
         <section id="assembly">
-  <AssemblyScroll
-    onVisible={() => trackAssemblyEvent("Assembly Scroll Storytelling")}
-  />
-</section>
+          <AssemblyScroll
+            onVisible={() => trackAssemblyEvent("Assembly Scroll Storytelling")}
+          />
+        </section>
 
         {/* Sensor Modules Grid */}
-        <section id="sensors" className="relative bg-white py-20 px-4">
+        <section id="sensors" className="relative bg-white pt-24 pb-20 px-4">
           <div className="max-w-7xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 50 }}
@@ -360,24 +434,29 @@ const AssemblyPage = () => {
           </div>
         </section>
 
+        {/* Hero Scroll Demo Section */}
+        <section id="hero-scroll">
+          <HeroScrollDemo />
+        </section>
+
         {/* Interactive 3D Viewer */}
         <section id="configurator">
-  <InteractiveViewer
-    onVisible={() => trackAssemblyEvent("Configurator Interactive Viewer")}
-  />
-</section>
+          <InteractiveViewer
+            onVisible={() =>
+              trackAssemblyEvent("Configurator Interactive Viewer")
+            }
+          />
+        </section>
 
         {/* Benefits Timeline */}
         <section id="benefits">
-  <BenefitTimeline
-    onVisible={() => trackAssemblyEvent("Benefits Timeline")}
-  />
-</section>
+          <BenefitTimeline
+            onVisible={() => trackAssemblyEvent("Benefits Timeline")}
+          />
+        </section>
 
         {/* CTA Section */}
         <CTA onVisible={() => trackAssemblyEvent("CTA Section")} />
-
-  
       </motion.div>
     </>
   );

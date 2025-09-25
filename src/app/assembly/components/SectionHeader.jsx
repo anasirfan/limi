@@ -5,9 +5,9 @@ const SectionHeader = ({ isInView }) => (
     initial={{ opacity: 0, y: 50 }}
     animate={isInView ? { opacity: 1, y: 0 } : {}}
     transition={{ duration: 0.8 }}
-    className="text-center mb-16"
+    className="text-center mb-6"
   >
-    <h2 className="text-5xl md:text-6xl font-black text-[#fafafa] mb-6">
+    <h2 className="text-5xl md:text-6xl font-black text-[#fafafa] mb-4">
       INTERACTIVE
       <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#54bb74] to-[#93cfa2]">
         {' '}3D VIEWER
