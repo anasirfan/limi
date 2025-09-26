@@ -116,9 +116,20 @@ const FreeTrialSection = ({ onGetStarted }) => {
   const [mounted, setMounted] = useState(false);
   const [showJourneyModal, setShowJourneyModal] = useState(false);
   const [showBrochureModal, setShowBrochureModal] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     setMounted(true);
+    
+    // Mobile detection
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
   const handleStartJourney = () => {
@@ -145,35 +156,36 @@ const FreeTrialSection = ({ onGetStarted }) => {
         >
           {/* Main Container - Bright Blue Background */}
           <div 
-            className="flex flex-col lg:flex-row items-center justify-between px-10 py-10 rounded-2xl shadow-2xl overflow-visible relative"
+            className={`flex ${isMobile ? 'flex-col' : 'flex-col lg:flex-row'} items-center justify-between px-10 py-10 rounded-2xl shadow-2xl overflow-visible relative`}
             style={{
               backgroundColor: '#54BB74',
-              height: '311px',
+              height: isMobile ? 'auto' : '311px',
+              minHeight: isMobile ? '400px' : '311px',
               borderRadius: '16px'
             }}
           >
             
             {/* Left Content - Text Area */}
-            <div className="flex-1 text-white z-10 mb-8 lg:mb-0">
+            <div className={`flex-1 text-white z-10 ${isMobile ? 'mb-6 text-center' : 'mb-8 lg:mb-0'}`}>
               <motion.h2
-                initial={{ opacity: 0, x: -30 }}
-                whileInView={{ opacity: 1, x: 0 }}
+                initial={{ opacity: 0, x: isMobile ? 0 : -30, y: isMobile ? -20 : 0 }}
+                whileInView={{ opacity: 1, x: 0, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
                 viewport={{ once: true }}
                 className="font-bold text-white mb-2"
-                style={{ fontSize: '28px' }}
+                style={{ fontSize: isMobile ? '24px' : '28px' }}
               >
                 Ready to Transform Your Space?
               </motion.h2>
               
               <motion.p
-                initial={{ opacity: 0, x: -30 }}
-                whileInView={{ opacity: 1, x: 0 }}
+                initial={{ opacity: 0, x: isMobile ? 0 : -30, y: isMobile ? -20 : 0 }}
+                whileInView={{ opacity: 1, x: 0, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
                 viewport={{ once: true }}
                 className="mb-5 leading-relaxed"
                 style={{ 
-                  fontSize: '16px', 
+                  fontSize: isMobile ? '14px' : '16px', 
                   color: '#E6E6E6',
                   lineHeight: '1.5'
                 }}
@@ -183,7 +195,7 @@ const FreeTrialSection = ({ onGetStarted }) => {
               
               {/* CTA Buttons */}
               <motion.div 
-                className="flex flex-col sm:flex-row gap-3"
+                className={`flex ${isMobile ? 'flex-col items-center' : 'flex-col sm:flex-row'} gap-3`}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.6 }}
@@ -280,29 +292,29 @@ const FreeTrialSection = ({ onGetStarted }) => {
             <div 
               className="flex-1 flex items-center justify-center relative"
               style={{
-                height: '311px',
+                height: isMobile ? '250px' : '311px',
                 overflow: 'visible',
-                marginLeft: '40px'
+                marginLeft: isMobile ? '0' : '40px',
+                marginTop: isMobile ? '20px' : '0'
               }}
             >
               <div
-  
                 className="w-full relative overflow-visible pointer-events-auto"
                 style={{
-                  height: '400px',
-                  maxWidth: '350px'
+                  height: isMobile ? '250px' : '400px',
+                  maxWidth: isMobile ? '280px' : '350px'
                 }}
               >
                 <Canvas
                   camera={{ 
-                    position: [0, 0, 4], 
-                    fov: 50,
+                    position: [0, 0, isMobile ? 4.2 : 3.8], 
+                    fov: isMobile ? 45 : 50,
                     near: 0.1,
                     far: 1000
                   }}
                   style={{ 
                     width: '100%', 
-                    height: '400px',
+                    height: isMobile ? '250px' : '400px',
                     background: 'transparent'
                   }}
                 >
@@ -320,15 +332,13 @@ const FreeTrialSection = ({ onGetStarted }) => {
                     <RobotModel />
                   </Suspense>
                   
-                  {/* OrbitControls with autoRotate */}
+                  {/* OrbitControls - rotation only, no zoom */}
                   <OrbitControls
                     enablePan={false}
-                    enableZoom={true}
+                    enableZoom={false}
                     enableRotate={true}
                     maxPolarAngle={Math.PI / 2}
                     minPolarAngle={Math.PI / 6}
-                    maxDistance={5}
-                    minDistance={3.5}
                     autoRotate={false}
                   />
                 </Canvas>
