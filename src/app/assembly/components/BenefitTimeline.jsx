@@ -64,10 +64,26 @@ const BenefitTimeline = () => {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-5xl md:text-7xl font-black mb-6 leading-tight">
-            <span className="text-white">WHY CHOOSE </span>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#54bb74] to-[#93cfa2]">INTELLIGENCE</span>
-          </h2>
+          <div className="relative inline-block">
+            <h2 className="text-5xl md:text-7xl font-black text-white mb-6 leading-tight">
+              WHY CHOOSE{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#54bb74] to-[#93cfa2]">
+                INTELLIGENCE
+              </span>
+            </h2>
+
+            {/* Decorative Elements */}
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+              className="absolute -top-8 -left-8 w-16 h-16 border-4 border-[#54bb74]/30 rounded-full"
+            />
+            <motion.div
+              animate={{ scale: [1, 1.2, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="absolute -top-4 -right-8 w-8 h-8 bg-[#93cfa2] rounded-full"
+            />
+          </div>
           <p className="text-xl text-white/70 max-w-4xl mx-auto leading-relaxed">
             Discover the revolutionary advantages that make our AI ecosystem 
             the future of autonomous environments.
@@ -85,18 +101,28 @@ const BenefitTimeline = () => {
                   initial={{ opacity: 0, x: -50 }}
                   animate={isInView ? { opacity: 1, x: 0 } : {}}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
-                  className="cursor-pointer"
+                  className="cursor-pointer focus:outline-none"
                   onClick={() => setSelectedOption(index)}
                 >
                   {/* Option Label - Only this gets green background */}
                   <motion.div 
-                    className={`flex items-center space-x-4 p-4 rounded-lg transition-all duration-500 ease-out ${
-                      selectedOption === index 
-                        ? 'bg-[#54bb74]/20 border border-[#54bb74]/50' 
-                        : 'hover:bg-white/5'
-                    }`}
-                    whileHover={{ scale: 1.02 }}
+                    className="flex items-center space-x-4 p-4 rounded-lg outline-none"
+                    style={{
+                      backgroundColor: selectedOption === index ? '#8ECA9F1A' : 'transparent'
+                    }}
+                    animate={{
+                      backgroundColor: selectedOption === index ? '#8ECA9F1A' : 'transparent',
+                      scale: selectedOption === index ? 1.02 : 1
+                    }}
+                    whileHover={{ 
+                      scale: 1.02,
+                      backgroundColor: selectedOption === index ? '#8ECA9F1A' : 'rgba(255,255,255,0.05)'
+                    }}
                     whileTap={{ scale: 0.98 }}
+                    transition={{ 
+                      duration: 0.4, 
+                      ease: [0.4, 0.0, 0.2, 1]
+                    }}
                   >
                     <motion.span 
                       className={`text-2xl font-bold transition-colors duration-500 ease-out ${

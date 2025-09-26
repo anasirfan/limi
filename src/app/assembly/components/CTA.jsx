@@ -168,6 +168,21 @@ const CTA = () => {
     );
   };
 
+  // Accordion navigation functions
+  const handleNextAccordion = (e) => {
+    e.stopPropagation();
+    if (activeAccordion < accordionData.length - 1) {
+      setActiveAccordion(activeAccordion + 1);
+    }
+  };
+
+  const handlePreviousAccordion = (e) => {
+    e.stopPropagation();
+    if (activeAccordion > 0) {
+      setActiveAccordion(activeAccordion - 1);
+    }
+  };
+
   if (!mounted) return null;
 
   return (
@@ -316,22 +331,38 @@ const CTA = () => {
                           </p>
                         </div>
                         
-                        {/* Next Button */}
-                        <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setShowStartModal(true);
-                            trackModalInteraction("start_journey", "open");
-                          }}
-                          className="self-start px-8 py-3 bg-gradient-to-r from-[#54bb74] to-[#93cfa2] 
-                                   text-white rounded-xl font-semibold flex items-center gap-2 
-                                   hover:shadow-lg transition-all duration-300"
-                        >
-                          Next
-                          <FaArrowRight className="text-sm" />
-                        </motion.button>
+                        {/* Navigation Buttons - Desktop Only */}
+                        <div className="flex gap-4">
+                          {/* Previous Button - Show for options 2, 3, 4 */}
+                          {index > 0 && (
+                            <motion.button
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              onClick={handlePreviousAccordion}
+                              className="px-8 py-3 bg-transparent border-2 border-white 
+                                       text-white rounded-xl font-semibold flex items-center gap-2 
+                                       hover:bg-white hover:text-[#004D3F] transition-all duration-300"
+                            >
+                              <FaArrowRight className="text-sm rotate-180" />
+                              Previous
+                            </motion.button>
+                          )}
+                          
+                          {/* Next Button - Show for options 1, 2, 3 */}
+                          {index < accordionData.length - 1 && (
+                            <motion.button
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              onClick={handleNextAccordion}
+                              className="px-8 py-3 bg-gradient-to-r from-[#54bb74] to-[#93cfa2] 
+                                       text-white rounded-xl font-semibold flex items-center gap-2 
+                                       hover:shadow-lg transition-all duration-300"
+                            >
+                              Next
+                              <FaArrowRight className="text-sm" />
+                            </motion.button>
+                          )}
+                        </div>
                       </div>
 
                       {/* Image/Video Section */}
@@ -451,22 +482,38 @@ const CTA = () => {
                         <div className="absolute inset-0 bg-gradient-to-t from-[#004D3F]/30 to-transparent" />
                       </div>
 
-                      {/* Next Button */}
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setShowStartModal(true);
-                          trackModalInteraction("start_journey", "open");
-                        }}
-                        className="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-[#54bb74] to-[#93cfa2] 
-                                 text-white rounded-xl font-semibold flex items-center justify-center gap-2 
-                                 hover:shadow-lg transition-all duration-300"
-                      >
-                        Next
-                        <FaArrowRight className="text-sm" />
-                      </motion.button>
+                      {/* Navigation Buttons - Mobile Only */}
+                      <div className="flex flex-col sm:flex-row gap-3">
+                        {/* Previous Button - Show for options 2, 3, 4 */}
+                        {index > 0 && (
+                          <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={handlePreviousAccordion}
+                            className="w-full sm:w-auto px-8 py-3 bg-transparent border-2 border-white 
+                                     text-white rounded-xl font-semibold flex items-center justify-center gap-2 
+                                     hover:bg-white hover:text-[#004D3F] transition-all duration-300"
+                          >
+                            <FaArrowRight className="text-sm rotate-180" />
+                            Previous
+                          </motion.button>
+                        )}
+                        
+                        {/* Next Button - Show for options 1, 2, 3 */}
+                        {index < accordionData.length - 1 && (
+                          <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={handleNextAccordion}
+                            className="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-[#54bb74] to-[#93cfa2] 
+                                     text-white rounded-xl font-semibold flex items-center justify-center gap-2 
+                                     hover:shadow-lg transition-all duration-300"
+                          >
+                            Next
+                            <FaArrowRight className="text-sm" />
+                          </motion.button>
+                        )}
+                      </div>
                     </div>
                   </motion.div>
                 </div>

@@ -147,14 +147,14 @@ const Hero = ({ variant = "glassmorphism" }) => {
           </motion.p>
           
           <motion.div
-            className="flex gap-3"
+            className="flex items-center gap-3"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1.6 }}
           >
             <Link href="/configurator">
               <motion.button
-                className="bg-[#19b576] text-white px-6 py-3 rounded-full font-semibold text-sm shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2"
+                className="bg-[#19b576] text-white px-6 py-3 rounded-full font-semibold text-sm shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2 h-12"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -165,7 +165,7 @@ const Hero = ({ variant = "glassmorphism" }) => {
             
             <Link href="/features">
               <motion.button
-                className="border-2 border-white/30 text-white hover:bg-white/10 px-6 py-3 rounded-full font-semibold text-sm backdrop-blur-sm transition-all duration-300 flex items-center gap-2"
+                className="border-2 border-white/30 text-white hover:bg-white/10 px-6 py-3 rounded-full font-semibold text-sm backdrop-blur-sm transition-all duration-300 flex items-center justify-center gap-2 h-12"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >

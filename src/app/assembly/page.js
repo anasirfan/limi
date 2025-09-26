@@ -14,11 +14,13 @@ import Image from "next/image";
 
 // Import components
 import Hero from "./components/Hero";
+import HeroNew from "./components/HeroNew";
 import AssemblyScroll from "./components/AssemblyScroll";
 import SensorModuleCard from "./components/SensorModuleCard";
 import { HeroScrollDemo } from "./components/HeroScrollDemo";
 import InteractiveViewer from "./components/InteractiveViewer";
 import BenefitTimeline from "./components/BenefitTimeline";
+import FreeTrialSection from "./components/FreeTrialSection";
 import CTA from "./components/CTA";
 
 // Import Umami tracking utilities
@@ -383,6 +385,11 @@ const AssemblyPage = () => {
           <Hero onVisible={() => trackAssemblyEvent("Hero Section")} />
         </section>
 
+        {/* New Hero Section with Carousel */}
+        {/* <section id="hero-new">
+          <HeroNew />
+        </section> */}
+
         {/* Assembly Scroll Storytelling */}
         <section id="assembly">
           <AssemblyScroll
@@ -391,7 +398,7 @@ const AssemblyPage = () => {
         </section>
 
         {/* Sensor Modules Grid */}
-        <section id="sensors" className="relative bg-white pt-24 pb-20 px-4">
+        <section id="sensors" className="relative bg-white pt-24 px-4">
           <div className="max-w-7xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 50 }}
@@ -432,6 +439,17 @@ const AssemblyPage = () => {
               />
             </div>
           </div>
+        </section>
+
+        {/* Free Trial Section */}
+        <section id="free-trial">
+          <FreeTrialSection 
+            onBrochureClick={() => {
+              // You can integrate this with your existing brochure modal logic
+              trackAssemblyEvent("Free Trial Brochure Click");
+              console.log("Brochure button clicked");
+            }}
+          />
         </section>
 
         {/* Hero Scroll Demo Section */}

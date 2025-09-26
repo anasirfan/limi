@@ -55,7 +55,7 @@ const ViewerContainer = ({ isLoaded, viewerRef, sendMessagesForDesign, sendMessa
 
   const handleScroll = (e) => {
     const scrollTop = e.target.scrollTop;
-    const cardHeight = 100; // Height per card including spacing
+    const cardHeight = 120; // Height per card including spacing
     const newIndex = Math.round(scrollTop / cardHeight);
     const clampedIndex = Math.max(0, Math.min(carouselItems.length - 1, newIndex));
     setActiveCardIndex(clampedIndex);
@@ -116,8 +116,8 @@ const ViewerContainer = ({ isLoaded, viewerRef, sendMessagesForDesign, sendMessa
     </div>
 
     {/* Vertical Carousel - Right Side Overlay */}
-    <div className="absolute right-4 top-0 h-full flex items-center justify-center">
-      <div className="flex flex-col items-center justify-center space-y-6 h-80">
+    <div className="absolute right-6 top-0 h-full flex items-center justify-center">
+      <div className="flex flex-col items-center justify-center space-y-8 h-96">
         {getVisibleCards().map((item, arrayIndex) => {
           const isActive = item.index === activeCardIndex;
           const isSelected = selectedDesign === item.barData.design;
@@ -126,12 +126,10 @@ const ViewerContainer = ({ isLoaded, viewerRef, sendMessagesForDesign, sendMessa
           return (
             <motion.div
               key={item.id}
-              className={`flex p-3 flex-col items-center justify-center rounded-2xl backdrop-blur-md border cursor-pointer ${
+              className={`flex flex-col items-center justify-center rounded-xl cursor-pointer backdrop-blur-md ${
                 isActive 
-                  ? 'w-24 h-28 bg-white/20 border-[#54bb74]/50 shadow-xl' 
-                  : 'w-20 h-24 bg-white/10 border-white/20 shadow-lg'
-              } ${
-                isSelected ? 'ring-2 ring-[#54bb74] ring-opacity-70' : ''
+                  ? 'w-32 h-40 bg-white/20 shadow-2xl' 
+                  : 'w-28 h-36 bg-white/10 shadow-lg'
               }`}
               initial={false}
               animate={{
@@ -149,8 +147,9 @@ const ViewerContainer = ({ isLoaded, viewerRef, sendMessagesForDesign, sendMessa
                 damping: 30
               }}
               whileHover={{ 
-                scale: isActive ? 1.2 : 1.0,
-                y: position * 8 - 5, // Lift effect on hover
+                scale: isActive ? 1.15 : 1.05,
+                y: position * 8 - 8, // Lift effect on hover
+                boxShadow: "0 25px 50px rgba(0,0,0,0.2)",
                 transition: { 
                   duration: 0.3,
                   ease: "easeOut"
@@ -167,11 +166,28 @@ const ViewerContainer = ({ isLoaded, viewerRef, sendMessagesForDesign, sendMessa
               }}
               style={{
                 transformStyle: 'preserve-3d',
-                perspective: 1000
+                perspective: 1000,
+                borderTop: isActive ? '2px solid rgba(255,255,255,0.8)' : '1px solid rgba(255,255,255,0.4)',
+                borderLeft: isActive ? '1.5px solid rgba(255,255,255,0.6)' : '0.8px solid rgba(255,255,255,0.3)',
+                borderRight: isActive ? '1.5px solid rgba(255,255,255,0.6)' : '0.8px solid rgba(255,255,255,0.3)',
+                borderBottom: 'none'
               }}
             >
+              <motion.span 
+                className={`text-sm font-semibold text-center`}
+                animate={{
+                  color: isActive ? '#ffffff' : 'rgba(255, 255, 255, 0.7)',
+                  opacity: isActive ? 1 : 0.8
+                }}
+                transition={{ 
+                  duration: 0.4, 
+                  ease: "easeOut" 
+                }}
+              >
+                {item.label}
+              </motion.span>
               <motion.div 
-                className={`mb-2 relative ${isActive ? 'w-16 h-16' : 'w-12 h-12'} flex items-center justify-center`}
+                className={`relative ${isActive ? 'w-20 h-20' : 'w-16 h-16'} flex items-center justify-center`}
                 animate={{
                   scale: isActive ? 1.1 : 1,
                   filter: isActive ? 'brightness(1.2) saturate(1.3)' : 'brightness(0.8) saturate(0.7)'
@@ -184,26 +200,13 @@ const ViewerContainer = ({ isLoaded, viewerRef, sendMessagesForDesign, sendMessa
                 <Image
                   src={item.icon}
                   alt={item.label}
-                  width={isActive ? 64 : 48}
-                  height={isActive ? 64 : 48}
+                  width={isActive ? 80 : 64}
+                  height={isActive ? 80 : 64}
                   className={`transition-all duration-300 ${
                     isActive ? 'opacity-100' : 'opacity-70'
                   }`}
                 />
               </motion.div>
-              <motion.span 
-                className={`text-xs font-medium text-center`}
-                animate={{
-                  color: isActive ? '#ffffff' : 'rgba(255, 255, 255, 0.6)',
-                  opacity: isActive ? 1 : 0.8
-                }}
-                transition={{ 
-                  duration: 0.4, 
-                  ease: "easeOut" 
-                }}
-              >
-                {item.label}
-              </motion.span>
             </motion.div>
           );
         })}

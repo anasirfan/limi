@@ -61,21 +61,73 @@ const AssemblyScroll = () => {
     >
       <div className="max-w-7xl mx-auto px-4">
         {/* Section Header */}
-        <div className="text-center mb-6">
-          <h2 className="text-4xl md:text-6xl font-bold text-white mb-4">
-            Intelligence
-            <span className="text-[#19b576]"> Assembly</span>
-          </h2>
-          <p className="text-lg text-white max-w-2xl mx-auto">
+        <motion.div 
+          className="text-center mb-6"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          viewport={{ once: true, margin: "-50px" }}
+        >
+          <div className="relative inline-block">
+            <motion.h2 
+              className="text-4xl md:text-6xl font-bold text-white mb-4"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
+              viewport={{ once: true, margin: "-50px" }}
+            >
+              <span>Intelligence</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#54bb74] to-[#93cfa2]"> Assembly</span>
+            </motion.h2>
+
+            {/* Decorative Elements */}
+            <motion.div
+              className="absolute -top-8 -left-8 w-16 h-16 border-4 border-[#54bb74]/30 rounded-full"
+              initial={{ opacity: 0, scale: 0 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              animate={{ rotate: 360 }}
+              transition={{ 
+                opacity: { duration: 0.5, delay: 0.3, ease: "easeOut" },
+                scale: { duration: 0.5, delay: 0.3, ease: "easeOut" },
+                rotate: { duration: 20, repeat: Infinity, ease: "linear" }
+              }}
+              viewport={{ once: true, margin: "-50px" }}
+            />
+            <motion.div
+              className="absolute -top-4 -right-8 w-8 h-8 bg-[#93cfa2] rounded-full"
+              initial={{ opacity: 0, scale: 0 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              animate={{ scale: [1, 1.2, 1] }}
+              transition={{ 
+                opacity: { duration: 0.5, delay: 0.4, ease: "easeOut" },
+                scale: { duration: 2, repeat: Infinity }
+              }}
+              viewport={{ once: true, margin: "-50px" }}
+            />
+          </div>
+          <motion.p 
+            className="text-lg text-white max-w-2xl mx-auto"
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+            viewport={{ once: true, margin: "-50px" }}
+          >
             Deploy a complete AI ecosystem in four simple steps.
-          </p>
-        </div>
+          </motion.p>
+        </motion.div>
 
         {/* Bento Grid Layout */}
         <div className="space-y-6">
           {/* First Row - Step 1 (wider) and Step 2 (narrower) */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="md:col-span-2 relative rounded-2xl overflow-hidden bg-white shadow-lg hover:shadow-xl transition-all duration-300 group cursor-pointer h-80">
+            <motion.div 
+              className="md:col-span-2 relative rounded-2xl overflow-hidden transition-all duration-300 group cursor-pointer h-80"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              viewport={{ once: true, margin: "-100px" }}
+              whileHover={{ scale: 1.02, transition: { duration: 0.3 } }}
+            >
               {/* Video Background */}
               <div className="absolute inset-0">
                 <video
@@ -87,7 +139,6 @@ const AssemblyScroll = () => {
                 >
                   <source src={steps[0].video} type="video/mp4" />
                 </video>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
               </div>
 
               {/* Content Overlay */}
@@ -121,9 +172,16 @@ const AssemblyScroll = () => {
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
-            <div className="md:col-span-1 relative rounded-2xl overflow-hidden bg-white shadow-lg hover:shadow-xl transition-all duration-300 group cursor-pointer h-80">
+            <motion.div 
+              className="md:col-span-1 relative rounded-2xl overflow-hidden transition-all duration-300 group cursor-pointer h-80"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
+              viewport={{ once: true, margin: "-100px" }}
+              whileHover={{ scale: 1.02, transition: { duration: 0.3 } }}
+            >
               {/* Video Background */}
               <div className="absolute inset-0">
                 <video
@@ -135,8 +193,7 @@ const AssemblyScroll = () => {
                 >
                   <source src={steps[1].video} type="video/mp4" />
                 </video>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-              </div>
+               </div>
 
               {/* Content Overlay */}
               <div className="relative z-10 p-6 h-full flex flex-col justify-end">
@@ -169,12 +226,19 @@ const AssemblyScroll = () => {
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
 
           {/* Second Row - Step 3 (narrower) and Step 4 (wider) */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="md:col-span-1 relative rounded-2xl overflow-hidden bg-white shadow-lg hover:shadow-xl transition-all duration-300 group cursor-pointer h-80">
+            <motion.div 
+              className="md:col-span-1 relative rounded-2xl overflow-hidden transition-all duration-300 group cursor-pointer h-80"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              viewport={{ once: true, margin: "-100px" }}
+              whileHover={{ scale: 1.02, transition: { duration: 0.3 } }}
+            >
               {/* Video Background */}
               <div className="absolute inset-0">
                 <video
@@ -186,14 +250,13 @@ const AssemblyScroll = () => {
                 >
                   <source src={steps[2].video} type="video/mp4" />
                 </video>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
               </div>
 
               {/* Content Overlay */}
               <div className="relative z-10 p-6 h-full flex flex-col justify-end">
                 <div className="flex items-center mb-4">
                   <div 
-                    className="w-12 h-12 rounded-full flex items-center justify-center mr-3 backdrop-blur-sm"
+                    className="w-12 h-12 rounded-full flex items-center justify-center mr-3 "
                     style={{ backgroundColor: `${steps[2].color}90` }}
                   >
                     <HiLightningBolt className="text-xl text-white" />
@@ -220,9 +283,16 @@ const AssemblyScroll = () => {
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
-            <div className="md:col-span-2 relative rounded-2xl overflow-hidden bg-white shadow-lg hover:shadow-xl transition-all duration-300 group cursor-pointer h-80">
+            <motion.div 
+              className="md:col-span-2 relative rounded-2xl overflow-hidden transition-all duration-300 group cursor-pointer h-80"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
+              viewport={{ once: true, margin: "-100px" }}
+              whileHover={{ scale: 1.02, transition: { duration: 0.3 } }}
+            >
               {/* Video Background */}
               <div className="absolute inset-0">
                 <video
@@ -234,7 +304,6 @@ const AssemblyScroll = () => {
                 >
                   <source src={steps[3].video} type="video/mp4" />
                 </video>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
               </div>
 
               {/* Content Overlay */}
@@ -268,7 +337,7 @@ const AssemblyScroll = () => {
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </div>

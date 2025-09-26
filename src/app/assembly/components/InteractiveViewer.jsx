@@ -84,22 +84,7 @@ const InteractiveViewer = () => {
     };
   }, [isInView]);
 
-  // Listen for iframe messages to toggle SensorOptionsPanel
-  useEffect(() => {
-    function handleSensorPanelToggle(event) {
-      if (typeof event.data === "string") {
-        if (event.data.startsWith("offconfig")) {
-          setShowSensorOptions(false);
-        } else if (event.data.includes("cable_")) {
-          setShowSensorOptions(true);
-        }
-      }
-    }
-    window.addEventListener("message", handleSensorPanelToggle);
-    return () => {
-      window.removeEventListener("message", handleSensorPanelToggle);
-    };
-  }, []);
+
 
   const viewModes = [
     { id: "assembly", label: "Assembly View", icon: HiCube },
