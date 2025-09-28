@@ -24,6 +24,7 @@ import FreeTrialSection from "./components/FreeTrialSection";
 import TeamSection from "./components/TeamSection";
 import CTA from "./components/CTA";
 import Footer from "./components/Footer";
+import { Environment } from "./components/Environment";
 
 // Import Umami tracking utilities
 import {
@@ -386,6 +387,11 @@ const AssemblyPage = () => {
           <Hero onVisible={() => trackAssemblyEvent("Hero Section")} />
         </section>
 
+        {/* Environment Section */}
+        <section id="environment" className="bg-[#010101] py-20">
+          <Environment />
+        </section>
+
         {/* New Hero Section with Carousel */}
         {/* <section id="hero-new">
           <HeroNew />
@@ -470,8 +476,8 @@ const AssemblyPage = () => {
           <TeamSection onVisible={() => trackAssemblyEvent("Team Section")} />
         </section>
 
-                {/* Free Trial Section */}
-                <section id="free-trial">
+        {/* Free Trial Section */}
+        <section id="free-trial">
           <FreeTrialSection
             onBrochureClick={() => {
               // You can integrate this with your existing brochure modal logic

@@ -57,70 +57,42 @@ const FreeTrialSection = ({ onGetStarted }) => {
             
             {/* Left Content - Text Area */}
             <div className="flex-1 text-white z-10 mb-6 lg:mb-0 text-center lg:text-left lg:pr-8">
-              <motion.h2
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                viewport={{ once: true }}
+              <h2
                 className="font-bold text-white mb-3 text-xl sm:text-2xl md:text-3xl lg:text-4xl"
               >
                 Ready to Transform Your Space?
-              </motion.h2>
+              </h2>
               
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.4 }}
-                viewport={{ once: true }}
+              <p
+       
                 className="mb-6 leading-relaxed text-sm sm:text-base md:text-lg text-white/90"
               >
                 Join thousands of satisfied customers who have revolutionized their lighting with our modular system. Experience the future today.
-              </motion.p>
+              </p>
               
               {/* CTA Buttons */}
-              <motion.div 
+              <div 
                 className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.6 }}
-                viewport={{ once: true }}
+            
+                
               >
-                <motion.button
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  transition={{ 
-                    duration: 0.6, 
-                    delay: 0.7,
-                    type: "spring",
-                    stiffness: 100,
-                    damping: 10
-                  }}
-                  viewport={{ once: true }}
-                  whileHover={{ 
-                    scale: 1.05,
-                    boxShadow: '0px 8px 25px rgba(0,0,0,0.25)',
-                    transition: { duration: 0.2 }
-                  }}
-                  whileTap={{ 
-                    scale: 0.98,
-                    transition: { duration: 0.1 }
-                  }}
+                <button
+                  
+                  
+                  
+                  
+               
                   onClick={handleStartJourney}
                   className="inline-flex items-center justify-center gap-2 font-semibold transition-all duration-300 group bg-white text-black px-6 py-3 sm:px-7 sm:py-4 rounded-full shadow-lg hover:shadow-xl border-none cursor-pointer w-full sm:w-auto"
                 >
                   Start your journey
-                  <motion.div
-                    className="text-sm"
-                    animate={{ x: [0, 3, 0] }}
-                    transition={{ 
-                      duration: 1.5, 
-                      repeat: Infinity, 
-                      ease: "easeInOut" 
-                    }}
+                  <div
+                   className="text-sm"
+                  
                   >
                     <FaArrowRight />
-                  </motion.div>
-                </motion.button>
+                  </div>
+                </button>
                 
                 <motion.button
                   initial={{ opacity: 0, scale: 0.8 }}
@@ -148,7 +120,7 @@ const FreeTrialSection = ({ onGetStarted }) => {
                 >
                   Get brochure
                 </motion.button>
-              </motion.div>
+              </div>
             </div>
 
             {/* Right Content - Robot Image Area */}
