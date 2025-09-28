@@ -21,7 +21,9 @@ import { HeroScrollDemo } from "./components/HeroScrollDemo";
 import InteractiveViewer from "./components/InteractiveViewer";
 import BenefitTimeline from "./components/BenefitTimeline";
 import FreeTrialSection from "./components/FreeTrialSection";
+import TeamSection from "./components/TeamSection";
 import CTA from "./components/CTA";
+import Footer from "./components/Footer";
 
 // Import Umami tracking utilities
 import {
@@ -283,14 +285,13 @@ const AssemblyPage = () => {
 
             {/* Desktop Auth Buttons */}
             <div className="hidden md:flex items-center space-x-4">
-                <motion.button
-                  className="bg-white text-black px-6 py-2 rounded-full font-semibold hover:bg-gray-100 transition-all duration-200 shadow-lg"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  Try Configurator
-                </motion.button>
-           
+              <motion.button
+                className="bg-white text-black px-6 py-2 rounded-full font-semibold hover:bg-gray-100 transition-all duration-200 shadow-lg"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Try Configurator
+              </motion.button>
             </div>
 
             {/* Mobile Menu Button */}
@@ -398,7 +399,7 @@ const AssemblyPage = () => {
         </section>
 
         {/* Sensor Modules Grid */}
-        <section id="sensors" className="relative bg-white pt-24 px-4">
+        <section id="sensors" className="relative bg-white p-24 px-4">
           <div className="max-w-7xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 50 }}
@@ -440,18 +441,6 @@ const AssemblyPage = () => {
             </div>
           </div>
         </section>
-
-        {/* Free Trial Section */}
-        <section id="free-trial">
-          <FreeTrialSection 
-            onBrochureClick={() => {
-              // You can integrate this with your existing brochure modal logic
-              trackAssemblyEvent("Free Trial Brochure Click");
-              console.log("Brochure button clicked");
-            }}
-          />
-        </section>
-
         {/* Hero Scroll Demo Section */}
         <section id="hero-scroll">
           <HeroScrollDemo />
@@ -475,6 +464,29 @@ const AssemblyPage = () => {
 
         {/* CTA Section */}
         <CTA onVisible={() => trackAssemblyEvent("CTA Section")} />
+
+        {/* Team Section */}
+        <section id="team">
+          <TeamSection onVisible={() => trackAssemblyEvent("Team Section")} />
+        </section>
+
+                {/* Free Trial Section */}
+                <section id="free-trial">
+          <FreeTrialSection
+            onBrochureClick={() => {
+              // You can integrate this with your existing brochure modal logic
+              trackAssemblyEvent("Free Trial Brochure Click");
+              console.log("Brochure button clicked");
+            }}
+          />
+        </section>
+
+        {/* Footer Section */}
+        <section className="bg-[#010101] px-4 pb-8">
+          <div className="max-w-7xl mx-auto">
+            <Footer />
+          </div>
+        </section>
       </motion.div>
     </>
   );
