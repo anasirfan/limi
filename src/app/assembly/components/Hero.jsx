@@ -126,7 +126,7 @@ const Hero = ({ variant = "glassmorphism" }) => {
       >
         <div className="p-0 sm:p-6 ">
           <motion.h1
-            className="text-3xl md:text-6xl font-bold text-white mb-6"
+            className="text-3xl md:text-6xl font-bold text-white mb-6 tracking-widest"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1.2 }}
@@ -287,29 +287,6 @@ const Hero = ({ variant = "glassmorphism" }) => {
                 />
               ))}
             </div>
-          </div>
-        </motion.div>
-      </motion.div>
-
-      {/* Scroll Indicator */}
-      <motion.div
-        className="hidden sm:block absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white/70"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, delay: 2 }}
-      >
-        <motion.div
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-          className="flex flex-col items-center gap-2"
-        >
-          <span className="text-sm font-medium">Scroll to explore</span>
-          <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center">
-            <motion.div
-              className="w-1 h-3 bg-white/70 rounded-full mt-2"
-              animate={{ y: [0, 12, 0] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
           </div>
         </motion.div>
       </motion.div>

@@ -405,7 +405,7 @@ const AssemblyPage = () => {
         </section>
 
         {/* Sensor Modules Grid */}
-        <section id="sensors" className="relative bg-white p-24 px-4">
+        {/* <section id="sensors" className="relative bg-white p-24 px-4">
           <div className="max-w-7xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 50 }}
@@ -446,7 +446,7 @@ const AssemblyPage = () => {
               />
             </div>
           </div>
-        </section>
+        </section> */}
         {/* Hero Scroll Demo Section */}
         <section id="hero-scroll">
           <HeroScrollDemo />

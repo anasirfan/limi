@@ -183,7 +183,7 @@ const CTA = () => {
   return (
     <section
       ref={containerRef}
-      className="relative pt-20 pb-20 bg-[#010101] min-h-screen"
+      className="relative pt-20 bg-[#010101] min-h-screen"
     >
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-10">
