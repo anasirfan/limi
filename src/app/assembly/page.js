@@ -25,6 +25,8 @@ import TeamSection from "./components/TeamSection";
 import CTA from "./components/CTA";
 import Footer from "./components/Footer";
 import { Environment } from "./components/Environment";
+import SensorShowcase from "./components/SensorShowcase";
+import BaseShowcase from "./components/BaseShowcase";
 
 // Import Umami tracking utilities
 import {
@@ -388,9 +390,9 @@ const AssemblyPage = () => {
         </section>
 
         {/* Environment Section */}
-        <section id="environment" className="bg-[#010101] py-20">
+        {/* <section id="environment" className="bg-[#010101] py-20">
           <Environment />
-        </section>
+        </section> */}
 
         {/* New Hero Section with Carousel */}
         {/* <section id="hero-new">
@@ -452,14 +454,28 @@ const AssemblyPage = () => {
           <HeroScrollDemo />
         </section>
 
+        {/* Sensor Showcase Section */}
+        <section id="sensors">
+          <SensorShowcase
+            onVisible={() => trackAssemblyEvent("Sensor Showcase")}
+          />
+        </section>
+
+        {/* Base Showcase */}
+        {/* <section id="base-showcase">
+          <BaseShowcase
+            onVisible={() => trackAssemblyEvent("Base Showcase")}
+          />
+        </section> */}
+
         {/* Interactive 3D Viewer */}
-        <section id="configurator">
+        {/* <section id="configurator">
           <InteractiveViewer
             onVisible={() =>
               trackAssemblyEvent("Configurator Interactive Viewer")
             }
           />
-        </section>
+        </section> */}
 
         {/* Benefits Timeline */}
         <section id="benefits">
