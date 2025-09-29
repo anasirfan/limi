@@ -232,7 +232,7 @@ const SensorShowcase = ({ onVisible }) => {
                 </div>
                 
                 {/* Icon Container */}
-                <div className="flex justify-center items-end flex-grow">
+                <div className="flex justify-center items-center flex-grow min-h-0">
                   <div className="relative w-[240px] h-[240px]">
                     <Image
                       src={sensorData[1].icon}
@@ -282,7 +282,7 @@ const SensorShowcase = ({ onVisible }) => {
                 </div>
                 
                 {/* Icon Container */}
-                <div className="flex justify-center items-end flex-grow">
+                <div className="flex justify-center items-center flex-grow min-h-0">
                   <div className="relative w-[240px] h-[240px]">
                     <Image
                       src={sensorData[2].icon}
@@ -331,7 +331,7 @@ const SensorShowcase = ({ onVisible }) => {
                 </div>
                 
                 {/* Icon Container */}
-                <div className="flex justify-center items-end flex-grow">
+                <div className="flex justify-center items-center flex-grow min-h-0">
                   <div className="relative w-[240px] h-[240px]">
                     <Image
                       src={sensorData[3].icon}
