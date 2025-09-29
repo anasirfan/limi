@@ -108,7 +108,7 @@ const Hero = ({ variant = "glassmorphism" }) => {
           onLoadedData={handleVideoLoad}
           poster="/api/placeholder/1920/1080" // Fallback poster
         >
-          <source src="/limiai/step2.mp4" type="video/mp4" />
+          <source src="/assemblyImages/herobasevid.mp4" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
         

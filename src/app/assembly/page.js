@@ -27,6 +27,7 @@ import Footer from "./components/Footer";
 import { Environment } from "./components/Environment";
 import SensorShowcase from "./components/SensorShowcase";
 import BaseShowcase from "./components/BaseShowcase";
+import LimiAIShowcase from "./components/LimiAIShowcase";
 
 // Import Umami tracking utilities
 import {
@@ -458,6 +459,13 @@ const AssemblyPage = () => {
         <section id="sensors">
           <SensorShowcase
             onVisible={() => trackAssemblyEvent("Sensor Showcase")}
+          />
+        </section>
+
+        {/* LIMI AI Showcase Section */}
+        <section id="limi-showcase">
+          <LimiAIShowcase
+            onVisible={() => trackAssemblyEvent("LIMI AI Showcase")}
           />
         </section>
 
