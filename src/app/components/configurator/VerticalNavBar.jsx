@@ -41,7 +41,7 @@ import {
 } from "../../util/iframeCableMessageHandler";
 
  // Pendant selection functionality
- 
+ //adsaldasldja
 const VerticalNavBar = ({
   activeStep,
   setActiveStep,
