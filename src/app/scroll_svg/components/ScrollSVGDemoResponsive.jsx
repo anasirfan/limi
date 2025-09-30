@@ -4,13 +4,14 @@ import { useEffect, useRef, useState } from 'react';
 import { animate, createScope } from 'animejs';
 import Lenis from '@studio-freight/lenis';
 
-const ScrollSVGDemo = () => {
+const ScrollSVGDemoResponsive = () => {
   const svgRef = useRef(null);
   const containerRef = useRef(null);
   const scope = useRef(null);
   const [currentStep, setCurrentStep] = useState(0);
   const [scrollDirection, setScrollDirection] = useState('down');
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
   const lastScrollTop = useRef(0);
   const lenisRef = useRef(null);
 
@@ -24,6 +25,18 @@ const ScrollSVGDemo = () => {
     { title: "Fifth Layer Revealed", description: "Almost fully exploded, the fifth layer is visible.", labels: ["layer5", "exploded", "almost"] },
     { title: "Fully Exploded View", description: "All layers are revealed, showing the complete inner workings.", labels: ["exploded", "final", "complete"] },
   ];
+
+  // Check if mobile on mount and resize
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Initialize Lenis smooth scroll
   useEffect(() => {
@@ -56,75 +69,6 @@ const ScrollSVGDemo = () => {
     if (!containerRef.current) return;
 
     scope.current = createScope({ root: containerRef.current }).add(self => {
-      // Step 1: Foundation animation
-      self.add('animateFoundation', () => {
-        animate('#foundation', {
-          scale: [0.5, 1],
-          opacity: [0, 1],
-          rotateY: [90, 0],
-          duration: 800,
-          ease: 'out(3)'
-        });
-      });
-
-      // Step 2: Core Body animation  
-      self.add('animateCoreBody', () => {
-        animate('#core-body', {
-          scale: [0.8, 1],
-          opacity: [0.3, 1],
-          translateY: [50, 0],
-          duration: 800,
-          ease: 'out(3)'
-        });
-      });
-
-      // Step 3: Screen Display animation
-      self.add('animateScreen', () => {
-        animate('#screen', {
-          scale: [0, 1],
-          opacity: [0, 1],
-          rotateX: [180, 0],
-          duration: 800,
-          ease: 'out(3)'
-        });
-      });
-
-      // Step 4: Control Panel animation
-      self.add('animateControls', () => {
-        animate('#controls', {
-          scale: [0.5, 1],
-          opacity: [0, 1],
-          translateX: [-100, 0],
-          rotate: [45, 0],
-          duration: 800,
-          ease: 'out(3)'
-        });
-      });
-
-      // Step 5: Glow Effect animation
-      self.add('animateGlow', () => {
-        animate('#glow-effect', {
-          scale: [0, 1.2, 1],
-          opacity: [0, 0.8, 0.6],
-          duration: 1000,
-          ease: 'out(3)'
-        });
-      });
-
-      // Reset all animations
-      self.add('resetAll', () => {
-        animate(['#foundation', '#core-body', '#screen', '#controls', '#glow-effect'], {
-          scale: [null, 0.5],
-          opacity: [null, 0],
-          translateY: 0,
-          translateX: 0,
-          rotate: 0,
-          rotateX: 0,
-          rotateY: 0,
-          duration: 0
-        });
-      });
-
       // Scroll-controlled carousel animation
       self.add('animateCarousel', (scrollProgress) => {
         const totalSteps = steps.length;
@@ -140,11 +84,7 @@ const ScrollSVGDemo = () => {
           ease: 'linear'
         });
       });
-
     });
-
-    // Initialize with reset state
-    scope.current.methods.resetAll();
 
     // Throttled Lenis scroll handler to prevent excessive animation calls
     let animationId = null;
@@ -186,21 +126,8 @@ const ScrollSVGDemo = () => {
           targetStep = steps.length - 1;
         }
         
-        console.log('Scroll Progress:', progress, 'Target Step:', targetStep, 'Step Progress:', stepProgress);
-        
         // Update current step
         setCurrentStep(targetStep);
-
-        // Only animate SVG when step actually changes to prevent flickering
-        if (targetStep !== currentStep) {
-          scope.current.methods.resetAll();
-          
-          if (targetStep >= 0) scope.current.methods.animateFoundation();
-          if (targetStep >= 1) scope.current.methods.animateCoreBody();
-          if (targetStep >= 2) scope.current.methods.animateScreen();
-          if (targetStep >= 3) scope.current.methods.animateControls();
-          if (targetStep >= 4) scope.current.methods.animateGlow();
-        }
       });
     };
 
@@ -266,7 +193,7 @@ const ScrollSVGDemo = () => {
         </div>
 
         {/* Center PNG Reveal Animation */}
-        <div className="svg-container" style={{ position: 'relative', width: 600, height: 400, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div className="svg-container">
           {[
             '/base_renders/Parts.11.png',
             '/base_renders/Parts.12.png',
@@ -284,14 +211,8 @@ const ScrollSVGDemo = () => {
                 key={src}
                 src={src}
                 alt={`Reveal stage ${idx+1}`}
+                className="assembly-image"
                 style={{
-                  position: 'absolute',
-                  left: '-55%',
-                  top: '-40%',
-                  transform: 'translate(-50%, -50%)',
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'contain',
                   opacity: imageOpacity
                 }}
                 draggable={false}
@@ -300,31 +221,13 @@ const ScrollSVGDemo = () => {
           })}
         </div>
 
-        {/* Right Technical Labels */}
-        <div className="right-labels">
-          {steps[currentStep]?.labels.map((label, index) => (
-            <div 
-              key={`${currentStep}-${index}`}
-              className="label-item" 
-              style={{ 
-                top: `${15 + index * 12.5}%`, 
-                right: `${5 + (index % 3) * 3}%`,
-                animationDelay: `${index * 0.1}s`
-              }}
-            >
-              <span className="label-text">{label}</span>
-              <div className="label-line"></div>
-            </div>
-          ))}
-        </div>
-
         {/* Scroll Progress Indicator */}
         <div className="scroll-progress-indicator">
           <div className="progress-track">
-            {Array.from({ length: 50 }, (_, index) => (
+            {Array.from({ length: isMobile ? 20 : 50 }, (_, index) => (
               <div 
                 key={index}
-                className={`progress-segment ${index < (scrollProgress * 50) ? 'active' : ''}`}
+                className={`progress-segment ${index < (scrollProgress * (isMobile ? 20 : 50)) ? 'active' : ''}`}
               />
             ))}
           </div>
@@ -363,6 +266,7 @@ const ScrollSVGDemo = () => {
           min-height: 700vh;
           font-family: 'Arial', sans-serif;
           position: relative;
+          overflow-x: hidden;
         }
 
         .viewport-section {
@@ -380,9 +284,9 @@ const ScrollSVGDemo = () => {
         .left-text-carousel {
           position: absolute;
           left: 5%;
-          top: 0;
-          width: 400px;
-          height: 100vh;
+          top: 15%;
+          width: clamp(280px, 35vw, 400px);
+          height: 70vh;
           z-index: 3;
           overflow: hidden;
         }
@@ -407,24 +311,17 @@ const ScrollSVGDemo = () => {
           justify-content: center;
         }
 
-        .carousel-item:nth-child(1) { top: 50%; }
-        .carousel-item:nth-child(2) { top: calc(50% + 100vh); }
-        .carousel-item:nth-child(3) { top: calc(50% + 200vh); }
-        .carousel-item:nth-child(4) { top: calc(50% + 300vh); }
-        .carousel-item:nth-child(5) { top: calc(50% + 400vh); }
-        .carousel-item:nth-child(6) { top: calc(50% + 500vh); }
-
         .main-title {
-          font-size: 48px;
+          font-size: clamp(24px, 5vw, 48px);
           font-weight: 700;
           color: #f3ebe2;
           line-height: 1.1;
-          margin-bottom: 24px;
+          margin-bottom: clamp(12px, 2vw, 24px);
           letter-spacing: -0.02em;
         }
 
         .main-description {
-          font-size: 16px;
+          font-size: clamp(14px, 1.5vw, 16px);
           line-height: 1.6;
           color: #93cfa2;
           margin: 0;
@@ -436,85 +333,35 @@ const ScrollSVGDemo = () => {
           top: 50%;
           left: 50%;
           transform: translate(-50%, -50%);
+          width: clamp(300px, 50vw, 600px);
+          height: clamp(200px, 40vh, 400px);
           display: flex;
           justify-content: center;
           align-items: center;
           z-index: 2;
         }
 
-        .main-svg {
-          max-width: 500px;
-          width: 100%;
-          height: auto;
-          display: block;
-        }
-
-        .right-labels {
+        .assembly-image {
           position: absolute;
           top: 0;
-          right: 0;
+          left: 0;
           width: 100%;
           height: 100%;
-          z-index: 3;
-        }
-
-        .label-item {
-          position: absolute;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          opacity: 0;
-          transform: translateX(20px);
-          animation: slideInLabel 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
-
-        @keyframes slideInLabel {
-          0% {
-            opacity: 0;
-            transform: translateX(20px);
-          }
-          100% {
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
-
-        .label-text {
-          font-size: 14px;
-          color: #93cfa2;
-          font-weight: 500;
-          text-transform: lowercase;
-          letter-spacing: 0.5px;
-          transition: color 0.3s ease;
-        }
-
-        .label-text:hover {
-          color: #54bb74;
-        }
-
-        .label-line {
-          width: 60px;
-          height: 1px;
-          background: linear-gradient(90deg, #54bb74, transparent);
-          opacity: 0.6;
-          transition: all 0.3s ease;
-        }
-
-        .label-item:hover .label-line {
-          width: 80px;
-          opacity: 1;
+          object-fit: contain;
+          transition: opacity 0.5s ease-in-out;
+          filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.3));
         }
 
         .scroll-progress-indicator {
           position: fixed;
-          bottom: 30px;
+          bottom: clamp(20px, 3vh, 30px);
           left: 50%;
           transform: translateX(-50%);
           z-index: 1000;
           background: rgba(41, 41, 41, 0.8);
           backdrop-filter: blur(10px);
           border-radius: 20px;
-          padding: 8px 16px;
+          padding: clamp(6px, 1vw, 8px) clamp(12px, 2vw, 16px);
           border: 1px solid rgba(147, 207, 162, 0.2);
         }
 
@@ -522,12 +369,12 @@ const ScrollSVGDemo = () => {
           display: flex;
           align-items: center;
           gap: 2px;
-          width: 300px;
+          width: clamp(150px, 30vw, 300px);
           height: 4px;
         }
 
         .progress-segment {
-          width: 6px;
+          width: clamp(3px, 0.8vw, 6px);
           height: 4px;
           background: rgba(147, 207, 162, 0.2);
           border-radius: 2px;
@@ -545,115 +392,177 @@ const ScrollSVGDemo = () => {
           position: relative;
         }
 
-        /* Responsive Design */
-        @media (max-width: 1024px) {
+        /* Tablet Styles */
+        @media (max-width: 1024px) and (min-width: 769px) {
           .left-text-carousel {
             left: 3%;
-            width: 350px;
-          }
-
-          .main-title {
-            font-size: 40px;
-          }
-
-          .right-labels {
-            display: none;
-          }
-
-          .progress-track {
-            width: 250px;
-          }
-        }
-
-        @media (max-width: 768px) {
-          .left-text-carousel {
-            left: 50%;
+            width: clamp(300px, 40vw, 350px);
             top: 10%;
-            width: 90%;
-            height: 30vh;
-            transform: translateX(-50%);
+            height: 75vh;
           }
-
-          .carousel-item {
-            text-align: center;
-            height: 30vh;
-          }
-
-          .carousel-item:nth-child(1) { top: 50%; }
-          .carousel-item:nth-child(2) { top: calc(50% + 30vh); }
-          .carousel-item:nth-child(3) { top: calc(50% + 60vh); }
-          .carousel-item:nth-child(4) { top: calc(50% + 90vh); }
-          .carousel-item:nth-child(5) { top: calc(50% + 120vh); }
-          .carousel-item:nth-child(6) { top: calc(50% + 150vh); }
 
           .main-title {
-            font-size: 32px;
-            margin-bottom: 16px;
-          }
-
-          .main-description {
-            font-size: 14px;
+            font-size: clamp(28px, 4.5vw, 40px);
           }
 
           .svg-container {
-            top: 55%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-          }
-
-          .main-svg {
-            max-width: 400px;
-          }
-
-          .progress-track {
-            width: 200px;
-          }
-
-          .progress-segment {
-            width: 4px;
+            width: clamp(350px, 45vw, 500px);
+            height: clamp(250px, 35vh, 350px);
           }
         }
 
-        @media (max-width: 480px) {
+        /* Mobile Landscape */
+        @media (max-width: 768px) and (orientation: landscape) {
+          .viewport-section {
+            flex-direction: row;
+          }
+
           .left-text-carousel {
-            width: 95%;
-            height: 25vh;
+            left: 2%;
+            top: 5%;
+            width: 45%;
+            height: 90vh;
+          }
+
+          .svg-container {
+            right: 2%;
+            left: auto;
+            transform: translateY(-50%);
+            width: 45%;
+            height: 60vh;
+          }
+
+          .main-title {
+            font-size: clamp(20px, 3vw, 28px);
+            margin-bottom: 8px;
+          }
+
+          .main-description {
+            font-size: clamp(12px, 1.2vw, 14px);
+          }
+        }
+
+        /* Mobile Portrait */
+        @media (max-width: 768px) and (orientation: portrait) {
+          .viewport-section {
+            flex-direction: column;
+            padding: clamp(20px, 5vw, 40px);
+          }
+
+          .left-text-carousel {
+            position: relative;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 40vh;
+            text-align: center;
+            order: 1;
+          }
+
+          .svg-container {
+            position: relative;
+            top: 0;
+            left: 0;
+            transform: none;
+            width: 100%;
+            height: 50vh;
+            order: 2;
+            margin-top: 20px;
           }
 
           .carousel-item {
-            height: 25vh;
+            top: 0;
+            height: 40vh;
+            justify-content: flex-start;
+            padding-top: 20px;
           }
 
-          .carousel-item:nth-child(1) { top: 50%; }
-          .carousel-item:nth-child(2) { top: calc(50% + 25vh); }
-          .carousel-item:nth-child(3) { top: calc(50% + 50vh); }
-          .carousel-item:nth-child(4) { top: calc(50% + 75vh); }
-          .carousel-item:nth-child(5) { top: calc(50% + 100vh); }
-          .carousel-item:nth-child(6) { top: calc(50% + 125vh); }
+          .main-title {
+            font-size: clamp(24px, 6vw, 32px);
+            margin-bottom: clamp(8px, 2vw, 16px);
+            text-align: center;
+          }
+
+          .main-description {
+            font-size: clamp(14px, 3vw, 16px);
+            text-align: center;
+            max-width: 90%;
+            margin: 0 auto;
+          }
+
+          .scroll-progress-indicator {
+            bottom: 10px;
+            padding: 4px 8px;
+          }
+
+          .progress-track {
+            width: clamp(120px, 25vw, 200px);
+          }
+        }
+
+        /* Small Mobile */
+        @media (max-width: 480px) {
+          .left-text-carousel {
+            height: 35vh;
+          }
+
+          .svg-container {
+            height: 45vh;
+          }
 
           .main-title {
-            font-size: 28px;
+            font-size: clamp(20px, 5.5vw, 28px);
             line-height: 1.2;
           }
 
           .main-description {
-            font-size: 13px;
+            font-size: clamp(12px, 2.8vw, 14px);
           }
 
-          .svg-container {
-            top: 50%;
-          }
-
-          .main-svg {
-            max-width: 320px;
+          .scroll-progress-indicator {
+            bottom: 5px;
+            padding: 3px 6px;
           }
 
           .progress-track {
-            width: 150px;
+            width: clamp(100px, 20vw, 150px);
           }
 
           .progress-segment {
-            width: 3px;
+            width: clamp(2px, 0.6vw, 4px);
+            height: 3px;
+          }
+
+          .progress-segment.active {
+            height: 4px;
+          }
+        }
+
+        /* Ultra-wide screens */
+        @media (min-width: 1920px) {
+          .left-text-carousel {
+            width: 450px;
+          }
+
+          .svg-container {
+            width: 700px;
+            height: 500px;
+          }
+
+          .main-title {
+            font-size: 56px;
+          }
+
+          .main-description {
+            font-size: 18px;
+          }
+        }
+
+        /* High DPI displays */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+          .assembly-image {
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
           }
         }
       `}</style>
@@ -661,4 +570,4 @@ const ScrollSVGDemo = () => {
   );
 };
 
-export default ScrollSVGDemo;
+export default ScrollSVGDemoResponsive;
