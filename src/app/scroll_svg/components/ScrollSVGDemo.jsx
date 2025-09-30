@@ -16,36 +16,13 @@ const ScrollSVGDemo = () => {
 
   // Dynamic content for each step
   const steps = [
-    { 
-      title: "The complete<br />LIMI AI toolbox",
-      description: "Break free from traditional lighting<br />and illuminate anything in your space<br />with intelligent AI control.",
-      labels: ["adaptive", "intelligence", "smart", "lighting", "automation"]
-    },
-    { 
-      title: "Smart foundation<br />architecture",
-      description: "Built on robust hardware designed<br />for seamless integration with<br />any existing home setup.",
-      labels: ["foundation", "hardware", "integration", "setup", "robust"]
-    },
-    { 
-      title: "Intelligent core<br />processing",
-      description: "Advanced AI algorithms learn<br />your preferences and adapt<br />lighting automatically.",
-      labels: ["algorithms", "learning", "preferences", "adaptive", "processing"]
-    },
-    { 
-      title: "Interactive display<br />interface",
-      description: "Intuitive touch controls and<br />real-time feedback for<br />complete lighting management.",
-      labels: ["interface", "controls", "feedback", "management", "interactive"]
-    },
-    { 
-      title: "Advanced control<br />system",
-      description: "Precision lighting control with<br />customizable scenes and<br />automated scheduling.",
-      labels: ["precision", "scenes", "scheduling", "control", "customizable"]
-    },
-    { 
-      title: "Complete lighting<br />ecosystem",
-      description: "Everything unified in one<br />intelligent system that grows<br />with your needs.",
-      labels: ["ecosystem", "unified", "intelligent", "scalable", "complete"]
-    }
+    { title: "Foundation Base", description: "The core circular base of the system, ready to reveal its inner technology.", labels: ["foundation", "base", "start"] },
+    { title: "First Layer Revealed", description: "The first layer opens, showing the initial components inside.", labels: ["layer1", "opening", "components"] },
+    { title: "Second Layer Revealed", description: "A deeper look as the second layer is revealed.", labels: ["layer2", "deeper", "mechanism"] },
+    { title: "Third Layer Revealed", description: "The third layer exposes more advanced elements.", labels: ["layer3", "advanced", "structure"] },
+    { title: "Fourth Layer Revealed", description: "The fourth layer opens up, showing the system's complexity.", labels: ["layer4", "complexity", "details"] },
+    { title: "Fifth Layer Revealed", description: "Almost fully exploded, the fifth layer is visible.", labels: ["layer5", "exploded", "almost"] },
+    { title: "Fully Exploded View", description: "All layers are revealed, showing the complete inner workings.", labels: ["exploded", "final", "complete"] },
   ];
 
   // Initialize Lenis smooth scroll
@@ -199,15 +176,20 @@ const ScrollSVGDemo = () => {
           scope.current.methods.animateCarousel(progress);
         }
         
-        // Calculate which step should be active for SVG and labels
+        // Calculate smooth progress for each step
         const stepProgress = progress * (steps.length - 1);
-        const newStep = Math.floor(stepProgress);
-        const targetStep = Math.min(newStep, steps.length - 1);
+        const currentStepFloat = Math.max(0, Math.min(stepProgress, steps.length - 1));
+        let targetStep = Math.floor(currentStepFloat);
         
-        // Update current step for SVG and labels
-        if (targetStep !== currentStep) {
-          setCurrentStep(targetStep);
+        // Ensure we reach the last step at 100% scroll
+        if (progress >= 0.95) {
+          targetStep = steps.length - 1;
         }
+        
+        console.log('Scroll Progress:', progress, 'Target Step:', targetStep, 'Step Progress:', stepProgress);
+        
+        // Update current step
+        setCurrentStep(targetStep);
 
         // Only animate SVG when step actually changes to prevent flickering
         if (targetStep !== currentStep) {
@@ -254,76 +236,92 @@ const ScrollSVGDemo = () => {
         {/* Left Text Carousel */}
         <div className="left-text-carousel">
           <div className="carousel-container" id="carousel-container">
-            {steps.map((step, index) => (
-              <div 
-                key={index}
-                className="carousel-item"
-                data-index={index}
-              >
-                <h1 
-                  className="main-title"
-                  dangerouslySetInnerHTML={{ __html: step.title }}
-                />
-                <p 
-                  className="main-description"
-                  dangerouslySetInnerHTML={{ __html: step.description }}
-                />
-              </div>
-            ))}
+            {steps.map((step, index) => {
+              const stepStart = index / (steps.length - 1);
+              const stepEnd = (index + 1) / (steps.length - 1);
+              const stepMid = (stepStart + stepEnd) / 2;
+              
+              let stepOpacity = 0;
+              let translateY = 0;
+              
+              if (index === steps.length - 1) {
+                // Last step: show when we're at or past its start point
+                stepOpacity = scrollProgress >= stepStart ? 1 : 0;
+              } else {
+                // Show current step and next step during transition
+                const progressInStep = (scrollProgress - stepStart) / (stepEnd - stepStart);
+                
+                if (scrollProgress >= stepStart && scrollProgress < stepEnd) {
+                  // Current step - fade out as we progress
+                  stepOpacity = Math.max(0.3, 1 - progressInStep);
+                  translateY = -progressInStep * 20; // Slide up slightly
+                } else if (index > 0 && scrollProgress >= (index - 1) / (steps.length - 1) && scrollProgress < stepStart) {
+                  // Next step preview - fade in as we approach
+                  const prevStepEnd = index / (steps.length - 1);
+                  const previewProgress = (scrollProgress - (index - 1) / (steps.length - 1)) / (stepStart - (index - 1) / (steps.length - 1));
+                  stepOpacity = Math.min(0.7, previewProgress);
+                  translateY = 20 - previewProgress * 20; // Slide up from below
+                }
+              }
+              
+              return (
+                <div 
+                  key={index}
+                  className="carousel-item"
+                  style={{
+                    opacity: stepOpacity,
+                    transform: `translateY(${translateY}px)`,
+                    transition: 'none' // Remove fade transitions for immediate response
+                  }}
+                >
+                  <h1 
+                    className="main-title"
+                    dangerouslySetInnerHTML={{ __html: step.title }}
+                  />
+                  <p 
+                    className="main-description"
+                    dangerouslySetInnerHTML={{ __html: step.description }}
+                  />
+                </div>
+              );
+            })}
           </div>
         </div>
 
-        {/* Center SVG */}
-        <div className="svg-container">
-          <svg
-            ref={svgRef}
-            width="600"
-            height="400"
-            viewBox="0 0 600 400"
-            className="main-svg"
-          >
-            {/* Glow effect (invisible initially) */}
-            <defs>
-              <filter id="glow">
-                <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
-                <feMerge> 
-                  <feMergeNode in="coloredBlur"/>
-                  <feMergeNode in="SourceGraphic"/>
-                </feMerge>
-              </filter>
-            </defs>
-
-            {/* Step 5: Glow Effect */}
-            <g id="glow-effect" style={{ opacity: 0 }}>
-              <circle cx="300" cy="200" r="180" fill="none" stroke="#54bb74" strokeWidth="2" filter="url(#glow)" />
-            </g>
-
-            {/* Step 1: Foundation */}
-            <g id="foundation" style={{ opacity: 0, transformOrigin: '300px 200px' }}>
-              <rect x="200" y="150" width="200" height="100" fill="#292929" stroke="#93cfa2" strokeWidth="2" rx="10" />
-            </g>
-
-            {/* Step 2: Core Body */}
-            <g id="core-body" style={{ opacity: 0.3, transformOrigin: '300px 200px' }}>
-              <rect x="220" y="120" width="160" height="160" fill="#f3ebe2" stroke="#292929" strokeWidth="3" rx="15" />
-              <rect x="240" y="140" width="120" height="120" fill="#54bb74" opacity="0.3" rx="10" />
-            </g>
-
-            {/* Step 3: Screen Display */}
-            <g id="screen" style={{ opacity: 0, transformOrigin: '300px 180px' }}>
-              <rect x="250" y="160" width="100" height="60" fill="#292929" stroke="#93cfa2" strokeWidth="2" rx="5" />
-              <rect x="260" y="170" width="80" height="40" fill="#54bb74" opacity="0.8" rx="3" />
-              <text x="300" y="195" textAnchor="middle" fill="#f3ebe2" fontSize="12" fontFamily="Arial">LIMI</text>
-            </g>
-
-            {/* Step 4: Control Panel */}
-            <g id="controls" style={{ opacity: 0, transformOrigin: '300px 260px' }}>
-              <circle cx="270" cy="260" r="8" fill="#93cfa2" />
-              <circle cx="300" cy="260" r="8" fill="#54bb74" />
-              <circle cx="330" cy="260" r="8" fill="#f3ebe2" stroke="#292929" strokeWidth="1" />
-              <rect x="280" y="280" width="40" height="15" fill="#292929" rx="7" />
-            </g>
-          </svg>
+        {/* Center PNG Reveal Animation */}
+        <div className="svg-container" style={{ position: 'relative', width: 600, height: 400, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          {[
+            '/base_renders/Parts.11.png',
+            '/base_renders/Parts.12.png',
+            '/base_renders/Parts.13.png',
+            '/base_renders/Parts.14.png',
+            '/base_renders/Parts.17.png',
+            '/base_renders/Parts.15.png',
+            '/base_renders/Parts.16.png',
+          ].map((src, idx) => {
+            const stepStart = idx / (steps.length - 1);
+            const imageOpacity = scrollProgress >= stepStart ? 1 : 0;
+            
+            return (
+              <img
+                key={src}
+                src={src}
+                alt={`Reveal stage ${idx+1}`}
+                style={{
+                  position: 'absolute',
+                  left: '-55%',
+                  top: '-40%',
+                  transform: 'translate(-50%, -50%)',
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'contain',
+                  opacity: imageOpacity,
+                  transition: 'opacity 0.5s ease-in-out'
+                }}
+                draggable={false}
+              />
+            );
+          })}
         </div>
 
         {/* Right Technical Labels */}
@@ -386,7 +384,7 @@ const ScrollSVGDemo = () => {
         .scroll-svg-container {
           background: #111;
           color: #f3ebe2;
-          min-height: 500vh;
+          min-height: 700vh;
           font-family: 'Arial', sans-serif;
           position: relative;
         }
@@ -422,7 +420,7 @@ const ScrollSVGDemo = () => {
 
         .carousel-item {
           position: absolute;
-          top: 50%;
+          top: 40%;
           left: 0;
           width: 100%;
           height: 100vh;
@@ -567,7 +565,7 @@ const ScrollSVGDemo = () => {
         }
 
         .scroll-spacer {
-          height: 400vh;
+          height: 600vh;
           position: relative;
         }
 

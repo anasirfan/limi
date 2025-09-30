@@ -181,18 +181,16 @@ const SensorShowcase = ({ onVisible }) => {
                     {sensorData[0].description}
                   </p>
                 </div>
-                
-                {/* Icon Container */}
-                <div className="flex justify-center items-center flex-grow min-h-0">
-                  <div className="relative w-[240px] h-[240px]">
-                    <Image
-                      src={sensorData[0].icon}
-                      alt={sensorData[0].title}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                </div>
+              </div>
+              
+              {/* Absolutely Positioned Image */}
+              <div className="absolute -top-4 -right-16 w-[500px] h-[500px] z-20">
+                <Image
+                  src={sensorData[0].icon}
+                  alt={sensorData[0].title}
+                  fill
+                  className="object-cover"
+                />
               </div>
 
               {/* Decorative Elements */}
@@ -230,18 +228,19 @@ const SensorShowcase = ({ onVisible }) => {
                     {sensorData[1].description}
                   </p>
                 </div>
-                
-                {/* Icon Container */}
-                <div className="flex justify-center items-center flex-grow min-h-0">
-                  <div className="relative w-[240px] h-[240px]">
-                    <Image
-                      src={sensorData[1].icon}
-                      alt={sensorData[1].title}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                </div>
+              </div>
+              
+              {/* Absolutely Positioned Image */}
+              <div 
+                className="absolute top-4 right-8 w-[500px] h-[500px] z-20"
+                style={{ transform: 'rotate(180deg) rotate(-12deg)' }}
+              >
+                <Image
+                  src={sensorData[1].icon}
+                  alt={sensorData[1].title}
+                  fill
+                  className="object-cover"
+                />
               </div>
 
               {/* Decorative Elements */}
@@ -280,18 +279,17 @@ const SensorShowcase = ({ onVisible }) => {
                     {sensorData[2].description}
                   </p>
                 </div>
-                
-                {/* Icon Container */}
-                <div className="flex justify-center items-center flex-grow min-h-0">
-                  <div className="relative w-[240px] h-[240px]">
-                    <Image
-                      src={sensorData[2].icon}
-                      alt={sensorData[2].title}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                </div>
+              </div>
+              
+              {/* Absolutely Positioned Image */}
+              <div className="absolute top-4 right-4 w-[500px] h-[500px] z-20"
+                     style={{ transform: 'rotate(180deg) rotate(-12deg)' }}>
+                <Image
+                  src={sensorData[2].icon}
+                  alt={sensorData[2].title}
+                  fill
+                  className="object-cover"
+                />
               </div>
 
               {/* Decorative Elements */}
@@ -329,18 +327,17 @@ const SensorShowcase = ({ onVisible }) => {
                     {sensorData[3].description}
                   </p>
                 </div>
-                
-                {/* Icon Container */}
-                <div className="flex justify-center items-center flex-grow min-h-0">
-                  <div className="relative w-[240px] h-[240px]">
-                    <Image
-                      src={sensorData[3].icon}
-                      alt={sensorData[3].title}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                </div>
+              </div>
+              
+              {/* Absolutely Positioned Image */}
+              <div className="absolute -top-4 -right-2 w-[500px] h-[500px] z-20"
+                     style={{ transform: 'rotate(180deg) rotate(40deg)' }}>
+                <Image
+                  src={sensorData[3].icon}
+                  alt={sensorData[3].title}
+                  fill
+                  className="object-cover"
+                />
               </div>
 
               {/* Decorative Elements */}
