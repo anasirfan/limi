@@ -17,41 +17,42 @@ const ScrollSVGDemoFixed = () => {
   // Dynamic content for each step
   const steps = [
     { 
-      title: "Foundation Base", 
-      description: "The core circular base of the system, ready to reveal its inner technology.", 
-      labels: ["foundation", "base", "start"]
+      title: "Top Plate", 
+      description: "The topmost cover plate that protects the internal parts and completes the outer structure.", 
+      labels: ["top", "plate", "cover"]
     },
     { 
-      title: "First Layer Revealed", 
-      description: "The first layer opens, showing the initial components inside.", 
-      labels: ["layer1", "opening", "components"]
+      title: "Male Connector Plate", 
+      description: "A connector plate that ensures proper alignment and secure attachment with other components.", 
+      labels: ["male", "connector", "plate"]
     },
     { 
-      title: "Second Layer Revealed", 
-      description: "A deeper look as the second layer is revealed.", 
-      labels: ["layer2", "deeper", "mechanism"]
+      title: "Ceiling Bracket Steel", 
+      description: "A durable steel bracket designed to fix the system securely to the ceiling structure.", 
+      labels: ["ceiling", "bracket", "steel"]
     },
     { 
-      title: "Third Layer Revealed", 
-      description: "The third layer exposes more advanced elements.", 
-      labels: ["layer3", "advanced", "structure"]
+      title: "Plate", 
+      description: "A supporting plate that helps distribute weight and maintain stability in the assembly.", 
+      labels: ["support", "plate", "stability"]
     },
     { 
-      title: "Fourth Layer Revealed", 
-      description: "The fourth layer opens up, showing the system's complexity.", 
-      labels: ["layer4", "complexity", "details"]
+      title: "Components", 
+      description: "Various mechanical and electrical parts that work together to build the full system.", 
+      labels: ["components", "parts", "assembly"]
     },
     { 
-      title: "Fifth Layer Revealed", 
-      description: "Almost fully exploded, the fifth layer is visible.", 
-      labels: ["layer5", "exploded", "almost"]
+      title: "PCB Board", 
+      description: "The printed circuit board that controls electronic functions and signal processing.", 
+      labels: ["pcb", "board", "electronics"]
     },
     { 
-      title: "Fully Exploded View", 
-      description: "All layers are revealed, showing the complete inner workings.", 
-      labels: ["exploded", "final", "complete"]
+      title: "Ceiling Hub", 
+      description: "The central hub where all plates, components, and electronics integrate into one system.", 
+      labels: ["ceiling", "hub", "integration"]
     }
   ];
+  
 
   // Initialize scroll without Lenis for better scrollbar compatibility
   useEffect(() => {
@@ -98,21 +99,17 @@ const ScrollSVGDemoFixed = () => {
         const progress = documentHeight > 0 ? Math.min(Math.max(scrollTop / documentHeight, 0), 1) : 0;
         setScrollProgress(progress);
         
-        // Calculate smooth progress for each step
-        const stepProgress = progress * (steps.length - 1);
-        const currentStepFloat = Math.max(0, Math.min(stepProgress, steps.length - 1));
-        let targetStep = Math.floor(currentStepFloat);
-        
-        // Ensure we reach the last step at 100% scroll
-        if (progress >= 0.95) {
-          targetStep = steps.length - 1;
+        // Calculate current step based on same logic as images
+        let targetStep = 0;
+        for (let i = 0; i < steps.length; i++) {
+          const stepStart = i / (steps.length - 1);
+          if (progress >= stepStart) {
+            targetStep = i;
+          }
         }
         
-        // Update current step
-        if (targetStep !== currentStep) {
-          console.log('Step changed:', currentStep, '->', targetStep, 'Progress:', Math.round(progress * 100) + '%');
-          setCurrentStep(targetStep);
-        }
+        // Update current step - always set it to ensure sync
+        setCurrentStep(targetStep);
       });
     };
 
