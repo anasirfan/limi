@@ -436,7 +436,8 @@ const PlayCanvasViewer = ({
         id="playcanvas-app"
         // https://configurator.limilighting.com
         // src="https://playcanv.as/e/p/7c2273a2/"
-        src="https://limi-conf.vercel.app/"
+        // src="https://limi-conf.vercel.app/"
+        src='https://playcanv.as/e/p/7c2273a2/'
         allow="autoplay; fullscreen; vr"
         className={`w-full h-full transition-opacity duration-500 ${appReady ? 'opacity-100' : 'opacity-0'}`}
         style={{ border: 'none' }}
