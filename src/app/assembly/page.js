@@ -28,6 +28,7 @@ import { Environment } from "./components/Environment";
 import SensorShowcase from "./components/SensorShowcase";
 import BaseShowcase from "./components/BaseShowcase";
 import LimiAIShowcase from "./components/LimiAIShowcase";
+import StickyImageReveal from "./components/StickyImageReveal";
 
 // Import Umami tracking utilities
 import {
@@ -466,6 +467,13 @@ const AssemblyPage = () => {
         <section id="limi-showcase">
           <LimiAIShowcase
             onVisible={() => trackAssemblyEvent("LIMI AI Showcase")}
+          />
+        </section>
+
+        {/* Sticky Image Reveal Section */}
+        <section id="sticky-reveal">
+          <StickyImageReveal
+            onVisible={() => trackAssemblyEvent("Sticky Image Reveal")}
           />
         </section>
 

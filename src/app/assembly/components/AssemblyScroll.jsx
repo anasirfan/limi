@@ -12,8 +12,8 @@ const AssemblyScroll = () => {
   const steps = [
     {
       id: 1,
-      title: 'Deploy Neural Hub',
-      description: 'Install the AI processing center that becomes the brain of your intelligent space.',
+      title: 'Install the Base in the Ceiling',
+      description: 'Securely mount the foundation base onto the ceiling to prepare for the full assembly.',
       icon: HiCube,
       color: '#19b576',
       video: '/limiai/step1.mp4',
@@ -21,8 +21,8 @@ const AssemblyScroll = () => {
     },
     {
       id: 2,
-      title: 'Connect Data Network',
-      description: 'Establish secure communication channels for real-time environmental analysis.',
+      title: 'Connect the Cables',
+      description: 'Carefully connect the power and data cables to ensure proper communication and functionality.',
       icon: HiOutlineWifi,
       color: '#19b576',
       video: '/limiai/step2.mp4',
@@ -30,23 +30,24 @@ const AssemblyScroll = () => {
     },
     {
       id: 3,
-      title: 'Activate Control Node',
-      description: 'Seamlessly integrate the primary interface for autonomous space management.',
+      title: 'Attach the Pendant',
+      description: 'Mount and secure the pendant to the installed base for structural integration.',
       icon: HiLightningBolt,
       color: '#19b576',
-      video: '/limiai/step3.m4v',
+      video: '/limi_ai_assets/assemblyStep3.mp4',
       size: 'medium' // Takes 1 column
     },
     {
       id: 4,
-      title: 'Install Sensor Array',
-      description: 'Deploy advanced sensing modules for comprehensive environmental intelligence.',
+      title: 'Add Sensors',
+      description: 'Integrate the sensors into the system for enhanced functionality and smart monitoring.',
       icon: HiCog,
       color: '#19b576',
       video: '/limiai/step4.m4v',
       size: 'large' // Takes 2 columns
     }
   ];
+  
 
   useEffect(() => {
     setMounted(true);

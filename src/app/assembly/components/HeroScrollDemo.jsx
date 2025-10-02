@@ -21,18 +21,15 @@ export function HeroScrollDemo() {
       <ContainerScroll
         titleComponent={
           <>
-            <h1 className="text-4xl font-medium text-white mb-4">
-            Every Surface. Every Corner. Every Moment. <br />
-              <span className="text-4xl md:text-[5rem] mt-3 leading-none">
-                Powered by <span className="text-white">Adaptive</span>{" "}
-                <span className="text-[#54bb74]">Intelligence</span>
-              </span>
+            <h1 className="text-6xl font-medium text-white mb-4">
+              Introducing <span className="text-[#54bb74] font-black">LIMI AI</span><br />
+          
             </h1>
           
           </>
         }>
         <video
-          src="/limiai/main_video.mp4"
+          src="/limi_ai_assets/main_video_section.mp4"
           className={`mx-auto rounded-2xl h-full w-full ${
             isMobile 
               ? 'object-contain object-center' 

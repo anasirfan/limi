@@ -2,9 +2,31 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const LimiAIShowcase = ({ onVisible }) => {
+  const videoRef = useRef(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const handlePlay = (entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          video.play();
+        } else {
+          video.pause();
+        }
+      });
+    };
+
+    const observer = new window.IntersectionObserver(handlePlay, { threshold: 0.5 });
+    observer.observe(video);
+
+    return () => observer.disconnect();
+  }, []);
+
   const [currentTime, setCurrentTime] = useState(new Date());
   const [userCount, setUserCount] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -201,11 +223,15 @@ const LimiAIShowcase = ({ onVisible }) => {
             >
               {/* Background Image */}
               <div className="absolute inset-0 rounded-2xl overflow-hidden">
-                <Image
-                  src="/assemblyImages/baseExploaded.jpg"
-                  alt="LIMI AI Base Exploded View"
-                  fill
-                  className="object-cover"
+                <video
+                  ref={videoRef}
+                  src="/limi_ai_assets/base_animation.mp4"
+                  className="object-cover w-full h-full"
+                  muted
+                  playsInline
+                  loop
+                  preload="auto"
+                  style={{ display: 'block' }}
                 />
               </div>
               
