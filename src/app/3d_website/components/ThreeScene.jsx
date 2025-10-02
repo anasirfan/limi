@@ -25,6 +25,10 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
   const isScrollingRef = useRef(false);
   const scrollTimeoutRef = useRef(null);
   
+  // Touch interaction state
+  const touchStartRef = useRef({ y: 0, progress: 0 });
+  const isTouchingRef = useRef(false);
+  
   // Create refs for animation functions
   const assembleModelsRef = useRef(null);
   const explodeModelsRef = useRef(null);
@@ -38,14 +42,14 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
   };
 
   // ===== CUSTOM POSITIONS =====
-  // Custom exploded positions for each model
+  // Custom exploded positions for each model (centered around 0)
   const explodedPositions = [
-    { x: 0, y: 4, z: 0 },    // Model 1 (top)
-    { x: 0, y: 3, z: 0 },    // Model 2
-    { x: 0, y: 2, z: 0 },    // Model 3
-    { x: 0, y: 1, z: 0 },   // Model 4
-    { x: 0, y: 0, z: 0 },   // Model 5
-    { x: 0, y: -1, z: 0 }    // Model 6 (bottom)
+    { x: 0, y: 1.3, z: 0 },    // Model 1 (top)
+    { x: 0, y: 0.8, z: 0 },    // Model 2
+    { x: 0, y: 0.3, z: 0 },    // Model 3
+    { x: 0, y: -0.3, z: 0 },   // Model 4
+    { x: 0, y: -1.0, z: 0 },   // Model 5
+    { x: 0, y: -1.8, z: 0 }    // Model 6 (bottom)
   ];
 
   // Custom assembled positions for each model
@@ -85,7 +89,7 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
       0.1,
       1000
     );
-    camera.position.set(0, 0, 5);
+    camera.position.set(0, 0, 3); // Moved closer for zoom effect
     camera.lookAt(0, 0, 0); // Look at the center of the model stack
     cameraRef.current = camera;
 
@@ -97,27 +101,9 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
     renderer.setSize(window.innerWidth, window.innerHeight);
     rendererRef.current = renderer;
 
-    // ===== ORBIT CONTROLS =====
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.02; // Ultra smooth damping (lower = smoother)
-    controls.enableZoom = false;   // Disable zoom completely
-    controls.enableRotate = true;
-    controls.enablePan = false;    // Disable pan for cleaner interaction
-    controls.target.set(0, 0, 0); // Keep rotation centered at origin
-    
-    // Remove rotation limits for full 360° movement
-    controls.minPolarAngle = 0; // Allow looking straight up
-    controls.maxPolarAngle = Math.PI; // Allow looking straight down
-    controls.minAzimuthAngle = -Infinity; // No horizontal rotation limit
-    controls.maxAzimuthAngle = Infinity; // No horizontal rotation limit
-    
-    // Ultra smooth rotation settings
-    controls.rotateSpeed = 0.3; // Slower, more precise rotation
-    controls.autoRotate = false;
-    controls.autoRotateSpeed = 0;
-    
-    controlsRef.current = controls;
+    // ===== ORBIT CONTROLS DISABLED =====
+    // No orbit controls - only scroll interaction allowed
+    controlsRef.current = null;
     
     // ===== ENHANCED LIGHTING =====
     // Brighter ambient light
@@ -323,32 +309,63 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
       progress = Math.max(0, Math.min(1, progress));
       scrollProgressRef.current = progress;
       
-      // Update state based on progress
-      const newIsAssembled = progress < 0.5;
+      // Calculate position progress with twist at 180°
+      let positionProgress;
+      if (progress <= 0.5) {
+        // First half: explode (0 to 1)
+        positionProgress = progress * 2;
+      } else {
+        // Second half: assemble while rotating (1 to 0)
+        positionProgress = 2 - (progress * 2);
+      }
+      
+      // Update state based on position progress
+      const newIsAssembled = positionProgress < 0.5;
       if (newIsAssembled !== isAssembled) {
         setIsAssembled(newIsAssembled);
       }
       
-      // Interpolate model positions
+      // Interpolate model positions using position progress
       modelsRef.current.forEach((model, index) => {
         if (model && model.userData) {
           const assembledPos = model.userData.assembledPos;
           const explodedPos = model.userData.explodedPos;
           
           // Lerp between assembled and exploded positions
-          model.position.x = assembledPos.x + (explodedPos.x - assembledPos.x) * progress;
-          model.position.y = assembledPos.y + (explodedPos.y - assembledPos.y) * progress;
-          model.position.z = assembledPos.z + (explodedPos.z - assembledPos.z) * progress;
+          model.position.x = assembledPos.x + (explodedPos.x - assembledPos.x) * positionProgress;
+          model.position.y = assembledPos.y + (explodedPos.y - assembledPos.y) * positionProgress;
+          model.position.z = assembledPos.z + (explodedPos.z - assembledPos.z) * positionProgress;
         }
       });
       
-      // Interpolate scene Y rotation (90deg to 140deg)
-      const startRotY = Math.PI / 2; // 90deg
-      const endRotY = 140 * Math.PI / 180; // 140deg
-      sceneRef.current.rotation.y = startRotY + (endRotY - startRotY) * progress;
+      // Full 360° rotation with tilt (rotation continues throughout)
+      modelsGroupRef.current.rotation.x = progress * Math.PI * 2; // Forward flip
+      modelsGroupRef.current.rotation.z = progress * Math.PI * 0.5; // Tilt angle (90° max)
       
-      // Interpolate models group Z rotation (0 to 360deg)
-      modelsGroupRef.current.rotation.z = progress * Math.PI * 2;
+      // Background color transition based on rotation angle
+      const rotationDegrees = (progress * 360); // Convert to degrees for easier calculation
+      let bgColor;
+      
+      if (rotationDegrees >= 160 && rotationDegrees <= 240) {
+        // Between 160-240 degrees: transition to white
+        const transitionProgress = (rotationDegrees - 160) / 80; // 0 to 1 over 80 degrees
+        const smoothProgress = Math.sin(transitionProgress * Math.PI); // Smooth sine curve
+        
+        // Interpolate from dark gray (0x222222) to light beige (0xDAD5D0)
+        const r = Math.round(0x22 + (0xDA - 0x22) * smoothProgress);
+        const g = Math.round(0x22 + (0xD5 - 0x22) * smoothProgress);
+        const b = Math.round(0x22 + (0xD0 - 0x22) * smoothProgress);
+        
+        bgColor = (r << 16) | (g << 8) | b;
+      } else {
+        // Outside 160-240 range: dark gray
+        bgColor = 0x222222;
+      }
+      
+      // Apply background color
+      if (sceneRef.current) {
+        sceneRef.current.background.setHex(bgColor);
+      }
     };
 
     // ===== SMOOTH GSAP SCROLL HANDLER =====
@@ -374,11 +391,15 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
       let targetProgress = scrollProgressRef.current;
       
       if (delta > 0) {
-        // Scrolling down - explode
-        targetProgress += scrollSensitivity;
+        // Scrolling down - explode (only if not fully exploded)
+        if (scrollProgressRef.current < 1) {
+          targetProgress += scrollSensitivity;
+        }
       } else {
-        // Scrolling up - assemble
-        targetProgress -= scrollSensitivity;
+        // Scrolling up - assemble (only if not fully assembled)
+        if (scrollProgressRef.current > 0) {
+          targetProgress -= scrollSensitivity;
+        }
       }
       
       // Clamp target progress
@@ -400,8 +421,70 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
       });
     };
 
-    // Add scroll event listener
+    // ===== TOUCH EVENT HANDLERS FOR MOBILE =====
+    const handleTouchStart = (event) => {
+      isTouchingRef.current = true;
+      touchStartRef.current = {
+        y: event.touches[0].clientY,
+        progress: scrollProgressRef.current
+      };
+    };
+
+    const handleTouchMove = (event) => {
+      if (!isTouchingRef.current) return;
+      event.preventDefault();
+      
+      const currentY = event.touches[0].clientY;
+      const deltaY = touchStartRef.current.y - currentY;
+      const touchSensitivity = 0.003; // Adjust for touch responsiveness
+      
+      let targetProgress = touchStartRef.current.progress + (deltaY * touchSensitivity);
+      
+      // Apply same scroll logic as wheel event
+      if (deltaY > 0) {
+        // Swiping up - explode (only if not fully exploded)
+        if (scrollProgressRef.current < 1) {
+          targetProgress = Math.min(1, targetProgress);
+        } else {
+          targetProgress = scrollProgressRef.current;
+        }
+      } else {
+        // Swiping down - assemble (only if not fully assembled)
+        if (scrollProgressRef.current > 0) {
+          targetProgress = Math.max(0, targetProgress);
+        } else {
+          targetProgress = scrollProgressRef.current;
+        }
+      }
+      
+      // Clamp target progress
+      targetProgress = Math.max(0, Math.min(1, targetProgress));
+      
+      // Kill existing tween
+      if (scrollTweenRef.current) {
+        scrollTweenRef.current.kill();
+      }
+      
+      // Create smooth GSAP tween
+      scrollTweenRef.current = gsap.to(scrollProgressRef, {
+        current: targetProgress,
+        duration: 0.3, // Faster for touch responsiveness
+        ease: "power2.out",
+        onUpdate: () => {
+          updateScrollAnimation(scrollProgressRef.current);
+        }
+      });
+    };
+
+    const handleTouchEnd = (event) => {
+      isTouchingRef.current = false;
+    };
+
+    // Add event listeners for both desktop and mobile
     window.addEventListener('wheel', handleScroll, { passive: false });
+    canvasRef.current.addEventListener('touchstart', handleTouchStart, { passive: false });
+    canvasRef.current.addEventListener('touchmove', handleTouchMove, { passive: false });
+    canvasRef.current.addEventListener('touchend', handleTouchEnd, { passive: false });
 
     // Assign functions to refs for component access
     assembleModelsRef.current = assembleModels;
@@ -415,13 +498,17 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
     const animate = () => {
       requestAnimationFrame(animate);
       
-      // Continuous auto-rotation (only when not scrolling)
-      if (sceneRef.current && !isScrollingRef.current) {
-        sceneRef.current.rotation.y += 0.005; // Adjust speed as needed
-      }
+      // Continuous auto-rotation of each individual model (commented out)
+      // modelsRef.current.forEach((model, index) => {
+      //   if (model) {
+      //     // Each model rotates at slightly different speeds for variety
+      //     const baseSpeed = 0.01;
+      //     const speedVariation = (index + 1) * 0.002; // Different speed per model
+      //     model.rotation.y += baseSpeed + speedVariation;
+      //   }
+      // });
 
-      // Update controls
-      controls.update();
+      // No controls to update - orbit controls disabled
       
       // Render scene
       renderer.render(scene, camera);
@@ -441,6 +528,13 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('wheel', handleScroll);
       
+      // Clean up touch event listeners
+      if (canvasRef.current) {
+        canvasRef.current.removeEventListener('touchstart', handleTouchStart);
+        canvasRef.current.removeEventListener('touchmove', handleTouchMove);
+        canvasRef.current.removeEventListener('touchend', handleTouchEnd);
+      }
+      
       // Kill scroll tween and timeout on cleanup
       if (scrollTweenRef.current) {
         scrollTweenRef.current.kill();
@@ -449,9 +543,7 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
         clearTimeout(scrollTimeoutRef.current);
       }
       
-      if (controlsRef.current) {
-        controlsRef.current.dispose();
-      }
+      // No controls to dispose - orbit controls disabled
       
       if (rendererRef.current) {
         rendererRef.current.dispose();
@@ -487,7 +579,7 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
             Models Loaded: {modelsLoaded}/{modelPaths.length}
           </div>
           
-          <div className="text-white text-xs">
+          {/* <div className="text-white text-xs">
             Status: {isAssembled ? 'Assembled' : 'Exploded'}
           </div>
           
@@ -515,7 +607,7 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
             >
               Explode
             </button>
-          </div>
+          </div> */}
           
           {autoAssemble && (
             <div className="text-yellow-400 text-xs">
