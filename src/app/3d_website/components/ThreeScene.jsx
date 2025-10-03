@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { TransformControls } from 'three/examples/jsm/controls/TransformControls';
 import { EXRLoader } from 'three/examples/jsm/loaders/EXRLoader';
 import { gsap } from 'gsap';
 
@@ -273,6 +274,38 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
     // Axes helper (pivot, size 5)
     const axesHelper = new THREE.AxesHelper(5);
     scene.add(axesHelper);
+
+    // ===== TRANSFORM CONTROLS (GIZMO) =====
+    const transformControls = new TransformControls(camera, canvasRef.current);
+    transformControls.setMode('translate'); // Start with translate mode
+    transformControls.setSize(1.5); // Make gizmo larger for visibility
+    scene.add(transformControls);
+    
+    // Create a dummy object at origin for the gizmo to control
+    const gizmoTarget = new THREE.Object3D();
+    gizmoTarget.position.set(0, 0, 0);
+    scene.add(gizmoTarget);
+    transformControls.attach(gizmoTarget);
+    
+    // Add keyboard controls for gizmo modes
+    const handleKeyDown = (event) => {
+      switch (event.key) {
+        case 'g': // Translate mode
+          transformControls.setMode('translate');
+          break;
+        case 'r': // Rotate mode
+          transformControls.setMode('rotate');
+          break;
+        case 's': // Scale mode
+          transformControls.setMode('scale');
+          break;
+        case 'Escape': // Detach gizmo
+          transformControls.detach();
+          break;
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
 
     // ===== CREATE MODELS GROUP =====
     const modelsGroup = new THREE.Group();
@@ -593,7 +626,7 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
                        (navigator.maxTouchPoints > 0);
       
       // Adjust sensitivity based on device type
-      const scrollSensitivity = isMobile ? 0.005 : 0.02; // Much lower sensitivity for mobile devices
+      const scrollSensitivity = isMobile ? 0.005 : 0.03; // Much lower sensitivity for mobile devices
       
       let targetProgress = scrollProgressRef.current;
       
@@ -735,6 +768,7 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
     return () => {
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('wheel', handleScroll);
+      window.removeEventListener('keydown', handleKeyDown);
       
       // Clean up touch event listeners
       if (canvasRef.current) {
@@ -943,6 +977,17 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
             <div className="text-yellow-400 text-xs">Auto-assembly enabled</div>
           </div>
         )}
+      </div>
+      
+      {/* Gizmo Controls Info */}
+      <div className="absolute bottom-4 right-4 bg-black bg-opacity-80 backdrop-blur-md text-white p-3 rounded-xl text-xs border border-white border-opacity-20">
+        <div className="font-bold mb-2 text-white">Gizmo Controls</div>
+        <div className="space-y-1 text-gray-300">
+          <div><kbd className="bg-gray-700 px-1 rounded">G</kbd> - Translate</div>
+          <div><kbd className="bg-gray-700 px-1 rounded">R</kbd> - Rotate</div>
+          <div><kbd className="bg-gray-700 px-1 rounded">S</kbd> - Scale</div>
+          <div><kbd className="bg-gray-700 px-1 rounded">Esc</kbd> - Detach</div>
+        </div>
       </div>
       {/* Callout positions for 60-120 degree rotation state */}
       {(() => {
