@@ -56,8 +56,9 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
     { x: 0, y: -0.3, z: 0 },   // Model 4
     { x: 0, y: -1.0, z: 0 },   // Model 5
     { x: 0, y: -1.8, z: 0 },   // Model 6 (bottom)
-    { x: 0, y: -2.0, z: 0 },   // Model 7 (starts closer, 10x scale needs less distance)
-    { x: 0, y: -3.0, z: 0 }    // Model 8 (starts even further below, comes after model7)
+    { x: 0, y: -2.0, z: 0 },   // Model 7 (starts closer, 1.5x scale)
+    { x: 0, y: -3.0, z: 0 },   // Model 8 (starts further below, 2x scale)
+    { x: 0, y: -4.0, z: 0 }    // Model 9 (starts furthest below, comes after model8)
   ];
 
   // Custom assembled positions for each model (Model 4 centered at origin)
@@ -68,8 +69,9 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
     { x: 0, y: 0.0, z: 0 },   // Model 4 (CENTER - at origin)
     { x: 0, y: -0.2, z: 0 },  // Model 5
     { x: 0, y: -0.3, z: 0 },  // Model 6 (bottom of stack)
-    { x: 0, y: -1.5, z: 0 },    // Model 7 (large scale, positioned below model6)
-    { x: 0, y: -2, z: 0 }   // Model 8 (attaches below model7)
+    { x: 0, y: -0.38 , z: 0 },  // Model 7 (large scale, positioned below model6)
+    { x: 0, y: -2.3, z: 0 },    // Model 8 (attaches below model7)
+    { x: 0, y: -2.5, z: 0 }   // Model 9 (attaches below model8)
   ];
 
   // ===== MODEL PATHS =====
@@ -81,7 +83,8 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
     '/limi_ai_assets/models/model5.glb',
     '/limi_ai_assets/models/model6.glb',
     '/limi_ai_assets/models/model7.glb', // Additional model that comes from bottom
-    '/limi_ai_assets/models/model8.glb', // Final model that comes after model7
+    '/limi_ai_assets/models/model8.glb', // Second model that comes after model7
+    '/limi_ai_assets/models/model9.glb', // Final model that comes after model8
   ];
 
   useEffect(() => {
@@ -229,89 +232,7 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
       );
       scene.add(rimLight);
       rimLights.push(rimLight);
-    }
-
-    // === LIGHT HELPERS FOR VISUALIZATION ===
-    
-    // Directional light helpers
-    const keyLightHelper = new THREE.DirectionalLightHelper(keyLight, 2, 0xff0000);
-    scene.add(keyLightHelper);
-    
-    const fillLightHelper = new THREE.DirectionalLightHelper(fillLight, 2, 0x00ff00);
-    scene.add(fillLightHelper);
-    
-    const backLightHelper = new THREE.DirectionalLightHelper(backLight, 2, 0x0000ff);
-    scene.add(backLightHelper);
-    
-    const sideLight1Helper = new THREE.DirectionalLightHelper(sideLight1, 1.5, 0xffff00);
-    scene.add(sideLight1Helper);
-    
-    const sideLight2Helper = new THREE.DirectionalLightHelper(sideLight2, 1.5, 0xff00ff);
-    scene.add(sideLight2Helper);
-    
-    const bottomLightHelper = new THREE.DirectionalLightHelper(bottomLight, 1.5, 0x00ffff);
-    scene.add(bottomLightHelper);
-    
-    const accentLightHelper = new THREE.DirectionalLightHelper(accentLight, 2, 0xffa500);
-    scene.add(accentLightHelper);
-    
-    // Rim light helpers
-    const rimColors = [0xff6b6b, 0x4ecdc4, 0x45b7d1, 0x96ceb4, 0xffeaa7, 0xdda0dd];
-    rimLights.forEach((rimLight, index) => {
-      const helper = new THREE.DirectionalLightHelper(rimLight, 1, rimColors[index]);
-      scene.add(helper);
-    });
-    
-    // Spotlight helpers
-    const spotTopHelper = new THREE.SpotLightHelper(spotTop, 0xff4757);
-    scene.add(spotTopHelper);
-    
-    const spotCenterHelper = new THREE.SpotLightHelper(spotCenter, 0x3742fa);
-    scene.add(spotCenterHelper);
-    
-    const spotBottomHelper = new THREE.SpotLightHelper(spotBottom, 0x2ed573);
-    scene.add(spotBottomHelper);
-    
-    // ===== GRID AND AXES HELPERS =====
-    // Grid helper (size 10, divisions 10)
-    const gridHelper = new THREE.GridHelper(10, 10, 0x444444, 0x222222);
-    scene.add(gridHelper);
-
-    // Axes helper (pivot, size 5)
-    const axesHelper = new THREE.AxesHelper(5);
-    scene.add(axesHelper);
-
-    // ===== TRANSFORM CONTROLS (GIZMO) =====
-    const transformControls = new TransformControls(camera, canvasRef.current);
-    transformControls.setMode('translate'); // Start with translate mode
-    transformControls.setSize(1.5); // Make gizmo larger for visibility
-    scene.add(transformControls);
-    
-    // Create a dummy object at origin for the gizmo to control
-    const gizmoTarget = new THREE.Object3D();
-    gizmoTarget.position.set(0, 0, 0);
-    scene.add(gizmoTarget);
-    transformControls.attach(gizmoTarget);
-    
-    // Add keyboard controls for gizmo modes
-    const handleKeyDown = (event) => {
-      switch (event.key) {
-        case 'g': // Translate mode
-          transformControls.setMode('translate');
-          break;
-        case 'r': // Rotate mode
-          transformControls.setMode('rotate');
-          break;
-        case 's': // Scale mode
-          transformControls.setMode('scale');
-          break;
-        case 'Escape': // Detach gizmo
-          transformControls.detach();
-          break;
-      }
-    };
-    
-    window.addEventListener('keydown', handleKeyDown);
+    }   
 
     // ===== CREATE MODELS GROUP =====
     const modelsGroup = new THREE.Group();
@@ -345,6 +266,13 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
           
           model.position.set(assembledPos.x, assembledPos.y, assembledPos.z);
           model.scale.set(3, 3, 3);
+          
+          // Set initial visibility - model7, model8, and model9 start hidden
+          if (index === 6 || index === 7 || index === 8) { // Model 7, Model 8, and Model 9
+            model.visible = false;
+          } else {
+            model.visible = true;
+          }
           
           // Store custom positions for animation
           model.userData = {
@@ -540,7 +468,7 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
               model.position.y = explodedPos.y;
               model.position.z = explodedPos.z;
               model.visible = false; // Hide until 75%
-              model.scale.setScalar(1.5); // Reduced scale for model7
+              model.scale.setScalar(3); // Larger scale for model7
             } else if (progress < 0.9) {
               // Between 75% and 90%: model7 animates from bottom to attach to model6
               model.visible = true;
@@ -553,14 +481,14 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
               model.position.z = explodedPos.z + (assembledPos.z - explodedPos.z) * clampedProgress;
               
               // Keep model7 at reduced scale
-              model.scale.setScalar(1.5); // 5x larger than other models
+              model.scale.setScalar(3); // 5x larger than other models
             } else {
               // After 90%: model7 stays in final position
               model.visible = true;
               model.position.x = assembledPos.x;
               model.position.y = assembledPos.y;
               model.position.z = assembledPos.z;
-              model.scale.setScalar(1.5);
+              model.scale.setScalar(3);
             }
           } else if (index === 7) { // Model 8
             if (progress < 0.9) {
@@ -569,11 +497,11 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
               model.position.y = explodedPos.y;
               model.position.z = explodedPos.z;
               model.visible = false; // Hide until 90%
-              model.scale.setScalar(1.5); // Reduced scale for model8
-            } else {
-              // After 90%: smoothly animate from bottom to attach to model7
+              model.scale.setScalar(2.0); // Slightly larger scale for model8
+            } else if (progress < 0.95) {
+              // Between 90% and 95%: model8 animates from bottom to attach to model7
               model.visible = true;
-              const model8Progress = (progress - 0.9) / 0.1; // 0 to 1 from 90% to 100%
+              const model8Progress = (progress - 0.9) / 0.05; // 0 to 1 from 90% to 95%
               const clampedProgress = Math.min(1, model8Progress);
               
               // Animate from exploded position to assembled position
@@ -581,8 +509,37 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
               model.position.y = explodedPos.y + (assembledPos.y - explodedPos.y) * clampedProgress;
               model.position.z = explodedPos.z + (assembledPos.z - explodedPos.z) * clampedProgress;
               
-              // Keep model8 at reduced scale
-              model.scale.setScalar(1.5); // 3x larger than other models
+              // Keep model8 at slightly larger scale
+              model.scale.setScalar(2.0); // 2x larger than other models
+            } else {
+              // After 95%: model8 stays in final position
+              model.visible = true;
+              model.position.x = assembledPos.x;
+              model.position.y = assembledPos.y;
+              model.position.z = assembledPos.z;
+              model.scale.setScalar(2.0);
+            }
+          } else if (index === 8) { // Model 9
+            if (progress < 0.95) {
+              // Before 95%: keep model9 hidden far below
+              model.position.x = explodedPos.x;
+              model.position.y = explodedPos.y;
+              model.position.z = explodedPos.z;
+              model.visible = false; // Hide until 95%
+              model.scale.setScalar(2.2); // Larger scale for model9
+            } else {
+              // After 95%: smoothly animate from bottom to attach to model8
+              model.visible = true;
+              const model9Progress = (progress - 0.95) / 0.05; // 0 to 1 from 95% to 100%
+              const clampedProgress = Math.min(1, model9Progress);
+              
+              // Animate from exploded position to assembled position
+              model.position.x = explodedPos.x + (assembledPos.x - explodedPos.x) * clampedProgress;
+              model.position.y = explodedPos.y + (assembledPos.y - explodedPos.y) * clampedProgress;
+              model.position.z = explodedPos.z + (assembledPos.z - explodedPos.z) * clampedProgress;
+              
+              // Keep model9 at larger scale
+              model.scale.setScalar(2.2); // 2.2x larger than other models
             }
           } else {
             // Normal behavior for models 1-6
@@ -598,6 +555,26 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
       if (progress >= 0.75) {
         // At 75% and beyond: stop at centered position (0° = full rotation)
         modelsGroupRef.current.rotation.y = 0; // Centered position (0° = 360°)
+        
+        // Smooth upward lift when model9 is fully assembled (after 98%)
+        if (progress >= 0.98) {
+          const liftProgress = (progress - 0.98) / 0.02; // 0 to 1 from 98% to 100%
+          const clampedLiftProgress = Math.min(1, liftProgress);
+          
+          // Smooth easing function for the lift (ease-out)
+          const easedProgress = 1 - Math.pow(1 - clampedLiftProgress, 3);
+          
+          // Lift the entire models group upward
+          modelsGroupRef.current.position.y = easedProgress * 5.0; // Lift up by 4 units
+          
+          // Optional: Add slight scale increase for dramatic effect
+          const scaleBoost = 1 + (easedProgress * 0.1); // 1.0 to 1.1 scale
+          modelsGroupRef.current.scale.setScalar(scaleBoost);
+        } else {
+          // Reset position and scale before lift
+          modelsGroupRef.current.position.y = 0;
+          modelsGroupRef.current.scale.setScalar(1);
+        }
       } else if (progress > 0.5) {
         // Between 50% and 75%: continue rotations
         modelsGroupRef.current.rotation.x = progress * Math.PI * 2; // 0 to 360° on X-axis
@@ -829,7 +806,6 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
     return () => {
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('wheel', handleScroll);
-      window.removeEventListener('keydown', handleKeyDown);
       
       // Clean up touch event listeners
       if (canvasRef.current) {
@@ -913,8 +889,14 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
       progress: 0.9
     },
     {
+      title: "Secondary Base",
+      subtitle: "Model 8 - Support Layer",
+      description: "The secondary foundation layer that reinforces the primary support structure.",
+      progress: 0.95
+    },
+    {
       title: "Ultimate Base",
-      subtitle: "Model 8 - Final Foundation",
+      subtitle: "Model 9 - Final Foundation",
       description: "The ultimate foundation that completes the entire assembly from the very bottom.",
       progress: 1.0
     }
@@ -1050,17 +1032,6 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
             <div className="text-yellow-400 text-xs">Auto-assembly enabled</div>
           </div>
         )}
-      </div>
-      
-      {/* Gizmo Controls Info */}
-      <div className="absolute bottom-4 right-4 bg-black bg-opacity-80 backdrop-blur-md text-white p-3 rounded-xl text-xs border border-white border-opacity-20">
-        <div className="font-bold mb-2 text-white">Gizmo Controls</div>
-        <div className="space-y-1 text-gray-300">
-          <div><kbd className="bg-gray-700 px-1 rounded">G</kbd> - Translate</div>
-          <div><kbd className="bg-gray-700 px-1 rounded">R</kbd> - Rotate</div>
-          <div><kbd className="bg-gray-700 px-1 rounded">S</kbd> - Scale</div>
-          <div><kbd className="bg-gray-700 px-1 rounded">Esc</kbd> - Detach</div>
-        </div>
       </div>
       {/* Callout positions for 60-120 degree rotation state */}
       {(() => {
