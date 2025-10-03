@@ -83,25 +83,9 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
     // ===== SCENE SETUP =====
     const scene = new THREE.Scene();
     
-    // Create gradient background using Canvas
-    const canvas = document.createElement('canvas');
-    canvas.width = 512;
-    canvas.height = 512;
-    const ctx = canvas.getContext('2d');
-    
-    // Create linear gradient at 315 degrees (equivalent to 45 degrees from top-left to bottom-right)
-    // 315deg = -45deg in canvas terms, so we use opposite direction
-    const gradient = ctx.createLinearGradient(0, 512, 512, 0); // 45 degree angle
-    gradient.addColorStop(0, '#2d3436'); // Start color at 0%
-    gradient.addColorStop(0.74, '#000000'); // End color at 74%
-    gradient.addColorStop(1, '#000000'); // Continue black to 100%
-    
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    const bgTexture = new THREE.CanvasTexture(canvas);
-    scene.background = bgTexture;
-    console.log('Gradient background applied successfully');
+    // Set solid black background
+    scene.background = new THREE.Color(0x000000); // Pure black background
+    console.log('Black background applied successfully');
     
     sceneRef.current = scene;
     // Start with Y rotation at 90deg and tilted to 180 degrees
@@ -602,7 +586,14 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
       }, 1000); // Resume auto-rotation 1 second after scrolling stops
       
       const delta = event.deltaY;
-      const scrollSensitivity = 0.02; // Lower sensitivity for slower, more controlled scrolling
+      
+      // Detect if device is mobile/touch device
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+                       ('ontouchstart' in window) || 
+                       (navigator.maxTouchPoints > 0);
+      
+      // Adjust sensitivity based on device type
+      const scrollSensitivity = isMobile ? 0.005 : 0.02; // Much lower sensitivity for mobile devices
       
       let targetProgress = scrollProgressRef.current;
       
@@ -652,7 +643,7 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
       
       const currentY = event.touches[0].clientY;
       const deltaY = touchStartRef.current.y - currentY;
-      const touchSensitivity = 0.003; // Adjust for touch responsiveness
+      const touchSensitivity = 0.0008; // Much lower sensitivity for more controlled touch scrolling
       
       let targetProgress = touchStartRef.current.progress + (deltaY * touchSensitivity);
       
@@ -836,6 +827,16 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
 
   return (
     <div className="relative w-full h-screen overflow-hidden">
+      {/* Loading Screen */}
+      {modelsLoaded < modelPaths.length && (
+        <div className="absolute inset-0 bg-black flex items-center justify-center z-20">
+          <div className="text-white text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white mx-auto mb-4"></div>
+            <p className="text-lg">Loading 3D Preview...</p>
+          </div>
+        </div>
+      )}
+      
       <canvas ref={canvasRef} className="w-full h-full" />
       
       {/* Left Content Carousel - Responsive */}
@@ -915,26 +916,18 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
           })}
         </div>
       </div>
-      {/* Loading indicator */}
-      {modelsLoaded < modelPaths.length && (
-        <div className="absolute top-4 left-4 bg-black bg-opacity-50 text-white p-2 rounded">
-          <div className="text-white text-xs mb-1">Loading 3D Models...</div>
-          <div className="text-white text-xs">Models Loaded: {modelsLoaded}/{modelPaths.length}</div>
-          {autoAssemble && (
-            <div className="text-yellow-400 text-xs">Auto-assembly enabled</div>
-          )}
-        </div>
-      )}
-      {/* Model Position Debug Info (for development) */}
-      {process.env.NODE_ENV === 'development' && modelPositions.length > 0 && (
-        <div className="absolute top-4 right-4 bg-black bg-opacity-70 text-white p-2 rounded text-xs max-w-xs">
-          <div className="font-bold mb-2">Model Positions (Progress: {Math.round(scrollProgressRef.current * 100)}%)</div>
-          {modelPositions.map((pos, index) => (
-            <div key={pos.id} className="mb-1">
-              <strong>{pos.name}:</strong> x:{pos.x}, y:{pos.y} {!pos.isVisible && '(hidden)'}
-            </div>
-          ))}
-        </div>
+      {autoAssemble && (
+        <>
+          <div className="text-yellow-400 text-xs">Auto-assembly enabled</div>
+          <div className="absolute top-4 right-4 bg-black bg-opacity-70 text-white p-2 rounded text-xs max-w-xs">
+            <div className="font-bold mb-2">Model Positions (Progress: {Math.round(scrollProgressRef.current * 100)}%)</div>
+            {modelPositions.map((pos, index) => (
+              <div key={pos.id} className="mb-1">
+                <strong>{pos.name}:</strong> x:{pos.x}, y:{pos.y} {!pos.isVisible && '(hidden)'}
+              </div>
+            ))}
+          </div>
+        </>
       )}
       {/* Callout positions for 60-120 degree rotation state */}
       {(() => {
