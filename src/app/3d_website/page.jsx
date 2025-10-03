@@ -25,7 +25,7 @@ export default function ThreeDWebsite() {
   }, []);
 
   return (
-    <div ref={containerRef} className="relative bg-[#1e2022bb] h-screen">
+    <div ref={containerRef} className="relative bg-white h-screen">
       {/* Fixed Three.js Canvas Background with Assembly Animation */}
       <ThreeScene 
         autoAssemble={false}  // Set to true for auto-assembly on load
