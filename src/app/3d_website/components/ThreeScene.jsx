@@ -630,10 +630,17 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
 
     // ===== TOUCH EVENT HANDLERS FOR MOBILE =====
     const handleTouchStart = (event) => {
+      event.preventDefault();
       isTouchingRef.current = true;
+      
+      // Kill any existing animation to ensure smooth touch start
+      if (scrollTweenRef.current) {
+        scrollTweenRef.current.kill();
+      }
+      
       touchStartRef.current = {
         y: event.touches[0].clientY,
-        progress: scrollProgressRef.current
+        progress: scrollProgressRef.current // Use current actual progress
       };
     };
 
@@ -672,15 +679,9 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
         scrollTweenRef.current.kill();
       }
       
-      // Create smooth GSAP tween for touch
-      scrollTweenRef.current = gsap.to(scrollProgressRef, {
-        current: targetProgress,
-        duration: 0.2, // Very fast for touch responsiveness
-        ease: "power1.out", // Gentler easing
-        onUpdate: () => {
-          updateScrollAnimation(scrollProgressRef.current);
-        }
-      });
+      // Update progress immediately for smooth touch response
+      scrollProgressRef.current = targetProgress;
+      updateScrollAnimation(scrollProgressRef.current);
     };
 
     const handleTouchEnd = (event) => {
@@ -705,12 +706,12 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
     const animate = () => {
       requestAnimationFrame(animate);
       
-      // Continuous auto-rotation of each individual model
+      // Continuous auto-rotation of each individual model (slower)
       modelsRef.current.forEach((model, index) => {
         if (model) {
-          // Each model rotates at slightly different speeds for variety
-          const baseSpeed = 0.01;
-          const speedVariation = (index + 1) * 0.002; // Different speed per model
+          // Each model rotates at slightly different speeds for variety (much slower)
+          const baseSpeed = 0.003; // Reduced from 0.01 to 0.003 (3x slower)
+          const speedVariation = (index + 1) * 0.0005; // Reduced from 0.002 to 0.0005 (4x slower)
           model.rotation.y += baseSpeed + speedVariation;
         }
       });
@@ -916,19 +917,33 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
           })}
         </div>
       </div>
-      {autoAssemble && (
-        <>
-          <div className="text-yellow-400 text-xs">Auto-assembly enabled</div>
-          <div className="absolute top-4 right-4 bg-black bg-opacity-70 text-white p-2 rounded text-xs max-w-xs">
-            <div className="font-bold mb-2">Model Positions (Progress: {Math.round(scrollProgressRef.current * 100)}%)</div>
-            {modelPositions.map((pos, index) => (
-              <div key={pos.id} className="mb-1">
-                <strong>{pos.name}:</strong> x:{pos.x}, y:{pos.y} {!pos.isVisible && '(hidden)'}
+      {/* Model Positions Display - Always Visible */}
+      <div className="absolute top-4 right-4 bg-black bg-opacity-80 backdrop-blur-md text-white p-4 rounded-xl text-sm max-w-xs border border-white border-opacity-20">
+        <div className="font-bold mb-3 text-white">
+          Model Positions
+        </div>
+        <div className="text-gray-300 mb-3 text-xs">
+          Progress: {Math.round(scrollProgressRef.current * 100)}%
+        </div>
+        {modelPositions.length > 0 ? (
+          modelPositions.map((pos, index) => (
+            <div key={pos.id} className="mb-2 p-2 bg-white bg-opacity-10 rounded">
+              <div className="font-medium text-white">{pos.name}</div>
+              <div className="text-xs text-gray-300">
+                x: {pos.x.toFixed(2)}, y: {pos.y.toFixed(2)}
+                {!pos.isVisible && <span className="text-red-400 ml-2">(hidden)</span>}
               </div>
-            ))}
+            </div>
+          ))
+        ) : (
+          <div className="text-gray-400 text-xs">Loading models...</div>
+        )}
+        {autoAssemble && (
+          <div className="mt-3 pt-2 border-t border-white border-opacity-20">
+            <div className="text-yellow-400 text-xs">Auto-assembly enabled</div>
           </div>
-        </>
-      )}
+        )}
+      </div>
       {/* Callout positions for 60-120 degree rotation state */}
       {(() => {
         const rotationDegrees = scrollProgressRef.current * 360;
