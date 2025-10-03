@@ -739,13 +739,14 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
     const animate = () => {
       requestAnimationFrame(animate);
       
-      // Continuous auto-rotation of each individual model (slower)
+      // Scroll-synchronized rotation of each individual model
       modelsRef.current.forEach((model, index) => {
         if (model) {
-          // Each model rotates at slightly different speeds for variety (much slower)
-          const baseSpeed = 0.003; // Reduced from 0.01 to 0.003 (3x slower)
-          const speedVariation = (index + 1) * 0.0005; // Reduced from 0.002 to 0.0005 (4x slower)
-          model.rotation.y += baseSpeed + speedVariation;
+          // Rotation synchronized with scroll progress
+          // Each model has slightly different rotation speed for variety
+          const baseRotation = scrollProgressRef.current * Math.PI * 2; // 0 to 360 degrees based on scroll
+          const rotationVariation = (index + 1) * 0.2; // Different rotation offset per model
+          model.rotation.y = baseRotation + rotationVariation;
         }
       });
 
