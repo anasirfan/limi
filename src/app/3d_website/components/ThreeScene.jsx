@@ -55,7 +55,9 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
     { x: 0, y: 0.3, z: 0 },    // Model 3
     { x: 0, y: -0.3, z: 0 },   // Model 4
     { x: 0, y: -1.0, z: 0 },   // Model 5
-    { x: 0, y: -1.8, z: 0 }    // Model 6 (bottom)
+    { x: 0, y: -1.8, z: 0 },   // Model 6 (bottom)
+    { x: 0, y: -2.0, z: 0 },   // Model 7 (starts closer, 10x scale needs less distance)
+    { x: 0, y: -3.0, z: 0 }    // Model 8 (starts even further below, comes after model7)
   ];
 
   // Custom assembled positions for each model (Model 4 centered at origin)
@@ -65,7 +67,9 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
     { x: 0, y: 0.2, z: 0 },   // Model 3
     { x: 0, y: 0.0, z: 0 },   // Model 4 (CENTER - at origin)
     { x: 0, y: -0.2, z: 0 },  // Model 5
-    { x: 0, y: -0.3, z: 0 }   // Model 6 (bottom of stack)
+    { x: 0, y: -0.3, z: 0 },  // Model 6 (bottom of stack)
+    { x: 0, y: -1.5, z: 0 },    // Model 7 (large scale, positioned below model6)
+    { x: 0, y: -2, z: 0 }   // Model 8 (attaches below model7)
   ];
 
   // ===== MODEL PATHS =====
@@ -76,6 +80,8 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
     '/limi_ai_assets/models/model4.glb',
     '/limi_ai_assets/models/model5.glb',
     '/limi_ai_assets/models/model6.glb',
+    '/limi_ai_assets/models/model7.glb', // Additional model that comes from bottom
+    '/limi_ai_assets/models/model8.glb', // Final model that comes after model7
   ];
 
   useEffect(() => {
@@ -526,10 +532,65 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
           const assembledPos = model.userData.assembledPos;
           const explodedPos = model.userData.explodedPos;
           
-          // Lerp between assembled and exploded positions
-          model.position.x = assembledPos.x + (explodedPos.x - assembledPos.x) * positionProgress;
-          model.position.y = assembledPos.y + (explodedPos.y - assembledPos.y) * positionProgress;
-          model.position.z = assembledPos.z + (explodedPos.z - assembledPos.z) * positionProgress;
+          // Special handling for model7 (index 6) - comes from bottom after 75%
+          if (index === 6) { // Model 7
+            if (progress < 0.75) {
+              // Before 75%: keep model7 hidden far below
+              model.position.x = explodedPos.x;
+              model.position.y = explodedPos.y;
+              model.position.z = explodedPos.z;
+              model.visible = false; // Hide until 75%
+              model.scale.setScalar(1.5); // Reduced scale for model7
+            } else if (progress < 0.9) {
+              // Between 75% and 90%: model7 animates from bottom to attach to model6
+              model.visible = true;
+              const model7Progress = (progress - 0.75) / 0.15; // 0 to 1 from 75% to 90%
+              const clampedProgress = Math.min(1, model7Progress);
+              
+              // Animate from exploded position to assembled position
+              model.position.x = explodedPos.x + (assembledPos.x - explodedPos.x) * clampedProgress;
+              model.position.y = explodedPos.y + (assembledPos.y - explodedPos.y) * clampedProgress;
+              model.position.z = explodedPos.z + (assembledPos.z - explodedPos.z) * clampedProgress;
+              
+              // Keep model7 at reduced scale
+              model.scale.setScalar(1.5); // 5x larger than other models
+            } else {
+              // After 90%: model7 stays in final position
+              model.visible = true;
+              model.position.x = assembledPos.x;
+              model.position.y = assembledPos.y;
+              model.position.z = assembledPos.z;
+              model.scale.setScalar(1.5);
+            }
+          } else if (index === 7) { // Model 8
+            if (progress < 0.9) {
+              // Before 90%: keep model8 hidden far below
+              model.position.x = explodedPos.x;
+              model.position.y = explodedPos.y;
+              model.position.z = explodedPos.z;
+              model.visible = false; // Hide until 90%
+              model.scale.setScalar(1.5); // Reduced scale for model8
+            } else {
+              // After 90%: smoothly animate from bottom to attach to model7
+              model.visible = true;
+              const model8Progress = (progress - 0.9) / 0.1; // 0 to 1 from 90% to 100%
+              const clampedProgress = Math.min(1, model8Progress);
+              
+              // Animate from exploded position to assembled position
+              model.position.x = explodedPos.x + (assembledPos.x - explodedPos.x) * clampedProgress;
+              model.position.y = explodedPos.y + (assembledPos.y - explodedPos.y) * clampedProgress;
+              model.position.z = explodedPos.z + (assembledPos.z - explodedPos.z) * clampedProgress;
+              
+              // Keep model8 at reduced scale
+              model.scale.setScalar(1.5); // 3x larger than other models
+            }
+          } else {
+            // Normal behavior for models 1-6
+            // Lerp between assembled and exploded positions
+            model.position.x = assembledPos.x + (explodedPos.x - assembledPos.x) * positionProgress;
+            model.position.y = assembledPos.y + (explodedPos.y - assembledPos.y) * positionProgress;
+            model.position.z = assembledPos.z + (explodedPos.z - assembledPos.z) * positionProgress;
+          }
         }
       });
       
@@ -739,14 +800,13 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
     const animate = () => {
       requestAnimationFrame(animate);
       
-      // Scroll-synchronized rotation of each individual model
+      // Continuous auto-rotation of each individual model (slower)
       modelsRef.current.forEach((model, index) => {
         if (model) {
-          // Rotation synchronized with scroll progress
-          // Each model has slightly different rotation speed for variety
-          const baseRotation = scrollProgressRef.current * Math.PI * 2; // 0 to 360 degrees based on scroll
-          const rotationVariation = (index + 1) * 0.2; // Different rotation offset per model
-          model.rotation.y = baseRotation + rotationVariation;
+          // Each model rotates at slightly different speeds for variety (much slower)
+          const baseSpeed = 0.003; // Reduced from 0.01 to 0.003 (3x slower)
+          const speedVariation = (index + 1) * 0.0005; // Reduced from 0.002 to 0.0005 (4x slower)
+          model.rotation.y += baseSpeed + speedVariation;
         }
       });
 
@@ -838,12 +898,24 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
       title: "Interface Module",
       subtitle: "Model 2 - User Interface",
       description: "Intuitive interface design for effortless interaction and control.",
-      progress: 0.8
+      progress: 0.75
     },
     {
       title: "Top Assembly",
       subtitle: "Model 1 - Final Touch",
       description: "The finishing component that completes the perfect assembly.",
+      progress: 0.8
+    },
+    {
+      title: "Foundation Base",
+      subtitle: "Model 7 - Primary Support",
+      description: "The massive foundation piece that emerges from below to support everything.",
+      progress: 0.9
+    },
+    {
+      title: "Ultimate Base",
+      subtitle: "Model 8 - Final Foundation",
+      description: "The ultimate foundation that completes the entire assembly from the very bottom.",
       progress: 1.0
     }
   ];
