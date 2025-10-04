@@ -25,7 +25,20 @@ export default function ThreeDWebsite() {
   }, []);
 
   return (
-    <div ref={containerRef} className="relative bg-white h-screen">
+    <div 
+      ref={containerRef} 
+      className="relative bg-black h-screen overflow-hidden"
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: '100vw',
+        height: '100vh',
+        minHeight: '100vh'
+      }}
+    >
       {/* Fixed Three.js Canvas Background with Assembly Animation */}
       <ThreeScene 
         autoAssemble={false}  // Set to true for auto-assembly on load

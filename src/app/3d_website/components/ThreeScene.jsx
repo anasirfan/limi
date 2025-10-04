@@ -117,7 +117,20 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
       canvas: canvasRef.current,
       antialias: true,
     });
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    
+    // Mobile-friendly viewport sizing
+    const getViewportSize = () => {
+      // Use visualViewport API for better mobile support
+      const width = window.visualViewport?.width || window.innerWidth;
+      const height = window.visualViewport?.height || window.innerHeight;
+      return { width, height };
+    };
+    
+    const { width: initialWidth, height: initialHeight } = getViewportSize();
+    renderer.setSize(initialWidth, initialHeight);
+    
+    // Shadow system disabled for better performance
+    renderer.shadowMap.enabled = false;
     // ===== ORBIT CONTROLS DISABLED =====
     // No orbit controls - only scroll interaction allowed
     controlsRef.current = null;
@@ -151,7 +164,7 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
     // Key light - Primary illumination from front-top-right
     const keyLight = new THREE.DirectionalLight(0xffffff, 2.0);
     keyLight.position.set(8, 12, 8);
-    keyLight.castShadow = true;
+    keyLight.castShadow = false; // Shadows disabled for performance
     scene.add(keyLight);
 
     // Fill light - Softer light from front-left to fill shadows
@@ -234,10 +247,29 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
       rimLights.push(rimLight);
     }   
 
+    // === SUNLIGHT REMOVED ===
+    // Sunlight system has been removed for cleaner studio lighting
+
+    // === CAMERA-FOLLOWING STUDIO LIGHT ===
+    // Professional studio light that follows camera angle for optimal model illumination
+    const studioLight = new THREE.DirectionalLight(0xffffff, 2.5); // Bright white studio light
+    studioLight.position.copy(camera.position); // Start at camera position
+    studioLight.position.add(new THREE.Vector3(0, 1, 2)); // Offset slightly above and forward
+    studioLight.target.position.set(0, 0, 0); // Always point at center
+    studioLight.castShadow = false; // Disable shadows for cleaner studio look
+    scene.add(studioLight);
+    scene.add(studioLight.target);
+    
+    // Store reference for updating in animation loop
+    const studioLightRef = { current: studioLight };
+
     // ===== CREATE MODELS GROUP =====
     const modelsGroup = new THREE.Group();
     scene.add(modelsGroup);
     modelsGroupRef.current = modelsGroup;
+
+    // ===== HELPERS REMOVED =====
+    // Axis helpers and grid helper have been removed for cleaner visualization
     // ===== LOAD MODELS =====
     const dracoLoader = new DRACOLoader();
     dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
@@ -251,12 +283,15 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
         (gltf) => {
           const model = gltf.scene;
 
-          // Make all meshes shiny
+          // Make all meshes shiny and enable shadows
           model.traverse(obj => {
             if (obj.isMesh && obj.material) {
               if ('metalness' in obj.material) obj.material.metalness = 1.0;
               if ('roughness' in obj.material) obj.material.roughness = 0.15;
-              obj.material.needsUpdate = true;
+              
+              // Shadow system disabled for performance
+              obj.castShadow = false;
+              obj.receiveShadow = false;
             }
           });
 
@@ -556,24 +591,28 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
         // At 75% and beyond: stop at centered position (0° = full rotation)
         modelsGroupRef.current.rotation.y = 0; // Centered position (0° = 360°)
         
-        // Smooth upward lift when model9 is fully assembled (after 98%)
-        if (progress >= 0.98) {
-          const liftProgress = (progress - 0.98) / 0.02; // 0 to 1 from 98% to 100%
+        // Smooth upward lift when assembly is complete (after 95%)
+        if (progress >= 0.95) {
+          const liftProgress = (progress - 0.95) / 0.05; // 0 to 1 from 95% to 100%
           const clampedLiftProgress = Math.min(1, liftProgress);
           
-          // Smooth easing function for the lift (ease-out)
-          const easedProgress = 1 - Math.pow(1 - clampedLiftProgress, 3);
+          // Smooth easing function for the lift (ease-out cubic)
+          const easedProgress = 1 - Math.pow(1 - clampedLiftProgress, 2);
           
-          // Lift the entire models group upward
-          modelsGroupRef.current.position.y = easedProgress * 5.0; // Lift up by 4 units
-          
+          // Lift the entire models group upward smoothly
+          modelsGroupRef.current.position.y = easedProgress * 8.0; // Lift up by 8 units (higher)
+        
           // Optional: Add slight scale increase for dramatic effect
-          const scaleBoost = 1 + (easedProgress * 0.1); // 1.0 to 1.1 scale
+          const scaleBoost = 1 + (easedProgress * 0.15); // 1.0 to 1.15 scale (more dramatic)
           modelsGroupRef.current.scale.setScalar(scaleBoost);
         } else {
-          // Reset position and scale before lift
-          modelsGroupRef.current.position.y = 0;
-          modelsGroupRef.current.scale.setScalar(1);
+          // Only reset if we're not in the middle of model 7, 8, 9 animations
+          if (progress < 0.75) {
+            // Reset position and scale before model 7 starts coming
+            modelsGroupRef.current.position.y = 0;
+            modelsGroupRef.current.scale.setScalar(1);
+          }
+          // Between 75% and 95%, let individual model animations handle positioning
         }
       } else if (progress > 0.5) {
         // Between 50% and 75%: continue rotations
@@ -604,8 +643,24 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
           screenPosition.project(cameraRef.current);
           
           // Convert to pixel coordinates
-          const x = (screenPosition.x * 0.5 + 0.5) * window.innerWidth;
-          const y = (screenPosition.y * -0.5 + 0.5) * window.innerHeight;
+          let x = (screenPosition.x * 0.5 + 0.5) * window.innerWidth;
+          let y = (screenPosition.y * -0.5 + 0.5) * window.innerHeight;
+          
+          // Manual offset adjustments for each model (in pixels)
+          const manualOffsets = [
+            { x: 70, y: -10 },   // Model 1 (Top Plate) - slightly right and up
+            { x: -35, y: 15 },   // Model 2 (Male Connector Plate) - left and down
+            { x: 130, y: -5 },    // Model 3 (Ceiling Bracket Steel) - right and up
+            { x: -70, y: -10 },   // Model 4 (Plate) - left and down
+            { x: 40, y: 25 },   // Model 5 (PCB Board) - right and up
+            { x: 0, y: 40 }    // Model 6 (Ceiling Hub) - left and down
+          ];
+          
+          // Apply manual offsets if available
+          if (manualOffsets[index]) {
+            x += manualOffsets[index].x;
+            y += manualOffsets[index].y;
+          }
           
           // Model names mapping
           const modelNames = [
@@ -777,17 +832,36 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
     const animate = () => {
       requestAnimationFrame(animate);
       
-      // Continuous auto-rotation of each individual model (slower)
+      // Continuous auto-rotation of each individual model (alternating directions)
       modelsRef.current.forEach((model, index) => {
         if (model) {
           // Each model rotates at slightly different speeds for variety (much slower)
           const baseSpeed = 0.003; // Reduced from 0.01 to 0.003 (3x slower)
           const speedVariation = (index + 1) * 0.0005; // Reduced from 0.002 to 0.0005 (4x slower)
-          model.rotation.y += baseSpeed + speedVariation;
+          
+          // Alternate rotation direction: even indices clockwise, odd indices anti-clockwise
+          const rotationDirection = index % 2 === 0 ? 1 : -1; // Model 1,3,5... clockwise, Model 2,4,6... anti-clockwise
+          
+          model.rotation.y += (baseSpeed + speedVariation) * rotationDirection;
         }
       });
 
       // No controls to update - orbit controls disabled
+      
+      // Update studio light to follow camera angle
+      if (studioLightRef.current) {
+        // Position studio light relative to camera with slight offset
+        const cameraDirection = new THREE.Vector3();
+        camera.getWorldDirection(cameraDirection);
+        
+        // Position light slightly above and forward from camera
+        studioLightRef.current.position.copy(camera.position);
+        studioLightRef.current.position.add(new THREE.Vector3(0, 1, 2));
+        
+        // Make light point towards the center of the models
+        studioLightRef.current.target.position.set(0, 0, 0);
+        studioLightRef.current.target.updateMatrixWorld();
+      }
       
       // Render scene
       renderer.render(scene, camera);
@@ -796,15 +870,24 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
 
     // ===== WINDOW RESIZE =====
     const handleResize = () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
+      const { width, height } = getViewportSize();
+      camera.aspect = width / height;
       camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setSize(width, height);
     };
+    
+    // Listen to both resize and visualViewport events for mobile
     window.addEventListener('resize', handleResize);
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', handleResize);
+    }
 
     // ===== CLEANUP =====
     return () => {
       window.removeEventListener('resize', handleResize);
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', handleResize);
+      }
       window.removeEventListener('wheel', handleScroll);
       
       // Clean up touch event listeners
@@ -916,7 +999,16 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
   const activeSection = getActiveSection();
 
   return (
-    <div className="relative w-full h-screen overflow-hidden">
+    <div className="relative w-full h-screen overflow-hidden" style={{
+      height: '100vh',
+      minHeight: '100vh',
+      maxHeight: '100vh',
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0
+    }}>
       {/* Loading Screen */}
       {modelsLoaded < modelPaths.length && (
         <div className="absolute inset-0 bg-black flex items-center justify-center z-20">
@@ -927,56 +1019,80 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
         </div>
       )}
       
-      <canvas ref={canvasRef} className="w-full h-full" />
+      <canvas 
+        ref={canvasRef} 
+        className="w-full h-full" 
+        style={{
+          display: 'block',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          touchAction: 'none'
+        }}
+      />
       
-      {/* Left Content Carousel - Responsive */}
-      <div className="absolute left-0 top-0 h-full w-full md:w-1/2 lg:w-1/3 pointer-events-none flex items-start md:items-center">
-        <div className="relative w-full h-full flex flex-col justify-start md:justify-center px-4 sm:px-6 md:px-8 pt-8 md:pt-0">
+      {/* Left Content Carousel - Responsive (Hidden during callouts) */}
+      {(() => {
+        const rotationDegrees = scrollProgressRef.current * 360;
+        const calloutsActive = (rotationDegrees >= 120 && rotationDegrees <= 180);
+        return !calloutsActive;
+      })() && (
+        <div className="absolute left-0 top-0 h-full w-full md:w-1/2 lg:w-1/3 pointer-events-none flex items-start md:items-center">
+          <div className="relative w-full h-full flex flex-col justify-start md:justify-center px-4 sm:px-6 md:px-8 pt-8 md:pt-0">
           {contentSections.map((section, index) => {
             const progress = scrollProgressRef.current;
             const sectionProgress = section.progress;
             const nextSectionProgress = contentSections[index + 1]?.progress || 1.1;
             
-            // Calculate visibility and position based on scroll progress
+            // Calculate smooth scroll-based position and opacity
             let opacity = 0;
-            let translateY = 100; // Start from bottom
+            let translateY = 0;
             
-            if (progress >= sectionProgress && progress < nextSectionProgress) {
-              // Active section
-              const localProgress = (progress - sectionProgress) / (nextSectionProgress - sectionProgress);
+            // Always show first section initially (on page load)
+            if (index === 0 && progress === 0) {
+              opacity = 1;
+              translateY = 0;
+            } else {
+              // Calculate position based on scroll progress
+              const sectionRange = nextSectionProgress - sectionProgress;
+              const transitionZone = sectionRange * 0.7; // 70% of section for transitions (slower)
               
-              if (localProgress < 0.2) {
-                // Entering from bottom
-                opacity = localProgress / 0.2;
-                translateY = 100 - (localProgress / 0.2) * 100;
-              } else if (localProgress > 0.8) {
-                // Exiting to top
-                const exitProgress = (localProgress - 0.8) / 0.2;
-                opacity = 1 - exitProgress;
-                translateY = -100 * exitProgress;
-              } else {
-                // Fully visible
+              if (progress < sectionProgress - transitionZone) {
+                // Section is below (not yet reached)
+                opacity = 0;
+                translateY = 100; // Start from bottom
+              } else if (progress >= sectionProgress - transitionZone && progress < sectionProgress) {
+                // Section is entering from bottom
+                const enterProgress = (progress - (sectionProgress - transitionZone)) / transitionZone;
+                opacity = Math.min(1, enterProgress);
+                translateY = 100 * (1 - enterProgress);
+              } else if (progress >= sectionProgress && progress < nextSectionProgress - transitionZone) {
+                // Section is fully visible
                 opacity = 1;
                 translateY = 0;
+              } else if (progress >= nextSectionProgress - transitionZone && progress < nextSectionProgress) {
+                // Section is exiting to top
+                const exitProgress = (progress - (nextSectionProgress - transitionZone)) / transitionZone;
+                opacity = Math.max(0, 1 - exitProgress);
+                translateY = -100 * exitProgress;
+              } else {
+                // Section has exited
+                opacity = 0;
+                translateY = -100;
               }
-            } else if (progress < sectionProgress) {
-              // Not yet visible
-              opacity = 0;
-              translateY = 100;
-            } else {
-              // Already passed
-              opacity = 0;
-              translateY = -100;
             }
             
             return (
               <div
                 key={index}
-                className="absolute inset-0 flex flex-col justify-start md:justify-center px-4 sm:px-6 md:px-8 pt-8 md:pt-0 transition-all duration-300"
+                className="absolute inset-0 flex flex-col justify-start md:justify-center px-4 sm:px-6 md:px-8 pt-8 md:pt-0"
                 style={{
                   opacity,
                   transform: `translateY(${translateY}%)`,
-                  pointerEvents: opacity > 0 ? 'auto' : 'none'
+                  pointerEvents: opacity > 0 ? 'auto' : 'none',
+                  willChange: 'transform, opacity'
                 }}
               >
                 <div className="bg-black bg-opacity-70 backdrop-blur-md rounded-xl md:rounded-2xl p-4 sm:p-6 md:p-8 border border-white border-opacity-10 max-w-sm sm:max-w-md md:max-w-none mx-auto md:mx-0">
@@ -1004,59 +1120,92 @@ const ThreeScene = ({ onAssemble = null, autoAssemble = false }) => {
               </div>
             );
           })}
-        </div>
-      </div>
-      {/* Model Positions Display - Always Visible */}
-      <div className="absolute top-4 right-4 bg-black bg-opacity-80 backdrop-blur-md text-white p-4 rounded-xl text-sm max-w-xs border border-white border-opacity-20">
-        <div className="font-bold mb-3 text-white">
-          Model Positions
-        </div>
-        <div className="text-gray-300 mb-3 text-xs">
-          Progress: {Math.round(scrollProgressRef.current * 100)}%
-        </div>
-        {modelPositions.length > 0 ? (
-          modelPositions.map((pos, index) => (
-            <div key={pos.id} className="mb-2 p-2 bg-white bg-opacity-10 rounded">
-              <div className="font-medium text-white">{pos.name}</div>
-              <div className="text-xs text-gray-300">
-                x: {pos.x.toFixed(2)}, y: {pos.y.toFixed(2)}
-                {!pos.isVisible && <span className="text-red-400 ml-2">(hidden)</span>}
-              </div>
-            </div>
-          ))
-        ) : (
-          <div className="text-gray-400 text-xs">Loading models...</div>
-        )}
-        {autoAssemble && (
-          <div className="mt-3 pt-2 border-t border-white border-opacity-20">
-            <div className="text-yellow-400 text-xs">Auto-assembly enabled</div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
       {/* Callout positions for 60-120 degree rotation state */}
       {(() => {
         const rotationDegrees = scrollProgressRef.current * 360;
         return (rotationDegrees >= 120 && rotationDegrees <= 180 && modelPositions.length > 0);
       })() && (
         <>
-          {modelPositions.map((pos) => (
-            pos.isVisible && (
-              <div
-                key={pos.id}
-                className="absolute pointer-events-none"
-                style={{
-                  left: pos.x,
-                  top: pos.y,
-                  transform: 'translate(-50%, -50%)'
-                }}
-              >
-                <div className="w-3 h-3 bg-red-500 rounded-full border-2 border-white shadow-lg"></div>
-                <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-white text-black px-2 py-1 rounded shadow-lg text-xs whitespace-nowrap">
-                  {pos.name}
+          {modelPositions
+            .filter((pos) => pos.id <= 5) // Only show models 1-6 (indices 0-5)
+            .map((pos) => (
+              pos.isVisible && (
+                <div
+                  key={pos.id}
+                  className="absolute pointer-events-none z-50"
+                  style={{
+                    left: pos.x,
+                    top: pos.y,
+                    transform: 'translate(-50%, -50%)'
+                  }}
+                >
+                  {/* Cyberpunk-style callout system */}
+                  <div className="relative">
+                    {/* Central glowing dot */}
+                    <div className="relative w-3 h-3">
+                      <div className="absolute inset-0 bg-cyan-400 rounded-full animate-pulse shadow-lg shadow-cyan-400/50"></div>
+                      <div className="absolute inset-0 bg-cyan-300 rounded-full animate-ping opacity-75"></div>
+                      <div className="absolute inset-0 bg-white rounded-full scale-50"></div>
+                    </div>
+                    
+                    {/* Connecting line to label - alternates direction */}
+                    <div className={`absolute top-1.5 w-24 h-px bg-gradient-to-r ${
+                      pos.id % 2 === 0 
+                        ? 'left-1.5 from-cyan-400 to-transparent' 
+                        : 'right-1.5 from-transparent to-cyan-400'
+                    }`}>
+                      {/* Animated pulse along the line */}
+                      <div className={`absolute top-0 w-2 h-px bg-cyan-300 animate-pulse ${
+                        pos.id % 2 === 0 ? 'animate-bounce-right' : 'animate-bounce-left'
+                      }`}></div>
+                    </div>
+                    
+                    {/* Tech-style callout label - alternates sides with more distance */}
+                    <div className={`absolute transform ${
+                      pos.id % 2 === 0 
+                        ? 'left-28 top-0 -translate-y-1/2' 
+                        : 'right-28 top-0 -translate-y-1/2'
+                    }`}>
+                      <div className="relative">
+                        {/* Outer glow effect */}
+                        <div className="absolute -inset-1 bg-cyan-400/20 blur-sm rounded"></div>
+                        
+                        {/* Main label container */}
+                        <div className="relative bg-black/90 border border-cyan-400/60 backdrop-blur-sm">
+                          {/* Corner decorations */}
+                          <div className="absolute -top-px -left-px w-2 h-2 border-t-2 border-l-2 border-cyan-400"></div>
+                          <div className="absolute -top-px -right-px w-2 h-2 border-t-2 border-r-2 border-cyan-400"></div>
+                          <div className="absolute -bottom-px -left-px w-2 h-2 border-b-2 border-l-2 border-cyan-400"></div>
+                          <div className="absolute -bottom-px -right-px w-2 h-2 border-b-2 border-r-2 border-cyan-400"></div>
+                          
+                          {/* Label content - Enhanced and larger */}
+                          <div className="px-4 py-3 text-cyan-300 font-mono whitespace-nowrap min-w-[180px]">
+                            {/* Main component name */}
+                            <div className="flex items-center space-x-2 mb-1">
+                              <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-pulse"></div>
+                              <span className="text-cyan-100 font-bold text-sm uppercase tracking-wide">{pos.name}</span>
+                            </div>
+                            {/* Status indicator with enhanced styling */}
+                            <div className="text-[11px] text-cyan-400/80 uppercase tracking-wider">
+                              COMPONENT #{pos.id + 1}
+                            </div>
+                          </div>                  
+                          {/* Animated border effect */}
+                          <div className="absolute inset-0 border border-cyan-400/30 animate-pulse"></div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Additional tech elements */}
+                    <div className="absolute -top-1 -left-1 w-5 h-5 border border-cyan-400/30 rounded-full animate-spin" style={{ animationDuration: '8s' }}></div>
+                    <div className="absolute -top-0.5 -left-0.5 w-4 h-4 border border-cyan-400/20 rounded-full animate-spin" style={{ animationDuration: '6s', animationDirection: 'reverse' }}></div>
+                  </div>
                 </div>
-              </div>
-            )
-          ))}
+              )
+            ))}
         </>
       )}
     </div>
