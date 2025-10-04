@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
-import { FaHome, FaBan } from 'react-icons/fa';
+import { FaHome, FaBan, FaBuilding, FaUtensils } from 'react-icons/fa';
 
 export const EnvironmentDropdown = ({ config, onEnvironmentChange, setActiveStep, setOpenDropdown, tourActive, onTourSelection, sendMessageToPlayCanvas }) => {
   const [isMobile, setIsMobile] = useState(false);
@@ -19,16 +19,30 @@ export const EnvironmentDropdown = ({ config, onEnvironmentChange, setActiveStep
     {
       id: 'noScene',
       label: 'No Scene',
-      icon: <FaBan className="w-8 h-8" />,
-      description: 'Empty environment',
+      icon: <FaBan className="w-5 h-5" />,
+      description: 'Empty',
       sceneValue: 0
     },
     {
       id: 'interior',
       label: 'Interior',
-      icon: <FaHome className="w-8 h-8" />,
-      description: 'Interior room scene',
+      icon: <FaHome className="w-5 h-5" />,
+      description: 'Home',
       sceneValue: 1
+    },
+    {
+      id: 'office',
+      label: 'Office',
+      icon: <FaBuilding className="w-5 h-5" />,
+      description: 'Workspace',
+      sceneValue: 2
+    },
+    {
+      id: 'restaurant',
+      label: 'Restaurant',
+      icon: <FaUtensils className="w-5 h-5" />,
+      description: 'Dining',
+      sceneValue: 3
     }
   ];
 
@@ -56,31 +70,29 @@ export const EnvironmentDropdown = ({ config, onEnvironmentChange, setActiveStep
       onClick={(e) => e.stopPropagation()}
       onTouchStart={(e) => e.stopPropagation()}
     >
-      {!isMobile && <h3 className="text-base font-bold text-white mb-3 font-['Amenti']">Environment</h3>}
-      <div className="flex space-x-3">
+      {!isMobile && <h3 className="text-base font-bold text-white mb-4 font-['Amenti']">Environment</h3>}
+      <div className="grid grid-cols-4 gap-4">
         {environments.map((environment) => (
           <motion.button
             key={environment.id}
             className={`
-              flex flex-col items-center p-4 rounded-lg border-2 transition-all duration-200
-              ${config.environment === environment.id 
-                ? 'border-emerald-500 bg-emerald-500/20 text-emerald-400' 
-                : 'border-gray-600 bg-gray-800/50 text-gray-300 hover:border-gray-400 hover:bg-gray-700/50'
-              }
+              flex flex-col items-center p-4 rounded-xl transition-all duration-300 min-w-0 group
+             
             `}
             onClick={() => handleEnvironmentSelect(environment)}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
           >
-            <div className="mb-2">
+            <div className={`
+              w-14 h-14 rounded-full flex items-center justify-center mb-3 transition-all duration-300
+              ${config.environment === environment.id 
+                ? 'bg-emerald-500/30 border-2 border-emerald-400' 
+                : 'bg-gray-700/60 border-2 border-gray-600 group-hover:border-emerald-400/50 group-hover:bg-emerald-500/10'
+              }
+            `}>
               {environment.icon}
             </div>
-            <div className="text-sm font-medium text-center">
-              {environment.label}
-            </div>
-            <div className="text-xs text-gray-400 text-center mt-1">
-              {environment.description}
-            </div>
+          
           </motion.button>
         ))}
       </div>
