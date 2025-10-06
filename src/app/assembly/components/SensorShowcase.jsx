@@ -163,11 +163,14 @@ const SensorShowcase = ({ onVisible }) => {
           >
             <div className={`
               relative h-[320px] rounded-2xl p-6 overflow-hidden
-              bg-[#004D3F]
+              bg-[rgba(31,31,31,1)]
               shadow-[0px_8px_20px_rgba(0,0,0,0.25)]
               border border-white/10
               group cursor-pointer
             `}>
+              {/* Top Border Gradient */}
+              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-white to-transparent opacity-60" />
+              
               {/* Glow Effect */}
               <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               
@@ -194,9 +197,7 @@ const SensorShowcase = ({ onVisible }) => {
               </div>
 
               {/* Decorative Elements */}
-              <div className="absolute top-4 right-4 w-8 h-8 border border-white/20 rounded-full" />
-              <div className="absolute bottom-4 left-4 w-4 h-4 bg-white/20 rounded-full" />
-            </div>
+              </div>
           </motion.div>
 
           <motion.div
@@ -210,11 +211,14 @@ const SensorShowcase = ({ onVisible }) => {
           >
             <div className={`
               relative h-[320px] rounded-2xl p-6 overflow-hidden
-              bg-[#004D3F]
+              bg-[rgba(31,31,31,1)]
               shadow-[0px_8px_20px_rgba(0,0,0,0.25)]
               border border-white/10
               group cursor-pointer
             `}>
+              {/* Top Border Gradient */}
+              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-white to-transparent opacity-60" />
+              
               {/* Glow Effect */}
               <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               
@@ -244,9 +248,7 @@ const SensorShowcase = ({ onVisible }) => {
               </div>
 
               {/* Decorative Elements */}
-              <div className="absolute top-4 right-4 w-8 h-8 border border-white/20 rounded-full" />
-              <div className="absolute bottom-4 left-4 w-4 h-4 bg-white/20 rounded-full" />
-            </div>
+                </div>
           </motion.div>
 
           {/* Second Row */}
@@ -261,11 +263,14 @@ const SensorShowcase = ({ onVisible }) => {
           >
             <div className={`
               relative h-[320px] rounded-2xl p-6 overflow-hidden
-              bg-[#004D3F]
+              bg-[rgba(31,31,31,1)]
               shadow-[0px_8px_20px_rgba(0,0,0,0.25)]
               border border-white/10
               group cursor-pointer
             `}>
+              {/* Top Border Gradient */}
+              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-white to-transparent opacity-60" />
+              
               {/* Glow Effect */}
               <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               
@@ -293,9 +298,7 @@ const SensorShowcase = ({ onVisible }) => {
               </div>
 
               {/* Decorative Elements */}
-              <div className="absolute top-4 right-4 w-8 h-8 border border-white/20 rounded-full" />
-              <div className="absolute bottom-4 left-4 w-4 h-4 bg-white/20 rounded-full" />
-            </div>
+                </div>
           </motion.div>
 
           <motion.div
@@ -309,11 +312,14 @@ const SensorShowcase = ({ onVisible }) => {
           >
             <div className={`
               relative h-[320px] rounded-2xl p-6 overflow-hidden
-              bg-[#004D3F]
+              bg-[rgba(31,31,31,1)]
               shadow-[0px_8px_20px_rgba(0,0,0,0.25)]
               border border-white/10
               group cursor-pointer
             `}>
+              {/* Top Border Gradient */}
+              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-white to-transparent opacity-60" />
+              
               {/* Glow Effect */}
               <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               
@@ -341,9 +347,7 @@ const SensorShowcase = ({ onVisible }) => {
               </div>
 
               {/* Decorative Elements */}
-              <div className="absolute top-4 right-4 w-8 h-8 border border-white/20 rounded-full" />
-              <div className="absolute bottom-4 left-4 w-4 h-4 bg-white/20 rounded-full" />
-            </div>
+             </div>
           </motion.div>
         </motion.div>
       </div>

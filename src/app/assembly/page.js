@@ -471,11 +471,11 @@ const AssemblyPage = () => {
         </section>
 
         {/* Sticky Image Reveal Section */}
-        {/* <section id="sticky-reveal">
+        <section id="sticky-reveal">
           <StickyImageReveal
             onVisible={() => trackAssemblyEvent("Sticky Image Reveal")}
           />
-        </section> */}
+        </section>
 
         {/* Base Showcase */}
         {/* <section id="base-showcase">
