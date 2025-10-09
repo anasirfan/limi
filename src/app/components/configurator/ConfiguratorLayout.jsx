@@ -22,6 +22,7 @@ import {
   getSystemAssignments,
   getSystemAssignmentsSync,
   findSystemAssignmentByDesign,
+  getMountDataSync,
 } from "./pendantSystemData";
 import {
   listenForCableMessages,
@@ -126,7 +127,11 @@ const ConfiguratorLayout = () => {
   useEffect(() => setMounted(true), []);
 
   // Use system assignments hook for optimized data access
-  const { systemAssignments: hookSystemAssignments, isLoading: systemAssignmentsLoading, findByDesign } = useSystemAssignments();
+  const {
+    systemAssignments: hookSystemAssignments,
+    isLoading: systemAssignmentsLoading,
+    findByDesign,
+  } = useSystemAssignments();
 
   const handleOpenSaveModal = () => {
     setConfiguringType("save");
@@ -609,7 +614,21 @@ const ConfiguratorLayout = () => {
     );
 
     // Send messages to iframe
+  // Get mount data and send mount model if available
+const mounts = getMountDataSync();
+console.log("mountsData", mounts);
 
+// Search through each mount object for matching cable number
+const matchingMount = mounts.find((mount) => {
+  console.log(`Checking mount: ${mount.mountName}, cableNumber: ${mount.mountCableNumber}, amount: ${amount}`);
+  return Number(amount) === Number(mount.mountCableNumber);
+});
+
+console.log("mountSelected", matchingMount);
+if (matchingMount && (matchingMount.mountModel || matchingMount.modelUrl)) {
+  const modelUrl = matchingMount.modelUrl || matchingMount.mountModel;
+  sendMessageToPlayCanvas(`mount_model:${modelUrl}`);
+}
     sendMessageToPlayCanvas(`light_amount:${amount}`);
     const designToIds = {};
     newSystems.forEach((system, idx) => {
@@ -740,11 +759,7 @@ const ConfiguratorLayout = () => {
 
       if (hasChandelier) {
         // For chandelier, set all three cables to the same design
-        setCables([
-          { design },
-          { design },
-          { design }
-        ]);
+        setCables([{ design }, { design }, { design }]);
         sendMessagesForDesign(design, [0, 1, 2]);
         return;
       }
@@ -761,12 +776,14 @@ const ConfiguratorLayout = () => {
       });
 
       // Send messages for just the updated cables
-      sendMessagesForDesign(design, pendantIds.length === 1 ? pendantIds[0] : pendantIds);
+      sendMessagesForDesign(
+        design,
+        pendantIds.length === 1 ? pendantIds[0] : pendantIds
+      );
     },
     [cables, config.lightAmount]
   );
 
-  
   useEffect(() => {
     setShowPendantLoadingScreen(true);
     const timer = setTimeout(() => {

@@ -47,7 +47,9 @@ export default function PendantSystemManager({
   const [newMountData, setNewMountData] = useState({
     mountName: "",
     mountIcon: "",
-    mountModel: ""
+    mountModel: "",
+    mountBaseType: "",
+    mountCableNumber: null
   });
   const [mountIconPreview, setMountIconPreview] = useState("");
   const [mountModelPreview, setMountModelPreview] = useState("");
@@ -323,7 +325,9 @@ export default function PendantSystemManager({
     setNewMountData({
       mountName: "",
       mountIcon: "",
-      mountModel: ""
+      mountModel: "",
+      mountBaseType: "",
+      mountCableNumber: null
     });
     setMountIconPreview("");
     setMountModelPreview("");
@@ -390,6 +394,8 @@ export default function PendantSystemManager({
     try {
       const formData = new FormData();
       formData.append('mountName', newMountData.mountName);
+      formData.append('mountBaseType', newMountData.mountBaseType);
+      formData.append('mountCableNumber', newMountData.mountCableNumber);
       
       if (mountIconFile) {
         formData.append('mountIcon', mountIconFile);

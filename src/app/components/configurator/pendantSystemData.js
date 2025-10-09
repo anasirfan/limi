@@ -9,13 +9,29 @@ let lastDataHash = null;
 // Global system assignments store for immediate access
 let globalSystemAssignments = [];
 
+// Mount data cache and state
+let cachedMountData = null;
+let mountCacheTimestamp = null;
+let mountPollTimer = null;
+let lastMountDataHash = null;
+let globalMountData = [];
+
 // Event listeners for data refresh
 const refreshCallbacks = new Set();
+
+// Mount data refresh callbacks
+const mountRefreshCallbacks = new Set();
 
 // Subscribe to data refresh events
 export const onDataRefresh = (callback) => {
   refreshCallbacks.add(callback);
   return () => refreshCallbacks.delete(callback); // Return unsubscribe function
+};
+
+// Subscribe to mount data refresh events
+export const onMountDataRefresh = (callback) => {
+  mountRefreshCallbacks.add(callback);
+  return () => mountRefreshCallbacks.delete(callback); // Return unsubscribe function
 };
 
 // Notify all subscribers of data refresh
@@ -29,6 +45,16 @@ const notifyDataRefresh = (newData) => {
   });
 };
 
+// Notify all subscribers of mount data refresh
+const notifyMountDataRefresh = (newData) => {
+  mountRefreshCallbacks.forEach(callback => {
+    try {
+      callback(newData);
+    } catch (error) {
+      console.error('Error in mount data refresh callback:', error);
+    }
+  });
+};
 // Generate hash for data comparison
 const generateDataHash = (data) => {
   try {
@@ -40,6 +66,22 @@ const generateDataHash = (data) => {
     }))));
   } catch (error) {
     console.error('Error generating data hash:', error);
+    return Date.now().toString(); // Fallback to timestamp
+  }
+};
+
+// Generate hash for mount data comparison
+const generateMountDataHash = (data) => {
+  try {
+    return btoa(JSON.stringify(data.map(item => ({ 
+      id: item.id, 
+      mountName: item.mountName,
+      mountBaseType: item.mountBaseType,
+      mountCableNumber: item.mountCableNumber,
+      updatedAt: item.updatedAt || item.updated_at 
+    }))));
+  } catch (error) {
+    console.error('Error generating mount data hash:', error);
     return Date.now().toString(); // Fallback to timestamp
   }
 };
@@ -91,6 +133,53 @@ const fetchSystemAssignments = async () => {
   }
 };
 
+// Fetch mount data from API
+const fetchMountData = async () => {
+  try {
+    const response = await fetch("https://dev.api1.limitless-lighting.co.uk/admin/configurator/mount", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch mount data");
+    }
+
+    const data = await response.json();
+    const formattedData = Array.isArray(data) ? data : data?.data || [];
+    
+    // Check if data has changed
+    const newDataHash = generateMountDataHash(formattedData);
+    const dataChanged = lastMountDataHash && lastMountDataHash !== newDataHash;
+    
+    // Cache the data and update global store
+    cachedMountData = formattedData;
+    globalMountData = formattedData; // Update global store for immediate access
+    mountCacheTimestamp = Date.now();
+    lastMountDataHash = newDataHash;
+    
+    // Always log the fetch for debugging
+    console.log('🔄 Mount API fetch completed:', {
+      itemCount: formattedData.length,
+      dataChanged,
+      newHash: newDataHash.substring(0, 10) + '...',
+      oldHash: lastMountDataHash ? lastMountDataHash.substring(0, 10) + '...' : 'none'
+    });
+    
+    // Notify subscribers if data changed OR if this is the first load
+    if (dataChanged || !lastMountDataHash) {
+      console.log('🔄 Mount API data updated, notifying components...');
+      notifyMountDataRefresh(formattedData);
+    }
+    
+    return formattedData;
+  } catch (error) {
+    throw error; // Only use API data, do not fallback
+  }
+};
+
 // Start periodic polling
 const startPolling = () => {
   if (pollTimer) return; // Already polling
@@ -98,6 +187,7 @@ const startPolling = () => {
   pollTimer = setInterval(async () => {
     try {
       await fetchSystemAssignments();
+      await fetchMountData();
     } catch (error) {
       console.error('Polling error:', error);
     }
@@ -136,6 +226,11 @@ if (typeof document !== 'undefined') {
   // Initialize global store with initial fetch
   fetchSystemAssignments().catch(error => {
     console.error('Error initializing system assignments:', error);
+  });
+  
+  // Initialize mount data
+  fetchMountData().catch(error => {
+    console.error('Error initializing mount data:', error);
   });
 }
 
@@ -342,7 +437,6 @@ export const debugCurrentData = async () => {
   
   return freshData;
 };
-
 // Manual polling controls
 export const startDataPolling = startPolling;
 export const stopDataPolling = stopPolling;
@@ -350,4 +444,67 @@ export const stopDataPolling = stopPolling;
 // Check if data is stale
 export const isDataStale = () => {
   return !cacheTimestamp || (Date.now() - cacheTimestamp > CACHE_DURATION);
+};
+
+// ===== MOUNT DATA FUNCTIONS =====
+
+// Get mount data synchronously from global store (FOR IMMEDIATE ACCESS)
+export const getMountDataSync = () => {
+  return globalMountData;
+};
+
+// Get mount data with caching (FOR CONFIGURATOR)
+export const getMountData = async () => {
+  let mountData;
+  
+  // Check if we have cached data and it's still valid
+  if (cachedMountData && mountCacheTimestamp && (Date.now() - mountCacheTimestamp < CACHE_DURATION)) {
+    mountData = cachedMountData;
+    console.log('Using cached mount data');
+  } else {
+    // Fetch fresh data
+    mountData = await fetchMountData();
+  }
+  
+  return mountData;
+};
+
+// Find a specific mount by name (SYNCHRONOUS)
+export const findMountByName = (mountName) => {
+  const mounts = getMountDataSync();
+  return mounts.find((mount) => mount.mountName === mountName);
+};
+
+// Get mounts filtered by base type
+export const getMountsByBaseType = async (baseType) => {
+  const mounts = await getMountData();
+  return mounts.filter(mount => mount.mountBaseType === baseType);
+};
+
+// Get mounts filtered by cable number
+export const getMountsByCableNumber = async (cableNumber) => {
+  const mounts = await getMountData();
+  return mounts.filter(mount => mount.mountCableNumber === cableNumber);
+};
+
+// Refresh mount data cache
+export const refreshMountData = async () => {
+  console.log('Manually refreshing mount data...');
+  cachedMountData = null;
+  mountCacheTimestamp = null;
+  return await getMountData();
+};
+
+// Force refresh mount data (ignores cache completely)
+export const forceRefreshMountData = async () => {
+  console.log('Force refreshing mount data...');
+  cachedMountData = null;
+  mountCacheTimestamp = null;
+  lastMountDataHash = null;
+  return await fetchMountData();
+};
+
+// Check if mount data is stale
+export const isMountDataStale = () => {
+  return !mountCacheTimestamp || (Date.now() - mountCacheTimestamp > CACHE_DURATION);
 };
