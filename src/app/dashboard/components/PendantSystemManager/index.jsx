@@ -363,7 +363,7 @@ export default function PendantSystemManager({
     setMountLoading(true);
     try {
       const token = localStorage.getItem("limiToken");
-      const response = await fetch("https://dev.api1.limitless-lighting.co.uk/admin/configurator-dynamic/mount", {
+      const response = await fetch("https://dev.api1.limitless-lighting.co.uk/admin/configurator/mount", {
         method: "GET",
         headers: {
           "Authorization": `${token}`,
@@ -400,7 +400,7 @@ export default function PendantSystemManager({
       }
 
       const token = localStorage.getItem("limiToken");
-      const response = await fetch("https://dev.api1.limitless-lighting.co.uk/admin/configurator-dynamic/mount", {
+      const response = await fetch("https://dev.api1.limitless-lighting.co.uk/admin/configurator/mount", {
         method: "POST",
         headers: {
           "Authorization": `${token}`,
@@ -439,7 +439,7 @@ export default function PendantSystemManager({
     if (window.confirm(`Are you sure you want to delete "${mount.mountName}"? This action cannot be undone.`)) {
       try {
         const token = localStorage.getItem("limiToken");
-        const response = await fetch(`https://dev.api1.limitless-lighting.co.uk/admin/configurator-dynamic/mount/${mount._id}`, {
+        const response = await fetch(`https://dev.api1.limitless-lighting.co.uk/admin/configurator/mount/${mount._id}`, {
           method: "DELETE",
           headers: {
             "Authorization": `${token}`,

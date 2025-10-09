@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { FaMountain, FaEdit, FaTrash, FaEye, FaDownload } from "react-icons/fa";
+import MountModelViewer from "./MountModelViewer";
 
 export default function MountTable({ 
   mounts, 
@@ -8,6 +9,20 @@ export default function MountTable({
   deletingItemId,
   viewMode = "table" 
 }) {
+  console.log("mounts",mounts)
+  const [selectedMount, setSelectedMount] = useState(null);
+  const [showModelViewer, setShowModelViewer] = useState(false);
+
+  const handleViewModel = (mount) => {
+    setSelectedMount(mount);
+    setShowModelViewer(true);
+  };
+
+  const handleCloseViewer = () => {
+    setShowModelViewer(false);
+    setSelectedMount(null);
+  };
+
   if (!mounts || mounts.length === 0) {
     return (
       <div className="bg-gradient-to-br from-[#1a1a1a] to-[#2a2a2a] rounded-2xl border border-[#50C878]/20 p-12 text-center">
@@ -48,9 +63,9 @@ export default function MountTable({
             >
               {/* Mount Icon */}
               <div className="aspect-square rounded-lg overflow-hidden mb-4 bg-[#1a1a1a] border border-[#50C878]/20">
-                {mount.mountIcon ? (
+                {mount.iconUrl ? (
                   <img
-                    src={mount.mountIcon}
+                    src={mount.iconUrl}
                     alt={mount.mountName}
                     className="w-full h-full object-cover"
                   />
@@ -66,15 +81,24 @@ export default function MountTable({
                 <h3 className="text-lg font-semibold text-white truncate">
                   {mount.mountName}
                 </h3>
-                {mount.mountModel && (
+                {mount.modelUrl && (
                   <p className="text-sm text-gray-400 truncate">
-                    Model: {mount.mountModel}
+                    Model: {mount.modelUrl}
                   </p>
                 )}
               </div>
 
               {/* Actions */}
               <div className="flex gap-2">
+                {mount.modelUrl && (
+                  <button
+                    onClick={() => handleViewModel(mount)}
+                    className="flex-1 px-3 py-2 bg-blue-500/20 hover:bg-blue-500/30 rounded-lg text-blue-400 text-sm font-medium transition-all duration-200 flex items-center justify-center"
+                  >
+                    <FaEye className="mr-1" />
+                    View
+                  </button>
+                )}
                 <button
                   onClick={() => onEdit && onEdit(mount)}
                   className="flex-1 px-3 py-2 bg-[#50C878]/20 hover:bg-[#50C878]/30 rounded-lg text-[#50C878] text-sm font-medium transition-all duration-200 flex items-center justify-center"
@@ -94,6 +118,13 @@ export default function MountTable({
             </div>
           ))}
         </div>
+
+        {/* Model Viewer Modal */}
+        <MountModelViewer
+          isOpen={showModelViewer}
+          onClose={handleCloseViewer}
+          mount={selectedMount}
+        />
       </div>
     );
   }
@@ -136,9 +167,9 @@ export default function MountTable({
               >
                 <td className="px-6 py-4">
                   <div className="w-12 h-12 rounded-lg overflow-hidden bg-[#2a2a2a] border border-[#50C878]/20">
-                    {mount.mountIcon ? (
+                    {mount.iconUrl ? (
                       <img
-                        src={mount.mountIcon}
+                        src={mount.iconUrl}
                         alt={mount.mountName}
                         className="w-full h-full object-cover"
                       />
@@ -153,9 +184,17 @@ export default function MountTable({
                   <div className="text-white font-medium">{mount.mountName}</div>
                 </td>
                 <td className="px-6 py-4">
-                  <div className="text-gray-400">
-                    {mount.mountModel || "No model"}
-                  </div>
+                  {mount.modelUrl ? (
+                    <button
+                      onClick={() => handleViewModel(mount)}
+                      className="px-3 py-1 bg-blue-500/20 hover:bg-blue-500/30 rounded-lg text-blue-400 text-sm font-medium transition-all duration-200 flex items-center"
+                    >
+                      <FaEye className="mr-1" />
+                      View Model
+                    </button>
+                  ) : (
+                    <div className="text-gray-400">No model</div>
+                  )}
                 </td>
                 <td className="px-6 py-4 text-right">
                   <div className="flex items-center justify-end space-x-2">
@@ -181,6 +220,13 @@ export default function MountTable({
           </tbody>
         </table>
       </div>
+
+      {/* Model Viewer Modal */}
+      <MountModelViewer
+        isOpen={showModelViewer}
+        onClose={handleCloseViewer}
+        mount={selectedMount}
+      />
     </div>
   );
 }
