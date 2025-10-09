@@ -1,9 +1,11 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { FaLightbulb, FaPlus, FaSpinner, FaSync } from "react-icons/fa";
+import { FaLightbulb, FaPlus, FaSpinner, FaSync, FaMountain } from "react-icons/fa";
 import TabNavigation from "./components/TabNavigation";
 import ProductTable from "./components/ProductTable";
 import AddModal from "./components/AddModal";
 import EditModal from "./components/EditModal";
+import AddMountModal from "./components/AddMountModal";
+import MountTable from "./components/MountTable";
 import { filterProductsByTab } from "./utils/fileUtils";
 import { onDataRefresh, refreshSystemAssignments, getAllSystemAssignments } from "../../../components/configurator/pendantSystemData";
 
@@ -34,8 +36,23 @@ export default function PendantSystemManager({
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showAddMountModal, setShowAddMountModal] = useState(false);
   const [deletingItemId, setDeletingItemId] = useState(null);
   const [activeTab, setActiveTab] = useState("all");
+  
+  // Mount state
+  const [mounts, setMounts] = useState([]);
+  const [mountLoading, setMountLoading] = useState(false);
+  const [mountSaving, setMountSaving] = useState(false);
+  const [newMountData, setNewMountData] = useState({
+    mountName: "",
+    mountIcon: "",
+    mountModel: ""
+  });
+  const [mountIconPreview, setMountIconPreview] = useState("");
+  const [mountModelPreview, setMountModelPreview] = useState("");
+  const [mountIconFile, setMountIconFile] = useState(null);
+  const [mountModelFile, setMountModelFile] = useState(null);
   
   // Search and filter state
   const [searchQuery, setSearchQuery] = useState("");
@@ -295,6 +312,155 @@ export default function PendantSystemManager({
     setShowAddForm(true);
   };
 
+  // Mount handlers
+  const handleAddMount = () => {
+    setShowAddMountModal(true);
+  };
+
+  const handleCloseMountModal = () => {
+    setShowAddMountModal(false);
+    // Clear form data
+    setNewMountData({
+      mountName: "",
+      mountIcon: "",
+      mountModel: ""
+    });
+    setMountIconPreview("");
+    setMountModelPreview("");
+    setMountIconFile(null);
+    setMountModelFile(null);
+  };
+
+  const handleMountInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewMountData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleMountIconChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setMountIconFile(file);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setMountIconPreview(e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleMountModelChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setMountModelFile(file);
+      setMountModelPreview(file.name);
+    }
+  };
+
+  const fetchMounts = async () => {
+    setMountLoading(true);
+    try {
+      const token = localStorage.getItem("limiToken");
+      const response = await fetch("https://dev.api1.limitless-lighting.co.uk/admin/configurator-dynamic/mount", {
+        method: "GET",
+        headers: {
+          "Authorization": `${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        // Handle both array and object responses
+        const mountsArray = Array.isArray(data) ? data : data?.data || [];
+        setMounts(mountsArray);
+      } else {
+        console.error("Failed to fetch mounts:", response.status);
+      }
+    } catch (error) {
+      console.error("Error fetching mounts:", error);
+    }
+    setMountLoading(false);
+  };
+
+  const saveMountData = async () => {
+    setMountSaving(true);
+    try {
+      const formData = new FormData();
+      formData.append('mountName', newMountData.mountName);
+      
+      if (mountIconFile) {
+        formData.append('mountIcon', mountIconFile);
+      }
+      
+      if (mountModelFile) {
+        formData.append('mountModel', mountModelFile);
+      }
+
+      const token = localStorage.getItem("limiToken");
+      const response = await fetch("https://dev.api1.limitless-lighting.co.uk/admin/configurator-dynamic/mount", {
+        method: "POST",
+        headers: {
+          "Authorization": `${token}`,
+        },
+        body: formData
+      });
+
+      if (response.ok) {
+        console.log("Mount saved successfully");
+        handleCloseMountModal();
+        fetchMounts(); // Refresh the mounts list
+      } else {
+        console.error("Failed to save mount:", response.status);
+        alert("Failed to save mount. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error saving mount:", error);
+      alert("Failed to save mount. Please try again.");
+    }
+    setMountSaving(false);
+  };
+
+  // Fetch mounts when component mounts or when mount tab is active
+  useEffect(() => {
+    if (activeTab === 'mount') {
+      fetchMounts();
+    }
+  }, [activeTab]);
+
+  const handleEditMount = (mount) => {
+    // For now, just log - you can implement edit functionality later
+    console.log("Edit mount:", mount);
+  };
+
+  const handleDeleteMount = async (mount) => {
+    if (window.confirm(`Are you sure you want to delete "${mount.mountName}"? This action cannot be undone.`)) {
+      try {
+        const token = localStorage.getItem("limiToken");
+        const response = await fetch(`https://dev.api1.limitless-lighting.co.uk/admin/configurator-dynamic/mount/${mount._id}`, {
+          method: "DELETE",
+          headers: {
+            "Authorization": `${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (response.ok) {
+          console.log("Mount deleted successfully");
+          fetchMounts(); // Refresh the mounts list
+        } else {
+          console.error("Failed to delete mount:", response.status);
+          alert("Failed to delete mount. Please try again.");
+        }
+      } catch (error) {
+        console.error("Error deleting mount:", error);
+        alert("Failed to delete mount. Please try again.");
+      }
+    }
+  };
+
   const handleCloseAddModal = () => {
     setShowAddModal(false);
     setShowAddForm(false);
@@ -509,14 +675,13 @@ export default function PendantSystemManager({
               {/* Action Buttons */}
               <div className="flex gap-3">
                 <button
-                  onClick={handleManualRefresh}
-                  disabled={isManualRefreshing}
-                  className="group relative px-6 py-4 bg-gradient-to-r from-gray-600 to-gray-700 rounded-2xl font-semibold text-white transition-all duration-300 transform hover:scale-105 hover:shadow-2xl overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={handleAddMount}
+                  className="group relative px-8 py-4 bg-gradient-to-r from-[#87CEAB] to-[#54bb74] rounded-2xl font-semibold text-white transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-[#87CEAB]/25 overflow-hidden"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-gray-700 to-gray-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  <div className="relative flex items-center space-x-2">
-                    <FaSync className={`text-lg ${isManualRefreshing ? 'animate-spin' : ''}`} />
-                    <span className="text-sm">{isManualRefreshing ? 'Refreshing...' : 'Refresh'}</span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#54bb74] to-[#87CEAB] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="relative flex items-center space-x-3">
+                    <FaMountain className="text-xl" />
+                    <span className="text-lg">Add Mount</span>
                   </div>
                 </button>
                 
@@ -571,6 +736,20 @@ export default function PendantSystemManager({
         pendantSaving={pendantSaving}
         onSave={handleSaveOrUpdate}
         setNewPendantData={setNewPendantData}
+      />
+
+      {/* Add Mount Modal */}
+      <AddMountModal
+        showModal={showAddMountModal}
+        onClose={handleCloseMountModal}
+        newMountData={newMountData}
+        handleMountInputChange={handleMountInputChange}
+        handleMountIconChange={handleMountIconChange}
+        handleMountModelChange={handleMountModelChange}
+        mountIconPreview={mountIconPreview}
+        mountModelPreview={mountModelPreview}
+        mountSaving={mountSaving}
+        onSave={saveMountData}
       />
 
       {/* Main Content */}
@@ -651,6 +830,7 @@ export default function PendantSystemManager({
                 activeFilters={activeFilters}
                 setActiveFilters={setActiveFilters}
                 processedProducts={processedProducts}
+                mounts={mounts}
               />
 
               {/* Filtered Products Display */}
@@ -737,6 +917,18 @@ export default function PendantSystemManager({
                       />
                     )}
                   </>
+                )}
+
+                {/* Show Mounts */}
+                {activeTab === 'mount' && (
+                  <MountTable
+                    key={`mounts-${mounts.length}`}
+                    mounts={mounts}
+                    onEdit={handleEditMount}
+                    onDelete={handleDeleteMount}
+                    deletingItemId={deletingItemId}
+                    viewMode={viewMode}
+                  />
                 )}
               </div>
             </div>
