@@ -2,7 +2,7 @@
 let cachedSystemAssignments = null;
 let cacheTimestamp = null;
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
-const POLL_INTERVAL = 10 * 1000; // 10 seconds polling
+const POLL_INTERVAL = 2 * 60 * 1000; // 2 minutes polling
 let pollTimer = null;
 let lastDataHash = null;
 
