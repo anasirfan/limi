@@ -61,7 +61,7 @@ const ConfiguratorLayout = () => {
   const searchParams = useSearchParams();
 
   // Version constant to track localStorage schema changes
-  const STORAGE_VERSION = "1.1.2";
+  const STORAGE_VERSION = "1.2.0";
 
   // Clear old localStorage data if version doesn't match
   useEffect(() => {
@@ -461,7 +461,10 @@ const ConfiguratorLayout = () => {
           //   sendMessageToPlayCanvas(`base_color:black`),
           sendMessageToPlayCanvas(`light_type:${savedConfig.lightType}`),
             sendMessageToPlayCanvas(`base_type:${savedConfig.baseType}`),
-            sendMessageToPlayCanvas(`light_amount:${savedConfig.lightAmount}`),
+            sendMessageToPlayCanvas('mount_model:https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/mount1_1_1760087653392.glb')
+            // sendMessageToPlayCanvas(`light_amount:${savedConfig.lightAmount}`),
+            sendMessageToPlayCanvas(`light_amount:1`),
+
             sendMessageToPlayCanvas(`base_color:${savedConfig.baseColor}`);
           savedCables.forEach((cable, index) => {
             const system = systemAssignments.find(
