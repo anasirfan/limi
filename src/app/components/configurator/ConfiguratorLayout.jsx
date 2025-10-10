@@ -461,9 +461,9 @@ const ConfiguratorLayout = () => {
           //   sendMessageToPlayCanvas(`base_color:black`),
           sendMessageToPlayCanvas(`light_type:${savedConfig.lightType}`),
             sendMessageToPlayCanvas(`base_type:${savedConfig.baseType}`),
+            sendMessageToPlayCanvas(`light_amount:1`),
             sendMessageToPlayCanvas('mount_model:https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/mount1_1_1760087653392.glb')
             // sendMessageToPlayCanvas(`light_amount:${savedConfig.lightAmount}`),
-            sendMessageToPlayCanvas(`light_amount:1`),
 
             sendMessageToPlayCanvas(`base_color:${savedConfig.baseColor}`);
           savedCables.forEach((cable, index) => {
@@ -628,11 +628,12 @@ const matchingMount = mounts.find((mount) => {
 });
 
 console.log("mountSelected", matchingMount);
+sendMessageToPlayCanvas(`light_amount:${amount}`);
 if (matchingMount && (matchingMount.mountModel || matchingMount.modelUrl)) {
   const modelUrl = matchingMount.modelUrl || matchingMount.mountModel;
   sendMessageToPlayCanvas(`mount_model:${modelUrl}`);
 }
-    sendMessageToPlayCanvas(`light_amount:${amount}`);
+    
     const designToIds = {};
     newSystems.forEach((system, idx) => {
       if (!designToIds[system.design]) designToIds[system.design] = [];
