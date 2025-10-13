@@ -83,10 +83,10 @@ export const EnvironmentDropdown = ({ config, onEnvironmentChange, setActiveStep
     // Send multiple configuration messages to PlayCanvas
     if (sendMessageToPlayCanvas) {
       // Send camera constraints
-      sendMessageToPlayCanvas('minYaw:42');
-      sendMessageToPlayCanvas('maxYaw:-42');
-      sendMessageToPlayCanvas('minZoom:1');
-      sendMessageToPlayCanvas('maxZoom:42');
+      // sendMessageToPlayCanvas('minYaw:42');
+      // sendMessageToPlayCanvas('maxYaw:-42');
+      // sendMessageToPlayCanvas('minZoom:1');
+      // sendMessageToPlayCanvas('maxZoom:42');
       
       // Send scene URL if it's not the empty scene
       if (environment.id !== 'no_scene') {
