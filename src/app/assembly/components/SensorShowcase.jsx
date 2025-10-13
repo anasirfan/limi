@@ -184,7 +184,7 @@ const SensorShowcase = ({ onVisible }) => {
               </div>
               
               {/* Absolutely Positioned Image */}
-              <div className="absolute top-32 left-24 w-[200px] h-[200px] z-20">
+              <div className="absolute top-32 left-28 sm:left-24 w-[200px] h-[200px] z-20">
                 <Image
                   src={sensorData[0].icon}
                   alt={sensorData[0].title}
@@ -228,7 +228,7 @@ const SensorShowcase = ({ onVisible }) => {
               
               {/* Absolutely Positioned Image */}
               <div 
-                className="absolute top-12 right-8 w-[620px] h-[500px] z-20"
+                className="absolute top-28 sm:top-16 right-8 sm:right-8 w-[620px] h-[500px] z-20"
                 
               >
                 <Image
@@ -276,7 +276,7 @@ const SensorShowcase = ({ onVisible }) => {
               </div>
               
               {/* Absolutely Positioned Image */}
-              <div className="absolute top-4 right-4 w-[500px] h-[500px] z-20"
+              <div className="absolute top-4 -right-6 sm:right-4 w-[500px] h-[500px] z-20"
                      style={{ transform: 'rotate(180deg) rotate(-12deg)' }}>
                 <Image
                   src={sensorData[2].icon}
@@ -322,7 +322,7 @@ const SensorShowcase = ({ onVisible }) => {
               </div>
               
               {/* Absolutely Positioned Image */}
-              <div className="absolute top-26 right-14 w-[300px] h-[300px] z-20"
+              <div className="absolute top-[7rem] right-32 sm:right-20 w-[200px] h-[200px]"
                     >
                 <Image
                   src={sensorData[3].icon}
