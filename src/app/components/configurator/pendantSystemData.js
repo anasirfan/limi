@@ -16,11 +16,21 @@ let mountPollTimer = null;
 let lastMountDataHash = null;
 let globalMountData = [];
 
+// Scene data cache and state
+let cachedSceneData = null;
+let sceneCacheTimestamp = null;
+let scenePollTimer = null;
+let lastSceneDataHash = null;
+let globalSceneData = [];
+
 // Event listeners for data refresh
 const refreshCallbacks = new Set();
 
 // Mount data refresh callbacks
 const mountRefreshCallbacks = new Set();
+
+// Scene data refresh callbacks
+const sceneRefreshCallbacks = new Set();
 
 // Subscribe to data refresh events
 export const onDataRefresh = (callback) => {
@@ -32,6 +42,12 @@ export const onDataRefresh = (callback) => {
 export const onMountDataRefresh = (callback) => {
   mountRefreshCallbacks.add(callback);
   return () => mountRefreshCallbacks.delete(callback); // Return unsubscribe function
+};
+
+// Subscribe to scene data refresh events
+export const onSceneDataRefresh = (callback) => {
+  sceneRefreshCallbacks.add(callback);
+  return () => sceneRefreshCallbacks.delete(callback); // Return unsubscribe function
 };
 
 // Notify all subscribers of data refresh
@@ -52,6 +68,17 @@ const notifyMountDataRefresh = (newData) => {
       callback(newData);
     } catch (error) {
       console.error('Error in mount data refresh callback:', error);
+    }
+  });
+};
+
+// Notify all subscribers of scene data refresh
+const notifySceneDataRefresh = (newData) => {
+  sceneRefreshCallbacks.forEach(callback => {
+    try {
+      callback(newData);
+    } catch (error) {
+      console.error('Error in scene data refresh callback:', error);
     }
   });
 };
@@ -82,6 +109,22 @@ const generateMountDataHash = (data) => {
     }))));
   } catch (error) {
     console.error('Error generating mount data hash:', error);
+    return Date.now().toString(); // Fallback to timestamp
+  }
+};
+
+// Generate hash for scene data comparison
+const generateSceneDataHash = (data) => {
+  try {
+    return btoa(JSON.stringify(data.map(item => ({ 
+      id: item._id || item.id, 
+      sceneName: item.sceneName,
+      sceneModel: item.sceneModel,
+      sceneIcon: item.sceneIcon,
+      updatedAt: item.updatedAt || item.updated_at 
+    }))));
+  } catch (error) {
+    console.error('Error generating scene data hash:', error);
     return Date.now().toString(); // Fallback to timestamp
   }
 };
@@ -180,6 +223,55 @@ const fetchMountData = async () => {
   }
 };
 
+// Fetch scene data from API
+const fetchSceneData = async () => {
+  try {
+    console.log('🔄 Fetching scene data from API...');
+    const response = await fetch("https://dev.api1.limitless-lighting.co.uk/admin/configurator/scene", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch scene data: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    console.log('🔄 Raw scene API response:', data);
+    const formattedData = Array.isArray(data) ? data : data?.data || [];
+    
+    // Check if data has changed
+    const newDataHash = generateSceneDataHash(formattedData);
+    const dataChanged = lastSceneDataHash && lastSceneDataHash !== newDataHash;
+    
+    // Cache the data and update global store
+    cachedSceneData = formattedData;
+    globalSceneData = formattedData; // Update global store for immediate access
+    sceneCacheTimestamp = Date.now();
+    lastSceneDataHash = newDataHash;
+    
+    // Always log the fetch for debugging
+    console.log('🔄 Scene API fetch completed:', {
+      itemCount: formattedData.length,
+      dataChanged,
+      newHash: newDataHash.substring(0, 10) + '...',
+      oldHash: lastSceneDataHash ? lastSceneDataHash.substring(0, 10) + '...' : 'none'
+    });
+    
+    // Notify subscribers if data changed OR if this is the first load
+    if (dataChanged || !lastSceneDataHash) {
+      console.log('🔄 Scene API data updated, notifying components...');
+      notifySceneDataRefresh(formattedData);
+    }
+    
+    return formattedData;
+  } catch (error) {
+    throw error; // Only use API data, do not fallback
+  }
+};
+
 // Start periodic polling
 const startPolling = () => {
   if (pollTimer) return; // Already polling
@@ -188,6 +280,7 @@ const startPolling = () => {
     try {
       await fetchSystemAssignments();
       await fetchMountData();
+      await fetchSceneData();
     } catch (error) {
       console.error('Polling error:', error);
     }
@@ -231,6 +324,11 @@ if (typeof document !== 'undefined') {
   // Initialize mount data
   fetchMountData().catch(error => {
     console.error('Error initializing mount data:', error);
+  });
+  
+  // Initialize scene data
+  fetchSceneData().catch(error => {
+    console.error('Error initializing scene data:', error);
   });
 }
 
@@ -507,4 +605,66 @@ export const forceRefreshMountData = async () => {
 // Check if mount data is stale
 export const isMountDataStale = () => {
   return !mountCacheTimestamp || (Date.now() - mountCacheTimestamp > CACHE_DURATION);
+};
+
+// ===== SCENE DATA FUNCTIONS =====
+
+// Get scene data synchronously from global store (FOR IMMEDIATE ACCESS)
+export const getSceneDataSync = () => {
+  return globalSceneData; // Return all scene data since API might not have isShow field
+};
+
+// Get scene data with caching (FOR CONFIGURATOR)
+export const getSceneData = async () => {
+  let sceneData;
+  
+  // Check if we have cached data and it's still valid
+  if (cachedSceneData && sceneCacheTimestamp && (Date.now() - sceneCacheTimestamp < CACHE_DURATION)) {
+    sceneData = cachedSceneData;
+    console.log('🔄 Using cached scene data');
+  } else {
+    // Fetch fresh data
+    sceneData = await fetchSceneData();
+  }
+  // Return all scene data since API might not have isShow field
+  return sceneData;
+};
+
+// Get ALL scene data with caching (FOR DASHBOARD)
+export const getAllSceneData = async () => {
+  let sceneData;
+  
+  // Check if we have cached data and it's still valid
+  if (cachedSceneData && sceneCacheTimestamp && (Date.now() - sceneCacheTimestamp < CACHE_DURATION)) {
+    sceneData = cachedSceneData;
+    console.log('🔄 Using cached scene data (dashboard - all items)');
+  } else {
+    // Fetch fresh data
+    sceneData = await fetchSceneData();
+  }
+  
+  // Return ALL items for dashboard management
+  return sceneData;
+};
+
+// Refresh scene data cache function
+export const refreshSceneData = async () => {
+  console.log('🔄 Manually refreshing scene data...');
+  cachedSceneData = null;
+  sceneCacheTimestamp = null;
+  return await getSceneData();
+};
+
+// Force refresh scene data (ignores cache completely)
+export const forceRefreshSceneData = async () => {
+  console.log('🔄 Force refreshing scene data...');
+  cachedSceneData = null;
+  sceneCacheTimestamp = null;
+  lastSceneDataHash = null;
+  return await fetchSceneData();
+};
+
+// Check if scene data is stale
+export const isSceneDataStale = () => {
+  return !sceneCacheTimestamp || (Date.now() - sceneCacheTimestamp > CACHE_DURATION);
 };

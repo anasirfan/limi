@@ -107,7 +107,6 @@ export const ConfigPanel = ({
     const handleMessage = (event) => {
       // Check if the message is from the expected iframe origin
       if (event.data === "loadingOff") {
-        console.log("Received loadingOff message from iframe");
         turnOffPendantLoading();
       }
     };
@@ -127,7 +126,6 @@ export const ConfigPanel = ({
   // Function to load all configurator data (only visible items)
   const loadConfiguratorData = async () => {
     try {
-      console.log('🔄 ConfigPanel: Loading configurator data (visible items only)');
       const [
         systemData,
         pendantData,

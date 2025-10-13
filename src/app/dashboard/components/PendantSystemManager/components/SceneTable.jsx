@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { FaImage, FaEdit, FaTrash, FaEye, FaCube } from "react-icons/fa";
+import ModelViewer3D from "./ModelViewer3D";
 
 export default function SceneTable({ 
   scenes, 
@@ -12,11 +13,14 @@ export default function SceneTable({
   const [showModelViewer, setShowModelViewer] = useState(false);
 
   const handleViewModel = (scene) => {
+    console.log('🔍 Opening model viewer for scene:', scene);
+    console.log('🔍 Scene model URL:', scene.sceneModel);
     setSelectedScene(scene);
     setShowModelViewer(true);
   };
 
   const handleCloseViewer = () => {
+    console.log('🔍 Closing model viewer');
     setShowModelViewer(false);
     setSelectedScene(null);
   };
@@ -61,9 +65,9 @@ export default function SceneTable({
             >
               {/* Scene Icon */}
               <div className="aspect-square rounded-lg overflow-hidden mb-4 bg-[#1a1a1a] border border-[#50C878]/20">
-                {scene.iconUrl ? (
+                {scene.sceneIcon ? (
                   <img
-                    src={scene.iconUrl}
+                    src={scene.sceneIcon}
                     alt={scene.sceneName}
                     className="w-full h-full object-cover"
                   />
@@ -89,7 +93,7 @@ export default function SceneTable({
                     <span className="text-[#50C878]">{scene.minZoom} to {scene.maxZoom}</span>
                   </div>
                 </div>
-                {scene.modelUrl && (
+                {scene.sceneModel && (
                   <div className="flex items-center space-x-1 text-xs text-gray-400">
                     <FaCube className="text-[#50C878]" />
                     <span className="truncate">Model attached</span>
@@ -99,7 +103,7 @@ export default function SceneTable({
 
               {/* Actions */}
               <div className="flex gap-2">
-                {scene.modelUrl && (
+                {scene.sceneModel && (
                   <button
                     onClick={() => handleViewModel(scene)}
                     className="flex-1 px-3 py-2 bg-blue-500/20 hover:bg-blue-500/30 rounded-lg text-blue-400 text-sm font-medium transition-all duration-200 flex items-center justify-center"
@@ -127,6 +131,23 @@ export default function SceneTable({
             </div>
           ))}
         </div>
+
+        {/* Model Viewer Modal */}
+        {selectedScene && (
+          <>
+            {console.log('🔍 Rendering ModelViewer3D (Grid):', { 
+              selectedScene: selectedScene?.sceneName, 
+              showModelViewer, 
+              modelUrl: selectedScene?.sceneModel 
+            })}
+            <ModelViewer3D
+              modelUrl={selectedScene.sceneModel}
+              modelName={`${selectedScene.sceneName} - 3D Model`}
+              isOpen={showModelViewer}
+              onClose={handleCloseViewer}
+            />
+          </>
+        )}
       </div>
     );
   }
@@ -171,9 +192,9 @@ export default function SceneTable({
               >
                 <td className="px-6 py-4">
                   <div className="w-12 h-12 rounded-lg overflow-hidden bg-[#2a2a2a] border border-[#50C878]/20">
-                    {scene.iconUrl ? (
+                    {scene.sceneIcon ? (
                       <img
-                        src={scene.iconUrl}
+                        src={scene.sceneIcon}
                         alt={scene.sceneName}
                         className="w-full h-full object-cover"
                       />
@@ -202,7 +223,7 @@ export default function SceneTable({
                   </div>
                 </td>
                 <td className="px-6 py-4">
-                  {scene.modelUrl ? (
+                  {scene.sceneModel ? (
                     <button
                       onClick={() => handleViewModel(scene)}
                       className="px-3 py-1 bg-blue-500/20 hover:bg-blue-500/30 rounded-lg text-blue-400 text-sm font-medium transition-all duration-200 flex items-center"
@@ -238,6 +259,23 @@ export default function SceneTable({
           </tbody>
         </table>
       </div>
+
+      {/* Model Viewer Modal */}
+      {selectedScene && (
+        <>
+          {console.log('🔍 Rendering ModelViewer3D:', { 
+            selectedScene: selectedScene?.sceneName, 
+            showModelViewer, 
+            modelUrl: selectedScene?.sceneModel 
+          })}
+          <ModelViewer3D
+            modelUrl={selectedScene.sceneModel}
+            modelName={`${selectedScene.sceneName} - 3D Model`}
+            isOpen={showModelViewer}
+            onClose={handleCloseViewer}
+          />
+        </>
+      )}
     </div>
   );
 }

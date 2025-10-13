@@ -462,7 +462,7 @@ const ConfiguratorLayout = () => {
             sendMessageToPlayCanvas(`light_type:${savedConfig.lightType}`),
             sendMessageToPlayCanvas(`base_type:${savedConfig.baseType}`),
             sendMessageToPlayCanvas(`light_amount:1`),
-            sendMessageToPlayCanvas('mount_model:https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/kitchen_1760359198797.glb')
+            sendMessageToPlayCanvas('mount_model:https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/mount1_glb_1760105101633.glb')
             // sendMessageToPlayCanvas(`light_amount:${savedConfig.lightAmount}`),
 
             sendMessageToPlayCanvas(`base_color:${savedConfig.baseColor}`);
@@ -619,15 +619,12 @@ const ConfiguratorLayout = () => {
     // Send messages to iframe
   // Get mount data and send mount model if available
 const mounts = getMountDataSync();
-console.log("mountsData", mounts);
 
 // Search through each mount object for matching cable number
 const matchingMount = mounts.find((mount) => {
-  console.log(`Checking mount: ${mount.mountName}, cableNumber: ${mount.mountCableNumber}, amount: ${amount}`);
   return Number(amount) === Number(mount.mountCableNumber);
 });
 
-console.log("mountSelected", matchingMount);
 sendMessageToPlayCanvas(`light_amount:${amount}`);
 if (matchingMount && (matchingMount.mountModel || matchingMount.modelUrl)) {
   const modelUrl = matchingMount.modelUrl || matchingMount.mountModel;

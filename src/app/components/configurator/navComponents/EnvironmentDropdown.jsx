@@ -1,72 +1,113 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { FaHome, FaBan, FaBuilding, FaUtensils, FaStore, FaGraduationCap, FaHospital, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { getSceneData, onSceneDataRefresh } from '../pendantSystemData';
 
 export const EnvironmentDropdown = ({ config, onEnvironmentChange, setActiveStep, setOpenDropdown, tourActive, onTourSelection, sendMessageToPlayCanvas }) => {
   const [isMobile, setIsMobile] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [environments, setEnvironments] = useState([]);
 
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 640);
     };
-    
+
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const environments = [
-    {
-      id: 'no_scene',
-      label: 'No Scene',
-      icon: <FaBan className="w-5 h-5" />,
-      description: 'Empty',
-      sceneValue: 0
-    },
-    {
-      id: 'interior',
-      label: 'Interior',
-      icon: <FaHome className="w-5 h-5" />,
-      description: 'Home',
-      sceneValue: 1
-    },
-    {
-      id: 'office',
-      label: 'Office',
-      icon: <FaBuilding className="w-5 h-5" />,
-      description: 'Workspace',
-      sceneValue: 2
-    },
-    {
-      id: 'restaurant',
-      label: 'Restaurant',
-      icon: <FaUtensils className="w-5 h-5" />,
-      description: 'Dining',
-      sceneValue: 3
-    },
-    {
-      id: 'retail',
-      label: 'Retail',
-      icon: <FaStore className="w-5 h-5" />,
-      description: 'Store',
-      sceneValue: 4
-    },
-    {
-      id: 'education',
-      label: 'Education',
-      icon: <FaGraduationCap className="w-5 h-5" />,
-      description: 'School',
-      sceneValue: 5
-    },
-    {
-      id: 'healthcare',
-      label: 'Healthcare',
-      icon: <FaHospital className="w-5 h-5" />,
-      description: 'Medical',
-      sceneValue: 6
-    }
-  ];
+  // Load scene data on component mount
+  useEffect(() => {
+    const loadSceneData = async () => {
+      try {
+        const sceneData = await getSceneData();
+
+        // Always include "No Scene" option first
+        const formattedEnvironments = [
+          {
+            id: 'no_scene',
+            label: 'No Scene',
+            icon: <FaBan className="w-5 h-5" />,
+            description: 'Empty',
+            sceneValue: 0,
+            sceneUrl: null
+          },
+          ...sceneData.map((scene, index) => ({
+            id: scene._id || scene.sceneName?.toLowerCase().replace(/\s+/g, '_'),
+            label: scene.sceneName,
+            icon: scene.sceneIcon ? <img src={scene.sceneIcon} alt={scene.sceneName} className="w-5 h-5" /> : getIconForSceneType('interior'),
+            description: scene.sceneName || 'Scene',
+            sceneValue: index + 1,
+            sceneUrl: scene.sceneModel,
+            minZoom: scene.minZoom,
+            maxZoom: scene.maxZoom,
+            minYaw: scene.minYaw,
+            maxYaw: scene.maxYaw
+          }))
+        ];
+
+        setEnvironments(formattedEnvironments);
+      } catch (error) {
+        console.error('Error loading scene data:', error);
+        // Fallback to default "No Scene" option
+        setEnvironments([{
+          id: 'no_scene',
+          label: 'No Scene',
+          icon: <FaBan className="w-5 h-5" />,
+          description: 'Empty',
+          sceneValue: 0,
+          sceneUrl: null
+        }]);
+      }
+    };
+
+    loadSceneData();
+
+    // Subscribe to scene data updates
+    const unsubscribe = onSceneDataRefresh((newSceneData) => {
+      const formattedEnvironments = [
+        {
+          id: 'no_scene',
+          label: 'No Scene',
+          icon: <FaBan className="w-5 h-5" />,
+          description: 'Empty',
+          sceneValue: 0,
+          sceneUrl: null
+        },
+        ...newSceneData.map((scene, index) => ({
+          id: scene._id || scene.sceneName?.toLowerCase().replace(/\s+/g, '_'),
+          label: scene.sceneName,
+          icon: scene.sceneIcon ? <img src={scene.sceneIcon} alt={scene.sceneName} className="w-5 h-5" /> : getIconForSceneType('interior'),
+          description: scene.sceneName || 'Scene',
+          sceneValue: index + 1,
+          sceneUrl: scene.sceneModel,
+          minZoom: scene.minZoom,
+          maxZoom: scene.maxZoom,
+          minYaw: scene.minYaw,
+          maxYaw: scene.maxYaw
+        }))
+      ];
+      setEnvironments(formattedEnvironments);
+    });
+
+    return unsubscribe;
+  }, []);
+
+  // Icon mapping for different scene types
+  const getIconForSceneType = (sceneType) => {
+    const iconMap = {
+      'no_scene': <FaBan className="w-5 h-5" />,
+      'interior': <FaHome className="w-5 h-5" />,
+      'office': <FaBuilding className="w-5 h-5" />,
+      'restaurant': <FaUtensils className="w-5 h-5" />,
+      'retail': <FaStore className="w-5 h-5" />,
+      'education': <FaGraduationCap className="w-5 h-5" />,
+      'healthcare': <FaHospital className="w-5 h-5" />
+    };
+    return iconMap[sceneType] || <FaHome className="w-5 h-5" />;
+  };
 
   const itemsPerPage = isMobile ? 3 : 4;
   const totalPages = Math.ceil(environments.length / itemsPerPage);
@@ -76,27 +117,33 @@ export const EnvironmentDropdown = ({ config, onEnvironmentChange, setActiveStep
     if (tourActive && onTourSelection) {
       onTourSelection('environment', environment.id);
     }
-    
+
     // Call the environment change handler
     onEnvironmentChange(environment.id);
-    
+
     // Send multiple configuration messages to PlayCanvas
     if (sendMessageToPlayCanvas) {
-      // Send camera constraints
-      // sendMessageToPlayCanvas('minYaw:42');
-      // sendMessageToPlayCanvas('maxYaw:-42');
-      // sendMessageToPlayCanvas('minZoom:1');
-      // sendMessageToPlayCanvas('maxZoom:42');
-      
-      // Send scene URL if it's not the empty scene
-      if (environment.id !== 'no_scene') {
-        sendMessageToPlayCanvas(`sceneLink:https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/Kitchen_1760348535795.glb`);
+      if (environment.minYaw !== undefined) {
+        sendMessageToPlayCanvas(`minYaw:${environment.minYaw}`);
+      }
+      if (environment.maxYaw !== undefined) {
+        sendMessageToPlayCanvas(`maxYaw:${environment.maxYaw}`);
+      }
+      if (environment.minZoom !== undefined) {
+        sendMessageToPlayCanvas(`minZoom:${environment.minZoom}`);
+      }
+      if (environment.maxZoom !== undefined) {
+        sendMessageToPlayCanvas(`maxZoom:${environment.maxZoom}`);
+      }
+      // Send scene URL if it's not the empty scene and has a scene URL
+      if (environment.id !== 'no_scene' && environment.sceneUrl) {
+        sendMessageToPlayCanvas(`sceneLink:${environment.sceneUrl}`);
       } else {
         // For no scene, just send the scene value
         sendMessageToPlayCanvas(`scene:${environment.sceneValue}`);
       }
     }
-    
+
     // Close dropdown
     setOpenDropdown(null);
   };
@@ -111,17 +158,18 @@ export const EnvironmentDropdown = ({ config, onEnvironmentChange, setActiveStep
 
   const getCurrentItems = () => {
     const startIndex = currentIndex * itemsPerPage;
-    return environments.slice(startIndex, startIndex + itemsPerPage);
+    const items = environments.slice(startIndex, startIndex + itemsPerPage);
+    return items;
   };
 
   return (
-    <div 
+    <div
       className="max-sm:left-0 max-sm:w-full p-4"
       onClick={(e) => e.stopPropagation()}
       onTouchStart={(e) => e.stopPropagation()}
     >
       {!isMobile && <h3 className="text-base font-bold text-white mb-4 font-['Amenti']">Environment</h3>}
-      
+
       {/* Carousel Container */}
       <div className="relative">
         {/* Navigation Arrows */}
@@ -144,9 +192,9 @@ export const EnvironmentDropdown = ({ config, onEnvironmentChange, setActiveStep
 
         {/* Carousel Content */}
         <div className="overflow-hidden">
-          <div 
+          <div
             className={`grid ${isMobile ? 'grid-cols-3' : 'grid-cols-4'} gap-4`}
-            
+
           >
             {getCurrentItems().map((environment) => (
               <button
@@ -155,20 +203,20 @@ export const EnvironmentDropdown = ({ config, onEnvironmentChange, setActiveStep
                   flex flex-col items-center rounded-xl transition-all duration-300 min-w-0 group
                 `}
                 onClick={() => handleEnvironmentSelect(environment)}
-        
-       
-              
+
+
+
               >
                 <div className={`
                   w-14 h-14 rounded-full flex items-center justify-center mb-3 transition-all duration-300
-                  ${config.environment === environment.id 
-                    ? 'bg-emerald-500/30 border-2 border-emerald-400 text-emerald-400' 
+                  ${config.environment === environment.id
+                    ? 'bg-emerald-500/30 border-2 border-emerald-400 text-emerald-400'
                     : 'bg-gray-700/60 border-2 border-gray-600 group-hover:border-emerald-400/50 group-hover:bg-emerald-500/10 text-white group-hover:text-emerald-400'
                   }
                 `}>
                   {environment.icon}
                 </div>
-            
+
               </button>
             ))}
           </div>
@@ -183,8 +231,8 @@ export const EnvironmentDropdown = ({ config, onEnvironmentChange, setActiveStep
                 onClick={() => setCurrentIndex(index)}
                 className={`
                   w-2 h-2 rounded-full transition-all duration-300
-                  ${index === currentIndex 
-                    ? 'bg-emerald-400' 
+                  ${index === currentIndex
+                    ? 'bg-emerald-400'
                     : 'bg-gray-600 hover:bg-gray-500'
                   }
                 `}
