@@ -462,7 +462,7 @@ const ConfiguratorLayout = () => {
             sendMessageToPlayCanvas(`light_type:${savedConfig.lightType}`),
             sendMessageToPlayCanvas(`base_type:${savedConfig.baseType}`),
             sendMessageToPlayCanvas(`light_amount:1`),
-            sendMessageToPlayCanvas('mount_model:https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/kitchen_1760358215649.glb')
+            sendMessageToPlayCanvas('mount_model:https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/kitchen_1760359198797.glb')
             // sendMessageToPlayCanvas(`light_amount:${savedConfig.lightAmount}`),
 
             sendMessageToPlayCanvas(`base_color:${savedConfig.baseColor}`);
