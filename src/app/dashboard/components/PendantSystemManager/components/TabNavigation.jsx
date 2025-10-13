@@ -12,7 +12,8 @@ import {
   FaList,
   FaEye,
   FaFilter,
-  FaMountain
+  FaMountain,
+  FaImage
 } from "react-icons/fa";
 import { getTabCounts } from "../utils/fileUtils";
 
@@ -31,9 +32,10 @@ const TabNavigation = ({
   activeFilters,
   setActiveFilters,
   processedProducts,
-  mounts = []
+  mounts = [],
+  scenes = []
 }) => {
-  const tabCounts = getTabCounts(products, mounts);
+  const tabCounts = getTabCounts(products, mounts, scenes);
 
   // Filter products for display based on active tab
   let displayedProducts = products;
@@ -82,6 +84,7 @@ const TabNavigation = ({
     { key: "chandelier", label: "Chandeliers", icon: FaLightbulb },
     { key: "model", label: "With Models", icon: FaCube },
     { key: "mount", label: "Mounts", icon: FaMountain },
+    { key: "scene", label: "Scenes", icon: FaImage },
   ];
 
   return (

@@ -74,7 +74,7 @@ export const filterAndSearchProducts = (products, activeTab, searchQuery) => {
 };
 
 // Get count for each tab
-export function getTabCounts(products, mounts = []) {
+export function getTabCounts(products, mounts = [], scenes = []) {
   return {
     all: products.length,
     pendant: products.filter((item) => !item.isSystem).length,
@@ -88,5 +88,6 @@ export function getTabCounts(products, mounts = []) {
     }).length,
     chandelier: products.filter(item => item.systemType === "chandelier").length,
     mount: mounts.length,
+    scene: scenes.length,
   };
 }

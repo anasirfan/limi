@@ -1,11 +1,13 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { FaLightbulb, FaPlus, FaSpinner, FaSync, FaMountain } from "react-icons/fa";
+import { FaLightbulb, FaPlus, FaSpinner, FaSync, FaMountain, FaImage } from "react-icons/fa";
 import TabNavigation from "./components/TabNavigation";
 import ProductTable from "./components/ProductTable";
 import AddModal from "./components/AddModal";
 import EditModal from "./components/EditModal";
 import AddMountModal from "./components/AddMountModal";
 import MountTable from "./components/MountTable";
+import AddSceneModal from "./components/AddSceneModal";
+import SceneTable from "./components/SceneTable";
 import { filterProductsByTab } from "./utils/fileUtils";
 import { onDataRefresh, refreshSystemAssignments, getAllSystemAssignments } from "../../../components/configurator/pendantSystemData";
 
@@ -37,6 +39,7 @@ export default function PendantSystemManager({
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showAddMountModal, setShowAddMountModal] = useState(false);
+  const [showAddSceneModal, setShowAddSceneModal] = useState(false);
   const [deletingItemId, setDeletingItemId] = useState(null);
   const [activeTab, setActiveTab] = useState("all");
   
@@ -55,6 +58,24 @@ export default function PendantSystemManager({
   const [mountModelPreview, setMountModelPreview] = useState("");
   const [mountIconFile, setMountIconFile] = useState(null);
   const [mountModelFile, setMountModelFile] = useState(null);
+  
+  // Scene state
+  const [scenes, setScenes] = useState([]);
+  const [sceneLoading, setSceneLoading] = useState(false);
+  const [sceneSaving, setSceneSaving] = useState(false);
+  const [newSceneData, setNewSceneData] = useState({
+    sceneName: "",
+    sceneIcon: "",
+    sceneModel: "",
+    minYaw: "",
+    maxYaw: "",
+    minZoom: "",
+    maxZoom: ""
+  });
+  const [sceneIconPreview, setSceneIconPreview] = useState("");
+  const [sceneModelPreview, setSceneModelPreview] = useState("");
+  const [sceneIconFile, setSceneIconFile] = useState(null);
+  const [sceneModelFile, setSceneModelFile] = useState(null);
   
   // Search and filter state
   const [searchQuery, setSearchQuery] = useState("");
@@ -436,6 +457,163 @@ export default function PendantSystemManager({
     }
   }, [activeTab]);
 
+  // Scene handlers
+  const handleAddScene = () => {
+    setShowAddSceneModal(true);
+  };
+
+  const handleCloseSceneModal = () => {
+    setShowAddSceneModal(false);
+    // Clear form data
+    setNewSceneData({
+      sceneName: "",
+      sceneIcon: "",
+      sceneModel: "",
+      minYaw: "",
+      maxYaw: "",
+      minZoom: "",
+      maxZoom: ""
+    });
+    setSceneIconPreview("");
+    setSceneModelPreview("");
+    setSceneIconFile(null);
+    setSceneModelFile(null);
+  };
+
+  const handleSceneInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewSceneData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSceneIconChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSceneIconFile(file);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setSceneIconPreview(e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSceneModelChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSceneModelFile(file);
+      setSceneModelPreview(file.name);
+    }
+  };
+
+  const fetchScenes = async () => {
+    setSceneLoading(true);
+    try {
+      const token = localStorage.getItem("limiToken");
+      const response = await fetch("https://dev.api1.limitless-lighting.co.uk/admin/configurator/scene", {
+        method: "GET",
+        headers: {
+          "Authorization": `${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        // Handle both array and object responses
+        const scenesArray = Array.isArray(data) ? data : data?.data || [];
+        setScenes(scenesArray);
+      } else {
+        console.error("Failed to fetch scenes:", response.status);
+      }
+    } catch (error) {
+      console.error("Error fetching scenes:", error);
+    }
+    setSceneLoading(false);
+  };
+
+  const saveSceneData = async () => {
+    setSceneSaving(true);
+    try {
+      const formData = new FormData();
+      formData.append('sceneName', newSceneData.sceneName);
+      formData.append('minYaw', parseInt(newSceneData.minYaw));
+      formData.append('maxYaw', parseInt(newSceneData.maxYaw));
+      formData.append('minZoom', parseInt(newSceneData.minZoom));
+      formData.append('maxZoom', parseInt(newSceneData.maxZoom));
+      
+      if (sceneIconFile) {
+        formData.append('sceneIcon', sceneIconFile);
+      }
+      
+      if (sceneModelFile) {
+        formData.append('sceneModel', sceneModelFile);
+      }
+
+      const token = localStorage.getItem("limiToken");
+      const response = await fetch("https://dev.api1.limitless-lighting.co.uk/admin/configurator/scene", {
+        method: "POST",
+        headers: {
+          "Authorization": `${token}`,
+        },
+        body: formData
+      });
+
+      if (response.ok) {
+        console.log("Scene saved successfully");
+        handleCloseSceneModal();
+        fetchScenes(); // Refresh the scenes list
+      } else {
+        console.error("Failed to save scene:", response.status);
+        alert("Failed to save scene. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error saving scene:", error);
+      alert("Failed to save scene. Please try again.");
+    }
+    setSceneSaving(false);
+  };
+
+  // Fetch scenes when component mounts or when scene tab is active
+  useEffect(() => {
+    if (activeTab === 'scene') {
+      fetchScenes();
+    }
+  }, [activeTab]);
+
+  const handleEditScene = (scene) => {
+    // For now, just log - you can implement edit functionality later
+    console.log("Edit scene:", scene);
+  };
+
+  const handleDeleteScene = async (scene) => {
+    if (window.confirm(`Are you sure you want to delete "${scene.sceneName}"? This action cannot be undone.`)) {
+      try {
+        const token = localStorage.getItem("limiToken");
+        const response = await fetch(`https://dev.api1.limitless-lighting.co.uk/admin/configurator/scene/${scene._id}`, {
+          method: "DELETE",
+          headers: {
+            "Authorization": `${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (response.ok) {
+          console.log("Scene deleted successfully");
+          fetchScenes(); // Refresh the scenes list
+        } else {
+          console.error("Failed to delete scene:", response.status);
+          alert("Failed to delete scene. Please try again.");
+        }
+      } catch (error) {
+        console.error("Error deleting scene:", error);
+        alert("Failed to delete scene. Please try again.");
+      }
+    }
+  };
+
   const handleEditMount = (mount) => {
     // For now, just log - you can implement edit functionality later
     console.log("Edit mount:", mount);
@@ -692,6 +870,17 @@ export default function PendantSystemManager({
                 </button>
                 
                 <button
+                  onClick={handleAddScene}
+                  className="group relative px-8 py-4 bg-gradient-to-r from-[#50C878] to-[#87CEAB] rounded-2xl font-semibold text-white transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-[#50C878]/25 overflow-hidden"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#87CEAB] to-[#50C878] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="relative flex items-center space-x-3">
+                    <FaImage className="text-xl" />
+                    <span className="text-lg">Add Scene</span>
+                  </div>
+                </button>
+                
+                <button
                   onClick={handleAddNew}
                   className="group relative px-8 py-4 bg-gradient-to-r from-[#54bb74] to-[#87CEAB] rounded-2xl font-semibold text-white transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-[#54bb74]/25 overflow-hidden"
                 >
@@ -756,6 +945,20 @@ export default function PendantSystemManager({
         mountModelPreview={mountModelPreview}
         mountSaving={mountSaving}
         onSave={saveMountData}
+      />
+
+      {/* Add Scene Modal */}
+      <AddSceneModal
+        showModal={showAddSceneModal}
+        onClose={handleCloseSceneModal}
+        newSceneData={newSceneData}
+        handleSceneInputChange={handleSceneInputChange}
+        handleSceneIconChange={handleSceneIconChange}
+        handleSceneModelChange={handleSceneModelChange}
+        sceneIconPreview={sceneIconPreview}
+        sceneModelPreview={sceneModelPreview}
+        sceneSaving={sceneSaving}
+        onSave={saveSceneData}
       />
 
       {/* Main Content */}
@@ -837,6 +1040,7 @@ export default function PendantSystemManager({
                 setActiveFilters={setActiveFilters}
                 processedProducts={processedProducts}
                 mounts={mounts}
+                scenes={scenes}
               />
 
               {/* Filtered Products Display */}
@@ -932,6 +1136,18 @@ export default function PendantSystemManager({
                     mounts={mounts}
                     onEdit={handleEditMount}
                     onDelete={handleDeleteMount}
+                    deletingItemId={deletingItemId}
+                    viewMode={viewMode}
+                  />
+                )}
+
+                {/* Show Scenes */}
+                {activeTab === 'scene' && (
+                  <SceneTable
+                    key={`scenes-${scenes.length}`}
+                    scenes={scenes}
+                    onEdit={handleEditScene}
+                    onDelete={handleDeleteScene}
                     deletingItemId={deletingItemId}
                     viewMode={viewMode}
                   />
