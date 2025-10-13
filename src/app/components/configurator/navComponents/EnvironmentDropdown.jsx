@@ -80,9 +80,21 @@ export const EnvironmentDropdown = ({ config, onEnvironmentChange, setActiveStep
     // Call the environment change handler
     onEnvironmentChange(environment.id);
     
-    // Send message to PlayCanvas
+    // Send multiple configuration messages to PlayCanvas
     if (sendMessageToPlayCanvas) {
-      sendMessageToPlayCanvas(`scene:${environment.sceneValue}`);
+      // Send camera constraints
+      sendMessageToPlayCanvas('minYaw:42');
+      sendMessageToPlayCanvas('maxYaw:-42');
+      sendMessageToPlayCanvas('minZoom:1');
+      sendMessageToPlayCanvas('maxZoom:42');
+      
+      // Send scene URL if it's not the empty scene
+      if (environment.id !== 'no_scene') {
+        sendMessageToPlayCanvas(`sceneLink:https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/Kitchen_1760348535795.glb`);
+      } else {
+        // For no scene, just send the scene value
+        sendMessageToPlayCanvas(`scene:${environment.sceneValue}`);
+      }
     }
     
     // Close dropdown
