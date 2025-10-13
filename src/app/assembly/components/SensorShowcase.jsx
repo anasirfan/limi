@@ -9,7 +9,7 @@ const SensorShowcase = ({ onVisible }) => {
       id: 1,
       title: "Audio Output",
       description: "High-quality speakers deliver voice feedback, notifications, and ambient audio to enhance your smart lighting experience.",
-      icon: "/assemblyImages/sens4.png",
+      icon: "/sensors/sens4.png",
       gradient: "from-[#017E7C] to-[#016060]",
       delay: 0
     },
@@ -17,7 +17,7 @@ const SensorShowcase = ({ onVisible }) => {
       id: 2,
       title: "Temperature Control",
       description: "Smart temperature sensors monitor ambient conditions and automatically adjust lighting warmth to create optimal comfort zones.",
-      icon: "/assemblyImages/sens3.png",
+      icon: "/sensors/sens3.png",
       gradient: "from-[#098C53] to-[#0E736B]",
       delay: 0.1
     },
@@ -25,7 +25,7 @@ const SensorShowcase = ({ onVisible }) => {
       id: 3,
       title: "Computer Vision",
       description: "AI-powered cameras recognize gestures, faces, and activities to provide intelligent contextual responses and visual automation.",
-      icon: "/assemblyImages/sens1.png",
+      icon: "/sensors/sens1.png",
       gradient: "from-[#016060] to-[#017E7C]",
       delay: 0.2
     },
@@ -33,7 +33,7 @@ const SensorShowcase = ({ onVisible }) => {
       id: 4,
       title: "Motion Detection",
       description: "Advanced radar sensors detect movement and presence with precision accuracy for intelligent lighting automation and occupancy sensing.",
-      icon: "/assemblyImages/sens2.png",
+      icon: "/sensors/sens2.png",
       gradient: "from-[#0E736B] to-[#098C53]",
       delay: 0.3
     }
@@ -162,14 +162,11 @@ const SensorShowcase = ({ onVisible }) => {
             className="lg:col-span-1"
           >
             <div className={`
-              relative h-[320px] rounded-2xl p-6 overflow-hidden
+              relative h-[320px] p-6 overflow-hidden
               bg-[rgba(31,31,31,1)]
               shadow-[0px_8px_20px_rgba(0,0,0,0.25)]
-              border border-white/10
               group cursor-pointer
             `}>
-              {/* Top Border Gradient */}
-              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-white to-transparent opacity-60" />
               
               {/* Glow Effect */}
               <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -187,7 +184,7 @@ const SensorShowcase = ({ onVisible }) => {
               </div>
               
               {/* Absolutely Positioned Image */}
-              <div className="absolute -top-4 -right-16 w-[500px] h-[500px] z-20">
+              <div className="absolute top-32 left-24 w-[200px] h-[200px] z-20">
                 <Image
                   src={sensorData[0].icon}
                   alt={sensorData[0].title}
@@ -195,8 +192,6 @@ const SensorShowcase = ({ onVisible }) => {
                   className="object-cover"
                 />
               </div>
-
-              {/* Decorative Elements */}
               </div>
           </motion.div>
 
@@ -210,14 +205,11 @@ const SensorShowcase = ({ onVisible }) => {
             className="lg:col-span-2"
           >
             <div className={`
-              relative h-[320px] rounded-2xl p-6 overflow-hidden
+              relative h-[320px] p-6 overflow-hidden
               bg-[rgba(31,31,31,1)]
               shadow-[0px_8px_20px_rgba(0,0,0,0.25)]
-              border border-white/10
               group cursor-pointer
             `}>
-              {/* Top Border Gradient */}
-              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-white to-transparent opacity-60" />
               
               {/* Glow Effect */}
               <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -236,8 +228,8 @@ const SensorShowcase = ({ onVisible }) => {
               
               {/* Absolutely Positioned Image */}
               <div 
-                className="absolute top-4 right-8 w-[500px] h-[500px] z-20"
-                style={{ transform: 'rotate(180deg) rotate(-12deg)' }}
+                className="absolute top-12 right-8 w-[620px] h-[500px] z-20"
+                
               >
                 <Image
                   src={sensorData[1].icon}
@@ -262,14 +254,11 @@ const SensorShowcase = ({ onVisible }) => {
             className="lg:col-span-2"
           >
             <div className={`
-              relative h-[320px] rounded-2xl p-6 overflow-hidden
+              relative h-[320px] p-6 overflow-hidden
               bg-[rgba(31,31,31,1)]
               shadow-[0px_8px_20px_rgba(0,0,0,0.25)]
-              border border-white/10
               group cursor-pointer
             `}>
-              {/* Top Border Gradient */}
-              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-white to-transparent opacity-60" />
               
               {/* Glow Effect */}
               <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -311,14 +300,11 @@ const SensorShowcase = ({ onVisible }) => {
             className="lg:col-span-1"
           >
             <div className={`
-              relative h-[320px] rounded-2xl p-6 overflow-hidden
+              relative h-[320px] p-6 overflow-hidden
               bg-[rgba(31,31,31,1)]
               shadow-[0px_8px_20px_rgba(0,0,0,0.25)]
-              border border-white/10
               group cursor-pointer
             `}>
-              {/* Top Border Gradient */}
-              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-white to-transparent opacity-60" />
               
               {/* Glow Effect */}
               <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -336,8 +322,8 @@ const SensorShowcase = ({ onVisible }) => {
               </div>
               
               {/* Absolutely Positioned Image */}
-              <div className="absolute -top-4 -right-2 w-[500px] h-[500px] z-20"
-                     style={{ transform: 'rotate(180deg) rotate(40deg)' }}>
+              <div className="absolute top-26 right-14 w-[300px] h-[300px] z-20"
+                    >
                 <Image
                   src={sensorData[3].icon}
                   alt={sensorData[3].title}

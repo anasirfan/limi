@@ -470,12 +470,7 @@ const AssemblyPage = () => {
           />
         </section>
 
-        {/* Sticky Image Reveal Section */}
-        <section id="sticky-reveal">
-          <StickyImageReveal
-            onVisible={() => trackAssemblyEvent("Sticky Image Reveal")}
-          />
-        </section>
+
 
         {/* Base Showcase */}
         {/* <section id="base-showcase">
@@ -494,14 +489,14 @@ const AssemblyPage = () => {
         </section> */}
 
         {/* Benefits Timeline */}
-        <section id="benefits">
+        {/* <section id="benefits">
           <BenefitTimeline
             onVisible={() => trackAssemblyEvent("Benefits Timeline")}
           />
-        </section>
+        </section> */}
 
         {/* CTA Section */}
-        <CTA onVisible={() => trackAssemblyEvent("CTA Section")} />
+        {/* <CTA onVisible={() => trackAssemblyEvent("CTA Section")} /> */}
 
         {/* Team Section */}
         <section id="team">
