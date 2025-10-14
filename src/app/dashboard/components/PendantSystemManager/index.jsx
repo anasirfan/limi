@@ -539,10 +539,10 @@ export default function PendantSystemManager({
     try {
       const formData = new FormData();
       formData.append('sceneName', newSceneData.sceneName);
-      formData.append('minYaw', parseInt(newSceneData.minYaw));
-      formData.append('maxYaw', parseInt(newSceneData.maxYaw));
-      formData.append('minZoom', parseInt(newSceneData.minZoom));
-      formData.append('maxZoom', parseInt(newSceneData.maxZoom));
+      formData.append('minYaw', parseFloat(newSceneData.minYaw));
+      formData.append('maxYaw', parseFloat(newSceneData.maxYaw));
+      formData.append('minZoom', parseFloat(newSceneData.minZoom));
+      formData.append('maxZoom', parseFloat(newSceneData.maxZoom));
       
       if (sceneIconFile) {
         formData.append('sceneIcon', sceneIconFile);
