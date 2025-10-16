@@ -61,7 +61,7 @@ const ConfiguratorLayout = () => {
   const searchParams = useSearchParams();
 
   // Version constant to track localStorage schema changes
-  const STORAGE_VERSION = "1.3.0";
+  const STORAGE_VERSION = "1.3.1";
 
   // Clear old localStorage data if version doesn't match
   useEffect(() => {
@@ -80,6 +80,7 @@ const ConfiguratorLayout = () => {
         configurationType: "pendant",
         lightAmount: 1,
         baseColor: "black",
+        mountUrl: "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/singleceilingBase_1760549067675.glb",
         selectedPendants: [],
         hotspot: "off",
         shades: {},
@@ -460,13 +461,13 @@ const ConfiguratorLayout = () => {
           //   sendMessageToPlayCanvas(`base_type:round`),
           //   sendMessageToPlayCanvas(`light_amount:1`),
           //   sendMessageToPlayCanvas(`base_color:black`),
-            sendMessageToPlayCanvas(`light_type:${savedConfig.lightType}`),
+          sendMessageToPlayCanvas(`light_type:${savedConfig.lightType}`),
             sendMessageToPlayCanvas(`base_type:${savedConfig.baseType}`),
             sendMessageToPlayCanvas(`light_amount:${savedConfig.lightAmount}`),
             sendMessageToPlayCanvas(`mount_model:${savedConfig.mountUrl}`)
-            // sendMessageToPlayCanvas(`light_amount:${savedConfig.lightAmount}`),
+          // sendMessageToPlayCanvas(`light_amount:${savedConfig.lightAmount}`),
 
-            sendMessageToPlayCanvas(`base_color:${savedConfig.baseColor}`);
+          sendMessageToPlayCanvas(`base_color:${savedConfig.baseColor}`);
           savedCables.forEach((cable, index) => {
             const system = systemAssignments.find(
               (a) => a.design === cable.design
@@ -508,9 +509,9 @@ const ConfiguratorLayout = () => {
             sendMessageToPlayCanvas(`brightness:${savedConfig.brightness}`),
               sendMessageToPlayCanvas(
                 "colorTemperature:" +
-                  Math.round(
-                    2700 + (savedConfig.colorTemperature / 100) * (6500 - 2700)
-                  )
+                Math.round(
+                  2700 + (savedConfig.colorTemperature / 100) * (6500 - 2700)
+                )
               );
           }
         }
@@ -618,24 +619,24 @@ const ConfiguratorLayout = () => {
     );
 
     // Send messages to iframe
-  // Get mount data and send mount model if available
-const mounts = getMountDataSync();
+    // Get mount data and send mount model if available
+    const mounts = getMountDataSync();
 
-// Search through each mount object for matching cable number
-const matchingMount = mounts.find((mount) => {
-  return Number(amount) === Number(mount.mountCableNumber);
-});
+    // Search through each mount object for matching cable number
+    const matchingMount = mounts.find((mount) => {
+      return Number(amount) === Number(mount.mountCableNumber);
+    });
 
-sendMessageToPlayCanvas(`light_amount:${amount}`);
-if (matchingMount && (matchingMount.mountModel || matchingMount.modelUrl)) {
-  const modelUrl = matchingMount.modelUrl || matchingMount.mountModel;
-  sendMessageToPlayCanvas(`mount_model:${modelUrl}`);
-  setConfig((prev) => ({
-    ...prev,
-    mountUrl: modelUrl,
-  }));
-    
-}
+    sendMessageToPlayCanvas(`light_amount:${amount}`);
+    if (matchingMount && (matchingMount.mountModel || matchingMount.modelUrl)) {
+      const modelUrl = matchingMount.modelUrl || matchingMount.mountModel;
+      sendMessageToPlayCanvas(`mount_model:${modelUrl}`);
+      setConfig((prev) => ({
+        ...prev,
+        mountUrl: modelUrl,
+      }));
+
+    }
     const designToIds = {};
     newSystems.forEach((system, idx) => {
       if (!designToIds[system.design]) designToIds[system.design] = [];
@@ -799,7 +800,7 @@ if (matchingMount && (matchingMount.mountModel || matchingMount.modelUrl)) {
     return () => clearTimeout(timer);
   }, [handlePendantDesignChange]);
 
-  useEffect(() => {}, [showPendantLoadingScreen]);
+  useEffect(() => { }, [showPendantLoadingScreen]);
   // Handle base type change
   const handleBaseTypeChange = useCallback((baseType) => {
     // Update config state
