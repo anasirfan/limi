@@ -151,6 +151,7 @@ const ConfiguratorLayout = () => {
       hotspot: "off",
       shades: {},
       lighting: true,
+      mountUrl: "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/singleceilingBase_1760549067675.glb",
       colorTemperature: 50,
       brightness: 50,
     });
@@ -461,8 +462,8 @@ const ConfiguratorLayout = () => {
           //   sendMessageToPlayCanvas(`base_color:black`),
             sendMessageToPlayCanvas(`light_type:${savedConfig.lightType}`),
             sendMessageToPlayCanvas(`base_type:${savedConfig.baseType}`),
-            sendMessageToPlayCanvas(`light_amount:1`),
-            sendMessageToPlayCanvas('mount_model:https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/mount1_glb_1760105101633.glb')
+            sendMessageToPlayCanvas(`light_amount:${savedConfig.lightAmount}`),
+            sendMessageToPlayCanvas(`mount_model:${savedConfig.mountUrl}`)
             // sendMessageToPlayCanvas(`light_amount:${savedConfig.lightAmount}`),
 
             sendMessageToPlayCanvas(`base_color:${savedConfig.baseColor}`);
@@ -629,8 +630,12 @@ sendMessageToPlayCanvas(`light_amount:${amount}`);
 if (matchingMount && (matchingMount.mountModel || matchingMount.modelUrl)) {
   const modelUrl = matchingMount.modelUrl || matchingMount.mountModel;
   sendMessageToPlayCanvas(`mount_model:${modelUrl}`);
-}
+  setConfig((prev) => ({
+    ...prev,
+    mountUrl: modelUrl,
+  }));
     
+}
     const designToIds = {};
     newSystems.forEach((system, idx) => {
       if (!designToIds[system.design]) designToIds[system.design] = [];
