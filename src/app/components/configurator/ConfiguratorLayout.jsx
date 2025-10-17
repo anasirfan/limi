@@ -540,12 +540,13 @@ const ConfiguratorLayout = () => {
     let matchingMount;
     if (type === "ceiling") {
       // For ceiling type, find all matching mounts and filter for mountCableNumber == 1
-      const ceilingMounts = mounts.filter((mount) => mount.lightType === type);
+      const ceilingMounts = mounts.filter((mount) => mount.mountLightType === type);
       matchingMount = ceilingMounts.find((mount) => mount.mountCableNumber === 1);
+
     } else {
       // For other types, use the original logic
       matchingMount = mounts.find((mount) => {
-        return mount.lightType === type;
+        return mount.mountLightType === type;
       });
     }
 
@@ -837,10 +838,19 @@ const ConfiguratorLayout = () => {
      
      const mounts = getMountDataSync();
 
-    // Search through each mount object for matching light type
-    const matchingMount = mounts.find((mount) => {
-      return mount.baseType === baseType;
-    });
+    // Search through each mount object for matching base type
+    let matchingMount;
+    const baseMounts = mounts.filter((mount) => mount.mountBaseType === baseType);
+    console.log("baseMounts", baseMounts);
+    
+    if (baseType === "round") {
+      // For round base type, find mount with mountCableNumber == 1
+      matchingMount = baseMounts.find((mount) => mount.mountCableNumber === 1);
+    } else if (baseType === "rectangular") {
+      // For rectangular base type, find mount with mountCableNumber == 3
+      matchingMount = baseMounts.find((mount) => mount.mountCableNumber === 3);
+      console.log("matchingMount", matchingMount);
+    }
 
     if (matchingMount && (matchingMount.mountModel || matchingMount.modelUrl)) {
       const modelUrl = matchingMount.modelUrl || matchingMount.mountModel;

@@ -135,15 +135,15 @@ export default function AddMountModal({
                 </button>
                 <button
                   type="button"
-                  onClick={() => handleMountInputChange({ target: { name: 'baseType', value: 'rectangle' } })}
+                  onClick={() => handleMountInputChange({ target: { name: 'baseType', value: 'rectangular' } })}
                   className={`p-4 rounded-xl border-2 transition-all duration-200 flex items-center justify-center space-x-3 ${
-                    newMountData.baseType === 'rectangle'
+                    newMountData.baseType === 'rectangular'
                       ? 'border-[#50C878] bg-[#50C878]/10 text-[#50C878]'
                       : 'border-[#50C878]/30 bg-[#2a2a2a] text-gray-400 hover:border-[#50C878]/50 hover:text-white'
                   }`}
                 >
                   <FaSquare className="text-xl" />
-                  <span className="font-semibold">Rectangle</span>
+                  <span className="font-semibold">Rectangular</span>
                 </button>
               </div>
             </div>
