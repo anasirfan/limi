@@ -534,7 +534,22 @@ const ConfiguratorLayout = () => {
     if (config.lightType === "ceiling" && type !== "ceiling") {
       setLastCeilingLightAmount(config.lightAmount);
     }
+   const mounts = getMountDataSync();
 
+    // Search through each mount object for matching light type
+    const matchingMount = mounts.find((mount) => {
+      return mount.lightType === type;
+    });
+
+    if (matchingMount && (matchingMount.mountModel || matchingMount.modelUrl)) {
+      const modelUrl = matchingMount.modelUrl || matchingMount.mountModel;
+      sendMessageToPlayCanvas(`mount_model:${modelUrl}`);
+      setConfig((prev) => ({
+        ...prev,
+        mountUrl: modelUrl,
+      }));
+
+    }
     // Get new amount and pendants using utility function
     const { newAmount, newPendants } = getLightTypeChangeData(
       type,
@@ -811,7 +826,22 @@ const ConfiguratorLayout = () => {
     }));
     const design = "piko";
     const system = findSystemAssignmentByDesign(design);
+     
+     const mounts = getMountDataSync();
 
+    // Search through each mount object for matching light type
+    const matchingMount = mounts.find((mount) => {
+      return mount.baseType === baseType;
+    });
+
+    if (matchingMount && (matchingMount.mountModel || matchingMount.modelUrl)) {
+      const modelUrl = matchingMount.modelUrl || matchingMount.mountModel;
+      sendMessageToPlayCanvas(`mount_model:${modelUrl}`);
+      setConfig((prev) => ({
+        ...prev,
+        mountUrl: modelUrl,
+      }));
+    }
     // Send message to PlayCanvas iframe
     if (baseType === "rectangular") {
       sendMessageToPlayCanvas(`base_type:${baseType}`);

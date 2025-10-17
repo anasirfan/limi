@@ -1,5 +1,5 @@
 import React from "react";
-import { FaTimes, FaMountain, FaUpload, FaSpinner, FaCircle, FaSquare } from "react-icons/fa";
+import { FaTimes, FaMountain, FaUpload, FaSpinner, FaCircle, FaSquare, FaHome, FaArrowUp, FaArrowRight } from "react-icons/fa";
 
 export default function AddMountModal({
   showModal,
@@ -17,7 +17,16 @@ export default function AddMountModal({
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSave();
+    
+    // Automatically set lightAmount based on lightType
+    const submitData = { ...newMountData };
+    if (submitData.lightType === 'wall') {
+      submitData.lightAmount = 1;
+    } else if (submitData.lightType === 'floor') {
+      submitData.lightAmount = 3;
+    }
+    
+    onSave(submitData);
   };
 
   return (
@@ -59,6 +68,160 @@ export default function AddMountModal({
               className="w-full px-4 py-3 bg-[#2a2a2a] border border-[#50C878]/30 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-[#50C878] focus:ring-2 focus:ring-[#50C878]/20 transition-all duration-200"
             />
           </div>
+
+          {/* Light Type */}
+          <div className="space-y-3">
+            <label className="block text-lg font-semibold text-white">
+              Light Type *
+            </label>
+            <div className="grid grid-cols-3 gap-4">
+              <button
+                type="button"
+                onClick={() => handleMountInputChange({ target: { name: 'lightType', value: 'floor' } })}
+                className={`p-4 rounded-xl border-2 transition-all duration-200 flex items-center justify-center space-x-3 ${
+                  newMountData.lightType === 'floor'
+                    ? 'border-[#50C878] bg-[#50C878]/10 text-[#50C878]'
+                    : 'border-[#50C878]/30 bg-[#2a2a2a] text-gray-400 hover:border-[#50C878]/50 hover:text-white'
+                }`}
+              >
+                <FaHome className="text-xl" />
+                <span className="font-semibold">Floor</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleMountInputChange({ target: { name: 'lightType', value: 'ceiling' } })}
+                className={`p-4 rounded-xl border-2 transition-all duration-200 flex items-center justify-center space-x-3 ${
+                  newMountData.lightType === 'ceiling'
+                    ? 'border-[#50C878] bg-[#50C878]/10 text-[#50C878]'
+                    : 'border-[#50C878]/30 bg-[#2a2a2a] text-gray-400 hover:border-[#50C878]/50 hover:text-white'
+                }`}
+              >
+                <FaArrowUp className="text-xl" />
+                <span className="font-semibold">Ceiling</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleMountInputChange({ target: { name: 'lightType', value: 'wall' } })}
+                className={`p-4 rounded-xl border-2 transition-all duration-200 flex items-center justify-center space-x-3 ${
+                  newMountData.lightType === 'wall'
+                    ? 'border-[#50C878] bg-[#50C878]/10 text-[#50C878]'
+                    : 'border-[#50C878]/30 bg-[#2a2a2a] text-gray-400 hover:border-[#50C878]/50 hover:text-white'
+                }`}
+              >
+                <FaArrowRight className="text-xl" />
+                <span className="font-semibold">Wall</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Base Type - Only show for ceiling */}
+          {newMountData.lightType === 'ceiling' && (
+            <div className="space-y-3">
+              <label className="block text-lg font-semibold text-white">
+                Base Type *
+              </label>
+              <div className="grid grid-cols-2 gap-4">
+                <button
+                  type="button"
+                  onClick={() => handleMountInputChange({ target: { name: 'baseType', value: 'round' } })}
+                  className={`p-4 rounded-xl border-2 transition-all duration-200 flex items-center justify-center space-x-3 ${
+                    newMountData.baseType === 'round'
+                      ? 'border-[#50C878] bg-[#50C878]/10 text-[#50C878]'
+                      : 'border-[#50C878]/30 bg-[#2a2a2a] text-gray-400 hover:border-[#50C878]/50 hover:text-white'
+                  }`}
+                >
+                  <FaCircle className="text-xl" />
+                  <span className="font-semibold">Round</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleMountInputChange({ target: { name: 'baseType', value: 'rectangle' } })}
+                  className={`p-4 rounded-xl border-2 transition-all duration-200 flex items-center justify-center space-x-3 ${
+                    newMountData.baseType === 'rectangle'
+                      ? 'border-[#50C878] bg-[#50C878]/10 text-[#50C878]'
+                      : 'border-[#50C878]/30 bg-[#2a2a2a] text-gray-400 hover:border-[#50C878]/50 hover:text-white'
+                  }`}
+                >
+                  <FaSquare className="text-xl" />
+                  <span className="font-semibold">Rectangle</span>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Light Amount - Only show for ceiling */}
+          {newMountData.lightType === 'ceiling' && newMountData.baseType && (
+            <div className="space-y-3">
+              <label className="block text-lg font-semibold text-white">
+                Light Amount *
+              </label>
+              <div className="grid grid-cols-3 gap-4">
+                {newMountData.baseType === 'round' ? (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => handleMountInputChange({ target: { name: 'lightAmount', value: 1 } })}
+                      className={`p-4 rounded-xl border-2 transition-all duration-200 flex items-center justify-center ${
+                        newMountData.lightAmount === 1
+                          ? 'border-[#50C878] bg-[#50C878]/10 text-[#50C878]'
+                          : 'border-[#50C878]/30 bg-[#2a2a2a] text-gray-400 hover:border-[#50C878]/50 hover:text-white'
+                      }`}
+                    >
+                      <span className="font-bold text-xl">1</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleMountInputChange({ target: { name: 'lightAmount', value: 3 } })}
+                      className={`p-4 rounded-xl border-2 transition-all duration-200 flex items-center justify-center ${
+                        newMountData.lightAmount === 3
+                          ? 'border-[#50C878] bg-[#50C878]/10 text-[#50C878]'
+                          : 'border-[#50C878]/30 bg-[#2a2a2a] text-gray-400 hover:border-[#50C878]/50 hover:text-white'
+                      }`}
+                    >
+                      <span className="font-bold text-xl">3</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleMountInputChange({ target: { name: 'lightAmount', value: 6 } })}
+                      className={`p-4 rounded-xl border-2 transition-all duration-200 flex items-center justify-center ${
+                        newMountData.lightAmount === 6
+                          ? 'border-[#50C878] bg-[#50C878]/10 text-[#50C878]'
+                          : 'border-[#50C878]/30 bg-[#2a2a2a] text-gray-400 hover:border-[#50C878]/50 hover:text-white'
+                      }`}
+                    >
+                      <span className="font-bold text-xl">6</span>
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => handleMountInputChange({ target: { name: 'lightAmount', value: 2 } })}
+                      className={`p-4 rounded-xl border-2 transition-all duration-200 flex items-center justify-center ${
+                        newMountData.lightAmount === 2
+                          ? 'border-[#50C878] bg-[#50C878]/10 text-[#50C878]'
+                          : 'border-[#50C878]/30 bg-[#2a2a2a] text-gray-400 hover:border-[#50C878]/50 hover:text-white'
+                      }`}
+                    >
+                      <span className="font-bold text-xl">2</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleMountInputChange({ target: { name: 'lightAmount', value: 3 } })}
+                      className={`p-4 rounded-xl border-2 transition-all duration-200 flex items-center justify-center ${
+                        newMountData.lightAmount === 3
+                          ? 'border-[#50C878] bg-[#50C878]/10 text-[#50C878]'
+                          : 'border-[#50C878]/30 bg-[#2a2a2a] text-gray-400 hover:border-[#50C878]/50 hover:text-white'
+                      }`}
+                    >
+                      <span className="font-bold text-xl">3</span>
+                    </button>
+                    <div></div> {/* Empty div for grid alignment */}
+                  </>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Mount Icon */}
           <div className="space-y-3">
@@ -124,113 +287,6 @@ export default function AddMountModal({
             </div>
           </div>
 
-          {/* Base Type */}
-          <div className="space-y-3">
-            <label className="block text-lg font-semibold text-white">
-              Base Type *
-            </label>
-            <div className="grid grid-cols-2 gap-4">
-              <button
-                type="button"
-                onClick={() => handleMountInputChange({ target: { name: 'mountBaseType', value: 'round' } })}
-                className={`p-4 rounded-xl border-2 transition-all duration-200 flex items-center justify-center space-x-3 ${
-                  newMountData.mountBaseType === 'round'
-                    ? 'border-[#50C878] bg-[#50C878]/10 text-[#50C878]'
-                    : 'border-[#50C878]/30 bg-[#2a2a2a] text-gray-400 hover:border-[#50C878]/50 hover:text-white'
-                }`}
-              >
-                <FaCircle className="text-xl" />
-                <span className="font-semibold">Round</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => handleMountInputChange({ target: { name: 'mountBaseType', value: 'rectangular' } })}
-                className={`p-4 rounded-xl border-2 transition-all duration-200 flex items-center justify-center space-x-3 ${
-                  newMountData.mountBaseType === 'rectangular'
-                    ? 'border-[#50C878] bg-[#50C878]/10 text-[#50C878]'
-                    : 'border-[#50C878]/30 bg-[#2a2a2a] text-gray-400 hover:border-[#50C878]/50 hover:text-white'
-                }`}
-              >
-                <FaSquare className="text-xl" />
-                <span className="font-semibold">Rectangular</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Cable Number */}
-          {newMountData.mountBaseType && (
-            <div className="space-y-3">
-              <label className="block text-lg font-semibold text-white">
-                Number of Cables *
-              </label>
-              <div className="grid grid-cols-3 gap-4">
-                {newMountData.mountBaseType === 'round' ? (
-                  <>
-                    <button
-                      type="button"
-                      onClick={() => handleMountInputChange({ target: { name: 'mountCableNumber', value: 1 } })}
-                      className={`p-4 rounded-xl border-2 transition-all duration-200 flex items-center justify-center ${
-                        newMountData.mountCableNumber === 1
-                          ? 'border-[#50C878] bg-[#50C878]/10 text-[#50C878]'
-                          : 'border-[#50C878]/30 bg-[#2a2a2a] text-gray-400 hover:border-[#50C878]/50 hover:text-white'
-                      }`}
-                    >
-                      <span className="font-bold text-xl">1</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleMountInputChange({ target: { name: 'mountCableNumber', value: 3 } })}
-                      className={`p-4 rounded-xl border-2 transition-all duration-200 flex items-center justify-center ${
-                        newMountData.mountCableNumber === 3
-                          ? 'border-[#50C878] bg-[#50C878]/10 text-[#50C878]'
-                          : 'border-[#50C878]/30 bg-[#2a2a2a] text-gray-400 hover:border-[#50C878]/50 hover:text-white'
-                      }`}
-                    >
-                      <span className="font-bold text-xl">3</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleMountInputChange({ target: { name: 'mountCableNumber', value: 6 } })}
-                      className={`p-4 rounded-xl border-2 transition-all duration-200 flex items-center justify-center ${
-                        newMountData.mountCableNumber === 6
-                          ? 'border-[#50C878] bg-[#50C878]/10 text-[#50C878]'
-                          : 'border-[#50C878]/30 bg-[#2a2a2a] text-gray-400 hover:border-[#50C878]/50 hover:text-white'
-                      }`}
-                    >
-                      <span className="font-bold text-xl">6</span>
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <button
-                      type="button"
-                      onClick={() => handleMountInputChange({ target: { name: 'mountCableNumber', value: 2 } })}
-                      className={`p-4 rounded-xl border-2 transition-all duration-200 flex items-center justify-center ${
-                        newMountData.mountCableNumber === 2
-                          ? 'border-[#50C878] bg-[#50C878]/10 text-[#50C878]'
-                          : 'border-[#50C878]/30 bg-[#2a2a2a] text-gray-400 hover:border-[#50C878]/50 hover:text-white'
-                      }`}
-                    >
-                      <span className="font-bold text-xl">2</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleMountInputChange({ target: { name: 'mountCableNumber', value: 6 } })}
-                      className={`p-4 rounded-xl border-2 transition-all duration-200 flex items-center justify-center ${
-                        newMountData.mountCableNumber === 6
-                          ? 'border-[#50C878] bg-[#50C878]/10 text-[#50C878]'
-                          : 'border-[#50C878]/30 bg-[#2a2a2a] text-gray-400 hover:border-[#50C878]/50 hover:text-white'
-                      }`}
-                    >
-                      <span className="font-bold text-xl">6</span>
-                    </button>
-                    <div></div> {/* Empty div for grid alignment */}
-                  </>
-                )}
-              </div>
-            </div>
-          )}
-
           {/* Action Buttons */}
           <div className="flex gap-4 pt-6">
             <button
@@ -242,7 +298,7 @@ export default function AddMountModal({
             </button>
             <button
               type="submit"
-              disabled={mountSaving || !newMountData.mountName || !newMountData.mountBaseType || !newMountData.mountCableNumber}
+              disabled={mountSaving || !newMountData.mountName || !newMountData.lightType || (newMountData.lightType === 'ceiling' && (!newMountData.baseType || !newMountData.lightAmount))}
               className="flex-1 px-6 py-3 bg-gradient-to-r from-[#50C878] to-[#87CEAB] hover:from-[#87CEAB] hover:to-[#50C878] rounded-xl text-white font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
             >
               {mountSaving ? (
