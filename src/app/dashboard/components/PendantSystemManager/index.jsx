@@ -186,60 +186,7 @@ export default function PendantSystemManager({
     return unsubscribe;
   }, []);
 
-  // Add additional refresh triggers for better reliability
-  useEffect(() => {
-    // Refresh when window gains focus
-    const handleFocus = async () => {
-      console.log('🔄 PendantSystemManager: Window focused, triggering refresh');
-      try {
-        await refreshSystemAssignments();
-        // Also directly fetch to ensure local state updates
-        await fetchAndUpdateLocalState();
-      } catch (error) {
-        console.error('Error refreshing on focus:', error);
-      }
-    };
 
-    // Refresh when page becomes visible (tab switching)
-    const handleVisibilityChange = async () => {
-      if (!document.hidden) {
-        console.log('🔄 PendantSystemManager: Page visible, triggering refresh');
-        try {
-          await refreshSystemAssignments();
-          // Also directly fetch to ensure local state updates
-          await fetchAndUpdateLocalState();
-        } catch (error) {
-          console.error('Error refreshing on visibility change:', error);
-        }
-      }
-    };
-
-    // Add event listeners
-    window.addEventListener('focus', handleFocus);
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    // Cleanup
-    return () => {
-      window.removeEventListener('focus', handleFocus);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, []);
-
-  // Periodic refresh fallback (every 2 minutes)
-  useEffect(() => {
-    const interval = setInterval(async () => {
-      console.log('🔄 PendantSystemManager: Periodic refresh fallback');
-      try {
-        await refreshSystemAssignments();
-        // Also directly fetch to ensure local state updates
-        await fetchAndUpdateLocalState();
-      } catch (error) {
-        console.error('Error in periodic refresh:', error);
-      }
-    }, 2 * 60 * 1000); // 2 minutes
-
-    return () => clearInterval(interval);
-  }, []);
 
   // Manual refresh function - completely independent
   const handleManualRefresh = async () => {
