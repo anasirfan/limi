@@ -415,8 +415,9 @@ export default function PendantSystemManager({
     try {
       const formData = new FormData();
       formData.append('mountName', newMountData.mountName);
-      formData.append('mountBaseType', newMountData.mountBaseType);
-      formData.append('mountCableNumber', newMountData.mountCableNumber);
+      formData.append('mountLightType', newMountData.lightType);
+      formData.append('mountBaseType', newMountData.baseType || newMountData.mountBaseType);
+      formData.append('mountCableNumber', newMountData.lightAmount || newMountData.mountCableNumber);
       
       if (mountIconFile) {
         formData.append('mountIcon', mountIconFile);

@@ -537,9 +537,17 @@ const ConfiguratorLayout = () => {
    const mounts = getMountDataSync();
 
     // Search through each mount object for matching light type
-    const matchingMount = mounts.find((mount) => {
-      return mount.lightType === type;
-    });
+    let matchingMount;
+    if (type === "ceiling") {
+      // For ceiling type, find all matching mounts and filter for mountCableNumber == 1
+      const ceilingMounts = mounts.filter((mount) => mount.lightType === type);
+      matchingMount = ceilingMounts.find((mount) => mount.mountCableNumber === 1);
+    } else {
+      // For other types, use the original logic
+      matchingMount = mounts.find((mount) => {
+        return mount.lightType === type;
+      });
+    }
 
     if (matchingMount && (matchingMount.mountModel || matchingMount.modelUrl)) {
       const modelUrl = matchingMount.modelUrl || matchingMount.mountModel;

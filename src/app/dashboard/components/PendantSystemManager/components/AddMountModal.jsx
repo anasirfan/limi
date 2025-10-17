@@ -155,7 +155,7 @@ export default function AddMountModal({
               <label className="block text-lg font-semibold text-white">
                 Light Amount *
               </label>
-              <div className="grid grid-cols-3 gap-4">
+              <div className={`grid gap-4 ${newMountData.baseType === 'round' ? 'grid-cols-3' : 'grid-cols-4'}`}>
                 {newMountData.baseType === 'round' ? (
                   <>
                     <button
@@ -216,7 +216,28 @@ export default function AddMountModal({
                     >
                       <span className="font-bold text-xl">3</span>
                     </button>
-                    <div></div> {/* Empty div for grid alignment */}
+                    <button
+                      type="button"
+                      onClick={() => handleMountInputChange({ target: { name: 'lightAmount', value: 4 } })}
+                      className={`p-4 rounded-xl border-2 transition-all duration-200 flex items-center justify-center ${
+                        newMountData.lightAmount === 4
+                          ? 'border-[#50C878] bg-[#50C878]/10 text-[#50C878]'
+                          : 'border-[#50C878]/30 bg-[#2a2a2a] text-gray-400 hover:border-[#50C878]/50 hover:text-white'
+                      }`}
+                    >
+                      <span className="font-bold text-xl">4</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleMountInputChange({ target: { name: 'lightAmount', value: 5 } })}
+                      className={`p-4 rounded-xl border-2 transition-all duration-200 flex items-center justify-center ${
+                        newMountData.lightAmount === 5
+                          ? 'border-[#50C878] bg-[#50C878]/10 text-[#50C878]'
+                          : 'border-[#50C878]/30 bg-[#2a2a2a] text-gray-400 hover:border-[#50C878]/50 hover:text-white'
+                      }`}
+                    >
+                      <span className="font-bold text-xl">5</span>
+                    </button>
                   </>
                 )}
               </div>
