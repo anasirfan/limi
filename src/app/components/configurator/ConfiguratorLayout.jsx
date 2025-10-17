@@ -646,10 +646,12 @@ const ConfiguratorLayout = () => {
     // Get mount data and send mount model if available
     const mounts = getMountDataSync();
 
-    // Search through each mount object for matching cable number
-    const matchingMount = mounts.find((mount) => {
-      return Number(amount) === Number(mount.mountCableNumber);
-    });
+    // First filter by lightType, then by cable number
+    const matchingMount = mounts
+      .filter((mount) => mount.mountBaseType === config.baseType)
+      .find((mount) => {
+        return Number(amount) === Number(mount.mountCableNumber);
+      });
 
     sendMessageToPlayCanvas(`light_amount:${amount}`);
     if (matchingMount && (matchingMount.mountModel || matchingMount.modelUrl)) {
@@ -659,8 +661,9 @@ const ConfiguratorLayout = () => {
         ...prev,
         mountUrl: modelUrl,
       }));
-
     }
+
+
     const designToIds = {};
     newSystems.forEach((system, idx) => {
       if (!designToIds[system.design]) designToIds[system.design] = [];
