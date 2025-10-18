@@ -534,7 +534,7 @@ const ConfiguratorLayout = () => {
     if (config.lightType === "ceiling" && type !== "ceiling") {
       setLastCeilingLightAmount(config.lightAmount);
     }
-   const mounts = getMountDataSync();
+    const mounts = getMountDataSync();
 
     // Search through each mount object for matching light type
     let matchingMount;
@@ -549,9 +549,19 @@ const ConfiguratorLayout = () => {
         return mount.mountLightType === type;
       });
     }
+       // Get new amount and pendants using utility function
+    const { newAmount, newPendants } = getLightTypeChangeData(
+      type,
+      config,
+      lastCeilingLightAmount
+    );
 
     if (matchingMount && (matchingMount.mountModel || matchingMount.modelUrl)) {
       const modelUrl = matchingMount.modelUrl || matchingMount.mountModel;
+      // Send light type message
+      sendMessageToPlayCanvas(`light_type:${type}`);
+      // Send light amount message
+      sendMessageToPlayCanvas(`light_amount:${newAmount}`);
       sendMessageToPlayCanvas(`mount_model:${modelUrl}`);
       setConfig((prev) => ({
         ...prev,
@@ -559,13 +569,7 @@ const ConfiguratorLayout = () => {
       }));
 
     }
-    // Get new amount and pendants using utility function
-    const { newAmount, newPendants } = getLightTypeChangeData(
-      type,
-      config,
-      lastCeilingLightAmount
-    );
-
+ 
     setConfig((prev) => ({
       ...prev,
       lightType: type,
@@ -591,11 +595,7 @@ const ConfiguratorLayout = () => {
 
     // Send messages to iframe
 
-    // Send light type message
-    sendMessageToPlayCanvas(`light_type:${type}`);
 
-    // Send light amount message
-    sendMessageToPlayCanvas(`light_amount:${newAmount}`);
     //hotspot off
     sendMessageToPlayCanvas(`hotspot:'off'`);
 
@@ -838,14 +838,14 @@ const ConfiguratorLayout = () => {
     }));
     const design = "piko";
     const system = findSystemAssignmentByDesign(design);
-     
-     const mounts = getMountDataSync();
+
+    const mounts = getMountDataSync();
 
     // Search through each mount object for matching base type
     let matchingMount;
     const baseMounts = mounts.filter((mount) => mount.mountBaseType === baseType);
     console.log("baseMounts", baseMounts);
-    
+
     if (baseType === "round") {
       // For round base type, find mount with mountCableNumber == 1
       matchingMount = baseMounts.find((mount) => mount.mountCableNumber === 1);
@@ -868,7 +868,7 @@ const ConfiguratorLayout = () => {
     }
     // Send message to PlayCanvas iframe
     if (baseType === "rectangular") {
-    
+
       // Use a loop for 3 pendants (IDs 0, 1, 2)
       [0, 1, 2].forEach((id) => {
         sendMessagesForDesign(design, id);

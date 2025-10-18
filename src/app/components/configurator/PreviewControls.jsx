@@ -27,7 +27,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { listenForAppReady1 } from "../../util/iframeCableMessageHandler";
 import { systemAssignments } from "./pendantSystemData";
 import { listenForOffconfigMessages, listenForLoadingMessages } from "../../util/iframeCableMessageHandler";
-import LoadingScreen from "./LoadingScreen";
 
 export const PreviewControls = ({
   isPreviewMode,
@@ -44,8 +43,6 @@ export const PreviewControls = ({
   selectedPendants,
   selectedLocation,
   cableMessage,
-  showPendantLoadingScreen,
-  setShowPendantLoadingScreen,
 
   brightness,
   setBrightness,
@@ -63,7 +60,6 @@ export const PreviewControls = ({
   const [currentSlide, setCurrentSlide] = useState(0);
   const [slidesToShow] = useState(3); // Number of items to show at once
   const [showOnboarding, setShowOnboarding] = useState(false);
-  const [showLoadingScreen, setShowLoadingScreen] = useState(false);
   const brightnessDebounceTimeout = useRef();
   const colorTempDebounceTimeout = useRef();
   const prevLightingPanelWasOpenRef = useRef(false);
@@ -101,47 +97,6 @@ export const PreviewControls = ({
       }
     }
   }, []);
-  // Listen for 'loadingoff' message from iframe
-  useEffect(() => {
-    const cleanup = listenForLoadingMessages((msg) => {
-      if (msg === "loadingOff" || msg === "loadingoff") {
-        // Ensure loading screen stays visible for at least 500ms
-        if (!window.limiLoadingStartTime) window.limiLoadingStartTime = Date.now();
-        const elapsed = Date.now() - window.limiLoadingStartTime;
-        // if (elapsed < 500) {
-        //   setTimeout(() => {
-        //     setShowPendantLoadingScreen(false);
-        //     window.limiLoadingStartTime = null;
-        //   }, 500 - elapsed);
-        // } else {
-        //   setShowPendantLoadingScreen(false);
-        //   window.limiLoadingStartTime = null;
-        // }
-      } 
-    });
-    return () => {
-      if (typeof cleanup === 'function') cleanup();
-    };
-  }, [setShowPendantLoadingScreen]);
-  // Close lighting panel when navigation guide is hovered
-  useEffect(() => {
-    // If lighting panel is open and info is hovered, close the panel
-
-    if (isLightingPanelOpen && isHovered) {
-      setIsLightingPanelOpen(false);
-    }
-    // If lighting panel was open and hover ends, reopen it
-    else if (!isHovered && prevLightingPanelWasOpenRef.current) {
-      setIsLightingPanelOpen(true);
-    }
-    // Track if the panel was open before hover
-    if (isHovered && isLightingPanelOpen) {
-      prevLightingPanelWasOpenRef.current = true;
-    } else if (!isHovered) {
-      prevLightingPanelWasOpenRef.current = false;
-    }
-  }, [isHovered, isLightingPanelOpen]);
-
   useEffect(() => {
     const cleanup = listenForOffconfigMessages((data, event) => {
       setShowWishlistModal(false);
@@ -149,17 +104,6 @@ export const PreviewControls = ({
     return cleanup;
   }, [cableMessage]);
 
-  // Listen for loading screen messages
-  useEffect(() => {
-    const cleanup = listenForLoadingMessages((message, event) => {
-      if (message === "loadingOpen") {
-        setShowLoadingScreen(true);
-      } else if (message === "loadingOff") {
-        setShowLoadingScreen(false);
-      }
-    });
-    return cleanup;
-  }, []);
   const guideRef = useRef(null);
 
   useEffect(() => {
@@ -201,7 +145,7 @@ export const PreviewControls = ({
       colorTempDebounceTimeout.current = setTimeout(() => {
         sendMessageToPlayCanvas(
           "colorTemperature:" +
-            Math.round(2700 + (colorTemperature / 100) * (6500 - 2700))
+          Math.round(2700 + (colorTemperature / 100) * (6500 - 2700))
         );
       });
       return () => clearTimeout(colorTempDebounceTimeout.current);
@@ -313,11 +257,10 @@ export const PreviewControls = ({
         onTouchStart={handleTouch}
       >
         <button
-          className={`p-2 rounded-full bg-gray-700 text-white transition-all shadow-lg ${
-            isHovered
+          className={`p-2 rounded-full bg-gray-700 text-white transition-all shadow-lg ${isHovered
               ? " hover:bg-[#50C878]"
               : "hover:scale-110 hover:bg-[#50C878]"
-          }`}
+            }`}
           title="View Navigation Guide"
           aria-expanded={isHovered}
         >
@@ -385,11 +328,10 @@ export const PreviewControls = ({
         <motion.button
           whileHover={{ scale: 0.95 }}
           whileTap={{ scale: 0.95 }}
-          className={`p-2 rounded-full transition-all duration-300 shadow-lg backdrop-blur-sm border ${
-            isLightingPanelOpen
+          className={`p-2 rounded-full transition-all duration-300 shadow-lg backdrop-blur-sm border ${isLightingPanelOpen
               ? "bg-blue-600/90 border-blue-400 text-white"
               : "bg-gray-900/80 border-gray-600 text-gray-300 hover:bg-gray-800/90 hover:border-gray-500"
-          }`}
+            }`}
           onClick={() => setIsLightingPanelOpen(!isLightingPanelOpen)}
           title="Lighting Controls"
         >
@@ -425,9 +367,8 @@ export const PreviewControls = ({
               <div className="flex items-center justify-between mb-2 sm:mb-5">
                 <div className="flex items-center gap-1 sm:gap-2">
                   <FaLightbulb
-                    className={`${
-                      lighting ? "text-yellow-400" : "text-gray-400"
-                    } transition-colors text-sm sm:text-base`}
+                    className={`${lighting ? "text-yellow-400" : "text-gray-400"
+                      } transition-colors text-sm sm:text-base`}
                     size={16}
                   />
                   <h3 className="text-white font-semibold text-sm sm:text-lg">
@@ -464,21 +405,18 @@ export const PreviewControls = ({
                         }
                       }
                     }}
-                    className={`sm:hidden relative inline-flex h-5 w-10 items-center rounded-full transition-colors duration-300 focus:outline-none ${
-                      lighting ? "bg-emerald-500" : "bg-gray-600"
-                    }`}
+                    className={`sm:hidden relative inline-flex h-5 w-10 items-center rounded-full transition-colors duration-300 focus:outline-none ${lighting ? "bg-emerald-500" : "bg-gray-600"
+                      }`}
                   >
                     <span
-                      className={`${
-                        lighting ? "translate-x-6" : "translate-x-0.5"
-                      } inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow-lg ring-0 transition-transform duration-300 ease-in-out`}
+                      className={`${lighting ? "translate-x-6" : "translate-x-0.5"
+                        } inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow-lg ring-0 transition-transform duration-300 ease-in-out`}
                     />
                   </button>
 
                   <div
-                    className={`hidden sm:block w-2 h-2 rounded-full ${
-                      lighting ? "bg-green-400" : "bg-red-400"
-                    } animate-pulse`}
+                    className={`hidden sm:block w-2 h-2 rounded-full ${lighting ? "bg-green-400" : "bg-red-400"
+                      } animate-pulse`}
                   ></div>
                 </div>
               </div>
@@ -488,11 +426,10 @@ export const PreviewControls = ({
                 <div className="flex items-center gap-2">
                   <span className="text-gray-200 font-medium">Power</span>
                   <span
-                    className={`text-xs px-2 py-1 rounded-full ${
-                      lighting
+                    className={`text-xs px-2 py-1 rounded-full ${lighting
                         ? "bg-green-500/20 text-green-400"
                         : "bg-red-500/20 text-red-400"
-                    } transition-colors duration-300`}
+                      } transition-colors duration-300`}
                   >
                     {lighting ? "ON" : "OFF"}
                   </span>
@@ -524,14 +461,12 @@ export const PreviewControls = ({
                       }
                     }
                   }}
-                  className={`relative inline-flex h-7 w-14 items-center rounded-full transition-colors duration-300 focus:outline-none ${
-                    lighting ? "bg-emerald-500" : "bg-gray-600"
-                  }`}
+                  className={`relative inline-flex h-7 w-14 items-center rounded-full transition-colors duration-300 focus:outline-none ${lighting ? "bg-emerald-500" : "bg-gray-600"
+                    }`}
                 >
                   <span
-                    className={`${
-                      lighting ? "translate-x-8" : "translate-x-1"
-                    } inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition-transform duration-300 ease-in-out`}
+                    className={`${lighting ? "translate-x-8" : "translate-x-1"
+                      } inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition-transform duration-300 ease-in-out`}
                   />
                 </button>
               </div>
@@ -688,11 +623,10 @@ export const PreviewControls = ({
         {/* Wishlist Button - Desktop Only */}
         <div className="relative hidden sm:block" ref={wishlistRef}>
           <button
-            className={`p-2 rounded-full ${
-              showWishlistModal
+            className={`p-2 rounded-full ${showWishlistModal
                 ? "bg-rose-500 text-white"
                 : "bg-gray-800 text-rose-400 hover:bg-rose-900"
-            } transition-all relative`}
+              } transition-all relative`}
             onClick={() => setShowWishlistModal(!showWishlistModal)}
             title="View Wishlist"
           >
@@ -783,24 +717,24 @@ export const PreviewControls = ({
                             key={pendant.id}
                             className="group relative p-2 "
                             onClick={() => {
-                             
+
                               // Build a mapping of design to indices
                               const designToIds = {};
                               selectedPendants.forEach((idx) => {
                                 const design = assignment.design;
-                           
-                                            //  const hasBarSystem = assignment.systemType === "bar";
-                                 
-                                            //  if (hasBarSystem) {
-                                            //    sendMessageToPlayCanvas(`cable_${idx}`);
-                                            //    sendMessageToPlayCanvas("bars");
-                                            //    sendMessageToPlayCanvas("glass_none");
-                                            //    sendMessageToPlayCanvas("color_gold");
-                                            //    sendMessageToPlayCanvas("silver_none");
-                                            //    sendMessageToPlayCanvas(
-                                            //      "product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/Bar_1756732230450.glb"
-                                            //    );
-                                            //  }
+
+                                //  const hasBarSystem = assignment.systemType === "bar";
+
+                                //  if (hasBarSystem) {
+                                //    sendMessageToPlayCanvas(`cable_${idx}`);
+                                //    sendMessageToPlayCanvas("bars");
+                                //    sendMessageToPlayCanvas("glass_none");
+                                //    sendMessageToPlayCanvas("color_gold");
+                                //    sendMessageToPlayCanvas("silver_none");
+                                //    sendMessageToPlayCanvas(
+                                //      "product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/Bar_1756732230450.glb"
+                                //    );
+                                //  }
                                 if (!designToIds[design])
                                   designToIds[design] = [];
                                 designToIds[design].push(idx);
@@ -832,8 +766,8 @@ export const PreviewControls = ({
                                 <img
                                   src={
                                     assignment.media &&
-                                    assignment.media.image &&
-                                    assignment.media.image.url
+                                      assignment.media.image &&
+                                      assignment.media.image.url
                                       ? assignment.media.image.url
                                       : ""
                                   }
@@ -991,12 +925,6 @@ export const PreviewControls = ({
           }
         }
       `}</style>
-
-      {/* Loading Screen */}
-      <LoadingScreen 
-        isVisible={showPendantLoadingScreen} 
-        onHide={() => setShowPendantLoadingScreen(false)}
-      />
     </div>
   );
 };

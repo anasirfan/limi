@@ -36,7 +36,6 @@ export const ConfigPanel = ({
   handleChandelierTypeChange,
   onBreadcrumbNavigation,
   onSystemTypeSelection,
-  antLoadingScreen,
   selectedLocation,
   selectedPendants,
   cables, // Add cables prop
