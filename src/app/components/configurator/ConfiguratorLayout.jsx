@@ -857,6 +857,9 @@ const ConfiguratorLayout = () => {
 
     if (matchingMount && (matchingMount.mountModel || matchingMount.modelUrl)) {
       const modelUrl = matchingMount.modelUrl || matchingMount.mountModel;
+      sendMessageToPlayCanvas(`base_type:${baseType}`);
+      sendMessageToPlayCanvas(`light_amount:${baseType === "rectangular" ? 3 : 1}`);
+      sendMessageToPlayCanvas(`system:${system.systemType}`);
       sendMessageToPlayCanvas(`mount_model:${modelUrl}`);
       setConfig((prev) => ({
         ...prev,
@@ -865,9 +868,7 @@ const ConfiguratorLayout = () => {
     }
     // Send message to PlayCanvas iframe
     if (baseType === "rectangular") {
-      sendMessageToPlayCanvas(`base_type:${baseType}`);
-      sendMessageToPlayCanvas(`light_amount:3`);
-      sendMessageToPlayCanvas(`system:${system.systemType}`);
+    
       // Use a loop for 3 pendants (IDs 0, 1, 2)
       [0, 1, 2].forEach((id) => {
         sendMessagesForDesign(design, id);
@@ -884,9 +885,7 @@ const ConfiguratorLayout = () => {
         },
       ]);
     } else {
-      sendMessageToPlayCanvas(`base_type:${baseType}`);
-      sendMessageToPlayCanvas(`light_amount:1`);
-      sendMessageToPlayCanvas(`system:${system.systemType}`);
+
       sendMessagesForDesign(design, 0);
       setCables([
         {
@@ -906,10 +905,8 @@ const ConfiguratorLayout = () => {
       ...prev,
       baseColor,
     }));
-
     // Send message to PlayCanvas iframe
     sendMessageToPlayCanvas(`base_color:${baseColor}`);
-
     // Move to next step
     setActiveStep("systemType");
   }, []);
