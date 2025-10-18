@@ -558,10 +558,23 @@ const ConfiguratorLayout = () => {
 
     if (matchingMount && (matchingMount.mountModel || matchingMount.modelUrl)) {
       const modelUrl = matchingMount.modelUrl || matchingMount.mountModel;
+      
+      // Set specific light amounts based on type
+      let lightAmount;
+      if (type === "ceiling") {
+        lightAmount = 1;
+      } else if (type === "floor") {
+        lightAmount = 3;
+      } else if (type === "wall") {
+        lightAmount = 1;
+      } else {
+        lightAmount = newAmount; // fallback to calculated amount
+      }
+      
       // Send light type message
       sendMessageToPlayCanvas(`light_type:${type}`);
       // Send light amount message
-      sendMessageToPlayCanvas(`light_amount:${newAmount}`);
+      sendMessageToPlayCanvas(`light_amount:${lightAmount}`);
       sendMessageToPlayCanvas(`mount_model:${modelUrl}`);
       setConfig((prev) => ({
         ...prev,
