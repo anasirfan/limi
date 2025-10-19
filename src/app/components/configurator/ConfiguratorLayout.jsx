@@ -218,7 +218,15 @@ const ConfiguratorLayout = () => {
   // Handler for selected cable messages
   useEffect(() => {
     const cleanup = listenForSelectedCableMessages((message) => {
+      console.log("🔍 Raw selected cable message:", message);
+      console.log("🔍 Message type:", typeof message);
+      console.log("🔍 Message length:", message.length);
+      
       const uniqueOrdered = processSelectedCableMessage(message);
+      console.log("🔍 Processed result:", uniqueOrdered);
+      console.log("🔍 Result type:", typeof uniqueOrdered);
+      console.log("🔍 Result is array:", Array.isArray(uniqueOrdered));
+      
       // Save to state
       setConfig((prev) => ({
         ...prev,
@@ -627,6 +635,9 @@ const ConfiguratorLayout = () => {
 
   // Handle light amount change
   const handleLightAmountChange = (amount) => {
+    console.log("🔄 handleLightAmountChange called with amount:", amount);
+    console.log("🔄 Current selectedPendants:", config.selectedPendants);
+    
     // Update the appropriate saved light amount based on current configuration
     if (config.lightType === "ceiling") {
       setLastCeilingLightAmount(amount);
@@ -643,6 +654,8 @@ const ConfiguratorLayout = () => {
       config.selectedPendants,
       amount
     );
+    
+    console.log("🔄 Filtered selectedPendants:", filteredSelectedPendants);
 
     setConfig((prev) => ({
       ...prev,

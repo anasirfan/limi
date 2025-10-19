@@ -55,6 +55,8 @@ export function listenForSelectedCableMessages(callback) {
     }
   }
   window.addEventListener("message", handleMessage);
+  // Return cleanup function
+  return () => window.removeEventListener("message", handleMessage);
 }
 export function listenForModelIdMessages(callback) {
   function handleMessage(event) {

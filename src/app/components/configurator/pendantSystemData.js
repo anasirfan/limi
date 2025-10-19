@@ -56,7 +56,6 @@ const notifyDataRefresh = (newData) => {
     try {
       callback(newData);
     } catch (error) {
-      console.error('Error in data refresh callback:', error);
     }
   });
 };
@@ -67,7 +66,6 @@ const notifyMountDataRefresh = (newData) => {
     try {
       callback(newData);
     } catch (error) {
-      console.error('Error in mount data refresh callback:', error);
     }
   });
 };
@@ -78,10 +76,10 @@ const notifySceneDataRefresh = (newData) => {
     try {
       callback(newData);
     } catch (error) {
-      console.error('Error in scene data refresh callback:', error);
     }
   });
 };
+
 // Generate hash for data comparison
 const generateDataHash = (data) => {
   try {
@@ -92,7 +90,6 @@ const generateDataHash = (data) => {
       updatedAt: item.updatedAt || item.updated_at 
     }))));
   } catch (error) {
-    console.error('Error generating data hash:', error);
     return Date.now().toString(); // Fallback to timestamp
   }
 };
@@ -108,7 +105,6 @@ const generateMountDataHash = (data) => {
       updatedAt: item.updatedAt || item.updated_at 
     }))));
   } catch (error) {
-    console.error('Error generating mount data hash:', error);
     return Date.now().toString(); // Fallback to timestamp
   }
 };
@@ -124,7 +120,6 @@ const generateSceneDataHash = (data) => {
       updatedAt: item.updatedAt || item.updated_at 
     }))));
   } catch (error) {
-    console.error('Error generating scene data hash:', error);
     return Date.now().toString(); // Fallback to timestamp
   }
 };
@@ -156,17 +151,8 @@ const fetchSystemAssignments = async () => {
     cacheTimestamp = Date.now();
     lastDataHash = newDataHash;
     
-    // Always log the fetch for debugging
-    console.log('🔄 API fetch completed:', {
-      itemCount: formattedData.length,
-      dataChanged,
-      newHash: newDataHash.substring(0, 10) + '...',
-      oldHash: lastDataHash ? lastDataHash.substring(0, 10) + '...' : 'none'
-    });
-    
     // Notify subscribers if data changed OR if this is the first load
     if (dataChanged || !lastDataHash) {
-      console.log('🔄 API data updated, notifying components...');
       notifyDataRefresh(formattedData);
     }
     
@@ -203,17 +189,8 @@ const fetchMountData = async () => {
     mountCacheTimestamp = Date.now();
     lastMountDataHash = newDataHash;
     
-    // Always log the fetch for debugging
-    console.log('🔄 Mount API fetch completed:', {
-      itemCount: formattedData.length,
-      dataChanged,
-      newHash: newDataHash.substring(0, 10) + '...',
-      oldHash: lastMountDataHash ? lastMountDataHash.substring(0, 10) + '...' : 'none'
-    });
-    
     // Notify subscribers if data changed OR if this is the first load
     if (dataChanged || !lastMountDataHash) {
-      console.log('🔄 Mount API data updated, notifying components...');
       notifyMountDataRefresh(formattedData);
     }
     
@@ -226,7 +203,6 @@ const fetchMountData = async () => {
 // Fetch scene data from API
 const fetchSceneData = async () => {
   try {
-    console.log('🔄 Fetching scene data from API...');
     const response = await fetch("https://dev.api1.limitless-lighting.co.uk/admin/configurator/scene", {
       method: "GET",
       headers: {
@@ -239,7 +215,6 @@ const fetchSceneData = async () => {
     }
 
     const data = await response.json();
-    console.log('🔄 Raw scene API response:', data);
     const formattedData = Array.isArray(data) ? data : data?.data || [];
     
     // Check if data has changed
@@ -252,17 +227,8 @@ const fetchSceneData = async () => {
     sceneCacheTimestamp = Date.now();
     lastSceneDataHash = newDataHash;
     
-    // Always log the fetch for debugging
-    console.log('🔄 Scene API fetch completed:', {
-      itemCount: formattedData.length,
-      dataChanged,
-      newHash: newDataHash.substring(0, 10) + '...',
-      oldHash: lastSceneDataHash ? lastSceneDataHash.substring(0, 10) + '...' : 'none'
-    });
-    
     // Notify subscribers if data changed OR if this is the first load
     if (dataChanged || !lastSceneDataHash) {
-      console.log('🔄 Scene API data updated, notifying components...');
       notifySceneDataRefresh(formattedData);
     }
     
@@ -282,11 +248,8 @@ const startPolling = () => {
       await fetchMountData();
       await fetchSceneData();
     } catch (error) {
-      console.error('Polling error:', error);
     }
   }, POLL_INTERVAL);
-  
-  console.log('🔄 Started API polling every 30 seconds');
 };
 
 // Stop periodic polling
@@ -294,7 +257,6 @@ const stopPolling = () => {
   if (pollTimer) {
     clearInterval(pollTimer);
     pollTimer = null;
-    console.log('⏹️ Stopped API polling');
   }
 };
 
@@ -302,14 +264,12 @@ const stopPolling = () => {
 if (typeof document !== 'undefined') {
   document.addEventListener('visibilitychange', async () => {
     if (!document.hidden) {
-      console.log('🔄 Page became visible, refreshing data...');
       await refreshSystemAssignments();
     }
   });
 
   // Auto-refresh on window focus
   window.addEventListener('focus', async () => {
-    console.log('🔄 Window focused, refreshing data...');
     await refreshSystemAssignments();
   });
 
@@ -318,17 +278,14 @@ if (typeof document !== 'undefined') {
   
   // Initialize global store with initial fetch
   fetchSystemAssignments().catch(error => {
-    console.error('Error initializing system assignments:', error);
   });
   
   // Initialize mount data
   fetchMountData().catch(error => {
-    console.error('Error initializing mount data:', error);
   });
   
   // Initialize scene data
   fetchSceneData().catch(error => {
-    console.error('Error initializing scene data:', error);
   });
 }
 
@@ -350,7 +307,6 @@ export const getSystemAssignments = async () => {
   // Check if we have cached data and it's still valid
   if (cachedSystemAssignments && cacheTimestamp && (Date.now() - cacheTimestamp < CACHE_DURATION)) {
     assignments = cachedSystemAssignments;
-    console.log('🔄 Using cached system assignments (configurator - visible only)');
   } else {
     // Fetch fresh data
     assignments = await fetchSystemAssignments();
@@ -366,7 +322,6 @@ export const getAllSystemAssignments = async () => {
   // Check if we have cached data and it's still valid
   if (cachedSystemAssignments && cacheTimestamp && (Date.now() - cacheTimestamp < CACHE_DURATION)) {
     assignments = cachedSystemAssignments;
-    console.log('🔄 Using cached system assignments (dashboard - all items)');
   } else {
     // Fetch fresh data
     assignments = await fetchSystemAssignments();
@@ -444,14 +399,6 @@ const updateReactiveExports = (newData) => {
   _barAssignments = newData.filter(a => a.isSystem && a.systemType === "bar");
   _universalAssignments = newData.filter(a => a.isSystem && a.systemType === "universal");
   _chandelierAssignments = newData.filter(a => a.isSystem && a.systemType === "chandelier");
-  
-  console.log('🔄 Updated reactive exports:', {
-    pendants: _pendantAssignments.length,
-    balls: _ballAssignments.length,
-    bars: _barAssignments.length,
-    universals: _universalAssignments.length,
-    chandeliers: _chandelierAssignments.length
-  });
 };
 
 // Subscribe to data changes to update reactive exports
@@ -502,7 +449,6 @@ export const chandelierBaseIds = chandelierAssignments.map(a => a.design);
 
 // Refresh cache function with enhanced capabilities
 export const refreshSystemAssignments = async () => {
-  console.log('🔄 Manually refreshing system assignments...');
   cachedSystemAssignments = null;
   cacheTimestamp = null;
   return await getSystemAssignments();
@@ -510,7 +456,6 @@ export const refreshSystemAssignments = async () => {
 
 // Force refresh (ignores cache completely)
 export const forceRefreshSystemAssignments = async () => {
-  console.log('🔄 Force refreshing system assignments...');
   cachedSystemAssignments = null;
   cacheTimestamp = null;
   lastDataHash = null;
@@ -519,22 +464,10 @@ export const forceRefreshSystemAssignments = async () => {
 
 // Debug function to manually trigger refresh and see current data
 export const debugCurrentData = async () => {
-  console.log('🔍 Debug: Current cached data:', {
-    hasCachedData: !!cachedSystemAssignments,
-    cacheAge: cacheTimestamp ? Date.now() - cacheTimestamp : 'no cache',
-    itemCount: cachedSystemAssignments?.length || 0,
-    lastHash: lastDataHash?.substring(0, 10) + '...' || 'none'
-  });
-  
-  console.log('🔍 Debug: Forcing fresh API call...');
   const freshData = await forceRefreshSystemAssignments();
-  console.log('🔍 Debug: Fresh data received:', {
-    itemCount: freshData.length,
-    items: freshData.map(item => ({ id: item.id, design: item.design, isShow: item.isShow }))
-  });
-  
   return freshData;
 };
+
 // Manual polling controls
 export const startDataPolling = startPolling;
 export const stopDataPolling = stopPolling;
@@ -558,7 +491,6 @@ export const getMountData = async () => {
   // Check if we have cached data and it's still valid
   if (cachedMountData && mountCacheTimestamp && (Date.now() - mountCacheTimestamp < CACHE_DURATION)) {
     mountData = cachedMountData;
-    console.log('Using cached mount data');
   } else {
     // Fetch fresh data
     mountData = await fetchMountData();
@@ -587,7 +519,6 @@ export const getMountsByCableNumber = async (cableNumber) => {
 
 // Refresh mount data cache
 export const refreshMountData = async () => {
-  console.log('Manually refreshing mount data...');
   cachedMountData = null;
   mountCacheTimestamp = null;
   return await getMountData();
@@ -595,7 +526,6 @@ export const refreshMountData = async () => {
 
 // Force refresh mount data (ignores cache completely)
 export const forceRefreshMountData = async () => {
-  console.log('Force refreshing mount data...');
   cachedMountData = null;
   mountCacheTimestamp = null;
   lastMountDataHash = null;
@@ -621,7 +551,6 @@ export const getSceneData = async () => {
   // Check if we have cached data and it's still valid
   if (cachedSceneData && sceneCacheTimestamp && (Date.now() - sceneCacheTimestamp < CACHE_DURATION)) {
     sceneData = cachedSceneData;
-    console.log('🔄 Using cached scene data');
   } else {
     // Fetch fresh data
     sceneData = await fetchSceneData();
@@ -637,7 +566,6 @@ export const getAllSceneData = async () => {
   // Check if we have cached data and it's still valid
   if (cachedSceneData && sceneCacheTimestamp && (Date.now() - sceneCacheTimestamp < CACHE_DURATION)) {
     sceneData = cachedSceneData;
-    console.log('🔄 Using cached scene data (dashboard - all items)');
   } else {
     // Fetch fresh data
     sceneData = await fetchSceneData();
@@ -649,7 +577,6 @@ export const getAllSceneData = async () => {
 
 // Refresh scene data cache function
 export const refreshSceneData = async () => {
-  console.log('🔄 Manually refreshing scene data...');
   cachedSceneData = null;
   sceneCacheTimestamp = null;
   return await getSceneData();
@@ -657,7 +584,6 @@ export const refreshSceneData = async () => {
 
 // Force refresh scene data (ignores cache completely)
 export const forceRefreshSceneData = async () => {
-  console.log('🔄 Force refreshing scene data...');
   cachedSceneData = null;
   sceneCacheTimestamp = null;
   lastSceneDataHash = null;
