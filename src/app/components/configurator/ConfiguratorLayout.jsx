@@ -199,6 +199,7 @@ const ConfiguratorLayout = () => {
   //     // Do something with the message, e.g. open UI, update state, etc.
   //     setCableMessage(message);
   //   });
+  //fdsafds
   //   return cleanup;
   // }, []);
 
