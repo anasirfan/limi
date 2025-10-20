@@ -28,7 +28,7 @@ import { ConfigPanel } from './navComponents/ConfigPanel';
 import MobileBottomMenu from './navComponents/MobileBottomMenu';
 import BaseColorPanel from "./navComponents/BaseColorPanel";
 import { ProgressIndicator } from './navComponents/ProgressIndicator';
-import SaveConfigurationModal from './navComponents/SaveConfigurationModal';
+import { SaveConfigurationModal } from './navComponents/SaveConfigurationModal';
 import { useNavSteps } from './navComponents/useNavSteps';
 import { useNavDropdown } from './navComponents/useNavDropdown';
 import { usePendantSelection } from './navComponents/usePendantSelection';
