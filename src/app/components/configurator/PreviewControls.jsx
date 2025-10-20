@@ -118,11 +118,14 @@ export const PreviewControls = ({
   }, []);
 
   useEffect(() => {
-    dispatch(fetchFavorites()).then((action) => {
-      if (action.payload) {
-        dispatch(syncFavoritesWithSystemAssignments(action.payload));
-      }
-    });
+    const token = localStorage.getItem("limiToken");
+    if (token) {
+      dispatch(fetchFavorites()).then((action) => {
+        if (action.payload) {
+          dispatch(syncFavoritesWithSystemAssignments(action.payload));
+        }
+      });
+    }
   }, [dispatch]);
 
   // --- Replace your current brightness useEffect with this ---
