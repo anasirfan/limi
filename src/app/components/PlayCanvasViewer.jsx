@@ -38,7 +38,7 @@ const PlayCanvasViewer = ({
   useEffect(() => {
     const handleMessage = (event) => {
       // Check if the message is from our iframe
-      if (event.data === 'loadingOff') {
+      if (event.data === 'loadingOffMount') {
         setAppReady(true);     
         setIsLoading(false);
         // Send default selections after app is ready
