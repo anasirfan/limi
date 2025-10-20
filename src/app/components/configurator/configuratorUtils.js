@@ -254,6 +254,7 @@ export const sendMessagesForDesignOnReload = (designName, id) => {
     if (assignment.systemType === "chandelier") {
       sendMessageToPlayCanvas(`chandelier_clearance`);
       sendMessageToPlayCanvas(`height_set`);
+      wasChandelier = true;
     }else{
       sendMessageToPlayCanvas('unequal_cable');
     }
