@@ -193,14 +193,14 @@ const ConfiguratorLayout = () => {
     saveToLocalStorage("lightCables", cables);
   }, [config, cables]);
 
-  useEffect(() => {
-    // Set up cable message listener
-    const cleanup = listenForCableMessages((message, event) => {
-      // Do something with the message, e.g. open UI, update state, etc.
-      setCableMessage(message);
-    });
-    return cleanup;
-  }, []);
+  // useEffect(() => {
+  //   // Set up cable message listener
+  //   const cleanup = listenForCableMessages((message, event) => {
+  //     // Do something with the message, e.g. open UI, update state, etc.
+  //     setCableMessage(message);
+  //   });
+  //   return cleanup;
+  // }, []);
 
   useEffect(() => {
     // Set up cable message listener
@@ -218,14 +218,7 @@ const ConfiguratorLayout = () => {
   // Handler for selected cable messages
   useEffect(() => {
     const cleanup = listenForSelectedCableMessages((message) => {
-      console.log("🔍 Raw selected cable message:", message);
-      console.log("🔍 Message type:", typeof message);
-      console.log("🔍 Message length:", message.length);
-      
       const uniqueOrdered = processSelectedCableMessage(message);
-      console.log("🔍 Processed result:", uniqueOrdered);
-      console.log("🔍 Result type:", typeof uniqueOrdered);
-      console.log("🔍 Result is array:", Array.isArray(uniqueOrdered));
       
       // Save to state
       setConfig((prev) => ({
@@ -635,8 +628,7 @@ const ConfiguratorLayout = () => {
 
   // Handle light amount change
   const handleLightAmountChange = (amount) => {
-    console.log("🔄 handleLightAmountChange called with amount:", amount);
-    console.log("🔄 Current selectedPendants:", config.selectedPendants);
+
     
     // Update the appropriate saved light amount based on current configuration
     if (config.lightType === "ceiling") {
@@ -655,7 +647,7 @@ const ConfiguratorLayout = () => {
       amount
     );
     
-    console.log("🔄 Filtered selectedPendants:", filteredSelectedPendants);
+    
 
     setConfig((prev) => ({
       ...prev,
@@ -870,7 +862,6 @@ const ConfiguratorLayout = () => {
     // Search through each mount object for matching base type
     let matchingMount;
     const baseMounts = mounts.filter((mount) => mount.mountBaseType === baseType);
-    console.log("baseMounts", baseMounts);
 
     if (baseType === "round") {
       // For round base type, find mount with mountCableNumber == 1
@@ -878,7 +869,6 @@ const ConfiguratorLayout = () => {
     } else if (baseType === "rectangular") {
       // For rectangular base type, find mount with mountCableNumber == 3
       matchingMount = baseMounts.find((mount) => mount.mountCableNumber === 3);
-      console.log("matchingMount", matchingMount);
     }
 
     if (matchingMount && (matchingMount.mountModel || matchingMount.modelUrl)) {

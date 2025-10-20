@@ -148,14 +148,7 @@ export const ConfigPanel = ({
       setUniversalAssignments(universalData);
       setChandelierAssignments(chandelierData);
       
-      console.log('🔄 ConfigPanel: Data loaded successfully', {
-        systemItems: systemData.length,
-        pendantItems: pendantData.length,
-        barItems: barData.length,
-        ballItems: ballData.length,
-        universalItems: universalData.length,
-        chandelierItems: chandelierData.length
-      });
+    
       
     } catch (error) {
       console.error('Error loading configurator data:', error);
@@ -211,7 +204,6 @@ export const ConfigPanel = ({
   // Subscribe to data refresh events to reload configurator data
   useEffect(() => {
     const unsubscribe = onDataRefresh((newData) => {
-      console.log('🔄 ConfigPanel: Data refreshed, reloading configurator data');
       setDataRefreshTrigger(prev => prev + 1);
       // Reload all configurator data to get only visible items
       loadConfiguratorData();
@@ -893,10 +885,6 @@ export const ConfigPanel = ({
 
          
           if (systemType === "bar") {
-            console.log(
-              "Firing bar messages for selectedPendants:",
-              selectedPendants
-            );
 
             // Check each cable individually and fire messages conditionally
             if (cables && cables.length > 0) {
@@ -920,9 +908,7 @@ export const ConfigPanel = ({
                         "product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/Bar_1756732230450.glb"
                       );
                     }
-                  } else {
-                    console.log(`Skipping messages for cable ${index} - already has bar system design: ${cable.design}`);
-                  }
+                  } 
                 }
               });
               sendMessageToPlayCanvas("allmodelsloaded");

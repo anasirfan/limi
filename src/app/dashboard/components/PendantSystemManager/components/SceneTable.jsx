@@ -13,14 +13,11 @@ export default function SceneTable({
   const [showModelViewer, setShowModelViewer] = useState(false);
 
   const handleViewModel = (scene) => {
-    console.log('🔍 Opening model viewer for scene:', scene);
-    console.log('🔍 Scene model URL:', scene.sceneModel);
     setSelectedScene(scene);
     setShowModelViewer(true);
   };
 
   const handleCloseViewer = () => {
-    console.log('🔍 Closing model viewer');
     setShowModelViewer(false);
     setSelectedScene(null);
   };
@@ -135,11 +132,6 @@ export default function SceneTable({
         {/* Model Viewer Modal */}
         {selectedScene && (
           <>
-            {console.log('🔍 Rendering ModelViewer3D (Grid):', { 
-              selectedScene: selectedScene?.sceneName, 
-              showModelViewer, 
-              modelUrl: selectedScene?.sceneModel 
-            })}
             <ModelViewer3D
               modelUrl={selectedScene.sceneModel}
               modelName={`${selectedScene.sceneName} - 3D Model`}
@@ -263,11 +255,6 @@ export default function SceneTable({
       {/* Model Viewer Modal */}
       {selectedScene && (
         <>
-          {console.log('🔍 Rendering ModelViewer3D:', { 
-            selectedScene: selectedScene?.sceneName, 
-            showModelViewer, 
-            modelUrl: selectedScene?.sceneModel 
-          })}
           <ModelViewer3D
             modelUrl={selectedScene.sceneModel}
             modelName={`${selectedScene.sceneName} - 3D Model`}
