@@ -443,7 +443,7 @@ const ConfiguratorLayout = () => {
   };
   useEffect(() => {
     const handleMessageLoad = (event) => {
-      if (event.data === "loadingOff") {
+      if (event.data === "loadingOffMount") {
         setIsLoading(false);
       }
     };
