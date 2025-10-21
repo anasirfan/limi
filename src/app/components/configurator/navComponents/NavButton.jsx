@@ -10,6 +10,7 @@ import {
   FaCubes,
   FaPalette 
 } from "react-icons/fa";
+import { FiHome } from "react-icons/fi";
 
 // Function to get React icon based on step ID
 const getStepIcon = (stepId) => {
@@ -23,7 +24,7 @@ const getStepIcon = (stepId) => {
     systemConfiguration: FaObjectGroup
   };
   
-  const IconComponent = iconMap[stepId] || FaList;
+  const IconComponent = iconMap[stepId] || FiHome;
   return <IconComponent size={24} />;
 };
 

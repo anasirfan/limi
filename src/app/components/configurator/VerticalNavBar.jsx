@@ -832,6 +832,14 @@ const VerticalNavBar = ({
                   return false;
                 }
 
+                // Hide environment button for wall and floor light types
+                if (
+                  step.id === "environment" &&
+                  (config.lightType === "wall" || config.lightType === "floor")
+                ) {
+                  return false;
+                }
+
                 return true;
               })
               .map((step, index) => (
