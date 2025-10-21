@@ -9,7 +9,8 @@ export const LightAmountDropdown = ({
   setActiveStep, 
   setOpenDropdown,
   tourActive,
-  onTourSelection
+  onTourSelection,
+  setShowLoadingScreen
 }) => {
   const carouselRef = useRef(null);
   const [isMobile, setIsMobile] = useState(false);
@@ -62,6 +63,16 @@ export const LightAmountDropdown = ({
       key={amount}
       className={`flex-shrink-0 flex flex-col items-center ${config.lightAmount === amount ? 'text-emerald-500' : 'text-gray-300 hover:text-white'}`}
       onClick={() => {
+        console.log('🎯 LightAmountDropdown - Button clicked for amount:', amount);
+        
+        // Show loading screen
+        if (setShowLoadingScreen) {
+          console.log('✅ LightAmountDropdown - Showing loading screen');
+          setShowLoadingScreen(true);
+        } else {
+          console.log('❌ LightAmountDropdown - setShowLoadingScreen not available');
+        }
+        
         // If tour is active, call tour selection handler
         if (tourActive && onTourSelection) {
           onTourSelection('lightAmount', amount);
@@ -71,6 +82,15 @@ export const LightAmountDropdown = ({
         // Always go to pendant selection next
         setActiveStep('pendantSelection');
         setOpenDropdown(null);
+        
+        // Hide loading screen after 3 seconds
+        if (setShowLoadingScreen) {
+          console.log('⏰ LightAmountDropdown - Setting timeout to hide loading screen in 3s');
+          setTimeout(() => {
+            console.log('🔚 LightAmountDropdown - Hiding loading screen');
+            setShowLoadingScreen(false);
+          }, 3000);
+        }
       }}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}

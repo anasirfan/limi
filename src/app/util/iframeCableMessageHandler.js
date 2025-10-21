@@ -126,3 +126,15 @@ export function listenForLoadingMessages(callback) {
   // Return cleanup
   return () => window.removeEventListener("message", handleMessage);
 }
+
+// Listen for loadingOffMount messages
+export function listenForLoadingOffMountMessages(callback) {
+  function handleMessage(event) {
+    if (typeof event.data === "string" && event.data === "loadingOffMount") {
+      callback(event.data, event);
+    }
+  }
+  window.addEventListener("message", handleMessage);
+  // Return cleanup
+  return () => window.removeEventListener("message", handleMessage);
+}

@@ -26,7 +26,8 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { listenForAppReady1 } from "../../util/iframeCableMessageHandler";
 import { systemAssignments } from "./pendantSystemData";
-import { listenForOffconfigMessages, listenForLoadingMessages } from "../../util/iframeCableMessageHandler";
+import { listenForOffconfigMessages, listenForLoadingMessages, listenForLoadingOffMountMessages } from "../../util/iframeCableMessageHandler";
+import LoadingScreen from "./LoadingScreen";
 
 export const PreviewControls = ({
   isPreviewMode,
@@ -43,7 +44,6 @@ export const PreviewControls = ({
   selectedPendants,
   selectedLocation,
   cableMessage,
-
   brightness,
   setBrightness,
   colorTemperature,
@@ -52,8 +52,14 @@ export const PreviewControls = ({
   lighting,
   setLighting,
   setCables,
+  showLoadingScreen,
+  setShowLoadingScreen,
   onStartTour, // Add tour callback prop
 }) => {
+  // Debug loading screen prop changes
+  useEffect(() => {
+    console.log('📱 PreviewControls - showLoadingScreen prop changed:', showLoadingScreen);
+  }, [showLoadingScreen]);
   const [isMobile, setIsMobile] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [showWishlistModal, setShowWishlistModal] = useState(false);
@@ -103,6 +109,17 @@ export const PreviewControls = ({
     });
     return cleanup;
   }, [cableMessage]);
+
+  // Listen for loadingOffMount message to hide loading screen
+  useEffect(() => {
+    const cleanup = listenForLoadingOffMountMessages((data, event) => {
+      console.log('🔚 PreviewControls - Received loadingOffMount event, hiding loading screen');
+      if (setShowLoadingScreen) {
+        setShowLoadingScreen(false);
+      }
+    });
+    return cleanup;
+  }, [setShowLoadingScreen]);
 
   const guideRef = useRef(null);
 
@@ -928,6 +945,9 @@ export const PreviewControls = ({
           }
         }
       `}</style>
+
+      {/* Loading Screen */}
+      <LoadingScreen isVisible={showLoadingScreen} />
     </div>
   );
 };

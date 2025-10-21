@@ -123,6 +123,12 @@ const ConfiguratorLayout = () => {
   const [isLightingPanelOpen, setIsLightingPanelOpen] = useState(false);
   const [showPendantLoadingScreen, setShowPendantLoadingScreen] =
     useState(false);
+  const [showLoadingScreen, setShowLoadingScreen] = useState(false);
+
+  // Debug loading screen state changes
+  useEffect(() => {
+    console.log('🔄 ConfiguratorLayout - showLoadingScreen changed:', showLoadingScreen);
+  }, [showLoadingScreen]);
 
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
@@ -220,7 +226,7 @@ const ConfiguratorLayout = () => {
   useEffect(() => {
     const cleanup = listenForSelectedCableMessages((message) => {
       const uniqueOrdered = processSelectedCableMessage(message);
-      
+
       // Save to state
       setConfig((prev) => ({
         ...prev,
@@ -469,6 +475,19 @@ const ConfiguratorLayout = () => {
             sendMessageToPlayCanvas(`mount_model:${savedConfig.mountUrl}`)
           // sendMessageToPlayCanvas(`light_amount:${savedConfig.lightAmount}`),
 
+          sendMessageToPlayCanvas(
+            `lighting:${savedConfig.lighting ? "on" : "off"}`
+          );
+
+          if (savedConfig.lighting == "on") {
+            sendMessageToPlayCanvas(`brightness:${savedConfig.brightness}`),
+              sendMessageToPlayCanvas(
+                "colorTemperature:" +
+                Math.round(
+                  2700 + (savedConfig.colorTemperature / 100) * (6500 - 2700)
+                )
+              );
+          }
           sendMessageToPlayCanvas(`base_color:${savedConfig.baseColor}`);
           savedCables.forEach((cable, index) => {
             const system = systemAssignments.find(
@@ -503,19 +522,6 @@ const ConfiguratorLayout = () => {
           // sendMessagesForDesign("fina", 0);
           // Send lighting messages with delays
 
-          sendMessageToPlayCanvas(
-            `lighting:${savedConfig.lighting ? "on" : "off"}`
-          );
-
-          if (savedConfig.lighting == "on") {
-            sendMessageToPlayCanvas(`brightness:${savedConfig.brightness}`),
-              sendMessageToPlayCanvas(
-                "colorTemperature:" +
-                Math.round(
-                  2700 + (savedConfig.colorTemperature / 100) * (6500 - 2700)
-                )
-              );
-          }
         }
 
         // If we have a configuration from URL, load it now
@@ -530,20 +536,30 @@ const ConfiguratorLayout = () => {
     return () => window.removeEventListener("message", handleMessage);
   }, [configFromUrl, handleLoadSpecificConfig]); // Added handleLoadSpecificConfig to dependencies
 
+   // Handle light type change
   // Handle light type change
   const handleLightTypeChange = (type) => {
     // Save current ceiling light amount if switching from ceiling
     if (config.lightType === "ceiling" && type !== "ceiling") {
       setLastCeilingLightAmount(config.lightAmount);
+      
     }
     const mounts = getMountDataSync();
 
     // Search through each mount object for matching light type
     let matchingMount;
     if (type === "ceiling") {
-      // For ceiling type, find all matching mounts and filter for mountCableNumber == 1
-      const ceilingMounts = mounts.filter((mount) => mount.mountLightType === type);
-      matchingMount = ceilingMounts.find((mount) => mount.mountCableNumber === 1);
+      // For ceiling type, find all matching mounts and filter based on baseType
+      
+      
+      if (config.baseType === "round") {
+        const ceilingMounts = mounts.filter((mount) => mount.mountLightType === type);
+        
+        matchingMount = ceilingMounts.find((mount) => mount.mountCableNumber === lastCeilingLightAmount &&  mount.mountBaseType === "round");
+      } else if (config.baseType === "rectangular") {
+        const ceilingMounts = mounts.filter((mount) => mount.mountLightType === type);
+        matchingMount = ceilingMounts.find((mount) => mount.mountCableNumber === lastCeilingLightAmount  &&  mount.mountBaseType === "rectangular");
+      }
 
     } else {
       // For other types, use the original logic
@@ -561,30 +577,21 @@ const ConfiguratorLayout = () => {
     if (matchingMount && (matchingMount.mountModel || matchingMount.modelUrl)) {
       const modelUrl = matchingMount.modelUrl || matchingMount.mountModel;
       
-      // Set specific light amounts based on type
-      let lightAmount;
-      if (type === "ceiling") {
-        lightAmount = 1;
-      } else if (type === "floor") {
-        lightAmount = 3;
-      } else if (type === "wall") {
-        lightAmount = 1;
-      } else {
-        lightAmount = newAmount; // fallback to calculated amount
-      }
-      
+     
       // Send light type message
       sendMessageToPlayCanvas(`light_type:${type}`);
-      // Send light amount message
-      sendMessageToPlayCanvas(`light_amount:${lightAmount}`);
+      if (type === "ceiling") {
+        sendMessageToPlayCanvas(`base_type:${config.baseType}`);
+      }
+      sendMessageToPlayCanvas(`light_amount:${newAmount}`);
       sendMessageToPlayCanvas(`mount_model:${modelUrl}`);
+
       setConfig((prev) => ({
         ...prev,
         mountUrl: modelUrl,
       }));
 
     }
- 
     setConfig((prev) => ({
       ...prev,
       lightType: type,
@@ -596,28 +603,16 @@ const ConfiguratorLayout = () => {
       setCables((prev) => [
         ...prev,
         {
-          isSystem: false,
-          systemType: "",
-          design: pendant.design,
-          designId: pendant.message,
-          hasGlass: pendant.hasGlass,
-          hasGold: pendant.hasGold,
-          hasSilver: pendant.hasSilver,
-          modelUrl: pendant.modelUrl,
-        },
+          design: pendant.design,  
+       },
       ]);
     });
-
-    // Send messages to iframe
-
-
-    //hotspot off
-    sendMessageToPlayCanvas(`hotspot:'off'`);
 
     newPendants.forEach((pendant, index) => {
       sendMessagesForDesign(pendant.design, index);
     });
   };
+
 
   // Handle configuration type change
   const handleConfigurationTypeChange = useCallback((type) => {
@@ -630,7 +625,7 @@ const ConfiguratorLayout = () => {
   // Handle light amount change
   const handleLightAmountChange = (amount) => {
 
-    
+
     // Update the appropriate saved light amount based on current configuration
     if (config.lightType === "ceiling") {
       setLastCeilingLightAmount(amount);
@@ -647,8 +642,8 @@ const ConfiguratorLayout = () => {
       config.selectedPendants,
       amount
     );
-    
-    
+
+
 
     setConfig((prev) => ({
       ...prev,
@@ -1279,6 +1274,8 @@ const ConfiguratorLayout = () => {
           cableMessage={cableMessage}
           showPendantLoadingScreen={showPendantLoadingScreen}
           setShowPendantLoadingScreen={setShowPendantLoadingScreen}
+          showLoadingScreen={showLoadingScreen}
+          setShowLoadingScreen={setShowLoadingScreen}
           onStartTour={() => {
             if (typeof window !== "undefined" && window.startConfiguratorTour) {
               window.startConfiguratorTour();
@@ -1332,6 +1329,7 @@ const ConfiguratorLayout = () => {
               setCableMessage={setCableMessage}
               sendMessageToPlayCanvas={sendMessageToPlayCanvas}
               setShowPendantLoadingScreen={setShowPendantLoadingScreen}
+              setShowLoadingScreen={setShowLoadingScreen}
             />
           )}
 

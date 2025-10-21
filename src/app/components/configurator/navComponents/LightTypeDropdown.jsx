@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 
-export const LightTypeDropdown = ({ config, onLightTypeChange, setActiveStep, setOpenDropdown, tourActive, onTourSelection }) => {
+export const LightTypeDropdown = ({ config, onLightTypeChange, setActiveStep, setOpenDropdown, tourActive, onTourSelection, setShowLoadingScreen }) => {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -35,6 +35,16 @@ export const LightTypeDropdown = ({ config, onLightTypeChange, setActiveStep, se
               key={type}
               className={`rounded-lg overflow-hidden ${config.lightType === type ? 'ring-2 ring-emerald-500 ring-offset-1 ring-offset-gray-800' : 'hover:ring-1 hover:ring-gray-400'}`}
               onClick={() => {
+                console.log('🎯 LightTypeDropdown - Button clicked for type:', type);
+                
+                // Show loading screen
+                if (setShowLoadingScreen) {
+                  console.log('✅ LightTypeDropdown - Showing loading screen');
+                  setShowLoadingScreen(true);
+                } else {
+                  console.log('❌ LightTypeDropdown - setShowLoadingScreen not available');
+                }
+                
                 // If tour is active, call tour selection handler
                 if (tourActive && onTourSelection) {
                   onTourSelection('lightType', type);
@@ -43,6 +53,15 @@ export const LightTypeDropdown = ({ config, onLightTypeChange, setActiveStep, se
                 onLightTypeChange(type);
                 // Don't automatically switch to next tab
                 setOpenDropdown(null);
+                
+                // Hide loading screen after 3 seconds
+                if (setShowLoadingScreen) {
+                  console.log('⏰ LightTypeDropdown - Setting timeout to hide loading screen in 3s');
+                  setTimeout(() => {
+                    console.log('🔚 LightTypeDropdown - Hiding loading screen');
+                    setShowLoadingScreen(false);
+                  }, 3000);
+                }
               }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}

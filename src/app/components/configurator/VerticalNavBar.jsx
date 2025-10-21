@@ -79,7 +79,12 @@ const VerticalNavBar = ({
   onShadeSelect, // Add onShadeSelect prop
   sendMessageToPlayCanvas, // Add sendMessageToPlayCanvas prop
   setShowPendantLoadingScreen, // Add setShowPendantLoadingScreen prop
+  setShowLoadingScreen, // Add setShowLoadingScreen prop
 }) => {
+  // Debug loading screen prop
+  useEffect(() => {
+    console.log('🔗 VerticalNavBar - setShowLoadingScreen prop received:', !!setShowLoadingScreen);
+  }, [setShowLoadingScreen]);
   // Define colors from LIMI brand palette
   const emerald = "#50C878";
   const charlestonGreen = "#2B2D2F";
@@ -856,6 +861,7 @@ const VerticalNavBar = ({
                         setOpenDropdown={setOpenDropdown}
                         tourActive={tourState.isActive}
                         onTourSelection={handleTourSubSelection}
+                        setShowLoadingScreen={setShowLoadingScreen}
                       />
                     )}
 
@@ -879,6 +885,7 @@ const VerticalNavBar = ({
                         setOpenDropdown={setOpenDropdown}
                         tourActive={tourState.isActive}
                         onTourSelection={handleTourSubSelection}
+                        setShowLoadingScreen={setShowLoadingScreen}
                       />
                     )}
 
@@ -915,6 +922,7 @@ const VerticalNavBar = ({
                           setOpenDropdown={setOpenDropdown}
                           tourActive={tourState.isActive}
                           onTourSelection={handleTourSubSelection}
+                          setShowLoadingScreen={setShowLoadingScreen}
                         />
                       )}
 
