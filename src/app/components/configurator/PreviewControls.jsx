@@ -28,6 +28,7 @@ import { listenForAppReady1 } from "../../util/iframeCableMessageHandler";
 import { systemAssignments } from "./pendantSystemData";
 import { listenForOffconfigMessages, listenForLoadingMessages, listenForLoadingOffMountMessages } from "../../util/iframeCableMessageHandler";
 import LoadingScreen from "./LoadingScreen";
+import PendantLengthOverlay from "./PendantLengthOverlay";
 
 export const PreviewControls = ({
   isPreviewMode,
@@ -66,6 +67,9 @@ export const PreviewControls = ({
   const [currentSlide, setCurrentSlide] = useState(0);
   const [slidesToShow] = useState(3); // Number of items to show at once
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showPendantLengthOverlay, setShowPendantLengthOverlay] = useState(false);
+  const [showClickAnimation, setShowClickAnimation] = useState(false);
+  const [showSwipeAnimation, setShowSwipeAnimation] = useState(false);
   const brightnessDebounceTimeout = useRef();
   const colorTempDebounceTimeout = useRef();
   const prevLightingPanelWasOpenRef = useRef(false);
@@ -91,6 +95,24 @@ export const PreviewControls = ({
       setTimeout(() => setShowOnboarding(false), 5000);
     });
     return cleanup;
+  }, []);
+
+  // Function to trigger click animation
+  const triggerClickAnimation = () => {
+    setShowClickAnimation(true);
+    setTimeout(() => setShowClickAnimation(false), 5000);
+  };
+
+  // Function to trigger swipe animation
+  const triggerSwipeAnimation = () => {
+    setShowSwipeAnimation(true);
+    setTimeout(() => setShowSwipeAnimation(false), 5000);
+  };
+
+  // Auto-trigger click animation on component mount (optional)
+  useEffect(() => {
+    // Uncomment the line below if you want the animation to show automatically
+    // triggerClickAnimation();
   }, []);
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -640,6 +662,39 @@ export const PreviewControls = ({
           <FaRoute size={16} />
         </motion.button>
 
+        {/* Pendant Length Overlay Button */}
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="p-2 rounded-full bg-amber-600 text-white hover:bg-amber-700 transition-all shadow-lg"
+          onClick={() => setShowPendantLengthOverlay(true)}
+          title="Adjust Pendant Length"
+        >
+          <FaArrowsAlt size={16} />
+        </motion.button>
+
+        {/* Click Animation Button */}
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="p-2 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-all shadow-lg"
+          onClick={triggerClickAnimation}
+          title="Show Click Animation"
+        >
+          <FaMousePointer size={16} />
+        </motion.button>
+
+        {/* Swipe Animation Button */}
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="p-2 rounded-full bg-purple-600 text-white hover:bg-purple-700 transition-all shadow-lg"
+          onClick={triggerSwipeAnimation}
+          title="Show Swipe Animation"
+        >
+          <FaHandPaper size={16} />
+        </motion.button>
+
         {/* Wishlist Button - Desktop Only */}
         <div className="relative hidden sm:block" ref={wishlistRef}>
           <button
@@ -948,6 +1003,93 @@ export const PreviewControls = ({
 
       {/* Loading Screen */}
       <LoadingScreen isVisible={showLoadingScreen} />
+
+      {/* Pendant Length Overlay */}
+      <PendantLengthOverlay 
+        isVisible={showPendantLengthOverlay} 
+        onClose={() => setShowPendantLengthOverlay(false)} 
+      />
+
+      {/* Click Animation GIF */}
+      {showClickAnimation && (
+        <div className="fixed inset-0 z-50 flex justify-center pointer-events-none" style={{ alignItems: 'flex-start', paddingTop: '46vh' }}>
+          <div className="relative">
+            <Image
+              src="/svg/click.gif"
+              alt="Click Animation"
+              width={200}
+              height={200}
+              className="animate-pulse"
+              style={{
+                animation: 'clickAnimation 5s ease-in-out forwards'
+              }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Swipe Animation GIF */}
+      {showSwipeAnimation && (
+        <div className="fixed inset-0 z-50 flex justify-center pointer-events-none" style={{ alignItems: 'flex-start', paddingTop: '46vh' }}>
+          <div className="relative">
+            <Image
+              src="/svg/Swipe.gif"
+              alt="Swipe Animation"
+              width={200}
+              height={200}
+              className="animate-pulse"
+              style={{
+                animation: 'swipeAnimation 5s ease-in-out forwards'
+              }}
+            />
+          </div>
+        </div>
+      )}
+
+      <style jsx>{`
+        @keyframes clickAnimation {
+          0% {
+            opacity: 0;
+            transform: scale(0.5);
+          }
+          10% {
+            opacity: 1;
+            transform: scale(1.1);
+          }
+          20% {
+            transform: scale(1);
+          }
+          80% {
+            opacity: 1;
+            transform: scale(1);
+          }
+          100% {
+            opacity: 0;
+            transform: scale(0.8);
+          }
+        }
+        @keyframes swipeAnimation {
+          0% {
+            opacity: 0;
+            transform: scale(0.5) translateX(-20px);
+          }
+          10% {
+            opacity: 1;
+            transform: scale(1.1) translateX(0px);
+          }
+          20% {
+            transform: scale(1) translateX(0px);
+          }
+          80% {
+            opacity: 1;
+            transform: scale(1) translateX(0px);
+          }
+          100% {
+            opacity: 0;
+            transform: scale(0.8) translateX(20px);
+          }
+        }
+      `}</style>
     </div>
   );
 };
