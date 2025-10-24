@@ -61,7 +61,7 @@ const ConfiguratorLayout = () => {
   const searchParams = useSearchParams();
 
   // Version constant to track localStorage schema changes
-  const STORAGE_VERSION = "1.4.1";
+  const STORAGE_VERSION = "1.4.6";
 
   // Clear old localStorage data if version doesn't match
   useEffect(() => {
@@ -80,7 +80,7 @@ const ConfiguratorLayout = () => {
         configurationType: "pendant",
         lightAmount: 1,
         baseColor: "black",
-        mountUrl: "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/singleceilingBase_1760549067675_1760699992781.glb",
+        mountUrl: "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/singleCeiling_1761213647054.glb",
         selectedPendants: [],
         hotspot: "off",
         shades: {},
@@ -158,7 +158,7 @@ const ConfiguratorLayout = () => {
       hotspot: "off",
       shades: {},
       lighting: true,
-      mountUrl: "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/singleceilingBase_1760549067675_1760699992781.glb",
+      mountUrl: "https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/singleCeiling_1761213647054.glb",
       colorTemperature: 50,
       brightness: 50,
     });
