@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { buildApi1Url } from '../../../../config/api.config';
 import { FaColumns, FaVideo, FaLayerGroup,FaExclamationCircle, FaUpload, FaSpinner, FaCheck, FaTimes } from 'react-icons/fa';
 import { getThemeStyles, getThemeBackgroundColor } from './utils/themeUtils';
 
@@ -51,7 +52,7 @@ const EditModal = ({
       const formData = new FormData();
       formData.append('media', file);
       
-      const response = await fetch('https://dev.api1.limitless-lighting.co.uk/admin/slide/upload-media', {
+      const response = await fetch(buildApi1Url('/admin/slide/upload-media'), {
         method: 'POST',
         body: formData,
       });

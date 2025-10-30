@@ -10,6 +10,7 @@ import Footer from '../components/Footer';
 import { FaMapMarkerAlt, FaPhone, FaEnvelope, FaCheck } from 'react-icons/fa';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { buildApi1Url } from '../config/api.config';
 
 export default function ContactUs() {
   const heroRef = useRef(null);
@@ -120,7 +121,7 @@ export default function ContactUs() {
         throw new Error('Please log in to send a message');
       }
       
-      const response = await fetch('https://dev.api1.limitless-lighting.co.uk/client/user/contact', {
+      const response = await fetch(buildApi1Url('/client/user/contact'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

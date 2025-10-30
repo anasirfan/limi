@@ -652,7 +652,7 @@ export const PreviewControls = ({
         </button>
 
         {/* Tour Guide Button */}
-        <motion.button
+        {/* <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           className="p-2 rounded-full bg-emerald-600 text-white hover:bg-emerald-700 transition-all shadow-lg"
@@ -660,10 +660,10 @@ export const PreviewControls = ({
           title="Start Guided Tour"
         >
           <FaRoute size={16} />
-        </motion.button>
+        </motion.button> */}
 
         {/* Pendant Length Overlay Button */}
-        <motion.button
+        {/* <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           className="p-2 rounded-full bg-amber-600 text-white hover:bg-amber-700 transition-all shadow-lg"
@@ -671,10 +671,10 @@ export const PreviewControls = ({
           title="Adjust Pendant Length"
         >
           <FaArrowsAlt size={16} />
-        </motion.button>
+        </motion.button> */}
 
         {/* Click Animation Button */}
-        <motion.button
+        {/* <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           className="p-2 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-all shadow-lg"
@@ -682,10 +682,10 @@ export const PreviewControls = ({
           title="Show Click Animation"
         >
           <FaMousePointer size={16} />
-        </motion.button>
+        </motion.button> */}
 
         {/* Swipe Animation Button */}
-        <motion.button
+        {/* <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           className="p-2 rounded-full bg-purple-600 text-white hover:bg-purple-700 transition-all shadow-lg"
@@ -693,10 +693,10 @@ export const PreviewControls = ({
           title="Show Swipe Animation"
         >
           <FaHandPaper size={16} />
-        </motion.button>
+        </motion.button> */}
 
         {/* Wishlist Button - Desktop Only */}
-        <div className="relative hidden sm:block" ref={wishlistRef}>
+        {/* <div className="relative hidden sm:block" ref={wishlistRef}>
           <button
             className={`p-2 rounded-full ${showWishlistModal
                 ? "bg-rose-500 text-white"
@@ -750,7 +750,6 @@ export const PreviewControls = ({
                   </div>
                 ) : (
                   <div className="relative">
-                    {/* Left Navigation Button */}
                     <button
                       onClick={() => {
                         const container =
@@ -782,7 +781,6 @@ export const PreviewControls = ({
                       }}
                     >
                       {favorites.map((pendant) => {
-                        // Find full pendant/system object from shared data (by id or designId)
                         const assignment = systemAssignments.find(
                           (item) => pendant.id == item.design
                         );
@@ -798,23 +796,11 @@ export const PreviewControls = ({
                               selectedPendants.forEach((idx) => {
                                 const design = assignment.design;
 
-                                //  const hasBarSystem = assignment.systemType === "bar";
-
-                                //  if (hasBarSystem) {
-                                //    sendMessageToPlayCanvas(`cable_${idx}`);
-                                //    sendMessageToPlayCanvas("bars");
-                                //    sendMessageToPlayCanvas("glass_none");
-                                //    sendMessageToPlayCanvas("color_gold");
-                                //    sendMessageToPlayCanvas("silver_none");
-                                //    sendMessageToPlayCanvas(
-                                //      "product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/Bar_1756732230450.glb"
-                                //    );
-                                //  }
+                           
                                 if (!designToIds[design])
                                   designToIds[design] = [];
                                 designToIds[design].push(idx);
                               });
-                              // Call sendMessagesForDesign for each unique design
                               Object.entries(designToIds).forEach(
                                 ([design, ids]) => {
                                   sendMessagesForDesign(
@@ -823,7 +809,6 @@ export const PreviewControls = ({
                                   );
                                 }
                               );
-                              // Update cables for all selected indices
                               setCables((prev) => {
                                 const updatedCables = [...prev];
                                 selectedPendants.forEach((idx) => {
@@ -865,7 +850,6 @@ export const PreviewControls = ({
                                 </button>
                               </div>
                               <p className="text-xs font-medium text-white line-clamp-2 h-8 flex items-center">
-                                {/* Use assignment.design for pendant/system name */}
                                 {assignment ? assignment.design : pendant.name}
                               </p>
                             </div>
@@ -874,7 +858,6 @@ export const PreviewControls = ({
                       })}
                     </div>
 
-                    {/* Right Navigation Button */}
                     <button
                       onClick={() => {
                         const container =
@@ -902,7 +885,7 @@ export const PreviewControls = ({
               </div>
             </div>
           )}
-        </div>
+        </div> */}
 
         <button
           type="button"

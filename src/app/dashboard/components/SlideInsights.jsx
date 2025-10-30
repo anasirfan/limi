@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
+import { buildApi1Url } from '../../../config/api.config';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -55,7 +56,7 @@ export default function SlideInsights({ customerId, slideTimes = [], sessions = 
     setError(null);
     (async () => {
       try {
-        const response = await fetch(`https://dev.api1.limitless-lighting.co.uk/client/user/slide_shows/analytics?customerId=${customerId}`);
+        const response = await fetch(buildApi1Url(`/client/user/slide_shows/analytics?customerId=${customerId}`));
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }

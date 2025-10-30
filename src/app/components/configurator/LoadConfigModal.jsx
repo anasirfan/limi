@@ -1,5 +1,7 @@
 "use client";
+
 import { useState, useEffect } from 'react';
+import { buildApi1Url } from '../../config/api.config';
 import { motion } from 'framer-motion';
 import { FaTimes, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
@@ -39,7 +41,7 @@ export const LoadConfigModal = ({
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch('https://dev.api1.limitless-lighting.co.uk/admin/products/users/light-configs', {
+      const response = await fetch(buildApi1Url('/admin/products/users/light-configs'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -62,7 +64,7 @@ export const LoadConfigModal = ({
 
   const handleLoadConfig = async (configId) => {
     try {
-      const response = await fetch(`https://dev.api1.limitless-lighting.co.uk/admin/products/light-configs/${configId}`);
+      const response = await fetch(buildApi1Url(`/admin/products/light-configs/${configId}`));
       
       if (!response.ok) {
         throw new Error('Failed to fetch configuration details');

@@ -1,6 +1,9 @@
 /**
- * Tracking service to collect and send visitor data
+ * Tracking Service for LIMI Website
+ * Handles user session tracking, page views, and analytics data collection
  */
+
+import { buildTrackingUrl, API_CONFIG } from '../config/api.config';
 
 // Session tracking variables
 let startTime = null;
@@ -496,7 +499,7 @@ export const sendTrackingData = async (isClosing = false, isUpdate = false) => {
     
     
     // Use the same endpoint for both new sessions and updates
-    const endpoint = 'https://api.limitless-lighting.co.uk/client/tracking_capture';
+    const endpoint = buildTrackingUrl(API_CONFIG.ENDPOINTS.TRACKING_CAPTURE);
     const method = 'POST';
     
     // Add _method key to the body if this is an update

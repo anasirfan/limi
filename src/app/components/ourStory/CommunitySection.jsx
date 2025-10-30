@@ -1,5 +1,7 @@
 'use client';
+
 import { useState, useRef } from 'react';
+import { buildApi1Url } from '../../config/api.config';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from './ThemeContext';
 
@@ -62,7 +64,7 @@ export default function CommunitySection() {
         'LIMI Collective': 'LIMI_Collective'
       };
       
-      const response = await fetch('https://dev.api1.limitless-lighting.co.uk/client/user/community/subscribe', {
+      const response = await fetch(buildApi1Url('/client/user/community/subscribe'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

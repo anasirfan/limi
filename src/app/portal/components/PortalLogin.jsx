@@ -22,6 +22,7 @@ import PortalCTA from "../../components/PortalCTA";
 import { useRef } from "react";
 import { fetchUserByToken } from '../../../app/redux/slices/userSlice.js';
 import { useHideNavFooter } from '../../components/context/HideNavFooterContext';
+import { buildApiUrl, API_CONFIG } from '../../config/api.config';
 export default function PortalLogin({ onLogin }) {
   const [isFetchingByToken, setIsFetchingByToken] = useState(false);
   const [loginMethod, setLoginMethod] = useState("email"); // 'email' or 'otp'
@@ -131,7 +132,7 @@ export default function PortalLogin({ onLogin }) {
     setResetStatus({ type: "loading", message: "Sending OTP..." });
 
     try {
-      const response = await fetch("https://dev.api.limitless-lighting.co.uk/client/forgot_password/send_otp", {
+      const response = await fetch(buildApiUrl('/client/forgot_password/send_otp'), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: resetEmail }),
@@ -164,7 +165,7 @@ export default function PortalLogin({ onLogin }) {
     setResetStatus({ type: "loading", message: "Verifying OTP..." });
 
     try {
-      const response = await fetch("https://dev.api.limitless-lighting.co.uk/client/forgot_password/verify_otp", {
+      const response = await fetch(buildApiUrl('/client/forgot_password/verify_otp'), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: resetEmail, otp: resetOtp }),
@@ -203,7 +204,7 @@ export default function PortalLogin({ onLogin }) {
     setResetStatus({ type: "loading", message: "Updating password..." });
 
     try {
-      const response = await fetch("https://dev.api.limitless-lighting.co.uk/client/forgot_password/reset", {
+      const response = await fetch(buildApiUrl('/client/forgot_password/reset'), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: resetEmail, newPassword }),

@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { buildApi1Url } from '../../../config/api.config';
 import Image from "next/image";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -163,7 +164,7 @@ export const ConfigPanel = ({
   const syncWishlistWithAPI = async (wishlistArray) => {
     const token = localStorage.getItem("limiToken");
     await fetch(
-      "https://dev.api1.limitless-lighting.co.uk/admin/products/light-configs/wishlist",
+      buildApi1Url('/admin/products/light-configs/wishlist'),
       {
         method: "POST",
         headers: {

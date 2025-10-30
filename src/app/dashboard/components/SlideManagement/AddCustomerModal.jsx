@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { buildApiUrl } from '../../../../config/api.config';
 import { FaTimes, FaUserPlus } from 'react-icons/fa';
 
 const AddCustomerModal = ({ isOpen, onClose, onCustomerAdded, token }) => {
@@ -28,7 +29,7 @@ const AddCustomerModal = ({ isOpen, onClose, onCustomerAdded, token }) => {
     setSuccess(false);
 
     try {
-      const response = await fetch('https://api.limitless-lighting.co.uk/client/customer_capture', {
+      const response = await fetch(buildApiUrl('/client/customer_capture'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -124,10 +124,12 @@ const generateSceneDataHash = (data) => {
   }
 };
 
+import { buildApi1Url } from '../../config/api.config';
+
 // Fetch pendant/system data from API
 const fetchSystemAssignments = async () => {
   try {
-    const response = await fetch("https://dev.api1.limitless-lighting.co.uk/admin/configurator/system", {
+    const response = await fetch(buildApi1Url('/admin/configurator/system'), {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -165,7 +167,7 @@ const fetchSystemAssignments = async () => {
 // Fetch mount data from API
 const fetchMountData = async () => {
   try {
-    const response = await fetch("https://dev.api1.limitless-lighting.co.uk/admin/configurator/mount", {
+    const response = await fetch(buildApi1Url('/admin/configurator/mount'), {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -203,7 +205,7 @@ const fetchMountData = async () => {
 // Fetch scene data from API
 const fetchSceneData = async () => {
   try {
-    const response = await fetch("https://dev.api1.limitless-lighting.co.uk/admin/configurator/scene", {
+    const response = await fetch(buildApi1Url('/admin/configurator/scene'), {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

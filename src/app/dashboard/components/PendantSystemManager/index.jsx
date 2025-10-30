@@ -10,6 +10,7 @@ import AddSceneModal from "./components/AddSceneModal";
 import SceneTable from "./components/SceneTable";
 import { filterProductsByTab } from "./utils/fileUtils";
 import { onDataRefresh, refreshSystemAssignments, getAllSystemAssignments } from "../../../components/configurator/pendantSystemData";
+import { buildApi1Url } from '../../../config/api.config';
 
 export default function PendantSystemManager({
   pendantSystemData,
@@ -145,7 +146,7 @@ export default function PendantSystemManager({
       
       // Fallback to direct API call if the new function fails
       try {
-        const response = await fetch("https://dev.api1.limitless-lighting.co.uk/admin/configurator/system", {
+        const response = await fetch(buildApi1Url('/admin/configurator/system'), {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -335,7 +336,7 @@ export default function PendantSystemManager({
     setMountLoading(true);
     try {
       const token = localStorage.getItem("limiToken");
-      const response = await fetch("https://dev.api1.limitless-lighting.co.uk/admin/configurator/mount", {
+      const response = await fetch(buildApi1Url('/admin/configurator/mount'), {
         method: "GET",
         headers: {
           "Authorization": `${token}`,
@@ -375,7 +376,7 @@ export default function PendantSystemManager({
       }
 
       const token = localStorage.getItem("limiToken");
-      const response = await fetch("https://dev.api1.limitless-lighting.co.uk/admin/configurator/mount", {
+      const response = await fetch(buildApi1Url('/admin/configurator/mount'), {
         method: "POST",
         headers: {
           "Authorization": `${token}`,
@@ -460,7 +461,7 @@ export default function PendantSystemManager({
     setSceneLoading(true);
     try {
       const token = localStorage.getItem("limiToken");
-      const response = await fetch("https://dev.api1.limitless-lighting.co.uk/admin/configurator/scene", {
+      const response = await fetch(buildApi1Url('/admin/configurator/scene'), {
         method: "GET",
         headers: {
           "Authorization": `${token}`,
@@ -501,7 +502,7 @@ export default function PendantSystemManager({
       }
 
       const token = localStorage.getItem("limiToken");
-      const response = await fetch("https://dev.api1.limitless-lighting.co.uk/admin/configurator/scene", {
+      const response = await fetch(buildApi1Url('/admin/configurator/scene'), {
         method: "POST",
         headers: {
           "Authorization": `${token}`,
@@ -540,7 +541,7 @@ export default function PendantSystemManager({
     if (window.confirm(`Are you sure you want to delete "${scene.sceneName}"? This action cannot be undone.`)) {
       try {
         const token = localStorage.getItem("limiToken");
-        const response = await fetch(`https://dev.api1.limitless-lighting.co.uk/admin/configurator/scene/${scene._id}`, {
+        const response = await fetch(buildApi1Url(`/admin/configurator/scene/${scene._id}`), {
           method: "DELETE",
           headers: {
             "Authorization": `${token}`,
@@ -571,7 +572,7 @@ export default function PendantSystemManager({
     if (window.confirm(`Are you sure you want to delete "${mount.mountName}"? This action cannot be undone.`)) {
       try {
         const token = localStorage.getItem("limiToken");
-        const response = await fetch(`https://dev.api1.limitless-lighting.co.uk/admin/configurator/mount/${mount._id}`, {
+        const response = await fetch(buildApi1Url(`/admin/configurator/mount/${mount._id}`), {
           method: "DELETE",
           headers: {
             "Authorization": `${token}`,

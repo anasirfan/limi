@@ -1107,7 +1107,7 @@ const ConfiguratorLayout = () => {
 
       // Send data to backend API
       const response = await fetch(
-        "https://dev.api1.limitless-lighting.co.uk/admin/products/light-configs",
+        buildApi1Url('/admin/products/light-configs'),
         {
           method: "POST",
           headers: {

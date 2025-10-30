@@ -1,5 +1,7 @@
 'use client';
-import { useState, useRef, useEffect } from 'react';
+
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { buildApi1Url } from '../../config/api.config';
 import { useSelector, useDispatch } from 'react-redux';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
@@ -243,7 +245,7 @@ export default function SlideCarousel({ slides, customerId }) {
   // Send session data to API
   const sendSessionToAPI = async (sessionData) => {
     try {
-      const response = await fetch('https://dev.api1.limitless-lighting.co.uk/client/user/slide_shows/analytics', {
+      const response = await fetch(buildApi1Url('/client/user/slide_shows/analytics'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

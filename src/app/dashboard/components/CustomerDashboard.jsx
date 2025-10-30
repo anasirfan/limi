@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, Fragment } from "react";
 import Image from "next/image";
+import { buildApi1Url, buildApiUrl, API_CONFIG } from '../../config/api.config';
 import {
   FaSort,
   FaInbox,
@@ -170,7 +171,7 @@ export default function CustomerDashboard({ token }) {
     setPendantLoading(true);
     try {
       const response = await fetch(
-        "https://dev.api1.limitless-lighting.co.uk/admin/configurator/system",
+        buildApi1Url('/admin/configurator/system'),
         {
           method: "GET",
           headers: {
@@ -226,7 +227,7 @@ export default function CustomerDashboard({ token }) {
         }
       });
       const response = await fetch(
-        `https://dev.api1.limitless-lighting.co.uk/admin/configurator/system/${id}`,
+        buildApi1Url(`/admin/configurator/system/${id}`),
         {
           method: "PATCH",
           headers: {
@@ -253,7 +254,7 @@ export default function CustomerDashboard({ token }) {
     setPendantSaving(true);
     try {
       const response = await fetch(
-        `https://dev.api1.limitless-lighting.co.uk/admin/configurator/system/${id}`,
+        buildApi1Url(`/admin/configurator/system/${id}`),
         {
           method: "DELETE",
           headers: {
@@ -307,7 +308,7 @@ export default function CustomerDashboard({ token }) {
       }
 
       const response = await fetch(
-        "https://dev.api1.limitless-lighting.co.uk/admin/configurator/system",
+        buildApi1Url('/admin/configurator/system'),
         {
           method: "POST",
           headers: {
@@ -460,7 +461,7 @@ export default function CustomerDashboard({ token }) {
 
     try {
       const response = await fetch(
-        "https://dev.api1.limitless-lighting.co.uk/client/user/community/subscriptions",
+        buildApi1Url('/client/user/community/subscriptions'),
         {
           method: "GET",
           headers: {
@@ -507,7 +508,7 @@ export default function CustomerDashboard({ token }) {
     setQueryError("");
     try {
       const response = await fetch(
-        "https://dev.api1.limitless-lighting.co.uk/client/user/contact-messages",
+        buildApi1Url('/client/user/contact-messages'),
         {
           method: "GET",
           headers: {
@@ -554,7 +555,7 @@ export default function CustomerDashboard({ token }) {
 
     try {
       const response = await fetch(
-        "https://dev.api1.limitless-lighting.co.uk/client/user/distributor/contact",
+        buildApi1Url('/client/user/distributor/contact'),
         {
           method: "GET",
           headers: {
@@ -782,7 +783,7 @@ export default function CustomerDashboard({ token }) {
       // Try to fetch from the actual API endpoint
       try {
         const response = await fetch(
-          "https://api.limitless-lighting.co.uk/client/get_user_capture",
+          buildApiUrl('/client/get_user_capture'),
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -1046,7 +1047,7 @@ export default function CustomerDashboard({ token }) {
         try {
           // In a real app, this would be an authenticated API call
           const response = await fetch(
-            "https://api.limitless-lighting.co.uk/client/get_customer_details/",
+            buildApiUrl('/client/get_customer_details/'),
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -1245,7 +1246,7 @@ export default function CustomerDashboard({ token }) {
 
     try {
       const response = await fetch(
-        `https://api.limitless-lighting.co.uk/client/customer_capture/${deleteConfirmation._id}`,
+        buildApiUrl(`/client/customer_capture/${deleteConfirmation._id}`),
         {
           method: "DELETE",
           headers: {

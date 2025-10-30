@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { buildApiUrl, buildApi1Url, API_CONFIG } from '../../config/api.config';
 
 // Load user from localStorage if available
 const loadUserFromStorage = () => {
@@ -78,7 +79,7 @@ export const loginUser = createAsyncThunk(
       }
       
       // Make API request 
-      const response = await fetch('https://dev.api.limitless-lighting.co.uk/client/verify_otp', {
+      const response = await fetch(buildApiUrl(API_CONFIG.ENDPOINTS.VERIFY_OTP), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -104,7 +105,7 @@ export const loginUser = createAsyncThunk(
       
       // Get user profile with token
       const token = data.data.token.startsWith('Bearer ') ? data.data.token : `${data.data.token}`;
-      const profileResponse = await fetch('https://dev.api1.limitless-lighting.co.uk/client/user/profile', {
+      const profileResponse = await fetch(buildApi1Url(API_CONFIG.ENDPOINTS.USER_PROFILE), {
         headers: {
           'Authorization': token
         }
@@ -136,7 +137,7 @@ export const fetchUserByToken = createAsyncThunk(
       }
 
       // Use token to fetch user profile
-      const profileResponse = await fetch('https://dev.api1.limitless-lighting.co.uk/client/user/profile', {
+      const profileResponse = await fetch(buildApi1Url(API_CONFIG.ENDPOINTS.USER_PROFILE), {
         headers: {
           'Authorization': token.startsWith('Bearer ') ? token : `${token}`
         }
@@ -172,7 +173,7 @@ export const signupUser = createAsyncThunk(
       }
       
       // Make API request to create account (send_otp)
-      const signupResponse = await fetch('https://dev.api.limitless-lighting.co.uk/client/send_otp', {
+      const signupResponse = await fetch(buildApiUrl(API_CONFIG.ENDPOINTS.SEND_OTP), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -191,7 +192,7 @@ export const signupUser = createAsyncThunk(
       }
 
       // Now verify OTP (auto verification after signup)
-      const verifyResponse = await fetch('https://dev.api.limitless-lighting.co.uk/client/verify_otp', {
+      const verifyResponse = await fetch(buildApiUrl(API_CONFIG.ENDPOINTS.VERIFY_OTP), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -220,7 +221,7 @@ export const signupUser = createAsyncThunk(
 
       // Get user profile with token
       const token = verifyData.data.token.startsWith('Bearer ') ? verifyData.data.token : `${verifyData.data.token}`;
-      const profileResponse = await fetch('https://dev.api1.limitless-lighting.co.uk/client/user/profile', {
+      const profileResponse = await fetch(buildApi1Url(API_CONFIG.ENDPOINTS.USER_PROFILE), {
         headers: {
           'Authorization': token
         }
@@ -260,7 +261,7 @@ export const updateUserProfile = createAsyncThunk(
       token = token.startsWith('Bearer ') ? token : `Bearer ${token}`;
       
       // Make API request with full URL
-      const response = await fetch('https://dev.api1.limitless-lighting.co.uk/client/user/profile', {
+      const response = await fetch(buildApi1Url(API_CONFIG.ENDPOINTS.USER_PROFILE), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

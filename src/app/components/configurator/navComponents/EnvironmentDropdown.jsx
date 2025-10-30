@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { FaHome, FaBan, FaBuilding, FaUtensils, FaStore, FaGraduationCap, FaHospital, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { getSceneData, onSceneDataRefresh } from '../pendantSystemData';
+import { cloneUniformsGroups } from 'three/src/renderers/shaders/UniformsUtils';
 
 export const EnvironmentDropdown = ({ config, onEnvironmentChange, setActiveStep, setOpenDropdown, tourActive, onTourSelection, sendMessageToPlayCanvas }) => {
   const [isMobile, setIsMobile] = useState(false);
@@ -29,7 +30,7 @@ export const EnvironmentDropdown = ({ config, onEnvironmentChange, setActiveStep
           {
             id: 'no_scene',
             label: 'No Scene',
-            icon: <FaBan className="w-5 h-5" />,
+            icon: <FaBan className="w-5 h-5" />, 
             description: 'Empty',
             sceneValue: 0,
             sceneUrl: null
@@ -113,11 +114,11 @@ export const EnvironmentDropdown = ({ config, onEnvironmentChange, setActiveStep
   const totalPages = Math.ceil(environments.length / itemsPerPage);
 
   const handleEnvironmentSelect = (environment) => {
+    console.log("environment", environment)
     // If tour is active, call tour selection handler
     if (tourActive && onTourSelection) {
       onTourSelection('environment', environment.id);
     }
-
     // Call the environment change handler
     onEnvironmentChange(environment.id);
 
