@@ -1,7 +1,5 @@
 'use client';
 import dynamic from 'next/dynamic';
-import Footer from './components/Footer';
-import Header from './components/Header';
 import HeroSection from './components/HeroSection';
 import ProductShowcase from './components/ProductShowcase';
 import HowItWorks from './components/HowItWorks';
@@ -128,8 +126,6 @@ export default function Home() {
   <HourSelector hour={testHour} onChange={handleHourChange} />
 </div>
       <TransitionLayout>
-        {/* <Header /> */}
-  
       
         <HeroSection />
         <ProductShowcase />
@@ -150,8 +146,6 @@ export default function Home() {
         <DistributorHub />
         */}
       </TransitionLayout>
-      {/* {!isMobile && <MouseTrail />} */}
-      {/* { !hideNavFooter && <Footer /> } */}
       <SectionNavigation />
       {/* <ScrollToTop /> */}
       <CookieConsent onAccept={handleTrackingConsent} onDecline={() => {}} />
