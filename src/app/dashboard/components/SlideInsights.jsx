@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
+import { buildApi1Url } from '../../../config/api.config';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -16,13 +17,12 @@ ChartJS.register(
   BarElement,
   Title,
   Tooltip,
-  Legend
 );
 
 /**
  * SlideInsights
  * @param {Object} props
- * @param {string} props.customerId - Customer ID to fetch analytics for
+ * @param {string} props.customerId
  * @param {Object[]} props.slideTimes - Array of { slideId, slideTitle, seconds } (fallback)
  * @param {Object[]} props.sessions - Array of { sessionStart, sessionEnd, durationSeconds } (fallback)
  */
@@ -31,31 +31,6 @@ export default function SlideInsights({ customerId, slideTimes = [], sessions = 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Fetch analytics data from API
-  const fetchAnalyticsData = async () => {
-    if (!customerId) return;
-    
-    setLoading(true);
-    setError(null);
-    
-    try {
-      const response = await fetch(`https://dev.api1.limitless-lighting.co.uk/client/user/slide_shows/analytics?customerId=${customerId}`);
-      console.log("slideshow response",response);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      setAnalyticsData(data);
-    } catch (err) {
-      console.error('Failed to fetch analytics data:', err);
-      setError(err.message);
-      // Fallback to localStorage data
-      loadLocalStorageData();
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // Load data from localStorage as fallback
   const loadLocalStorageData = () => {
@@ -72,26 +47,22 @@ export default function SlideInsights({ customerId, slideTimes = [], sessions = 
         });
       }
     } catch (err) {
-      console.error('Failed to load localStorage data:', err);
     }
   };
 
   // Fetch data on component mount
   useEffect(() => {
-    console.log('[DEBUG] useEffect ran in SlideInsights');
-    console.log('customerId:', customerId);
     setLoading(true);
     setError(null);
     (async () => {
       try {
-        const response = await fetch(`https://dev.api1.limitless-lighting.co.uk/client/user/slide_shows/analytics?customerId=${customerId}`);
+        const response = await fetch(buildApi1Url(`/client/user/slide_shows/analytics?customerId=${customerId}`));
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
         setAnalyticsData(data);
       } catch (err) {
-        console.error('Failed to fetch analytics data:', err);
         setError(err.message);
         if (typeof loadLocalStorageData === 'function') loadLocalStorageData();
       } finally {
@@ -326,6 +297,11 @@ export default function SlideInsights({ customerId, slideTimes = [], sessions = 
 
   return (
     <div className="bg-[#1e1e1e] rounded-lg p-6 space-y-6">
+      {error && (
+        <div className="bg-red-800 text-red-200 px-4 py-2 rounded mb-4">
+          <strong>Error:</strong> {error}
+        </div>
+      )}
       <h2 className="text-2xl font-bold text-[#93cfa2] mb-6">Slide Analytics Dashboard</h2>
       
       {/* Session Statistics */}

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { buildApi1Url } from '../config/api.config';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -70,7 +71,7 @@ export default function Collaborate() {
         throw new Error('Please log in to send a message');
       }
       
-      const response = await fetch('https://dev.api1.limitless-lighting.co.uk/client/user/distributor/contact', {
+      const response = await fetch(buildApi1Url('/client/user/distributor/contact'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -112,7 +113,6 @@ export default function Collaborate() {
         privacyPolicy: false
       });
     } catch (error) {
-      console.error('Error submitting form:', error);
       setSubmitStatus({ 
         success: false, 
         message: error.message || 'An error occurred while submitting the form. Please try again.' 

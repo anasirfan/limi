@@ -1,6 +1,7 @@
 import { motion, useInView } from 'framer-motion';
 import { FaShieldAlt, FaBrain, FaCloud, FaArrowRight, FaTimes, FaLightbulb, FaMicrochip, FaStore, FaWifi, FaHome, FaBuilding } from 'react-icons/fa';
 import { useRef, useState, useEffect } from 'react';
+import { buildApi1Url, API_CONFIG } from '../config/api.config';
 import Link from 'next/link';
 
 // What We're Really Building Section
@@ -812,7 +813,7 @@ export const FinalCTASection = () => {
     e.preventDefault();
     setSubmitStatus(null);
     try {
-      const response = await fetch("https://dev.api1.limitless-lighting.co.uk/admin/dashboard/investor_details", {
+      const response = await fetch(buildApi1Url(API_CONFIG.ENDPOINTS.INVESTOR_DETAILS), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

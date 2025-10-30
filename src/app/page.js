@@ -47,17 +47,8 @@ const CubeAnimation = dynamic(() => import('./components/CubeAnimation'), {
  * @returns {JSX.Element} The main app component.
  */
 export default function Home() {
-  // For testing: allow manual hour override
-  const [testHour, setTestHour] = useState(10); // Default to 10am (day)
-  const handleHourChange = (hour) => {
-    setTestHour(hour);
-    setDayNightTheme(hour);
-  };
-  const [isMobile, setIsMobile] = useState(false);
-  const [userType, setUserType] = useState(null);
-  const [showSplash, setShowSplash] = useState(true);
-  const [showUserSelection, setShowUserSelection] = useState(false);
   const { hideNavFooter, setHideNavFooter } = useHideNavFooter();
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     // Initialize dynamic hourly theme switcher
@@ -137,8 +128,8 @@ export default function Home() {
   <HourSelector hour={testHour} onChange={handleHourChange} />
 </div>
       <TransitionLayout>
-        <Header />
-      { !hideNavFooter && <Header /> }
+        {/* <Header /> */}
+  
       
         <HeroSection />
         <ProductShowcase />
@@ -160,7 +151,7 @@ export default function Home() {
         */}
       </TransitionLayout>
       {/* {!isMobile && <MouseTrail />} */}
-      { !hideNavFooter && <Footer /> }
+      {/* { !hideNavFooter && <Footer /> } */}
       <SectionNavigation />
       {/* <ScrollToTop /> */}
       <CookieConsent onAccept={handleTrackingConsent} onDecline={() => {}} />

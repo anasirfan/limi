@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { buildApi1Url } from '../../../config/api.config';
 import { useSelector, useDispatch } from "react-redux";
 import {
   FaPlus,
@@ -71,7 +72,7 @@ export default function SlideManagement({ customer }) {
     setLoading(true);
     try {
       const response = await fetch(
-        `https://dev.api1.limitless-lighting.co.uk/admin/slide/customers/${profileId}/slideshows`
+        buildApi1Url(`/admin/slide/customers/${profileId}/slideshows`)
       );
 
       if (!response.ok) {
@@ -440,7 +441,7 @@ export default function SlideManagement({ customer }) {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `https://dev.api1.limitless-lighting.co.uk/admin/slide/customers/${profileId}/slideshows`,
+        buildApi1Url(`/admin/slide/customers/${profileId}/slideshows`),
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -564,7 +565,7 @@ export default function SlideManagement({ customer }) {
 
       // Save to API - use PUT if exists, POST if new
       const token = localStorage.getItem("token");
-      let url = "https://dev.api1.limitless-lighting.co.uk/admin/slide/slideshows";
+      let url = buildApi1Url('/admin/slide/slideshows');
       let method = "POST";
       let operationType = "created";
 

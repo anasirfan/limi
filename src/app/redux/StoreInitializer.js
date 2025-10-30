@@ -17,7 +17,6 @@ export default function StoreInitializer() {
         const parsedCart = JSON.parse(savedCart);
         dispatch(loadCart(parsedCart));
       } catch (error) {
-        console.error('Error parsing cart from localStorage:', error);
       }
     }
 
@@ -28,7 +27,6 @@ export default function StoreInitializer() {
         const parsedFavorites = JSON.parse(savedFavorites);
         dispatch(loadFavorites(parsedFavorites));
       } catch (error) {
-        console.error('Error parsing favorites from localStorage:', error);
       }
     }
 
@@ -40,7 +38,6 @@ export default function StoreInitializer() {
         const parsedProducts = JSON.parse(savedProducts);
         dispatch(setProducts(parsedProducts));
       } catch (error) {
-        console.error('Error parsing products from localStorage:', error);
       }
     }
   }, [dispatch]);

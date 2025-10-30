@@ -1,6 +1,9 @@
 /**
- * Tracking service to collect and send visitor data
+ * Tracking Service for LIMI Website
+ * Handles user session tracking, page views, and analytics data collection
  */
+
+import { buildTrackingUrl, API_CONFIG } from '../config/api.config';
 
 // Session tracking variables
 let startTime = null;
@@ -148,7 +151,7 @@ const getIpInfo = async () => {
           return parsedCache;
         }
       } catch (e) {
-        console.warn('Error parsing cached IP info:', e);
+        // console.warn('Error parsing cached IP info:', e);
       }
     }
     
@@ -194,7 +197,7 @@ const getIpInfo = async () => {
           };
         }
       } catch (err) {
-        console.warn('ipinfo.io request failed:', err);
+        // console.warn('ipinfo.io request failed:', err);
       }
     }
     
@@ -224,7 +227,7 @@ const getIpInfo = async () => {
     
     return ipInfo;
   } catch (error) {
-    console.error('Error fetching IP info:', error);
+    // console.error('Error fetching IP info:', error);
     // Return fallback values
     return { 
       ip: '127.0.0.1', 
@@ -269,7 +272,7 @@ const tryRestoreSession = () => {
       localStorage.setItem('trackingDataSent', 'false');
     }
   } catch (error) {
-    console.error('❌ ERROR RESTORING SESSION:', error);
+    // console.error('❌ ERROR RESTORING SESSION:', error);
     // If there's an error, create a new session
     sessionId = generateSessionId();
     totalSessionDuration = 0;
@@ -296,7 +299,7 @@ const saveSessionData = () => {
     // Reset the start time for the next duration calculation
     startTime = Date.now();
   } catch (error) {
-    console.error('❌ ERROR SAVING SESSION DATA:', error);
+    // console.error('❌ ERROR SAVING SESSION DATA:', error);
   }
 };
 
@@ -496,7 +499,7 @@ export const sendTrackingData = async (isClosing = false, isUpdate = false) => {
     
     
     // Use the same endpoint for both new sessions and updates
-    const endpoint = 'https://api.limitless-lighting.co.uk/client/tracking_capture';
+    const endpoint = buildTrackingUrl(API_CONFIG.ENDPOINTS.TRACKING_CAPTURE);
     const method = 'POST';
     
     // Add _method key to the body if this is an update

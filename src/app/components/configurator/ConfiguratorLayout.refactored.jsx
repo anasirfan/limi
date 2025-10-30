@@ -589,7 +589,6 @@ const ConfiguratorLayout = () => {
   const handleSystemBaseDesignChange = useCallback((design) => {
     // Update the system base design in the config
     setConfig(prev => ({ ...prev, systemBaseDesign: design }));
-    
     // Reset current shade when changing base design
     setCurrentShade(null);
     

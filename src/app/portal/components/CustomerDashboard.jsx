@@ -7,6 +7,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { useDispatch } from "react-redux";
 import { updateUser } from "../../redux/slices/userSlice";
+import { buildApi1Url, API_CONFIG } from '../../config/api.config';
 import {
   FaUser,
   FaSignOutAlt,
@@ -62,7 +63,7 @@ export default function CustomerDashboard({ onLogout }) {
         const token = localStorage.getItem("limiToken");
         if (token) {
           const response = await fetch(
-            "https://dev.api1.limitless-lighting.co.uk/client/user/profile",
+            buildApi1Url(API_CONFIG.ENDPOINTS.USER_PROFILE),
             {
               headers: {
                 Authorization: token,
@@ -75,8 +76,6 @@ export default function CustomerDashboard({ onLogout }) {
             dispatch(updateUser(userData));
           }
         }
-      } catch (error) {
-        console.error("Error loading user data:", error);
       } finally {
         setIsLoading(false);
       }

@@ -40,7 +40,6 @@ export const useSystemAssignments = () => {
 
     // Subscribe to data refresh events
     const unsubscribe = onDataRefresh((newData) => {
-      console.log('🔄 useSystemAssignments: Data refreshed automatically');
       setData(newData.filter(assignment => assignment.isShow === true));
       setLastUpdated(new Date());
     });
@@ -83,7 +82,6 @@ export const usePendantAssignments = () => {
     loadData();
 
     const unsubscribe = onDataRefresh(async () => {
-      console.log('🔄 usePendantAssignments: Data refreshed automatically');
       const newData = await getPendantAssignments();
       setData(newData);
     });
@@ -117,7 +115,6 @@ export const useChandelierAssignments = () => {
     loadData();
 
     const unsubscribe = onDataRefresh(async () => {
-      console.log('🔄 useChandelierAssignments: Data refreshed automatically');
       const newData = await getChandelierAssignments();
       setData(newData);
     });
@@ -169,7 +166,6 @@ export const useSystemAssignmentsByType = (systemType) => {
     loadData();
 
     const unsubscribe = onDataRefresh(async () => {
-      console.log(`🔄 useSystemAssignmentsByType(${systemType}): Data refreshed automatically`);
       await loadData();
     });
 

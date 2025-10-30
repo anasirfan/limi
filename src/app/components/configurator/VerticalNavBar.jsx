@@ -2,21 +2,23 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useLayoutEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { 
-  FaArrowLeft, 
-  FaArrowRight, 
+import {
+  FaArrowLeft,
+  FaArrowRight,
   FaTimes,
-  FaLightbulb, 
-  FaLayerGroup, 
-  FaRegLightbulb, 
-  FaObjectGroup, 
-  FaList, 
+  FaLightbulb,
+  FaLayerGroup,
+  FaRegLightbulb,
+  FaObjectGroup,
+  FaList,
   FaCubes,
-  FaPalette 
+  FaPalette,
+  FaGlobe
 } from 'react-icons/fa';
 import { FiX, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import { NavButton } from './navComponents/NavButton';
 import { LightTypeDropdown } from './navComponents/LightTypeDropdown';
+import { EnvironmentDropdown } from './navComponents/EnvironmentDropdown';
 import { BaseTypeDropdown } from './navComponents/BaseTypeDropdown';
 import { LightAmountDropdown } from './navComponents/LightAmountDropdown';
 import { PendantSelectionDropdown } from './navComponents/PendantSelectionDropdown';
@@ -25,8 +27,8 @@ import { SystemConfigurationDropdown } from './navComponents/SystemConfiguration
 import { ConfigPanel } from './navComponents/ConfigPanel';
 import MobileBottomMenu from './navComponents/MobileBottomMenu';
 import BaseColorPanel from "./navComponents/BaseColorPanel";
-import {ProgressIndicator} from './navComponents/ProgressIndicator';
-import SaveConfigurationModal from './navComponents/SaveConfigurationModal';
+import { ProgressIndicator } from './navComponents/ProgressIndicator';
+import { SaveConfigurationModal } from './navComponents/SaveConfigurationModal';
 import { useNavSteps } from './navComponents/useNavSteps';
 import { useNavDropdown } from './navComponents/useNavDropdown';
 import { usePendantSelection } from './navComponents/usePendantSelection';
@@ -35,11 +37,12 @@ import {
   listenForConnectorColorMessages,
   listenForWallbaseColorMessages,
   listenForOffconfigMessages,
-  listenForCableMessages
+  listenForCableMessages,
+  listenForSelectedCableMessages
 } from "../../util/iframeCableMessageHandler";
 
- // Pendant selection functionality
- 
+// Pendant selection functionality
+//adsaldasldja
 const VerticalNavBar = ({
   activeStep,
   setActiveStep,
@@ -50,6 +53,7 @@ const VerticalNavBar = ({
   cables, // Add cables prop
   onCableSizeChange, // Add cable size change handler
   onLightTypeChange,
+  onEnvironmentChange, // Add environment change handler
   onBaseTypeChange,
   onBaseColorChange,
   onConnectorColorChange,
@@ -75,7 +79,12 @@ const VerticalNavBar = ({
   onShadeSelect, // Add onShadeSelect prop
   sendMessageToPlayCanvas, // Add sendMessageToPlayCanvas prop
   setShowPendantLoadingScreen, // Add setShowPendantLoadingScreen prop
+  setShowLoadingScreen, // Add setShowLoadingScreen prop
 }) => {
+  // Debug loading screen prop
+  useEffect(() => {
+    console.log('🔗 VerticalNavBar - setShowLoadingScreen prop received:', !!setShowLoadingScreen);
+  }, [setShowLoadingScreen]);
   // Define colors from LIMI brand palette
   const emerald = "#50C878";
   const charlestonGreen = "#2B2D2F";
@@ -132,7 +141,7 @@ const VerticalNavBar = ({
   const selectAllPendants = () => {
     setSelectedPendants(cables.map((_, index) => index));
   };
-  
+
   // Clear all selections
   const clearSelections = () => {
     setSelectedPendants([]);
@@ -151,12 +160,6 @@ const VerticalNavBar = ({
   }, []);
   useEffect(() => {
     const cleanup = listenForConnectorColorMessages((data, event) => {
-      // handle wallbaseColor message here
-      console.log(
-        "[ConfigPanel] Received connectorColor message:",
-        data,
-        event.data
-      );
       // Example: open a modal, update config, etc.
       setOpenDropdown("baseColor");
       setActiveStep("baseColor");
@@ -169,19 +172,25 @@ const VerticalNavBar = ({
 
   useEffect(() => {
     const cleanup = listenForCableMessages((data, event) => {
-      // handle wallbaseColor message here
-      console.log(
-        "[ConfigPanel] Received connectorColor message:",
-        data,
-        event.data
-      );
+
       // Example: open a modal, update config, etc.
       setMobileBottomMenuOpen(true)
-    setMobileActiveStep('pendantSelection')
+      setMobileActiveStep('pendantSelection')
     });
     return cleanup;
   }, []);
-  
+
+  useEffect(() => {
+    const cleanup = listenForSelectedCableMessages((data, event) => {
+      // Example: open a modal, update config, etc.
+      setShowConfigurationTypeSelector(true);
+      setActiveStep("pendantSelection");
+     setOpenDropdown("pendantSelection");
+    });
+    return cleanup;
+  }, [config.selectedPendants]);
+
+
   useEffect(() => {
     if (activeStep === "pendantSelection") {
       setOpenBase(false);
@@ -191,15 +200,13 @@ const VerticalNavBar = ({
 
   useEffect(() => {
     const cleanup = listenForOffconfigMessages((data, event) => {
-      // if (cableMessage && cableMessage.startsWith('offconfig')) {
-      sendMessageToPlayCanvas("Nobars");
       setShowConfigurationTypeSelector(false);
       setOpenBase(false);
       setOpenDropdown(false);
       setActiveStep(null);
       setIsLightingPanelOpen(false);
       setCableMessage("");
-      
+
       // Reset breadcrumb and navigation states
       onBreadcrumbNavigation("home");
     });
@@ -218,8 +225,8 @@ const VerticalNavBar = ({
             setOpenBase(false);
             // 1. Open the pendant selection step
             setActiveStep("pendantSelection");
-            
-            
+
+
             setIsLightingPanelOpen(true);
             // 2. Select the pendant with the extracte
             setSelectedPendants([cableId]);
@@ -234,7 +241,7 @@ const VerticalNavBar = ({
             // 1. Open the pendant selection step
             setActiveStep("pendantSelection");
             setOpenDropdown("pendantSelection");
-         
+
             setIsLightingPanelOpen(true);
             // 2. Select the pendant with the extracted id
             setSelectedPendants([cableId]);
@@ -350,14 +357,6 @@ const VerticalNavBar = ({
   };
 
   const executeTourStep = async (step) => {
-    console.log(`🎬 Executing interactive tour step: ${step.id}`);
-    console.log(`🎬 Current tour state before execution:`, tourState);
-
-    // Check if tour is still active before proceeding
-    if (!tourState.isActive) {
-      console.log("❌ Tour is not active, skipping step execution");
-      return;
-    }
 
     // Schedule step execution for next tick to avoid setState during render
     setTimeout(() => {
@@ -366,18 +365,11 @@ const VerticalNavBar = ({
   };
 
   const performStepExecution = async (step) => {
-    console.log(`🎭 Performing step execution for: ${step.id}`);
-
-    // Skip PlayCanvas message firing - let user actions trigger them
-    // if (step.playCanvasMessages) {
-    //   firePlayCanvasMessages(step.playCanvasMessages);
-    // }
 
     // 1. Open the dropdown/section for user interaction
     await performInteractiveStepAction(step);
 
     // 2. Set state to wait for user interaction
-    console.log("⏳ Setting tour to wait for user interaction");
     setTourState((prev) => ({
       ...prev,
       waitingForUser: true,
@@ -386,77 +378,62 @@ const VerticalNavBar = ({
   };
 
   const performInteractiveStepAction = async (step) => {
-    console.log(`🎭 Performing interactive action for step: ${step.id}`);
 
     switch (step.id) {
       case "lightType":
-        console.log("🔧 Opening lightType dropdown");
         setActiveStep("lightType");
         setOpenDropdown("lightType");
         break;
 
       case "baseType":
-        console.log("🔧 Opening baseType dropdown");
         setActiveStep("baseType");
         setOpenDropdown("baseType");
         break;
 
       case "baseColor":
-        console.log("🔧 Opening baseColor dropdown");
         setActiveStep("baseColor");
         setOpenDropdown("baseColor");
         handleSetActiveTab("base");
         break;
 
       case "lightAmount":
-        console.log("🔧 Opening lightAmount dropdown");
         setActiveStep("lightAmount");
         setOpenDropdown("lightAmount");
         break;
 
       case "pendantSelection":
-        console.log("🔧 Opening pendantSelection dropdown");
         setActiveStep("pendantSelection");
         setOpenDropdown("pendantSelection");
         break;
 
       default:
-        console.log(`❓ Unknown step: ${step.id}`);
         break;
     }
   };
 
   // New function to handle user sub-option selections during tour
   const handleTourSubSelection = (stepId, selectedValue) => {
-    console.log(`🎯 Tour sub-selection: ${stepId} = ${selectedValue}`);
     setUserSelection({ stepId, selectedValue });
-    
+
     // Check if this matches the expected value for current tour step
     const currentStep = tourSteps[tourState.currentStep];
     if (currentStep && currentStep.id === stepId) {
       const expectedValue = currentStep.expectedValue;
-      
+
       if (expectedValue === null || selectedValue === expectedValue) {
-        console.log(`✅ Correct selection made for ${stepId}: ${selectedValue}`);
-        
-        // Mark step as completed and advance to next step
         setTourState((current) => ({
           ...current,
           userCompletedStep: true,
           waitingForUser: false,
         }));
-        
-        // Automatically advance to next step when correct selection is made
-        console.log(`🚀 Auto-advancing to next step after correct selection`);
+
         manualAdvanceToNextStep();
-        
+
         return true;
       } else {
-        console.log(`❌ Incorrect selection for ${stepId}. Expected: ${expectedValue}, Got: ${selectedValue}`);
-        
+
         // During tour, keep dropdown open if wrong selection is made
         if (tourState.isActive && tourState.waitingForUser) {
-          console.log(`🔄 Keeping dropdown open for tour - wrong selection made`);
           // Re-open the dropdown to allow user to try again
           setTimeout(() => {
             setActiveStep(stepId);
@@ -471,13 +448,10 @@ const VerticalNavBar = ({
   // Manual function to advance to next tour step (called by user action)
   const manualAdvanceToNextStep = () => {
     if (!tourState.isActive) return;
-    
+
     const nextStep = tourState.currentStep + 1;
-    console.log(`📈 Manually advancing from step ${tourState.currentStep} to step ${nextStep}`);
-    
+
     if (nextStep >= tourSteps.length) {
-      // Tour completed
-      console.log("🎉 Tour completed!");
       setTourState(prev => ({
         ...prev,
         isActive: false,
@@ -488,7 +462,7 @@ const VerticalNavBar = ({
       }));
       return;
     }
-    
+
     // Update to next step
     setTourState(prev => ({
       ...prev,
@@ -496,15 +470,14 @@ const VerticalNavBar = ({
       waitingForUser: true,
       userCompletedStep: false,
     }));
-    
+
     // Reset selection state
     setUserSelection(null);
     setCurrentTourStep(null);
-    
+
     // Execute the next step properly through performInteractiveStepAction
     const nextTourStep = tourSteps[nextStep];
     if (nextTourStep) {
-      console.log(`🎯 Executing next tour step: ${nextTourStep.id}`);
       setTimeout(() => {
         performInteractiveStepAction(nextTourStep);
       }, 100);
@@ -515,18 +488,11 @@ const VerticalNavBar = ({
     setTourState((prev) => {
       // Don't advance if tour is not active
       if (!prev.isActive) {
-        console.log("❌ Cannot advance - tour is not active");
         return prev;
       }
 
       const nextStep = prev.currentStep + 1;
-      console.log(
-        `📈 Advancing from step ${prev.currentStep} to step ${nextStep}`
-      );
-
       if (nextStep >= tourSteps.length) {
-        // Tour completed
-        console.log("🎉 Interactive tour completed!");
         return {
           ...prev,
           isActive: false,
@@ -546,12 +512,7 @@ const VerticalNavBar = ({
 
       // Execute next step immediately when advancing
       if (tourSteps[nextStep]) {
-        console.log(
-          `🎯 Executing step ${nextStep}: ${tourSteps[nextStep].id}`
-        );
-        setTimeout(() => {
-          executeTourStep(tourSteps[nextStep]);
-        }, 9000);
+        executeTourStep(tourSteps[nextStep]);
       }
 
       return newState;
@@ -559,7 +520,6 @@ const VerticalNavBar = ({
   };
 
   const startInteractiveTour = () => {
-    console.log("🚀 Starting interactive tour...");
     sendMessageToPlayCanvas(`guidedtourstarted`);
     // First, set the tour state to active
     setTourState((prev) => {
@@ -571,7 +531,6 @@ const VerticalNavBar = ({
         waitingForUser: false,
         userCompletedStep: false,
       };
-      console.log("🔄 Setting tour state to:", newState);
       return newState;
     });
 
@@ -579,20 +538,8 @@ const VerticalNavBar = ({
     setTimeout(() => {
       const firstStep = tourSteps[0];
       if (firstStep) {
-        console.log("🎯 Executing first tour step:", firstStep.id);
-
-        // Skip PlayCanvas message firing - let user actions trigger them
-        // if (firstStep.playCanvasMessages) {
-        //   firePlayCanvasMessages(firstStep.playCanvasMessages);
-        // }
-
-        // 1. Open the dropdown
-        console.log("🔧 Opening lightType dropdown");
         setActiveStep("lightType");
         setOpenDropdown("lightType");
-
-        // 2. Set waiting state
-        console.log("⏳ Setting tour to wait for user interaction");
         setTourState((prev) => ({
           ...prev,
           waitingForUser: true,
@@ -617,21 +564,10 @@ const VerticalNavBar = ({
 
   // Add useEffect to monitor user actions during tour
   useEffect(() => {
-    console.log("🔍 Tour State Changed:", {
-      isActive: tourState.isActive,
-      currentStep: tourState.currentStep,
-      waitingForUser: tourState.waitingForUser,
-      userCompletedStep: tourState.userCompletedStep,
-      totalSteps: tourState.totalSteps,
-    });
-
     if (tourState.isActive && tourState.waitingForUser) {
       // Monitor for user selections and check if they match expected values
       const currentStep = tourSteps[tourState.currentStep];
-      if (currentStep) {
-        console.log(`⏳ Waiting for user to complete step: ${currentStep.id}`);
-        console.log(`📋 Step details:`, currentStep);
-      }
+
     }
   }, [
     tourState.waitingForUser,
@@ -640,18 +576,6 @@ const VerticalNavBar = ({
     tourState.userCompletedStep,
   ]);
 
-  // Monitor configuration 
-  useEffect(() => {
-    if (tourState.isActive) {
-      console.log("🔍 Tour State:", {
-        currentStep: tourState.currentStep,
-        currentTourStep: currentTourStep,
-        userSelection: userSelection,
-        waitingForUser: tourState.waitingForUser,
-        userCompletedStep: tourState.userCompletedStep
-      });
-    }
-  }, [tourState, currentTourStep, userSelection]);
 
   // Effect to check screen size and update on resize
   useEffect(() => {
@@ -683,11 +607,8 @@ const VerticalNavBar = ({
 
   // Handle step click in vertical nav - with tour integration
   const handleStepClick = (stepId) => {
-    console.log("handleStepClick", stepId);
-    
     // If tour is active, just open the dropdown - let sub-selection handle validation
     if (tourState.isActive) {
-      console.log(`🎯 Tour active - Opening dropdown for step: ${stepId}`);
       setActiveStep(stepId);
       setOpenDropdown(stepId);
       return;
@@ -706,7 +627,6 @@ const VerticalNavBar = ({
       }
     }
 
-    console.log("openDropdown", openDropdown);
     // Handle hotspot - on for pendant selection, off for everything else
     if (stepId === "pendantSelection") {
       sendMessageToPlayCanvas(`hotspot:on`);
@@ -754,8 +674,8 @@ const VerticalNavBar = ({
     setLocalConfiguringType(configuringType);
   }, [configuringType]);
 
-   // Pendant selection functionality
-   const {
+  // Pendant selection functionality
+  const {
     currentDesign,
     setCurrentDesign,
     carouselRef,
@@ -765,7 +685,7 @@ const VerticalNavBar = ({
     applyToAllPendants,
     getImageSrc,
     getPendantDesignImageNumber
-  } = usePendantSelection(pendants, selectedPendants, setSelectedPendants, onPendantDesignChange,setShowConfigurationTypeSelector,setOpenBase);
+  } = usePendantSelection(pendants, selectedPendants, setSelectedPendants, onPendantDesignChange, setShowConfigurationTypeSelector, setOpenBase);
 
 
 
@@ -797,8 +717,7 @@ const VerticalNavBar = ({
   const handleSaveConfig = () => {
     setShowSaveModal(true);
     setConfigName(
-      `${
-        config.lightType.charAt(0).toUpperCase() + config.lightType.slice(1)
+      `${config.lightType.charAt(0).toUpperCase() + config.lightType.slice(1)
       } Light Configuration`
     );
   };
@@ -830,7 +749,8 @@ const VerticalNavBar = ({
   const getNavIcon = (stepId) => {
     const iconMap = {
       lightType: <FaLightbulb />,
-      baseType: <FaLayerGroup />, 
+      environment: <FaGlobe />,
+      baseType: <FaLayerGroup />,
       baseColor: <FaPalette />,
       lightAmount: <FaList />,
       pendantSelection: <FaRegLightbulb />,
@@ -902,7 +822,6 @@ const VerticalNavBar = ({
             onClick={(e) => e.stopPropagation()}
             onTouchStart={(e) => e.stopPropagation()}
           >
-            {console.log("in steps", "step id ", steps, "config", config)}
             {/* Render NavButtons with data-tour-step for guided tour */}
             {steps
               .filter((step) => {
@@ -910,13 +829,24 @@ const VerticalNavBar = ({
                   (step.id === "baseType" || step.id === "baseColor") &&
                   config.lightType !== "ceiling"
                 ) {
-                  console.log("working if");
                   return false;
                 }
-                // if ((step.id === 'baseColor') && (config.baseType === 'rectangular')) {
-                //   console.log("working if")
-                //   return false;
-                // }
+
+                // Hide environment button for wall and floor light types
+                if (
+                  step.id === "environment" &&
+                  (config.lightType === "wall" || config.lightType === "floor")
+                ) {
+                  return false;
+                }
+                // Hide environment button for wall and floor light types
+                if (
+                  step.id === "lightAmount" &&
+                  (config.lightType === "wall" || config.lightType === "floor")
+                ) {
+                  return false;
+                }
+
                 return true;
               })
               .map((step, index) => (
@@ -946,6 +876,19 @@ const VerticalNavBar = ({
                         setOpenDropdown={setOpenDropdown}
                         tourActive={tourState.isActive}
                         onTourSelection={handleTourSubSelection}
+                        setShowLoadingScreen={setShowLoadingScreen}
+                      />
+                    )}
+
+                    {step?.id === "environment" && openDropdown === step?.id && (
+                      <EnvironmentDropdown
+                        config={config}
+                        onEnvironmentChange={onEnvironmentChange}
+                        setActiveStep={setActiveStep}
+                        setOpenDropdown={setOpenDropdown}
+                        tourActive={tourState.isActive}
+                        onTourSelection={handleTourSubSelection}
+                        sendMessageToPlayCanvas={sendMessageToPlayCanvas}
                       />
                     )}
 
@@ -957,6 +900,7 @@ const VerticalNavBar = ({
                         setOpenDropdown={setOpenDropdown}
                         tourActive={tourState.isActive}
                         onTourSelection={handleTourSubSelection}
+                        setShowLoadingScreen={setShowLoadingScreen}
                       />
                     )}
 
@@ -993,6 +937,7 @@ const VerticalNavBar = ({
                           setOpenDropdown={setOpenDropdown}
                           tourActive={tourState.isActive}
                           onTourSelection={handleTourSubSelection}
+                          setShowLoadingScreen={setShowLoadingScreen}
                         />
                       )}
 
@@ -1101,11 +1046,10 @@ const VerticalNavBar = ({
                       // Also set the active step for consistency
                       setActiveStep(step.id);
                     }}
-                    className={`w-12 h-12 rounded-full flex items-center justify-center text-base transition-all duration-200 ${
-                      mobileActiveStep === step.id && mobileBottomMenuOpen
+                    className={`w-12 h-12 rounded-full flex items-center justify-center text-base transition-all duration-200 ${mobileActiveStep === step.id && mobileBottomMenuOpen
                         ? `text-white`
                         : "text-gray-400 hover:text-white"
-                    }`}
+                      }`}
                     style={{
                       backgroundColor:
                         mobileActiveStep === step.id && mobileBottomMenuOpen ? emerald : "transparent",
@@ -1128,6 +1072,7 @@ const VerticalNavBar = ({
         onClose={() => setMobileBottomMenuOpen(false)}
         config={config}
         onLightTypeChange={onLightTypeChange}
+        onEnvironmentChange={onEnvironmentChange}
         onBaseTypeChange={onBaseTypeChange}
         onBaseColorChange={onBaseColorChange}
         onConnectorColorChange={onConnectorColorChange}
@@ -1410,11 +1355,10 @@ function GuidedTourOverlay({
           <button
             onClick={onPrev}
             disabled={stepIndex === 0}
-            className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 flex items-center ${
-              stepIndex === 0
+            className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 flex items-center ${stepIndex === 0
                 ? "text-gray-400 cursor-not-allowed"
                 : "text-emerald-600 hover:bg-emerald-50 hover:shadow-sm"
-            }`}
+              }`}
           >
             <FiChevronLeft size={18} className="mr-1" />
             Back
@@ -1511,10 +1455,10 @@ function TourOverlay({
       });
 
       // Find the dropdown content area - only if dropdown is actually open
-      let dropdownElement = el.parentElement?.querySelector('.p-4') || 
-                            el.parentElement?.querySelector('[style*="padding"]') ||
-                            el.parentElement?.querySelector('div[style]');
-      
+      let dropdownElement = el.parentElement?.querySelector('.p-4') ||
+        el.parentElement?.querySelector('[style*="padding"]') ||
+        el.parentElement?.querySelector('div[style]');
+
       // Special case for pendantSelection - look for ConfigPanel
       if (step.id === 'pendantSelection') {
         const configPanel = document.querySelector('div[class*="fixed"][class*="bottom-0"], div[class*="absolute"][class*="bottom-1"]');
@@ -1524,7 +1468,7 @@ function TourOverlay({
           return;
         }
       }
-      
+
       // Check if dropdown is visible and if the parent dropdown is actually open
       const parentDropdown = el.parentElement;
       const isDropdownOpen = parentDropdown && (
@@ -1534,14 +1478,14 @@ function TourOverlay({
         !parentDropdown.hasAttribute('hidden') &&
         !parentDropdown.classList.contains('hidden')
       );
-      
+
       // Also check if the dropdown content itself is visible
-      const isContentVisible = dropdownElement && 
-        dropdownElement.offsetHeight > 0 && 
+      const isContentVisible = dropdownElement &&
+        dropdownElement.offsetHeight > 0 &&
         dropdownElement.offsetWidth > 0 &&
         getComputedStyle(dropdownElement).visibility !== 'hidden' &&
         getComputedStyle(dropdownElement).display !== 'none';
-      
+
       if (isContentVisible && isDropdownOpen) {
         const dropdownBounds = dropdownElement.getBoundingClientRect();
         setDropdownRect(dropdownBounds);
@@ -1621,19 +1565,19 @@ function TourOverlay({
       <div
         className="fixed z-[10020] bg-white text-gray-800 rounded-lg shadow-lg px-4 py-3 w-[240px] sm:w-[240px] animate-fadeIn border border-gray-200"
         style={{
-          ...(typeof window !== "undefined" && window.innerWidth < 640 
+          ...(typeof window !== "undefined" && window.innerWidth < 640
             ? {
-                bottom: "280px",
-                left: "30%",
-                transform: "translateX(-50%)",
-                top: "auto"
-              }
+              bottom: "280px",
+              left: "30%",
+              transform: "translateX(-50%)",
+              top: "auto"
+            }
             : {
-                top: Math.max(tooltipPos.top - 80, 24),
-                left: Math.max(tooltipPos.left - 240, 24),
-                transform: "none",
-                bottom: "auto"
-              }
+              top: Math.max(tooltipPos.top - 80, 24),
+              left: Math.max(tooltipPos.left - 240, 24),
+              transform: "none",
+              bottom: "auto"
+            }
           ),
           pointerEvents: "auto",
         }}

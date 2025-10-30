@@ -1,8 +1,9 @@
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
+import { listenForLoadingOffMountMessages } from '../../../util/iframeCableMessageHandler';
 
-export const BaseTypeDropdown = ({ config, onBaseTypeChange, setActiveStep, setOpenDropdown, tourActive, onTourSelection }) => {
+export const BaseTypeDropdown = ({ config, onBaseTypeChange, setActiveStep, setOpenDropdown, tourActive, onTourSelection, setShowLoadingScreen }) => {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -15,6 +16,17 @@ export const BaseTypeDropdown = ({ config, onBaseTypeChange, setActiveStep, setO
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  // Listen for loadingOffMount message to hide loading screen
+  useEffect(() => {
+    const cleanup = listenForLoadingOffMountMessages((data, event) => {
+      console.log('🔚 BaseTypeDropdown - Received loadingOffMount event, hiding loading screen');
+      if (setShowLoadingScreen) {
+        setShowLoadingScreen(false);
+      }
+    });
+    return cleanup;
+  }, [setShowLoadingScreen]);
+
   return (
     <div className="p-4">
       {!isMobile && <h3 className="text-base font-bold text-white mb-3 font-['Amenti']">Base Type</h3>}
@@ -24,7 +36,15 @@ export const BaseTypeDropdown = ({ config, onBaseTypeChange, setActiveStep, setO
             key={type}
             className={`flex flex-col items-center ${config.baseType === type ? 'text-emerald-500' : 'text-gray-300 hover:text-white'}`}
             onClick={() => {
-              console.log(`🖱️ User clicked on base type: ${type}`);
+              console.log('🎯 BaseTypeDropdown - Button clicked for type:', type);
+              
+              // Show loading screen
+              if (setShowLoadingScreen) {
+                console.log('✅ BaseTypeDropdown - Showing loading screen');
+                setShowLoadingScreen(true);
+              } else {
+                console.log('❌ BaseTypeDropdown - setShowLoadingScreen not available');
+              }
               
               // If tour is active, call tour selection handler
               if (tourActive && onTourSelection) {

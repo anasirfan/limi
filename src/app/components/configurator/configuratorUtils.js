@@ -1,4 +1,53 @@
-import { getSystemAssignments } from "./pendantSystemData";
+import { getSystemAssignments, getSystemAssignmentsSync, findSystemAssignmentByDesign, onDataRefresh } from "./pendantSystemData";
+import { useState, useEffect } from "react";
+
+// ============================================================================
+// REACT HOOKS FOR SYSTEM ASSIGNMENTS
+// ============================================================================
+
+/**
+ * React hook to manage system assignments with automatic updates
+ * @returns {Object} { systemAssignments, isLoading, findByDesign }
+ */
+export const useSystemAssignments = () => {
+  const [systemAssignments, setSystemAssignments] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Initial load
+    const loadInitialData = async () => {
+      try {
+        const assignments = await getSystemAssignments();
+        setSystemAssignments(assignments);
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Error loading system assignments:', error);
+        setIsLoading(false);
+      }
+    };
+
+    // Subscribe to data refresh events
+    const unsubscribe = onDataRefresh((newData) => {
+      const visibleAssignments = newData.filter(item => item.isShow === true);
+      setSystemAssignments(visibleAssignments);
+    });
+
+    loadInitialData();
+
+    return unsubscribe;
+  }, []);
+
+  // Helper function to find assignment by design name
+  const findByDesign = (designName) => {
+    return systemAssignments.find((a) => a.design === designName);
+  };
+
+  return {
+    systemAssignments,
+    isLoading,
+    findByDesign
+  };
+};
 
 // ============================================================================
 // LOCAL STORAGE UTILITIES
@@ -114,7 +163,7 @@ export const getDefaultDesigns = (amount) => {
  * @param {string} message - The message to send
  */
 export const sendMessageToPlayCanvas = (message) => {
-  console.log("Sending message to PlayCanvas iframe:", message);
+  // console.log("Sending message to PlayCanvas iframe:", message);
   const iframe = document.getElementById("playcanvas-app");
   if (iframe && iframe.contentWindow) {
     iframe.contentWindow.postMessage(message, "*");
@@ -126,15 +175,20 @@ export const sendMessageToPlayCanvas = (message) => {
  * @param {string} designName - The design name
  * @param {number|Array} idOrIds - Single ID or array of IDs
  */
-export const sendMessagesForDesign = async (designName, idOrIds) => {
-  const systemAssignments = await getSystemAssignments();
-  const assignment = systemAssignments.find((a) => a.design === designName);
+let wasChandelier = false;
+export const sendMessagesForDesign = (designName, idOrIds) => {
+  const assignment = findSystemAssignmentByDesign(designName);
   if (!assignment) return;
+
+  // Track previous systemType to control message sending
+
 
   // Helper to send all messages for a single id
   const sendAllMessages = (id) => {
     if (assignment.systemType === "bar") {
       sendMessageToPlayCanvas("barextra");
+    }else{
+      sendMessageToPlayCanvas("Nobars");
     }
     sendMessageToPlayCanvas(`cable_${id}`);
     sendMessageToPlayCanvas(
@@ -145,13 +199,18 @@ export const sendMessagesForDesign = async (designName, idOrIds) => {
       `silver_${assignment.hasSilver ? "attached" : "none"}`
     );
     sendMessageToPlayCanvas(`product_${assignment.media?.model?.url}`);
-    
     sendMessageToPlayCanvas(`${assignment.message}`);
+
+    // Updated logic for chandelier/unequal_cable
     if (assignment.systemType === "chandelier") {
       sendMessageToPlayCanvas(`chandelier_clearance`);
       sendMessageToPlayCanvas(`height_set`);
+      wasChandelier = true;
     }else{
-      sendMessageToPlayCanvas('unequal_cable');
+      if (wasChandelier) {
+        sendMessageToPlayCanvas('unequal_cable');
+        wasChandelier = false;
+    }
     }
   };
 
@@ -173,9 +232,8 @@ export const sendMessagesForDesign = async (designName, idOrIds) => {
  * @param {string} designName - The design name
  * @param {number} id - The cable ID
  */
-export const sendMessagesForDesignOnReload = async (designName, id) => {
-  const systemAssignments = await getSystemAssignments();
-  const assignment = systemAssignments.find((a) => a.design === designName);
+export const sendMessagesForDesignOnReload = (designName, id) => {
+  const assignment = findSystemAssignmentByDesign(designName);
   if (!assignment) return;
   // Helper to send all messages for a single id
   const sendAllMessages = (id) => {
@@ -196,11 +254,10 @@ export const sendMessagesForDesignOnReload = async (designName, id) => {
     if (assignment.systemType === "chandelier") {
       sendMessageToPlayCanvas(`chandelier_clearance`);
       sendMessageToPlayCanvas(`height_set`);
+      wasChandelier = true;
     }else{
       sendMessageToPlayCanvas('unequal_cable');
     }
-
-    sendMessageToPlayCanvas(`allmodelsloaded`);
   };
   sendAllMessages(id);
 };

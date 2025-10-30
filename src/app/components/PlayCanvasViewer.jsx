@@ -38,7 +38,7 @@ const PlayCanvasViewer = ({
   useEffect(() => {
     const handleMessage = (event) => {
       // Check if the message is from our iframe
-      if (event.data === 'loadingOff') {
+      if (event.data === 'loadingOffMount') {
         setAppReady(true);     
         setIsLoading(false);
         // Send default selections after app is ready
@@ -130,7 +130,6 @@ const PlayCanvasViewer = ({
           // }
         }
       } catch (error) {
-        console.error("Error during iframe load:", error);
         setHasError(true);
         setIsLoading(false);
       }
@@ -292,7 +291,7 @@ const PlayCanvasViewer = ({
     <div className={`relative ${className} w-full h-full`}>
       {/* Enhanced Interactive Skeleton Loader - Only shown until app:ready1 message is received */}
       {!appReady && (
-        <div id="playcanvas-loader" className="absolute inset-0 flex flex-col items-center justify-center bg-charleston-green z-10 overflow-hidden">
+        <div id="playcanvas-loader" className="absolute inset-0 flex flex-col items-center justify-center bg-[#2B2D2F] z-10 overflow-hidden">
           {/* Background animated pattern */}
           <div className="absolute inset-0 opacity-10">
             <div className="absolute top-0 left-0 w-full h-full">
@@ -435,8 +434,13 @@ const PlayCanvasViewer = ({
       <iframe
         ref={iframeRef}
         id="playcanvas-app"
+        title="3D Configurator Preview"
         // https://configurator.limilighting.com
-        src="https://test-configurator.vercel.app/"
+        // src="https://playcanv.as/e/p/7c2273a2/"
+        // src="https://limi-conf.vercel.app/"
+        src='https://limi-configurator-dev.vercel.app/'
+        // src='https://playcanv.as/e/p/7c2273a2/'
+        // src='https://playcanv.as/e/p/7c2273a2/'
         allow="autoplay; fullscreen; vr"
         className={`w-full h-full transition-opacity duration-500 ${appReady ? 'opacity-100' : 'opacity-0'}`}
         style={{ border: 'none' }}

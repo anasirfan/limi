@@ -55,6 +55,8 @@ export function listenForSelectedCableMessages(callback) {
     }
   }
   window.addEventListener("message", handleMessage);
+  // Return cleanup function
+  return () => window.removeEventListener("message", handleMessage);
 }
 export function listenForModelIdMessages(callback) {
   function handleMessage(event) {
@@ -104,11 +106,8 @@ export function listenForWallbaseColorMessages(callback) {
 }
 export function listenForConnectorColorMessages(callback) {
   function handleMessage(event) {
-    // console.log('[connectorColor] BEFORE FILTER:', event.data);
     if (typeof event.data === "string" && event.data === "connectorColor") {
-      // console.log('[connectorColor] MATCHED connectorColor:', event.data);
       callback(event.data, event);
-      // console.log('[connectorColor] AFTER CALLBACK:', event.data);
     }
   }
   window.addEventListener("message", handleMessage);
@@ -120,6 +119,18 @@ export function listenForConnectorColorMessages(callback) {
 export function listenForLoadingMessages(callback) {
   function handleMessage(event) {
     if (typeof event.data === "string" && event.data === "loadingOff") {
+      callback(event.data, event);
+    }
+  }
+  window.addEventListener("message", handleMessage);
+  // Return cleanup
+  return () => window.removeEventListener("message", handleMessage);
+}
+
+// Listen for loadingOffMount messages
+export function listenForLoadingOffMountMessages(callback) {
+  function handleMessage(event) {
+    if (typeof event.data === "string" && event.data === "loadingOffMount") {
       callback(event.data, event);
     }
   }

@@ -12,7 +12,6 @@ const saveProductsToLocalStorage = (products) => {
   try {
     localStorage.setItem('limiProducts', JSON.stringify(products));
   } catch (error) {
-    console.error('Error saving products to localStorage:', error);
   }
 };
 

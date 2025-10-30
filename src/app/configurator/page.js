@@ -84,7 +84,7 @@ export default function ConfiguratorPage() {
 
   return (
     <main className="min-h-screen" ref={headerRef}>
-      {!isFullScreen && <Header />}
+      {/* {!isFullScreen && <Header />} */}
       
       <div className="h-screen">
         {USE_NEW_CONFIGURATOR ? (
@@ -94,7 +94,7 @@ export default function ConfiguratorPage() {
         )}
       </div>
       
-      {!isFullScreen && !isMobile && <Footer />}
+      {/* {!isFullScreen && !isMobile && <Footer />} */}
     </main>
   );
 }

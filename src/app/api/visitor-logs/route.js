@@ -39,7 +39,6 @@ export async function GET(request) {
         return NextResponse.json(data, { status: 200 });
       }
     } catch (error) {
-      console.error('Error fetching from API:', error);
       // Continue with mock data for development/testing
     }
     
@@ -195,7 +194,6 @@ export async function GET(request) {
       { status: 200 }
     );
   } catch (error) {
-    console.error('Error fetching visitor logs:', error);
     
     // Return error response
     return NextResponse.json(

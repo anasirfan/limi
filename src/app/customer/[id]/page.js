@@ -9,6 +9,7 @@ import Footer from '../../components/Footer';
 import SlideCarousel from '../../components/SlideCarousel';
 import { FaBuilding } from 'react-icons/fa';
 import { selectSlides } from '../../redux/slices/slidesSlice';
+import { buildApi1Url, buildApiUrl } from '../../config/api.config';
 
 // PresentationHeader component to display dynamic titles from slides
 const PresentationHeader = ({ customerName, customerId }) => {
@@ -22,7 +23,7 @@ const PresentationHeader = ({ customerName, customerId }) => {
       try {
         // First try to load from API
         const token = localStorage.getItem('token');
-        const response = await fetch(`https://dev.api1.limitless-lighting.co.uk/admin/slide/customers/${customerId}/slideshows`, {
+        const response = await fetch(buildApi1Url(`/admin/slide/customers/${customerId}/slideshows`), {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -187,7 +188,7 @@ export default function CustomerProfile() {
   const fetchPresentationData = async (profileId) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`https://dev.api1.limitless-lighting.co.uk/admin/slide/customers/${profileId}/slideshows`, {
+      const response = await fetch(buildApi1Url(`/admin/slide/customers/${profileId}/slideshows`), {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -264,7 +265,7 @@ export default function CustomerProfile() {
         try {
           // If not a test customer, fetch from API directly
           const token = localStorage.getItem('token');
-          const response = await fetch(`https://api.limitless-lighting.co.uk/client/get_customer_details/${customerId}`, {
+          const response = await fetch(buildApiUrl(`/client/get_customer_details/${customerId}`), {
             headers: {
               'Authorization': `Bearer ${token}`
             }

@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { useSelector, useDispatch } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
 import { fetchUserByToken } from "../../../redux/slices/userSlice";
+import { buildApi1Url, API_CONFIG } from '../../../config/api.config';
 import "react-toastify/dist/ReactToastify.css";
 import {
   FaEye,
@@ -122,7 +123,7 @@ export default function SavedConfigurations({ isARView = false }) {
     setIsLoading(true);
     try {
       const response = await fetch(
-        "https://dev.api1.limitless-lighting.co.uk/admin/products/users/light-configs",
+        buildApi1Url('/admin/products/users/light-configs'),
         {
           method: "POST",
           headers: {
@@ -138,15 +139,12 @@ export default function SavedConfigurations({ isARView = false }) {
 
       const data = await response.json();
       setConfigurations(data);
-      console.log("configurations", configurations);
     } catch (error) {
-      console.error("Error fetching configurations:", error);
       toast.error("Failed to load configurations");
     } finally {
       setIsLoading(false);
     }
   };
-  console.log("configurations", configurations);
 
   // Delete configuration
   const deleteConfiguration = async (configId) => {
@@ -154,7 +152,7 @@ export default function SavedConfigurations({ isARView = false }) {
       setIsDeleting(true);
       try {
         const response = await fetch(
-          `https://dev.api1.limitless-lighting.co.uk/admin/products/light-configs/${configId}`,
+          buildApi1Url(`/admin/products/light-configs/${configId}`),
           {
             method: "DELETE",
           }
@@ -176,7 +174,6 @@ export default function SavedConfigurations({ isARView = false }) {
 
         toast.success("Configuration deleted successfully");
       } catch (error) {
-        console.error("Error deleting configuration:", error);
         toast.error("Failed to delete configuration");
       } finally {
         setIsDeleting(false);
@@ -237,7 +234,6 @@ export default function SavedConfigurations({ isARView = false }) {
   // View configuration details
   const viewConfigDetails = (config) => {
     setSelectedConfig(config);
-    console.log("configthumb", config.thumbnail.url);
   };
 
   // Close configuration details
@@ -357,7 +353,7 @@ export default function SavedConfigurations({ isARView = false }) {
               <div className="flex items-center h-[200px] w-full justify-center py-2 bg-[#292929] border-b border-gray-200">
                 <Image
                   src={
-                    // `https://dev.api1.limitless-lighting.co.uk/${config.thumbnail?.url}` ||
+                    // buildApi1Url(config.thumbnail?.url) ||
                     `/images/homepage-products/${
                       Math.floor(Math.random() * 7) + 1
                     }-mobile.jpg`
@@ -471,7 +467,7 @@ export default function SavedConfigurations({ isARView = false }) {
                   <div className="bg-[#1a1a1a] rounded-xl p-4 border border-gray-800 shadow-lg">
                     <div className="relative w-full aspect-square mb-4 rounded-lg overflow-hidden bg-gradient-to-br from-gray-900 to-gray-800">
                       <Image
-                        src={`https://dev.api1.limitless-lighting.co.uk${selectedConfig.thumbnail?.url}`}
+                        src={buildApi1Url(selectedConfig.thumbnail?.url)}
                         alt={selectedConfig.name || "Configuration"}
                         fill
                         aspectRatio="1/1"

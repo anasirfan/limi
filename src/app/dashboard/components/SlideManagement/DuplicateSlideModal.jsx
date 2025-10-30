@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { buildApiUrl, buildApi1Url } from '../../../../config/api.config';
 import { FaClone, FaSpinner, FaSearch, FaEye, FaCheckSquare, FaSquare, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import SlidePreviewModal from './SlidePreviewModal';
 
@@ -31,7 +32,7 @@ const DuplicateSlideModal = ({ isOpen, onClose, onDuplicate }) => {
     setError(null);
     try {
       const token = localStorage.getItem('token') || localStorage.getItem('dashboardToken');
-      const response = await fetch('https://api.limitless-lighting.co.uk/client/get_customer_details/', {
+      const response = await fetch(buildApiUrl('/client/get_customer_details/'), {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -63,7 +64,7 @@ const DuplicateSlideModal = ({ isOpen, onClose, onDuplicate }) => {
     
     try {
       const token = localStorage.getItem('token') || localStorage.getItem('dashboardToken');
-      const response = await fetch(`https://dev.api1.limitless-lighting.co.uk/admin/slide/customers/${customerId}/slideshows`, {
+      const response = await fetch(buildApi1Url(`/admin/slide/customers/${customerId}/slideshows`), {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -111,7 +112,6 @@ const DuplicateSlideModal = ({ isOpen, onClose, onDuplicate }) => {
         setError('No slides found for this customer.');
       }
     } catch (err) {
-      console.error('Error fetching customer slides:', err);
       setError('Failed to load slides. Please try again.');
     } finally {
       setLoading(false);

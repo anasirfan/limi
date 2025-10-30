@@ -1,10 +1,12 @@
 'use client';
+
 import { useEffect, useRef, useState } from 'react';
 import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 import { FaArrowRight, FaChevronDown, FaTimes } from 'react-icons/fa';
 import { HiCube } from 'react-icons/hi';
 import Link from 'next/link';
-import { TractionSection, StrategySection, OpportunitySection, LearningLoopSection, MarketSection, TeamSection, RaisingSection, FinalCTASection } from './sections-enhanced';
+import { TractionSection, StrategySection, OpportunitySection, MarketSection, TeamSection, RaisingSection, FinalCTASection } from './sections-light';
+import { buildApi1Url, API_CONFIG } from '../config/api.config';
 
 const LimiAIPage = () => {
   const [mounted, setMounted] = useState(false);
@@ -32,7 +34,7 @@ const LimiAIPage = () => {
     e.preventDefault();
     setSubmitStatus(null);
     try {
-      const response = await fetch("https://dev.api1.limitless-lighting.co.uk/admin/dashboard/investor_details", {
+      const response = await fetch(buildApi1Url(API_CONFIG.ENDPOINTS.INVESTOR_DETAILS), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { buildApi1Url, API_CONFIG } from '../../config/api.config';
 
-const API_BASE = 'https://dev.api1.limitless-lighting.co.uk/admin/products/light-configs/wishlist';
+const API_BASE = buildApi1Url(API_CONFIG.ENDPOINTS.PRODUCTS_WISHLIST);
 
 const getToken = () => localStorage.getItem('limiToken');
 
@@ -9,7 +10,7 @@ export const fetchFavorites = createAsyncThunk(
   'favorites/fetchFavorites',
   async (_, thunkAPI) => {
     const token = getToken();
-    const res = await fetch(API_BASE, {
+    const res = await fetch(buildApi1Url(API_CONFIG.ENDPOINTS.PRODUCTS_WISHLIST), {
       method: 'GET',
       headers: {
         'Authorization': `${token}`,
@@ -62,7 +63,7 @@ export const updateFavorites = createAsyncThunk(
   'favorites/updateFavorites',
   async (favoritesArray, thunkAPI) => {
     const token = getToken();
-    const res = await fetch(API_BASE, {
+    const res = await fetch(buildApi1Url(API_CONFIG.ENDPOINTS.PRODUCTS_WISHLIST), {
       method: 'POST', // Change to PATCH/PUT if your API expects it
       headers: {
         'Authorization': `${token}`,

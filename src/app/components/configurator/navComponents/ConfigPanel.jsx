@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { buildApi1Url } from '../../../config/api.config';
 import Image from "next/image";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -36,7 +37,6 @@ export const ConfigPanel = ({
   handleChandelierTypeChange,
   onBreadcrumbNavigation,
   onSystemTypeSelection,
-  antLoadingScreen,
   selectedLocation,
   selectedPendants,
   cables, // Add cables prop
@@ -65,11 +65,6 @@ export const ConfigPanel = ({
 
   useEffect(() => {
     if (showConfigurationTypeSelector) {
-      console.log(
-        "showConfigurationTypeSelector",
-        showConfigurationTypeSelector
-      );
-      // Reset all state when panel is opened
       setCurrentDesign(null);
       setAvailableShades([]);
       setLocalSelectedShade(null);
@@ -92,10 +87,45 @@ export const ConfigPanel = ({
   const [ballAssignments, setBallAssignments] = useState([]);
   const [universalAssignments, setUniversalAssignments] = useState([]);
   const [chandelierAssignments, setChandelierAssignments] = useState([]);
+  // Loading state for pendant selection
+  const [pendantLoading, setPendantLoading] = useState(false);
+  // Ref to store the timeout ID for cleanup
+  const loadingTimeoutRef = useRef(null);
+  
+  // Function to turn off pendant loading
+  const turnOffPendantLoading = () => {
+    setPendantLoading(false);
+    // Clear the timeout if it exists
+    if (loadingTimeoutRef.current) {
+      clearTimeout(loadingTimeoutRef.current);
+      loadingTimeoutRef.current = null;
+    }
+  };
+
+  // Listen for messages from iframe to turn off loading
+  useEffect(() => {
+    const handleMessage = (event) => {
+      // Check if the message is from the expected iframe origin
+      if (event.data === "loadingOff") {
+        turnOffPendantLoading();
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+    
+    // Cleanup event listener on component unmount
+    return () => {
+      window.removeEventListener("message", handleMessage);
+      // Also clear any pending timeout
+      if (loadingTimeoutRef.current) {
+        clearTimeout(loadingTimeoutRef.current);
+      }
+    };
+  }, []);
+
   // Function to load all configurator data (only visible items)
   const loadConfiguratorData = async () => {
     try {
-      console.log('🔄 ConfigPanel: Loading configurator data (visible items only)');
       const [
         systemData,
         pendantData,
@@ -119,14 +149,7 @@ export const ConfigPanel = ({
       setUniversalAssignments(universalData);
       setChandelierAssignments(chandelierData);
       
-      console.log('🔄 ConfigPanel: Data loaded successfully', {
-        systemItems: systemData.length,
-        pendantItems: pendantData.length,
-        barItems: barData.length,
-        ballItems: ballData.length,
-        universalItems: universalData.length,
-        chandelierItems: chandelierData.length
-      });
+    
       
     } catch (error) {
       console.error('Error loading configurator data:', error);
@@ -141,7 +164,7 @@ export const ConfigPanel = ({
   const syncWishlistWithAPI = async (wishlistArray) => {
     const token = localStorage.getItem("limiToken");
     await fetch(
-      "https://dev.api1.limitless-lighting.co.uk/admin/products/light-configs/wishlist",
+      buildApi1Url('/admin/products/light-configs/wishlist'),
       {
         method: "POST",
         headers: {
@@ -182,7 +205,6 @@ export const ConfigPanel = ({
   // Subscribe to data refresh events to reload configurator data
   useEffect(() => {
     const unsubscribe = onDataRefresh((newData) => {
-      console.log('🔄 ConfigPanel: Data refreshed, reloading configurator data');
       setDataRefreshTrigger(prev => prev + 1);
       // Reload all configurator data to get only visible items
       loadConfiguratorData();
@@ -701,18 +723,6 @@ export const ConfigPanel = ({
         });
       }
       config.onItemSelect = (itemId) => {
-        // Fire messages for configuration type selection
-        if (sendMessageToPlayCanvas) {
-          if (itemId === "pendant") {
-            sendMessageToPlayCanvas("Nobars");
-          }
-          //  else if (itemId === "system") {
-          //   sendMessageToPlayCanvas("Nobars");
-          // } 
-          else if (itemId === "chandelier") {
-            sendMessageToPlayCanvas("Nobars");
-          }
-        }
         // Reset system type state when selecting system
         if (itemId === "system") {
           setCurrentDesign(null);
@@ -771,6 +781,11 @@ export const ConfigPanel = ({
             : "/images/configOptions/chandelier.png",
       }));
       config.onItemSelect = (itemId) => {
+        // Show loading overlay
+        setPendantLoading(true);
+        
+        // Loading will only be turned off when "loadingOff" message is received from iframe
+        
         // Call the chandelier type change handler
         if (handleChandelierTypeChange) {
           handleChandelierTypeChange(itemId);
@@ -828,6 +843,11 @@ export const ConfigPanel = ({
         baseNumber: pendant.baseNumber,
       }));
       config.onItemSelect = (itemId) => {
+        // Show loading overlay
+        setPendantLoading(true);
+        
+        // Loading will only be turned off when "loadingOff" message is received from iframe
+        
         setCurrentDesign(itemId);
     
         // Use all selected pendants if available, otherwise fall back to just the first one
@@ -836,8 +856,6 @@ export const ConfigPanel = ({
             ? selectedPendants
             : [selectedLocation];
         onPendantDesignChange(pendantsToUpdate, itemId);
-        console.log("pendantsToUpdate",pendantsToUpdate);
-        console.log("itemId",itemId);
         // Always hide and clear shade panel for pendants
         setShowShades(false);
         setAvailableShades([]);
@@ -866,17 +884,8 @@ export const ConfigPanel = ({
         config.onItemSelect = (systemType) => {
           // Fire specific messages for each system type
 
-          if (systemType === "universal") {
-            sendMessageToPlayCanvas("Nobars");
-          } else if (systemType === "ball") {
-            sendMessageToPlayCanvas("Nobars");
-          } 
-          
-          else if (systemType === "bar") {
-            console.log(
-              "Firing bar messages for selectedPendants:",
-              selectedPendants
-            );
+         
+          if (systemType === "bar") {
 
             // Check each cable individually and fire messages conditionally
             if (cables && cables.length > 0) {
@@ -900,9 +909,7 @@ export const ConfigPanel = ({
                         "product_https://dev.api1.limitless-lighting.co.uk/configurator_dynamic/models/Bar_1756732230450.glb"
                       );
                     }
-                  } else {
-                    console.log(`Skipping messages for cable ${index} - already has bar system design: ${cable.design}`);
-                  }
+                  } 
                 }
               });
               sendMessageToPlayCanvas("allmodelsloaded");
@@ -960,6 +967,11 @@ export const ConfigPanel = ({
           });
 
           config.onItemSelect = (itemId) => {
+            // Show loading overlay
+            setPendantLoading(true);
+            
+            // Loading will only be turned off when "loadingOff" message is received from iframe
+            
             setCurrentDesign(itemId);
             const selectedBase = config.items.find(
               (item) => item.id === itemId
@@ -1063,6 +1075,11 @@ export const ConfigPanel = ({
             } else {
               // Show base options
               config.onItemSelect = (itemId) => {
+                // Show loading overlay
+                setPendantLoading(true);
+                
+                // Loading will only be turned off when "loadingOff" message is received from iframe
+                
                 setCurrentDesign(itemId);
                 const selectedBase = config.items.find(
                   (item) => item.id === itemId
@@ -1105,6 +1122,11 @@ export const ConfigPanel = ({
           } else {
             // Show base options
             config.onItemSelect = (itemId) => {
+              // Show loading overlay
+              setPendantLoading(true);
+              
+              // Loading will only be turned off when "loadingOff" message is received from iframe
+              
               setCurrentDesign(itemId);
               const selectedBase = config.items.find(
                 (item) => item.id === itemId
@@ -1149,7 +1171,6 @@ export const ConfigPanel = ({
   // Custom breadcrumb navigation handler
   const handleBreadcrumbNavigation = (id) => {
     // Use the navigation state to determine where to go
-    console.log("handleBreadcrumbNavigation", id);
     if (id === "home") {
       // Reset to configuration type selection (first level)
       // Clear all system-related state
@@ -1246,8 +1267,26 @@ export const ConfigPanel = ({
   const isMobileView = className.includes("max-sm:static");
 
   return (
-    <div className="flex justify-center items-center w-full">
-      <motion.div
+    <>
+      {/* Full-Screen Loading Overlay for Pendant Selection */}
+      {pendantLoading && (
+        <motion.div
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[9999] flex flex-col items-center justify-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <div className="flex flex-col items-center space-y-4">
+            {/* Spinning loader */}
+            <div className="w-12 h-12 border-3 border-gray-600 border-t-emerald-500 rounded-full animate-spin"></div>
+            <p className="text-white text-lg font-medium font-['Amenti']">Loading pendant...</p>
+          </div>
+        </motion.div>
+      )}
+      
+      <div className="flex justify-center items-center w-full">
+        <motion.div
         className={`fixed h-[150px] sm:absolute bottom-0 sm:bottom-1 -translate-x-1/2 bg-black/95 sm:backdrop-blur-sm border border-gray-700 rounded-t-lg sm:rounded-lg z-40 w-full sm:max-w-[320px] md:max-w-[400px] lg:max-w-[480px] xl:max-w-[540px] sm:w-[80vw] md:w-[55vw] lg:w-[40vw] xl:w-[24vw] max-h-[60vh] sm:max-h-[30vh] shadow-lg overflow-hidden ${className}`}
         initial={
           isMobileView ? { y: "100%", opacity: 0 } : { y: 30, opacity: 0 }
@@ -1364,54 +1403,7 @@ export const ConfigPanel = ({
                       }`}
                     >
                       {/* Wishlist Icon Overlay */}
-                      {item.id !== "pendant" &&
-                        item.id !== "system" &&
-                        item.id !== "chandelier" &&
-                        item.id !== "bar" &&
-                        item.id !== "ball" &&
-                        item.id !== "universal" && (
-                          <button
-                            type="button"
-                            className="absolute top-1 right-1 z-10 bg-white/80 rounded-full p-1 hover:bg-rose-200 transition-all"
-                            onClick={async (e) => {
-                              e.stopPropagation();
-                              let newWishlist;
-
-                              if (favorites.some((fav) => fav.id === item.id)) {
-                                // Remove from Redux state
-                                dispatch(removeFromFavorites(item.id));
-                                // Remove from wishlist array
-                                newWishlist = favorites
-                                  .filter((fav) => fav.id !== item.id)
-                                  .map((fav) => fav.id);
-                              } else {
-                                // Add to Redux state
-                                dispatch(addToFavorites({ id: item.id }));
-                                // Add to wishlist array
-                                newWishlist = [
-                                  ...favorites.map((fav) => fav.id),
-                                  item.id,
-                                ];
-                              }
-
-                              // Sync with backend
-                              await syncWishlistWithAPI(newWishlist);
-                            }}
-                            title={
-                              favorites.some((fav) => fav.id === item.id)
-                                ? "Remove from Wishlist"
-                                : "Add to Wishlist"
-                            }
-                          >
-                            <FaHeart
-                              className={
-                                favorites.some((fav) => fav.id === item.id)
-                                  ? "text-rose-500"
-                                  : "text-gray-400"
-                              }
-                            />
-                          </button>
-                        )}
+                      
                       {item.image ? (
                         <Image
                           src={item.image}
@@ -1461,5 +1453,6 @@ export const ConfigPanel = ({
         </div>
       </motion.div>
     </div>
+    </>
   );
 };

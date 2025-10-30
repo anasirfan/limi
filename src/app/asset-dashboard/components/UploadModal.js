@@ -149,11 +149,40 @@ export default function UploadModal({ onClose }) {
     let hasError = false;
 
     for (const fileData of selectedFiles) {
-      const result = await uploadFile(fileData);
-      if (result === null) {
-        // Upload failed, error message already set in uploadFile function
-        hasError = true;
-        break; // Stop uploading remaining files on error
+      try {
+        // Simulate upload process
+        await simulateUpload(fileData);
+
+        // Create asset object
+        const newAsset = {
+          name: fileData.name,
+          type: fileData.type,
+          size: fileData.size,
+          url: `https://cdn.limi.com/${fileData.type}s/${fileData.name}`,
+          thumbnail: '/api/placeholder/300/200',
+          tags: fileData.tags.filter(tag => tag.trim()),
+          uploadedBy: fileData.uploadedBy,
+          usageContext: fileData.usageContext || `New ${fileData.type} asset`,
+          dimensions: fileData.type === 'image' ? '1920x1080' : undefined,
+          duration: fileData.type === 'video' ? '1:30' : undefined,
+          polygons: fileData.type === '3d' ? '10,000' : undefined,
+          format: fileData.name.split('.').pop().toUpperCase()
+        };
+
+        // Add to store
+        dispatch(addAsset(newAsset));
+
+        // Add activity
+        dispatch(addActivity({
+          user: fileData.uploadedBy,
+          role: 'Frontend Dev',
+          action: 'uploaded',
+          assetName: fileData.name,
+          assetType: fileData.type,
+          details: `Uploaded new ${fileData.type} asset: ${fileData.name}`
+        }));
+
+      } catch (error) {
       }
     }
 

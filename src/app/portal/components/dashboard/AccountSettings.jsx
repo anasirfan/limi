@@ -28,6 +28,7 @@ import {
   removePaymentMethod,
   setDefaultPaymentMethod,
 } from "../../../redux/slices/userSlice";
+import { buildApi1Url, buildApiUrl, API_CONFIG } from '../../../config/api.config';
 
 export default function AccountSettings({ user, onUserUpdate }) {
   const dispatch = useDispatch();
@@ -86,7 +87,7 @@ export default function AccountSettings({ user, onUserUpdate }) {
 
     try {
       const response = await fetch(
-        "https://dev.api1.limitless-lighting.co.uk/client/user/profile",
+        buildApi1Url(API_CONFIG.ENDPOINTS.USER_PROFILE),
         {
           headers: { Authorization: token },
         }
@@ -113,7 +114,6 @@ export default function AccountSettings({ user, onUserUpdate }) {
       localStorage.setItem("limiUser", JSON.stringify(userData));
       return userData;
     } catch (error) {
-      console.error("Error fetching user data:", error);
       return null;
     }
   };
@@ -173,7 +173,7 @@ export default function AccountSettings({ user, onUserUpdate }) {
 
       // Make the API call to update profile
       const response = await fetch(
-        "https://dev.api1.limitless-lighting.co.uk/client/user/profile",
+        buildApi1Url(API_CONFIG.ENDPOINTS.USER_PROFILE),
         {
           method: "PUT",
           headers: {
@@ -210,7 +210,6 @@ export default function AccountSettings({ user, onUserUpdate }) {
 
       setEditMode(false);
     } catch (error) {
-      console.error("Error updating profile:", error);
       setSaveError(
         error.message || "Failed to update profile. Please try again."
       );
@@ -297,7 +296,7 @@ export default function AccountSettings({ user, onUserUpdate }) {
 
       // Upload profile picture using PUT method
       const response = await fetch(
-        "https://dev.api.limitless-lighting.co.uk/client/update_profile",
+        buildApiUrl(API_CONFIG.ENDPOINTS.UPDATE_PROFILE),
         {
           method: "PATCH",
           body: formData,
@@ -333,7 +332,6 @@ export default function AccountSettings({ user, onUserUpdate }) {
       setUploadSuccess(true);
       setTimeout(() => setUploadSuccess(false), 3000);
     } catch (error) {
-      console.error("Error uploading profile picture:", error);
       setUploadError(
         error.message ||
           "Failed to upload profile picture. Please try again or contact support."
@@ -362,7 +360,7 @@ export default function AccountSettings({ user, onUserUpdate }) {
       }
 
       const response = await fetch(
-        "https://dev.api1.limitless-lighting.co.uk/client/user/profile/picture",
+        buildApi1Url(API_CONFIG.ENDPOINTS.USER_PROFILE_PICTURE),
         {
           method: "DELETE",
           headers: {
@@ -380,7 +378,7 @@ export default function AccountSettings({ user, onUserUpdate }) {
 
       // Get updated user data
       const profileResponse = await fetch(
-        "https://dev.api1.limitless-lighting.co.uk/client/user/profile",
+        buildApi1Url(API_CONFIG.ENDPOINTS.USER_PROFILE),
         {
           headers: { Authorization: token },
         }
@@ -404,7 +402,6 @@ export default function AccountSettings({ user, onUserUpdate }) {
       setProfilePicChanged((prev) => !prev); // Trigger profile reload
       setTimeout(() => setUploadSuccess(false), 3000);
     } catch (error) {
-      console.error("Error removing profile picture:", error);
       setUploadError(error.message || "Failed to remove profile picture");
     }
   };
@@ -933,7 +930,7 @@ export default function AccountSettings({ user, onUserUpdate }) {
 
         // Make the API call to update profile with only changed address fields
         const response = await fetch(
-          "https://dev.api1.limitless-lighting.co.uk/client/user/profile",
+          buildApi1Url(API_CONFIG.ENDPOINTS.USER_PROFILE),
           {
             method: "PUT",
             headers: {
@@ -964,7 +961,6 @@ export default function AccountSettings({ user, onUserUpdate }) {
         setEditingAddressId(null);
         
       } catch (error) {
-        console.error("Error updating address:", error);
         setSaveError(error.message || "Failed to update address. Please try again.");
       }
     };

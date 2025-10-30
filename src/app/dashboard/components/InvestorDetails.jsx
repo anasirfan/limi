@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { buildApi1Url, API_CONFIG } from '../../config/api.config';
 import { FaSpinner, FaUserTie, FaEnvelope, FaBuilding, FaUsers, FaClock, FaChartLine } from 'react-icons/fa';
 
 export default function InvestorDetails() {
@@ -12,7 +13,7 @@ export default function InvestorDetails() {
         setLoading(true);
         const token = localStorage.getItem('limiToken');
         
-        const response = await fetch("https://dev.api1.limitless-lighting.co.uk/admin/dashboard/investor_details", {
+        const response = await fetch(buildApi1Url(API_CONFIG.ENDPOINTS.INVESTOR_DETAILS), {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
